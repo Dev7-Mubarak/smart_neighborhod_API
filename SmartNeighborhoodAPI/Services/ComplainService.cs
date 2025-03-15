@@ -18,7 +18,7 @@ namespace SmartNeighborhoodAPI.Services
             var Complain = _mapper.Map<Complain>(ComplainDTo);
 
 
-            await _context.AddAsync(Complain);
+            await _context.Complains.AddAsync(Complain);
             if (await _context.SaveChangesAsync() > 0)
                 return ApiResponse<ComplainDTo>.Success(ComplainDTo, "Added Successed");
 
@@ -64,13 +64,13 @@ namespace SmartNeighborhoodAPI.Services
         }
         public async Task<ApiResponse<string>> UpdateAsync(int id, ComplainDTo ComplainDTo)
         {
-            var ExsitComplain = await _context.Ads.FirstOrDefaultAsync(x => x.Id == id);
+            var ExsitComplain = await _context.Complains.FirstOrDefaultAsync(x => x.Id == id);
 
             if (ExsitComplain is null)
                 return ApiResponse<string>.Error(HttpStatusCode.NotFound, "Complain Not Found");
             var UpdateComplain = _mapper.Map(ComplainDTo, ExsitComplain);
 
-            _context.Ads.Update(UpdateComplain);
+            _context.Complains.Update(UpdateComplain);
             if (await _context.SaveChangesAsync() > 0)
                 return ApiResponse<string>.Success("Complain Updated Successfully");
 

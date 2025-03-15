@@ -39,6 +39,8 @@ builder.Services.AddScoped<MemberTypeService>();
 builder.Services.AddScoped<BlockServices>();
 builder.Services.AddScoped<AdsService>();
 builder.Services.AddScoped<GroupService>();
+builder.Services.AddScoped<ComplainService>();
+builder.Services.AddScoped<ComplainTypeService>();
 
 
 

@@ -2,8 +2,7 @@
 {
     public class ComplainDTo
     {
-        [Required(ErrorMessage ="Image is required")]
-        public byte[] Image { get; set; }
+       
         [Required(ErrorMessage = "OutCome is required")]
         [MaxLength(300)]
         public string Outcome { get; set; }

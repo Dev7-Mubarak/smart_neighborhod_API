@@ -7,6 +7,8 @@ public class MappingProfile : Profile
     {
         CreateMap<Group, GroupDto>().ReverseMap();
         CreateMap<Ad, AdDto>().ReverseMap();
+        CreateMap<Complain, ComplainDTo>().ReverseMap();
+        CreateMap<ComplainType, ComplainTypeDto>().ReverseMap();
 
     }
 }

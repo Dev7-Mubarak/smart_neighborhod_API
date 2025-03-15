@@ -5,7 +5,7 @@
         public int Id { get; set; }
   
 
-        public byte[] Image { get; set; }
+  
         public string Outcome { get; set; }
         public int ComplainTypeId { get; set; }
         public string Notes { get; set; }
