@@ -37,6 +37,8 @@ builder.Services.AddScoped<FamilyTypeService>();
 builder.Services.AddScoped<FamilyService>();
 builder.Services.AddScoped<MemberTypeService>();
 builder.Services.AddScoped<BlockServices>();
+builder.Services.AddScoped<AdsService>();
+
 
 
 //var jwt = builder.Configuration.GetSection("Jwt").Get<JWT>();
