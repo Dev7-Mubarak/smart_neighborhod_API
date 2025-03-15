@@ -1,1 +1,1 @@
-# smart_neighborhod_API
+# SmartNeighborhoodAPI
