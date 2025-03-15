@@ -1,9 +1,12 @@
-﻿using SmartNeighborhoodAPI.Helpers.DTOs;
+﻿using OurProjectSmartNeiborhood.Services;
+using SmartNeighborhoodAPI.Helpers.DTOs;
 
 public class MappingProfile : Profile
 {
     public MappingProfile()
     {
-       
+        CreateMap<Group, GroupDto>().ReverseMap();
+        CreateMap<Ad, AdDto>().ReverseMap();
+
     }
 }
