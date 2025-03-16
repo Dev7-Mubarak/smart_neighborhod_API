@@ -70,7 +70,7 @@ namespace SmartNeighborhoodAPI.Services
         }
         public async Task<ApiResponse<MemberTypeDto>> GetByIdAsync(int id)
         {
-            var memberType = await _context.MemberTypes.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+            var memberType = await _context.MemberTypes.Include(x=>x.FamilyMembers).AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
             if (memberType == null)
                 return ApiResponse<MemberTypeDto>.Error(HttpStatusCode.NotFound, "Block Not Found");
 

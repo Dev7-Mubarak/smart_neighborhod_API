@@ -9,6 +9,7 @@ public class MappingProfile : Profile
         CreateMap<Ad, AdDto>().ReverseMap();
         CreateMap<Complain, ComplainDTo>().ReverseMap();
         CreateMap<ComplainType, ComplainTypeDto>().ReverseMap();
+        CreateMap<ConfilctParty, ConfilctPartyDto>().ReverseMap();
 
     }
 }

@@ -41,6 +41,7 @@ builder.Services.AddScoped<AdsService>();
 builder.Services.AddScoped<GroupService>();
 builder.Services.AddScoped<ComplainService>();
 builder.Services.AddScoped<ComplainTypeService>();
+builder.Services.AddScoped<ConfilctPartyService>();
 
 
 

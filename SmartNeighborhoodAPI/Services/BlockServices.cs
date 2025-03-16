@@ -56,7 +56,7 @@ namespace SmartNeighborhoodAPI.Services
 
         public async Task<ApiResponse<Block>> GetByIdAsync(int id)
         {
-            var block = await _context.Blocks.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+            var block = await _context.Blocks.Include(x=>x.Families).AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
             if (block == null)
                 return ApiResponse<Block>.Error(HttpStatusCode.NotFound, "Block Not Found");
 
