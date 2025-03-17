@@ -13,6 +13,8 @@ public class MappingProfile : Profile
         CreateMap<ProjectCatogory, ProjectCatgoryDto>().ReverseMap();
         CreateMap<Project, ProjectDto>().ReverseMap();
         CreateMap<ProjectFamily, ProjectFamilyDto>().ReverseMap();
+        CreateMap<Team, TeamDto>().ReverseMap();
+        CreateMap<TeamMember, TeamMemberDto>().ReverseMap();
 
 
     }

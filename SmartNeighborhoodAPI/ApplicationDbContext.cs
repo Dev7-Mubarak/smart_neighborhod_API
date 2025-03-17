@@ -69,7 +69,8 @@ namespace SmartNeighborhoodAPI
         public DbSet<ComplainType> ComplainTypes { get; set; }
         public DbSet<ProjectFamily> ProjectFamilies { get; set; }
         public DbSet<ProjectCatogory> ProjectCatogories { get; set; }
-        //public DbSet<Team> Teams { get; set; }
+        public DbSet<Team> Teams { get; set; }
+        public DbSet<TeamMember> TeamMembers { get; set; }
         //public DbSet<PersonComplain> PersonComplains { get; set; }
 
     }

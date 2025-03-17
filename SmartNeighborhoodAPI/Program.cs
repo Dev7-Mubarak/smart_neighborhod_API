@@ -45,6 +45,8 @@ builder.Services.AddScoped<ConfilctPartyService>();
 builder.Services.AddScoped<ProjectCatgoryService>();
 builder.Services.AddScoped<ProjectService>();
 builder.Services.AddScoped<ProjectFamilieservice>();
+builder.Services.AddScoped<TeamsService>();
+builder.Services.AddScoped<TeamMemberService>();
 
 
 
