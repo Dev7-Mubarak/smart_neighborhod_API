@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SmartNeighborhoodAPI;
 
@@ -11,9 +12,10 @@ using SmartNeighborhoodAPI;
 namespace SmartNeighborhoodAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250317110629_AddProjectFamilyTable")]
+    partial class AddProjectFamilyTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -66,22 +68,22 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "fede070c-3a65-4ccb-8cd1-a030b60b03e4",
-                            ConcurrencyStamp = "6a8342f9-966f-40bd-80e5-85bd4774a9ff",
+                            Id = "f17aeeef-ac3b-48f1-9d4f-0975ec11259f",
+                            ConcurrencyStamp = "6a636be7-16b3-4936-9ba0-4bcc5fa89396",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "a1a79a25-b7f9-43be-9d73-47524b7f1aee",
-                            ConcurrencyStamp = "23dddfb5-2793-4c0e-bc76-0830cbdad807",
+                            Id = "494089ff-5ac1-4814-ab52-745fcf2a68ee",
+                            ConcurrencyStamp = "2274856c-39d7-44b9-bba2-531953cd6941",
                             Name = "BlockManager",
                             NormalizedName = "BLOCKMANAGER"
                         },
                         new
                         {
-                            Id = "28130dbc-edbe-4cfe-a1d5-cd86fd5188b4",
-                            ConcurrencyStamp = "06b4f267-091a-4879-9e46-96013035c1ea",
+                            Id = "9ab68f23-4709-44db-a3ec-946237e6f449",
+                            ConcurrencyStamp = "9d1e9841-ad15-4f1b-b3ca-895e8df6b694",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -176,8 +178,8 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "21db0f8c-9303-4530-8df6-ef5e00de834a",
-                            RoleId = "fede070c-3a65-4ccb-8cd1-a030b60b03e4"
+                            UserId = "69bd8689-bc7d-49f8-9646-46aa525a7eb5",
+                            RoleId = "f17aeeef-ac3b-48f1-9d4f-0975ec11259f"
                         });
                 });
 
@@ -680,7 +682,7 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("Teams");
+                    b.ToTable("Team");
                 });
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.TeamMember", b =>
@@ -713,7 +715,7 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     b.HasIndex("TeamId");
 
-                    b.ToTable("TeamMembers");
+                    b.ToTable("TeamMember");
                 });
 
             modelBuilder.Entity("SmartNeighborhoodAPI.Entites.AppUser", b =>
@@ -793,18 +795,18 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "21db0f8c-9303-4530-8df6-ef5e00de834a",
+                            Id = "69bd8689-bc7d-49f8-9646-46aa525a7eb5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "702d5b2e-477f-4411-849b-bf2889bea549",
+                            ConcurrencyStamp = "21561e88-1986-49c0-acb7-3ab0dadaa87c",
                             Email = "admin@example.com",
                             EmailConfirmed = true,
                             IsActive = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@EXAMPLE.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEEihHlp/P1suuKNDDGZKbYC3VodHnvu9ep55DcD2xQmTYfJ4mDufKh9Zslb2e7SQLQ==",
+                            PasswordHash = "AQAAAAEAACcQAAAAENfvcsxqibuUtlWpZVnu//feu1MSzXlqwsQMsF0F55Wzu4WuahITRNnrpPZInnWUqA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "097653b8-0c61-46fa-aea4-30855a709687",
+                            SecurityStamp = "484c45bd-4e5d-42f8-8079-205d97a9d863",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         });

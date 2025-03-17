@@ -37,6 +37,17 @@ builder.Services.AddScoped<FamilyTypeService>();
 builder.Services.AddScoped<FamilyService>();
 builder.Services.AddScoped<MemberTypeService>();
 builder.Services.AddScoped<BlockServices>();
+builder.Services.AddScoped<AdsService>();
+builder.Services.AddScoped<GroupService>();
+builder.Services.AddScoped<ComplainService>();
+builder.Services.AddScoped<ComplainTypeService>();
+builder.Services.AddScoped<ConfilctPartyService>();
+builder.Services.AddScoped<ProjectCatgoryService>();
+builder.Services.AddScoped<ProjectService>();
+builder.Services.AddScoped<ProjectFamilieservice>();
+builder.Services.AddScoped<TeamsService>();
+builder.Services.AddScoped<TeamMemberService>();
+
 
 
 //var jwt = builder.Configuration.GetSection("Jwt").Get<JWT>();
