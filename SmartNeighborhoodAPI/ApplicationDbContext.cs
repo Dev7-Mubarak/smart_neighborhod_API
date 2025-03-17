@@ -64,7 +64,7 @@ namespace SmartNeighborhoodAPI
         public DbSet<ConfilctParty> ConfilctParties { get; set; }
         //public DbSet<ContactInfo> ContactInfos { get; set; }
 
-        //public DbSet<Project> Projects { get; set; }
+        public DbSet<Project> Projects { get; set; }
         public DbSet<Complain> Complains { get; set; }
         public DbSet<ComplainType> ComplainTypes { get; set; }
         //public DbSet<ProjectFamily> ProjectFamilies { get; set; }
