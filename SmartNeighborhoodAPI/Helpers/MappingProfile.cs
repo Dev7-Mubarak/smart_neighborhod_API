@@ -10,6 +10,8 @@ public class MappingProfile : Profile
         CreateMap<Complain, ComplainDTo>().ReverseMap();
         CreateMap<ComplainType, ComplainTypeDto>().ReverseMap();
         CreateMap<ConfilctParty, ConfilctPartyDto>().ReverseMap();
+        CreateMap<ProjectCatogory, ProjectCatgoryDto>().ReverseMap();
+ 
 
     }
 }

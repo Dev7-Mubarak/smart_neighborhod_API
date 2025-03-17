@@ -18,7 +18,8 @@ namespace SmartNeighborhoodAPI.Controllers
             if (!string.IsNullOrEmpty(name))
                 families = families.Where(u => u.Name.Contains(name));
 
-            
+
             return Ok(families.ToList());
         }
+    }
 }
