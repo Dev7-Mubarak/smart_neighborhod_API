@@ -12,6 +12,7 @@ public class MappingProfile : Profile
         CreateMap<ConfilctParty, ConfilctPartyDto>().ReverseMap();
         CreateMap<ProjectCatogory, ProjectCatgoryDto>().ReverseMap();
         CreateMap<Project, ProjectDto>().ReverseMap();
+        CreateMap<ProjectFamily, ProjectFamilyDto>().ReverseMap();
 
 
     }

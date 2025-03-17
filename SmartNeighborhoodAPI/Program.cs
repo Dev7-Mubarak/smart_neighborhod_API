@@ -44,6 +44,7 @@ builder.Services.AddScoped<ComplainTypeService>();
 builder.Services.AddScoped<ConfilctPartyService>();
 builder.Services.AddScoped<ProjectCatgoryService>();
 builder.Services.AddScoped<ProjectService>();
+builder.Services.AddScoped<ProjectFamilieservice>();
 
 
 
