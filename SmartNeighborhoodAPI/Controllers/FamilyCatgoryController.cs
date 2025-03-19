@@ -2,7 +2,7 @@
 
 namespace SmartNeighborhoodAPI.Controllers
 {
-    [Authorize]
+   // [Authorize]
     public class FamilyCatgoryController : AppControllerBase
     {
         private readonly FamilyCatgoryService _FamilyCatgoryService;

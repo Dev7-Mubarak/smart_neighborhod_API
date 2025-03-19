@@ -15,19 +15,28 @@ namespace SmartNeighborhoodAPI.Services
         }
         public async Task<ApiResponse<ProjectDto>> AddAsync(ProjectDto ProjectDto)
         {
-
-            var Project = _mapper.Map<Project>(ProjectDto);
-
-
+            var Project = MapProjectDtoToProject(ProjectDto);
 
             await _context.Projects.AddAsync(Project);
             if (await _context.SaveChangesAsync() > 0)
                 return ApiResponse<ProjectDto>.Success(ProjectDto, "Added Successed");
 
             return ApiResponse<ProjectDto>.Error(HttpStatusCode.BadRequest, "Project not add");
-
-
         }
+
+        private Project MapProjectDtoToProject(ProjectDto projectDto)
+        {
+            return new Project
+            {
+                Name = projectDto.Name,
+                ProjectCatogoryId = projectDto.ProjectCatgoryId,
+                Procedures = projectDto.Procedures,
+                ProjectStatus = projectDto.ProjectStatus,
+                Budget = projectDto.Budget,
+                Proiorty = projectDto.Proiorty
+            };
+        }
+
         public async Task<ApiResponse<string>> DeleteAsync(int id)
         {
             var entity = await _context.Projects.FirstOrDefaultAsync(x => x.Id == id); ;
