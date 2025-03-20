@@ -3,16 +3,7 @@
     public class Person
     {
         public int Id { get; set; }
-        [MaxLength(30)]
-        public string FirstName { get; set; }
-        [MaxLength(30)]
-        public string SecondName { get; set; }
-        [MaxLength(30)]
-        public string ThirdName { get; set; }
-        [MaxLength(30)]
-        public string LastName { get; set; }
-
-
+        public string FullName { get; set; }
         public string PhoneNumber { get; set; }
         [MaxLength(30)]
 
@@ -30,7 +21,6 @@
         [MaxLength(30)]
         public string Status { get; set; }
         public List<FamilyMember> FamilyMembers { get; set; }
-
 
         //public List<ContactInfo> ContactInfos { get; set; }
         //public List<TeamMember> TeamMembers { get; set; }

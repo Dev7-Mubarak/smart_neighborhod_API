@@ -13,14 +13,23 @@ namespace SmartNeighborhoodAPI.Services
 
         public async Task<ApiResponse<Family>> AddAsync(FamilyDto familyDto)
         {
+            var familyCategory = await _context.FamilyCatgories.FirstOrDefaultAsync(x => x.Id == familyDto.FamilyCatgoryId);
+            if (familyCategory == null)
+                return ApiResponse<Family>.Error(HttpStatusCode.NotFound, "Family Category Not Found");
+
+            var block = await _context.Blocks.FirstOrDefaultAsync(x => x.Id == familyDto.BlockId);
+            if (block == null)
+                return ApiResponse<Family>.Error(HttpStatusCode.NotFound, "Block Not Found");
+
+
             var family = new Family
             {
                 Name = familyDto.Name,
                 FamilyCatgoryId = familyDto.FamilyCatgoryId,
-                Location = familyDto.Location,
-                FamilyNotes = familyDto.FamilyNotes,
+                BlockId = familyDto.BlockId,
                 FamilyTypeId = familyDto.FamilyTypeId,
-                BlockId = familyDto.BlockId
+                Location = "test",
+                FamilyNotes = "test",
             };
 
             await _context.Families.AddAsync(family);
@@ -43,44 +52,24 @@ namespace SmartNeighborhoodAPI.Services
             return ApiResponse<string>.Error(HttpStatusCode.NotModified, "Failed To Delete the Family");
         }
 
-        public async Task<ApiResponse<IEnumerable<FamilyDto>>> GetAll()
+        public async Task<ApiResponse<IEnumerable<Family>>> GetAll()
         {
             var families = await _context.Families.AsNoTracking().ToListAsync();
             if (families.Count > 0)
             {
-                var familyDtos = families.Select(f => new FamilyDto
-                {
-                    Name = f.Name,
-                    FamilyCatgoryId = f.FamilyCatgoryId,
-                    Location = f.Location,
-                    FamilyNotes = f.FamilyNotes,
-                    FamilyTypeId = f.FamilyTypeId,
-
-                }).ToList();
-
-                return ApiResponse<IEnumerable<FamilyDto>>.Success(familyDtos);
+                return ApiResponse<IEnumerable<Family>>.Success(families);
             }
 
-            return ApiResponse<IEnumerable<FamilyDto>>.Error(HttpStatusCode.NotFound, "No Families Found");
+            return ApiResponse<IEnumerable<Family>>.Error(HttpStatusCode.NotFound, "No Families Found");
         }
 
-        public async Task<ApiResponse<FamilyDto>> GetByIdAsync(int id)
+        public async Task<ApiResponse<Family>> GetByIdAsync(int id)
         {
             var family = await _context.Families.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
             if (family == null)
-                return ApiResponse<FamilyDto>.Error(HttpStatusCode.NotFound, "Family Not Found");
+                return ApiResponse<Family>.Error(HttpStatusCode.NotFound, "Family Not Found");
 
-            var familyDto = new FamilyDto
-            {
-                Name = family.Name,
-                FamilyCatgoryId = family.FamilyCatgoryId,
-                Location = family.Location,
-                FamilyNotes = family.FamilyNotes,
-                FamilyTypeId = family.FamilyTypeId,
-
-            };
-
-            return ApiResponse<FamilyDto>.Success(familyDto);
+            return ApiResponse<Family>.Success(family);
         }
 
         public async Task<ApiResponse<string>> UpdateAsync(int id, FamilyDto familyDto)
@@ -92,9 +81,8 @@ namespace SmartNeighborhoodAPI.Services
 
             existingFamily.Name = familyDto.Name;
             existingFamily.FamilyCatgoryId = familyDto.FamilyCatgoryId;
-            existingFamily.Location = familyDto.Location;
-            existingFamily.FamilyNotes = familyDto.FamilyNotes;
             existingFamily.FamilyTypeId = familyDto.FamilyTypeId;
+            existingFamily.BlockId = familyDto.BlockId;
 
 
             _context.Families.Update(existingFamily);

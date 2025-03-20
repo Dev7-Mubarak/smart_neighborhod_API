@@ -16,6 +16,27 @@ namespace SmartNeighborhoodAPI
         {
             base.OnModelCreating(builder);
 
+            builder.Entity<MemberType>().HasData(
+                new MemberType { Id = 1, Name = "Father" },
+                new MemberType { Id = 2, Name = "Mother" },
+                new MemberType { Id = 3, Name = "Son" },
+                new MemberType { Id = 4, Name = "Daughter" },
+                new MemberType { Id = 5, Name = "Grandfather" },
+                new MemberType { Id = 6, Name = "Grandmother" }
+            );
+
+            builder.Entity<FamilyType>().HasData(
+                new FamilyType { Id = 1, Name = "Orphans Family" },
+                new FamilyType { Id = 2, Name = "Widow Family" },
+                new FamilyType { Id = 3, Name = "Single Parent Family" },
+                new FamilyType { Id = 4, Name = "Extended Family" }
+            );
+
+            builder.Entity<FamilyCatgory>().HasData(
+                new FamilyCatgory { Id = 2, Name = "A" },
+                new FamilyCatgory { Id = 3, Name = "B" },
+                new FamilyCatgory { Id = 4, Name = "C" }
+            );
 
             var adminRoleId = Guid.NewGuid().ToString();
 

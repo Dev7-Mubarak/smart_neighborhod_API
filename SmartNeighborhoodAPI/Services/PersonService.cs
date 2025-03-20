@@ -5,10 +5,7 @@ namespace OurProjectSmartNeiborhood.Services
     public class PersonDto
     {
         public int Id { get; set; }
-        public string FirstName { get; set; }
-        public string SecondName { get; set; }
-        public string ThirdName { get; set; }
-        public string LastName { get; set; }
+        public string FullName { get; set; }
         public string PhoneNumber { get; set; }
         public string Job { get; set; }
         public string Email { get; set; }
@@ -30,10 +27,7 @@ namespace OurProjectSmartNeiborhood.Services
 
     public class CreatePersonDto
     {
-        public string FirstName { get; set; }
-        public string SecondName { get; set; }
-        public string ThirdName { get; set; }
-        public string LastName { get; set; }
+        public string FullName { get; set; }
         public string PhoneNumber { get; set; }
         public string Job { get; set; }
         public string Email { get; set; }
@@ -65,10 +59,7 @@ namespace OurProjectSmartNeiborhood.Services
         {
             var person = new Person
             {
-                FirstName = createPersonDto.FirstName,
-                SecondName = createPersonDto.SecondName,
-                ThirdName = createPersonDto.ThirdName,
-                LastName = createPersonDto.LastName,
+                FullName = createPersonDto.FullName,
                 PhoneNumber = createPersonDto.PhoneNumber,
                 Job = createPersonDto.Job,
                 Email = createPersonDto.Email,
@@ -110,10 +101,7 @@ namespace OurProjectSmartNeiborhood.Services
                 var personDto = new PersonDto
                 {
                     Id = person.Id,
-                    FirstName = person.FirstName,
-                    SecondName = person.SecondName,
-                    ThirdName = person.ThirdName,
-                    LastName = person.LastName,
+                    FullName = person.FullName,
                     PhoneNumber = person.PhoneNumber,
                     Job = person.Job,
                     Email = person.Email,
@@ -158,10 +146,7 @@ namespace OurProjectSmartNeiborhood.Services
                 var personDtos = persons.Select(p => new PersonDto
                 {
                     Id = p.Id,
-                    FirstName = p.FirstName,
-                    SecondName = p.SecondName,
-                    ThirdName = p.ThirdName,
-                    LastName = p.LastName,
+                    FullName = p.FullName,
                     PhoneNumber = p.PhoneNumber,
                     Job = p.Job,
                     Email = p.Email,
@@ -194,10 +179,7 @@ namespace OurProjectSmartNeiborhood.Services
             var personDto = new PersonDto
             {
                 Id = person.Id,
-                FirstName = person.FirstName,
-                SecondName = person.SecondName,
-                ThirdName = person.ThirdName,
-                LastName = person.LastName,
+                FullName = person.FullName,
                 PhoneNumber = person.PhoneNumber,
                 Job = person.Job,
                 Email = person.Email,
@@ -225,10 +207,7 @@ namespace OurProjectSmartNeiborhood.Services
             if (existingPerson is null)
                 return ApiResponse<string>.Error(HttpStatusCode.NotFound, "Person Not Found");
 
-            existingPerson.FirstName = personDto.FirstName;
-            existingPerson.SecondName = personDto.SecondName;
-            existingPerson.ThirdName = personDto.ThirdName;
-            existingPerson.LastName = personDto.LastName;
+            existingPerson.FullName = personDto.FullName;
             existingPerson.PhoneNumber = personDto.PhoneNumber;
             existingPerson.Job = personDto.Job;
             existingPerson.Email = personDto.Email;
@@ -252,7 +231,6 @@ namespace OurProjectSmartNeiborhood.Services
             return ApiResponse<string>.Error(HttpStatusCode.NotModified, "Failed To Update Person");
         }
     }
-
 
 }
 

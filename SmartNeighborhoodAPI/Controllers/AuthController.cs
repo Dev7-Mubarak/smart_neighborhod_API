@@ -17,11 +17,5 @@ namespace SmartNeighborhoodAPI.Controllers
             return Response(await _authService.LoginAsync(loginDto));
         }
 
-        [HttpPost("[action]")]
-        public async Task<IActionResult> Register(RegisterDto registerDto)
-        {
-            return Response(await _authService.RegisterAsync(registerDto));
-        }
-
     }
 }

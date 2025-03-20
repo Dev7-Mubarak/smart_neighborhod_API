@@ -30,8 +30,9 @@ builder.Services.AddScoped<FamilyCatgoryService>();
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.Configure<JWT>(builder.Configuration.GetSection("Jwt"));
 
-builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<PersonService>();
+builder.Services.AddScoped<ChatService>();
 builder.Services.AddScoped<FamilyCatgoryService>();
 builder.Services.AddScoped<FamilyTypeService>();
 builder.Services.AddScoped<FamilyService>();

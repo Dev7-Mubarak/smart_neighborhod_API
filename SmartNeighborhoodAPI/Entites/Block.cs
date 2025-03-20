@@ -12,7 +12,7 @@ namespace OurProjectSmartNeiborhood.Entites
         [JsonIgnore]
         public AppUser Manager { get; set; }
 
-        public ICollection<Family>? Families { get; set; } = new List<Family>();
+        public ICollection<Family> Families { get; set; } = new List<Family>();
     }
 
 }

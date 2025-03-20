@@ -1,4 +1,7 @@
-﻿using System.Net;
+﻿using Microsoft.AspNetCore.Identity;
+using SmartNeighborhoodAPI.Entites;
+using SmartNeighborhoodAPI.Interfaces;
+using System.Net;
 
 namespace SmartNeighborhoodAPI.Services
 {
@@ -6,25 +9,40 @@ namespace SmartNeighborhoodAPI.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IAuthService _authService;
+        private readonly UserManager<AppUser> _userManager;
 
-        public BlockServices(ApplicationDbContext context, IMapper mapper)
+
+        public BlockServices(ApplicationDbContext context, IMapper mapper, IAuthService authService, UserManager<AppUser> userManager)
         {
             _context = context;
             _mapper = mapper;
+            _authService = authService;
+            _userManager = userManager;
         }
 
         public async Task<ApiResponse<Block>> AddAsync(BlockDto blockDto)
         {
 
-            var existMemberType = await _context.Blocks.FirstOrDefaultAsync(x => x.Name == blockDto.Name);
-            if (existMemberType != null)
+            var existblock = await _context.Blocks.FirstOrDefaultAsync(x => x.Name == blockDto.Name);
+            if (existblock != null)
                 return ApiResponse<Block>.Error(HttpStatusCode.Conflict, "Block Name Is Already Exist");
 
+            if (await _userManager.FindByEmailAsync(blockDto.Email) is not null)
+                return ApiResponse<Block>.Error(HttpStatusCode.Conflict, "User with this email already exists.");
+
+            RegisterDto registerDto = new RegisterDto
+            {
+                Email = blockDto.Email,
+                Password = blockDto.Password
+            };
+
+            var user = await _authService.RegisterAsync(registerDto);
 
             var block = new Block
             {
                 Name = blockDto.Name,
-                ManagerId = blockDto.UserId
+                ManagerId = user.Data.Id
             };
 
             await _context.Blocks.AddAsync(block);
@@ -56,7 +74,7 @@ namespace SmartNeighborhoodAPI.Services
 
         public async Task<ApiResponse<Block>> GetByIdAsync(int id)
         {
-            var block = await _context.Blocks.Include(x=>x.Families).AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+            var block = await _context.Blocks.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
             if (block == null)
                 return ApiResponse<Block>.Error(HttpStatusCode.NotFound, "Block Not Found");
 
@@ -70,7 +88,7 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<string>.Error(HttpStatusCode.NotFound, "Block Not Found");
 
             existingBlock.Name = blockDto.Name;
-            existingBlock.ManagerId = blockDto.UserId;
+            //existingBlock.ManagerId = blockDto.UserId;
 
             if (await _context.SaveChangesAsync() > 0)
                 return ApiResponse<string>.Success("Block Updated Successfully");
