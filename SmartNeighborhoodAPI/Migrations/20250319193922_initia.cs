@@ -5,10 +5,25 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace SmartNeighborhoodAPI.Migrations
 {
-    public partial class inital : Migration
+    public partial class initia : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Ads",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CreatedTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    AdsText = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    GroupId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Ads", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -21,6 +36,32 @@ namespace SmartNeighborhoodAPI.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetRoles", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ComplainTypes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ComplainTypes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ConfilctParties",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ConfilctParties", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -47,6 +88,19 @@ namespace SmartNeighborhoodAPI.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_FamilyTypes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Groups",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Groups", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -89,6 +143,20 @@ namespace SmartNeighborhoodAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ProjectCatogories",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProjectCatogories", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -105,6 +173,165 @@ namespace SmartNeighborhoodAPI.Migrations
                         name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
                         column: x => x.RoleId,
                         principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Complains",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Outcome = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ComplainTypeId = table.Column<int>(type: "int", nullable: false),
+                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SessionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsResolved = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Complains", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Complains_ComplainTypes_ComplainTypeId",
+                        column: x => x.ComplainTypeId,
+                        principalTable: "ComplainTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AdGroup",
+                columns: table => new
+                {
+                    AdsId = table.Column<int>(type: "int", nullable: false),
+                    GroupsId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AdGroup", x => new { x.AdsId, x.GroupsId });
+                    table.ForeignKey(
+                        name: "FK_AdGroup_Ads_AdsId",
+                        column: x => x.AdsId,
+                        principalTable: "Ads",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AdGroup_Groups_GroupsId",
+                        column: x => x.GroupsId,
+                        principalTable: "Groups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Projects",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ManagerId = table.Column<int>(type: "int", nullable: false),
+                    ProjectCatogoryId = table.Column<int>(type: "int", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Procedures = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ProjectStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Budget = table.Column<double>(type: "float", nullable: true),
+                    Proiorty = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Projects", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Projects_ProjectCatogories_ProjectCatogoryId",
+                        column: x => x.ProjectCatogoryId,
+                        principalTable: "ProjectCatogories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PersonComplain",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PesonId = table.Column<int>(type: "int", nullable: false),
+                    PersonId = table.Column<int>(type: "int", nullable: false),
+                    ComplainId = table.Column<int>(type: "int", nullable: false),
+                    ConfilctPartyId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PersonComplain", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PersonComplain_Complains_ComplainId",
+                        column: x => x.ComplainId,
+                        principalTable: "Complains",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PersonComplain_ConfilctParties_ConfilctPartyId",
+                        column: x => x.ConfilctPartyId,
+                        principalTable: "ConfilctParties",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PersonComplain_People_PersonId",
+                        column: x => x.PersonId,
+                        principalTable: "People",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Teams",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ProjectId = table.Column<int>(type: "int", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Teams", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Teams_Projects_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Projects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TeamMembers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TeamId = table.Column<int>(type: "int", nullable: false),
+                    MemberId = table.Column<int>(type: "int", nullable: false),
+                    PersonId = table.Column<int>(type: "int", nullable: false),
+                    DateOfJoin = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    MemberJob = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TeamMembers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TeamMembers_People_PersonId",
+                        column: x => x.PersonId,
+                        principalTable: "People",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TeamMembers_Teams_TeamId",
+                        column: x => x.TeamId,
+                        principalTable: "Teams",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -291,25 +518,61 @@ namespace SmartNeighborhoodAPI.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "ProjectFamilies",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ProjectId = table.Column<int>(type: "int", nullable: true),
+                    FamilyId = table.Column<int>(type: "int", nullable: true),
+                    BlockId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProjectFamilies", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProjectFamilies_Blocks_BlockId",
+                        column: x => x.BlockId,
+                        principalTable: "Blocks",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ProjectFamilies_Families_FamilyId",
+                        column: x => x.FamilyId,
+                        principalTable: "Families",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_ProjectFamilies_Projects_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Projects",
+                        principalColumn: "Id");
+                });
+
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "48a90e84-ee44-4844-b748-824d85a4a383", "f9258799-da1b-4968-ba18-5964d7b5fd49", "Admin", "ADMIN" },
-                    { "a6de5bfb-7c7a-4817-8f7f-14a258570487", "ff15d392-72a3-4850-8049-08c65ee9678f", "User", "USER" },
-                    { "c166ba25-40a4-49d0-9fe7-459bb62c8458", "898a60b6-6596-4b5b-bd77-65ae0315996a", "BlockManager", "BLOCKMANAGER" }
+                    { "10df4613-a12a-4502-9159-ade2ce34539f", "e8ce99bb-d526-4fa4-8d05-3d2ac508d60b", "User", "USER" },
+                    { "977a6967-1456-468c-9408-2dc5e0dc9057", "c1d84eeb-ae75-4159-b513-ea8737865a8b", "Admin", "ADMIN" },
+                    { "f22c25ff-eb26-4b22-9a75-0d6de03891fb", "5b3256f9-27cb-45ce-8fc7-97b262c49ebe", "BlockManager", "BLOCKMANAGER" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "FamilyMemberId", "IsActive", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "66b6699f-a4bc-45d4-af6e-6f1b5c363091", 0, "427de4e8-0909-4f9e-8d41-9c50cb866194", "admin@example.com", true, null, false, false, null, "ADMIN@EXAMPLE.COM", "ADMIN", "AQAAAAEAACcQAAAAEKWl4GZ0hzGP8IKVW2PlvqiGzwhNSsiEpcPlm6oSZ8su1fTwDDvhfX9siJyyl//SJg==", null, false, "a1b73866-8bc4-4f0f-a251-4921d75ad2a0", false, "Admin" });
+                values: new object[] { "67ceb821-8a84-46a8-aac7-22194e485369", 0, "72e4f1a8-d217-4b97-887f-ff4480ac003f", "admin@example.com", true, null, false, false, null, "ADMIN@EXAMPLE.COM", "ADMIN", "AQAAAAEAACcQAAAAEGS2REt7ij76ABm8zSJmwbLEJSkZ5mz7eCksfVblkwK/rbwD+wesSu4MksThFhnbJA==", null, false, "94e148a7-639e-4214-8a45-192de5827765", false, "Admin" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
                 columns: new[] { "RoleId", "UserId" },
-                values: new object[] { "48a90e84-ee44-4844-b748-824d85a4a383", "66b6699f-a4bc-45d4-af6e-6f1b5c363091" });
+                values: new object[] { "977a6967-1456-468c-9408-2dc5e0dc9057", "67ceb821-8a84-46a8-aac7-22194e485369" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AdGroup_GroupsId",
+                table: "AdGroup",
+                column: "GroupsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -363,6 +626,11 @@ namespace SmartNeighborhoodAPI.Migrations
                 column: "ManagerId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Complains_ComplainTypeId",
+                table: "Complains",
+                column: "ComplainTypeId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Families_BlockId",
                 table: "Families",
                 column: "BlockId");
@@ -391,6 +659,56 @@ namespace SmartNeighborhoodAPI.Migrations
                 name: "IX_FamilyMembers_PersonId",
                 table: "FamilyMembers",
                 column: "PersonId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PersonComplain_ComplainId",
+                table: "PersonComplain",
+                column: "ComplainId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PersonComplain_ConfilctPartyId",
+                table: "PersonComplain",
+                column: "ConfilctPartyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PersonComplain_PersonId",
+                table: "PersonComplain",
+                column: "PersonId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectFamilies_BlockId",
+                table: "ProjectFamilies",
+                column: "BlockId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectFamilies_FamilyId",
+                table: "ProjectFamilies",
+                column: "FamilyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectFamilies_ProjectId",
+                table: "ProjectFamilies",
+                column: "ProjectId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Projects_ProjectCatogoryId",
+                table: "Projects",
+                column: "ProjectCatogoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TeamMembers_PersonId",
+                table: "TeamMembers",
+                column: "PersonId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TeamMembers_TeamId",
+                table: "TeamMembers",
+                column: "TeamId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Teams_ProjectId",
+                table: "Teams",
+                column: "ProjectId");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_AspNetUserClaims_AspNetUsers_UserId",
@@ -431,6 +749,9 @@ namespace SmartNeighborhoodAPI.Migrations
                 table: "Blocks");
 
             migrationBuilder.DropTable(
+                name: "AdGroup");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
             migrationBuilder.DropTable(
@@ -446,7 +767,40 @@ namespace SmartNeighborhoodAPI.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "PersonComplain");
+
+            migrationBuilder.DropTable(
+                name: "ProjectFamilies");
+
+            migrationBuilder.DropTable(
+                name: "TeamMembers");
+
+            migrationBuilder.DropTable(
+                name: "Ads");
+
+            migrationBuilder.DropTable(
+                name: "Groups");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Complains");
+
+            migrationBuilder.DropTable(
+                name: "ConfilctParties");
+
+            migrationBuilder.DropTable(
+                name: "Teams");
+
+            migrationBuilder.DropTable(
+                name: "ComplainTypes");
+
+            migrationBuilder.DropTable(
+                name: "Projects");
+
+            migrationBuilder.DropTable(
+                name: "ProjectCatogories");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

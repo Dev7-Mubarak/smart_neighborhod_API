@@ -14,9 +14,9 @@ namespace OurProjectSmartNeiborhood.Entites
         public int FamilyTypeId { get; set; }
         public FamilyType FamilyType { get; set; }
         [JsonIgnore]
-        public List<FamilyMember> FamilyMembers { get; set; }
-        public int BlockId { get; set; }
+        public List<FamilyMember>? FamilyMembers { get; set; }
+        public int? BlockId { get; set; }
         [JsonIgnore]
-        public Block Block { get; set; }
+        public Block? Block { get; set; }
     }
 }
