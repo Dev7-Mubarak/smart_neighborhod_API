@@ -17,7 +17,7 @@
         public int FamilyTypeId { get; set; }
         [MaxLength(150)]
         public string FamilyNotes { get; set; }
-        [Required(ErrorMessage = "Block id is reqired")]
-        public int BlockId { get; set; }
+        //[Required(ErrorMessage = "Block id is reqired")]
+        public int? BlockId { get; set; }
     }
 }
