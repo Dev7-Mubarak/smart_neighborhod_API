@@ -12,8 +12,8 @@ using SmartNeighborhoodAPI;
 namespace SmartNeighborhoodAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250319193922_initia")]
-    partial class initia
+    [Migration("20250320191011_inital")]
+    partial class inital
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -68,22 +68,22 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "977a6967-1456-468c-9408-2dc5e0dc9057",
-                            ConcurrencyStamp = "c1d84eeb-ae75-4159-b513-ea8737865a8b",
+                            Id = "d2db89ef-c3e5-419a-9034-4b8fc930e0aa",
+                            ConcurrencyStamp = "45c40dc5-ce74-4c41-b58e-e243e7e1d6d4",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "f22c25ff-eb26-4b22-9a75-0d6de03891fb",
-                            ConcurrencyStamp = "5b3256f9-27cb-45ce-8fc7-97b262c49ebe",
+                            Id = "1b6e4ae2-17ef-4441-8ba1-3c9aa1350f43",
+                            ConcurrencyStamp = "148d04e7-b548-4783-a7dc-ac0910bab99d",
                             Name = "BlockManager",
                             NormalizedName = "BLOCKMANAGER"
                         },
                         new
                         {
-                            Id = "10df4613-a12a-4502-9159-ade2ce34539f",
-                            ConcurrencyStamp = "e8ce99bb-d526-4fa4-8d05-3d2ac508d60b",
+                            Id = "485b197c-5e0c-46aa-80c4-fc068b9ad259",
+                            ConcurrencyStamp = "9840c6b8-4ba2-41e1-b9f1-7966f30e1aa1",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -178,8 +178,8 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "67ceb821-8a84-46a8-aac7-22194e485369",
-                            RoleId = "977a6967-1456-468c-9408-2dc5e0dc9057"
+                            UserId = "7c57b752-5089-46a4-bcc0-915275c0e636",
+                            RoleId = "d2db89ef-c3e5-419a-9034-4b8fc930e0aa"
                         });
                 });
 
@@ -369,6 +369,23 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("FamilyCatgories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 2,
+                            Name = "A"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "B"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "C"
+                        });
                 });
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.FamilyMember", b =>
@@ -417,6 +434,28 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("FamilyTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Orphans Family"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Widow Family"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Single Parent Family"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Extended Family"
+                        });
                 });
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.Group", b =>
@@ -451,6 +490,38 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("MemberTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Father"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Mother"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Son"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Daughter"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "Grandfather"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "Grandmother"
+                        });
                 });
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.Person", b =>
@@ -473,10 +544,9 @@ namespace SmartNeighborhoodAPI.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("FirstName")
+                    b.Property<string>("FullName")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<byte>("Gender")
                         .HasColumnType("tinyint");
@@ -493,26 +563,11 @@ namespace SmartNeighborhoodAPI.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SecondName")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
                     b.Property<string>("Status")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<string>("ThirdName")
                         .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
@@ -792,18 +847,18 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "67ceb821-8a84-46a8-aac7-22194e485369",
+                            Id = "7c57b752-5089-46a4-bcc0-915275c0e636",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "72e4f1a8-d217-4b97-887f-ff4480ac003f",
+                            ConcurrencyStamp = "219b92d6-f916-4350-bdb7-f7eced42f2bc",
                             Email = "admin@example.com",
                             EmailConfirmed = true,
                             IsActive = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@EXAMPLE.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEGS2REt7ij76ABm8zSJmwbLEJSkZ5mz7eCksfVblkwK/rbwD+wesSu4MksThFhnbJA==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEC+RoJFDEwJ2NeI4yncN9Mf1S0z/UwJmXT9X4LeOD/ZDNeh2wPxwq5o6y8hKXqd/7Q==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "94e148a7-639e-4214-8a45-192de5827765",
+                            SecurityStamp = "de768243-77fb-4980-9960-f2bfb6d99eb6",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         });

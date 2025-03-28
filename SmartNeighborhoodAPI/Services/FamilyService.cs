@@ -17,9 +17,9 @@ namespace SmartNeighborhoodAPI.Services
             if (familyCategory == null)
                 return ApiResponse<Family>.Error(HttpStatusCode.NotFound, "Family Category Not Found");
 
-            var block = await _context.Blocks.FirstOrDefaultAsync(x => x.Id == familyDto.BlockId);
-            if (block == null)
-                return ApiResponse<Family>.Error(HttpStatusCode.NotFound, "Block Not Found");
+            //var block = await _context.Blocks.FirstOrDefaultAsync(x => x.Id == familyDto.BlockId);
+            //if (block == null)
+            //    return ApiResponse<Family>.Error(HttpStatusCode.NotFound, "Block Not Found");
 
 
             var family = new Family

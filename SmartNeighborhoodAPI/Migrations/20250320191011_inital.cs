@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace SmartNeighborhoodAPI.Migrations
 {
-    public partial class initia : Migration
+    public partial class inital : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -122,10 +122,7 @@ namespace SmartNeighborhoodAPI.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    FirstName = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
-                    SecondName = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
-                    ThirdName = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    FullName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Job = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
@@ -554,20 +551,54 @@ namespace SmartNeighborhoodAPI.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "10df4613-a12a-4502-9159-ade2ce34539f", "e8ce99bb-d526-4fa4-8d05-3d2ac508d60b", "User", "USER" },
-                    { "977a6967-1456-468c-9408-2dc5e0dc9057", "c1d84eeb-ae75-4159-b513-ea8737865a8b", "Admin", "ADMIN" },
-                    { "f22c25ff-eb26-4b22-9a75-0d6de03891fb", "5b3256f9-27cb-45ce-8fc7-97b262c49ebe", "BlockManager", "BLOCKMANAGER" }
+                    { "1b6e4ae2-17ef-4441-8ba1-3c9aa1350f43", "148d04e7-b548-4783-a7dc-ac0910bab99d", "BlockManager", "BLOCKMANAGER" },
+                    { "485b197c-5e0c-46aa-80c4-fc068b9ad259", "9840c6b8-4ba2-41e1-b9f1-7966f30e1aa1", "User", "USER" },
+                    { "d2db89ef-c3e5-419a-9034-4b8fc930e0aa", "45c40dc5-ce74-4c41-b58e-e243e7e1d6d4", "Admin", "ADMIN" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "FamilyMemberId", "IsActive", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "67ceb821-8a84-46a8-aac7-22194e485369", 0, "72e4f1a8-d217-4b97-887f-ff4480ac003f", "admin@example.com", true, null, false, false, null, "ADMIN@EXAMPLE.COM", "ADMIN", "AQAAAAEAACcQAAAAEGS2REt7ij76ABm8zSJmwbLEJSkZ5mz7eCksfVblkwK/rbwD+wesSu4MksThFhnbJA==", null, false, "94e148a7-639e-4214-8a45-192de5827765", false, "Admin" });
+                values: new object[] { "7c57b752-5089-46a4-bcc0-915275c0e636", 0, "219b92d6-f916-4350-bdb7-f7eced42f2bc", "admin@example.com", true, null, false, false, null, "ADMIN@EXAMPLE.COM", "ADMIN", "AQAAAAEAACcQAAAAEC+RoJFDEwJ2NeI4yncN9Mf1S0z/UwJmXT9X4LeOD/ZDNeh2wPxwq5o6y8hKXqd/7Q==", null, false, "de768243-77fb-4980-9960-f2bfb6d99eb6", false, "Admin" });
+
+            migrationBuilder.InsertData(
+                table: "FamilyCatgories",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 2, "A" },
+                    { 3, "B" },
+                    { 4, "C" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "FamilyTypes",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "Orphans Family" },
+                    { 2, "Widow Family" },
+                    { 3, "Single Parent Family" },
+                    { 4, "Extended Family" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "MemberTypes",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "Father" },
+                    { 2, "Mother" },
+                    { 3, "Son" },
+                    { 4, "Daughter" },
+                    { 5, "Grandfather" },
+                    { 6, "Grandmother" }
+                });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
                 columns: new[] { "RoleId", "UserId" },
-                values: new object[] { "977a6967-1456-468c-9408-2dc5e0dc9057", "67ceb821-8a84-46a8-aac7-22194e485369" });
+                values: new object[] { "d2db89ef-c3e5-419a-9034-4b8fc930e0aa", "7c57b752-5089-46a4-bcc0-915275c0e636" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AdGroup_GroupsId",

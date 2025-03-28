@@ -9,7 +9,7 @@
         public int ProjectId { get; set; }
         [Required(ErrorMessage ="Family id is reqired")]
         public int FamilyId { get; set; }
-        [Required(ErrorMessage ="Block id is reqired")]
-        public int BlockId { get; set; }
+        //[Required(ErrorMessage ="Block id is reqired")]
+        public int? BlockId { get; set; }
     }
 }

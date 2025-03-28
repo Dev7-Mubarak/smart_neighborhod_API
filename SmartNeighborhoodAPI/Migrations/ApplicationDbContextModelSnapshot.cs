@@ -66,22 +66,22 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "30bd6919-93f6-41d3-8692-5ee2c383e166",
-                            ConcurrencyStamp = "5a110e53-3104-465d-920d-82f53f1da054",
+                            Id = "d2db89ef-c3e5-419a-9034-4b8fc930e0aa",
+                            ConcurrencyStamp = "45c40dc5-ce74-4c41-b58e-e243e7e1d6d4",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "5ddd58bd-223d-43a4-8a8f-f19d77a428f5",
-                            ConcurrencyStamp = "b9f8778a-61f5-40ed-b8b3-bf0a593d7923",
+                            Id = "1b6e4ae2-17ef-4441-8ba1-3c9aa1350f43",
+                            ConcurrencyStamp = "148d04e7-b548-4783-a7dc-ac0910bab99d",
                             Name = "BlockManager",
                             NormalizedName = "BLOCKMANAGER"
                         },
                         new
                         {
-                            Id = "556118ea-69a3-4a6d-87bc-db6273b0581f",
-                            ConcurrencyStamp = "134a608d-1dff-401d-8e0a-ee5c31cf97a9",
+                            Id = "485b197c-5e0c-46aa-80c4-fc068b9ad259",
+                            ConcurrencyStamp = "9840c6b8-4ba2-41e1-b9f1-7966f30e1aa1",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -176,8 +176,8 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "3006ed00-f9c7-4b49-8875-f09e45292368",
-                            RoleId = "30bd6919-93f6-41d3-8692-5ee2c383e166"
+                            UserId = "7c57b752-5089-46a4-bcc0-915275c0e636",
+                            RoleId = "d2db89ef-c3e5-419a-9034-4b8fc930e0aa"
                         });
                 });
 
@@ -371,17 +371,17 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1,
+                            Id = 2,
                             Name = "A"
                         },
                         new
                         {
-                            Id = 2,
+                            Id = 3,
                             Name = "B"
                         },
                         new
                         {
-                            Id = 3,
+                            Id = 4,
                             Name = "C"
                         });
                 });
@@ -845,18 +845,18 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "3006ed00-f9c7-4b49-8875-f09e45292368",
+                            Id = "7c57b752-5089-46a4-bcc0-915275c0e636",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "becc6510-6777-444c-aae8-49ff714f3d3e",
+                            ConcurrencyStamp = "219b92d6-f916-4350-bdb7-f7eced42f2bc",
                             Email = "admin@example.com",
                             EmailConfirmed = true,
                             IsActive = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@EXAMPLE.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEFeOOa92fyUWJS9HL4tjM/Svqgi5kzjoNt0LG7Z1XvV8gai7jkoMUt2i+yl06r5m7w==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEC+RoJFDEwJ2NeI4yncN9Mf1S0z/UwJmXT9X4LeOD/ZDNeh2wPxwq5o6y8hKXqd/7Q==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "3175793f-1fc9-4bb7-9108-bb5251f41a78",
+                            SecurityStamp = "de768243-77fb-4980-9960-f2bfb6d99eb6",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         });
