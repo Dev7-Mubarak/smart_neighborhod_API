@@ -21,6 +21,21 @@ namespace SmartNeighborhoodAPI.Services
             _userManager = userManager;
         }
 
+        public async Task<ApiResponse<PaginatedResult<Family>>> GetBlockFamiliesById(int blockId, int pageNumber, int pageSize, string? search)
+        {
+            if (await _context.Blocks.FindAsync(blockId) is null)
+                return ApiResponse<PaginatedResult<Family>>.Error(HttpStatusCode.NotFound, "Block Not Found");
+
+            var query = _context.Families.AsNoTracking().AsQueryable();
+
+            if (string.IsNullOrEmpty(search))
+            {
+                return ApiResponse<PaginatedResult<Family>>.Success(await query.Where(x => x.BlockId == blockId).ToPaginatedListAsync(pageNumber, pageSize));
+            }
+
+            return ApiResponse<PaginatedResult<Family>>.Success(await query.Where(x => x.BlockId == blockId).Where(x => x.Name.Contains(search)).ToPaginatedListAsync(pageNumber, pageSize));
+        }
+
         public async Task<ApiResponse<Block>> AddAsync(BlockDto blockDto)
         {
 
@@ -67,9 +82,16 @@ namespace SmartNeighborhoodAPI.Services
             return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "Failed To Delete the Block");
         }
 
-        public async Task<ApiResponse<List<Block>>> GetAll()
+        public async Task<ApiResponse<PaginatedResult<Block>>> GetAll(int pageNumber, int pageSize, string? search)
         {
-            return ApiResponse<List<Block>>.Success(await _context.Blocks.AsNoTracking().ToListAsync());
+            var query = _context.Blocks.AsNoTracking().AsQueryable();
+
+            if (string.IsNullOrEmpty(search))
+            {
+                return ApiResponse<PaginatedResult<Block>>.Success(await query.ToPaginatedListAsync(pageNumber, pageSize));
+            }
+
+            return ApiResponse<PaginatedResult<Block>>.Success(await query.Where(x => x.Name.Contains(search)).ToPaginatedListAsync(pageNumber, pageSize));
         }
 
         public async Task<ApiResponse<Block>> GetByIdAsync(int id)

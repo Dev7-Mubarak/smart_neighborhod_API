@@ -9,15 +9,30 @@
             _BlockServices = BlockServices;
         }
 
+        [HttpGet("[action]")]
+        public async Task<IActionResult> GetBlockFamiliesById(
+            int blockId,
+            int pageNumber = 1,
+            int pageSize = 10,
+            string? search = null)
+
+        {
+            return Response(await _BlockServices.GetBlockFamiliesById(blockId, pageNumber, pageSize, search));
+        }
+
         [HttpPost("[action]")]
         public async Task<IActionResult> AddAsync(BlockDto BlockDto)
         {
             return Response(await _BlockServices.AddAsync(BlockDto));
         }
         [HttpGet("[action]")]
-        public async Task<IActionResult> GetAllAsync()
+        public async Task<IActionResult> GetAllAsync(
+            int pageNumber = 1,
+            int pageSize = 10,
+            string? search = null)
+
         {
-            return Response(await _BlockServices.GetAll());
+            return Response(await _BlockServices.GetAll(pageNumber, pageSize, search));
 
         }
         [HttpGet("[action]/{id:int}")]
