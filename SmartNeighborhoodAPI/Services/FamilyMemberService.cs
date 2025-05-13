@@ -12,17 +12,15 @@ namespace SmartNeighborhoodAPI.Services
             _context = context;
             _mapper = mapper;
         }
-        public async Task<ApiResponse<FamilyMemberDto>> AddAsync(FamilyMemberDto FamilyMemberDto)
+        public async Task<ApiResponse<FamilyMember>> AddAsync(FamilyMemberDto FamilyMemberDto)
         {
+            var familyMember = _mapper.Map<FamilyMember>(FamilyMemberDto);
 
-            var familyMember = _mapper.Map<FamilyMemberDto>(FamilyMemberDto);
-            var FamilyMember = _mapper.Map<FamilyMember>(familyMember);
-
-            await _context.AddAsync(FamilyMember);
+            await _context.FamilyMembers.AddAsync(familyMember);
             if (await _context.SaveChangesAsync() > 0)
-                return ApiResponse<FamilyMemberDto>.Success(familyMember, "Added Successed");
+                return ApiResponse<FamilyMember>.Success(familyMember, "Added Successed");
 
-            return ApiResponse<FamilyMemberDto>.Error(HttpStatusCode.BadRequest, "FamilyMember not add");
+            return ApiResponse<FamilyMember>.Error(HttpStatusCode.BadRequest, "FamilyMember not add");
 
 
         }

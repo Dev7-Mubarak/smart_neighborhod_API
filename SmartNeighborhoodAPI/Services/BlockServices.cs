@@ -49,7 +49,8 @@ namespace SmartNeighborhoodAPI.Services
             RegisterDto registerDto = new RegisterDto
             {
                 Email = blockDto.Email,
-                Password = blockDto.Password
+                Password = blockDto.Password,
+                PersonId = blockDto.PersonId,
             };
 
             var user = await _authService.RegisterAsync(registerDto);
@@ -82,16 +83,17 @@ namespace SmartNeighborhoodAPI.Services
             return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "Failed To Delete the Block");
         }
 
-        public async Task<ApiResponse<PaginatedResult<Block>>> GetAll(int pageNumber, int pageSize, string? search)
+        public async Task<ApiResponse<IEnumerable<RetrunBlockDto>>> GetAll()
         {
-            var query = _context.Blocks.AsNoTracking().AsQueryable();
-
-            if (string.IsNullOrEmpty(search))
+            var blocks = await _context.Blocks.Select(x => new RetrunBlockDto
             {
-                return ApiResponse<PaginatedResult<Block>>.Success(await query.ToPaginatedListAsync(pageNumber, pageSize));
-            }
+                Id = x.Id,
+                ManagerId = x.ManagerId,
+                Name = x.Name,
+                ManagerName = x.Manager.Person.FullName
+            }).AsNoTracking().ToListAsync();
 
-            return ApiResponse<PaginatedResult<Block>>.Success(await query.Where(x => x.Name.Contains(search)).ToPaginatedListAsync(pageNumber, pageSize));
+            return ApiResponse<IEnumerable<RetrunBlockDto>>.Success(blocks);
         }
 
         public async Task<ApiResponse<Block>> GetByIdAsync(int id)

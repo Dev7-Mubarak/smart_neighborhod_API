@@ -51,6 +51,7 @@ namespace SmartNeighborhoodAPI.Services
             {
                 Email = registerDto.Email,
                 UserName = registerDto.Email,
+                PersonId = registerDto.PersonId,
             };
 
             IdentityResult? result = await _userManager.CreateAsync(user, registerDto.Password);

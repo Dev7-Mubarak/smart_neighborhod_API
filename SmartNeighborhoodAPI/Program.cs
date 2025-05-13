@@ -48,6 +48,7 @@ builder.Services.AddScoped<ProjectService>();
 builder.Services.AddScoped<ProjectFamilieservice>();
 builder.Services.AddScoped<TeamsService>();
 builder.Services.AddScoped<TeamMemberService>();
+builder.Services.AddScoped<FamilyMemberService>();
 
 
 

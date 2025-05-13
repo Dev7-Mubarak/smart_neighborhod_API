@@ -1,42 +1,62 @@
 ﻿using System.Net;
+using OurProjectSmartNeiborhood.Services;
 
 namespace SmartNeighborhoodAPI.Services
 {
     public class FamilyService
     {
         private readonly ApplicationDbContext _context;
-
-        public FamilyService(ApplicationDbContext context)
+        private readonly IMapper _mapper;
+        private readonly FamilyMemberService _familyMemberService;
+        public FamilyService(ApplicationDbContext context, IMapper mapper, FamilyMemberService familyMemberService)
         {
             _context = context;
+            _mapper = mapper;
+            _familyMemberService = familyMemberService;
         }
-
-        public async Task<ApiResponse<Family>> AddAsync(FamilyDto familyDto)
+        // Edit
+        public async Task<ApiResponse<ReturnFamilyDto>> AddAsync(FamilyDto familyDto)
         {
             var familyCategory = await _context.FamilyCatgories.FirstOrDefaultAsync(x => x.Id == familyDto.FamilyCatgoryId);
             if (familyCategory == null)
-                return ApiResponse<Family>.Error(HttpStatusCode.NotFound, "Family Category Not Found");
+                return ApiResponse<ReturnFamilyDto>.Error(HttpStatusCode.NotFound, "Family Category Not Found");
 
-            //var block = await _context.Blocks.FirstOrDefaultAsync(x => x.Id == familyDto.BlockId);
-            //if (block == null)
-            //    return ApiResponse<Family>.Error(HttpStatusCode.NotFound, "Block Not Found");
+            var block = await _context.Blocks.FirstOrDefaultAsync(x => x.Id == familyDto.BlockId);
+            if (block == null)
+                return ApiResponse<ReturnFamilyDto>.Error(HttpStatusCode.NotFound, "Block Not Found");
 
-
-            var family = new Family
-            {
-                Name = familyDto.Name,
-                FamilyCatgoryId = familyDto.FamilyCatgoryId,
-                BlockId = familyDto.BlockId,
-                FamilyTypeId = familyDto.FamilyTypeId,
-                Location = "test",
-                FamilyNotes = "test",
-            };
+            var person = await _context.People.FirstOrDefaultAsync(x => x.Id == familyDto.PersonId);
+            if (person == null)
+                return ApiResponse<ReturnFamilyDto>.Error(HttpStatusCode.NotFound, "Person Not Found");
+            var family = _mapper.Map<Family>(familyDto);
 
             await _context.Families.AddAsync(family);
-            if (await _context.SaveChangesAsync() > 0)
-                return ApiResponse<Family>.Success(family, "Added Successfully");
+            await _context.SaveChangesAsync();
 
-            return ApiResponse<Family>.Error(HttpStatusCode.BadRequest, "Failed to add family");
+            var fimalyMember = new FamilyMember
+            {
+                FamilyId = family.Id,
+                PersonId = person.Id,
+                MemberTypeId = 1
+            };
+            await _context.FamilyMembers.AddAsync(fimalyMember);
+
+            if (await _context.SaveChangesAsync() > 0) {
+                var returnFamilyDto = new ReturnFamilyDto
+                {
+                    Id = family.Id,
+                    Name = family.Name,
+                    BlockId = family.BlockId,
+                    FamilyCatgoryId = family.FamilyCatgoryId,
+                    FamilyNotes = family.FamilyNotes,
+                    FamilyTypeId = family.FamilyTypeId,
+                    Location = family.Location,
+                    FamilyMemberId = fimalyMember.Id,
+                };
+                return ApiResponse<ReturnFamilyDto>.Success(returnFamilyDto, "Added Successfully");
+            }
+
+            return ApiResponse<ReturnFamilyDto>.Error(HttpStatusCode.BadRequest, "Failed to add family");
         }
 
         public async Task<ApiResponse<string>> DeleteAsync(int id)

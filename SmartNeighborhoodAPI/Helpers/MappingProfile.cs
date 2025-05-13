@@ -15,6 +15,10 @@ public class MappingProfile : Profile
         CreateMap<ProjectFamily, ProjectFamilyDto>().ReverseMap();
         CreateMap<Team, TeamDto>().ReverseMap();
         CreateMap<TeamMember, TeamMemberDto>().ReverseMap();
+        CreateMap<Person, CreatePersonDto>().ReverseMap();
+        CreateMap<Person, PersonDto>().ReverseMap();
+        CreateMap<Family, FamilyDto>().ReverseMap();
+        CreateMap<FamilyMember, FamilyMemberDto>().ReverseMap();
 
 
     }

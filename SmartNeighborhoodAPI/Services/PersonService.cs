@@ -2,122 +2,28 @@
 
 namespace OurProjectSmartNeiborhood.Services
 {
-    public class PersonDto
-    {
-        public int Id { get; set; }
-        public string FullName { get; set; }
-        public string PhoneNumber { get; set; }
-        public string Job { get; set; }
-        public string Email { get; set; }
-        public DateTime DateOfBirth { get; set; }
-        public byte Gender { get; set; }
-        public string BloodType { get; set; }
-        public string IdentityNumber { get; set; }
-        public string TypeOfIdentity { get; set; }
-        public string Status { get; set; }
-        public List<FamilyMemberDto> FamilyMembers { get; set; }
-    }
-
-    public class FamilyMemberDto
-    {
-        public int Id { get; set; }
-        public int? FamilyId { get; set; }
-        public int MemberTypeId { get; set; }
-    }
-
-    public class CreatePersonDto
-    {
-        public string FullName { get; set; }
-        public string PhoneNumber { get; set; }
-        public string Job { get; set; }
-        public string Email { get; set; }
-        public DateTime DateOfBirth { get; set; }
-        public byte Gender { get; set; }
-        public string BloodType { get; set; }
-        public string IdentityNumber { get; set; }
-        public string TypeOfIdentity { get; set; }
-        public string Status { get; set; }
-        public List<CreateFamilyMemberDto> FamilyMembers { get; set; }
-    }
-
-    public class CreateFamilyMemberDto
-    {
-        public int FamilyId { get; set; }
-        public int MemberTypeId { get; set; }
-    }
+ 
 
     public class PersonService
     {
         private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
 
-        public PersonService(ApplicationDbContext context)
+        public PersonService(ApplicationDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         public async Task<ApiResponse<PersonDto>> AddAsync(CreatePersonDto createPersonDto)
         {
-            var person = new Person
-            {
-                FullName = createPersonDto.FullName,
-                PhoneNumber = createPersonDto.PhoneNumber,
-                Job = createPersonDto.Job,
-                Email = createPersonDto.Email,
-                DateOfBirth = createPersonDto.DateOfBirth,
-                Gender = createPersonDto.Gender,
-                BloodType = createPersonDto.BloodType,
-                IdentityNumber = createPersonDto.IdentityNumber,
-                TypeOfIdentity = createPersonDto.TypeOfIdentity,
-                Status = createPersonDto.Status,
-                FamilyMembers = new List<FamilyMember>()
-            };
+            var person = _mapper.Map<Person>(createPersonDto);
 
-            if (createPersonDto.FamilyMembers != null && createPersonDto.FamilyMembers.Any())
-            {
-                foreach (var fmDto in createPersonDto.FamilyMembers)
-                {
-                    var family = await _context.Families.FindAsync(fmDto.FamilyId);
-                    if (family == null)
-                        return ApiResponse<PersonDto>.Error(HttpStatusCode.NotFound, "No Family Found");
-
-                    var memberType = await _context.MemberTypes.FindAsync(fmDto.MemberTypeId);
-                    if (memberType == null)
-                        return ApiResponse<PersonDto>.Error(HttpStatusCode.NotFound, "No FamilyMembers Found");
-
-                    var familyMember = new FamilyMember
-                    {
-                        Person = person,
-                        Family = family,
-                        MemberType = memberType
-                    };
-
-                    person.FamilyMembers.Add(familyMember);
-                }
-            }
 
             await _context.People.AddAsync(person);
             if (await _context.SaveChangesAsync() > 0)
             {
-                var personDto = new PersonDto
-                {
-                    Id = person.Id,
-                    FullName = person.FullName,
-                    PhoneNumber = person.PhoneNumber,
-                    Job = person.Job,
-                    Email = person.Email,
-                    DateOfBirth = person.DateOfBirth,
-                    Gender = person.Gender,
-                    BloodType = person.BloodType,
-                    IdentityNumber = person.IdentityNumber,
-                    TypeOfIdentity = person.TypeOfIdentity,
-                    Status = person.Status,
-                    FamilyMembers = person.FamilyMembers.Select(fm => new FamilyMemberDto
-                    {
-                        Id = fm.Id,
-                        FamilyId = fm.FamilyId,
-                        MemberTypeId = fm.MemberTypeId
-                    }).ToList()
-                };
+                var personDto = _mapper.Map<PersonDto>(person);
 
                 return ApiResponse<PersonDto>.Success(personDto);
             }
@@ -138,36 +44,16 @@ namespace OurProjectSmartNeiborhood.Services
             return ApiResponse<string>.Error(HttpStatusCode.NotModified, "Failed To Delete the Person");
         }
 
-        public async Task<ApiResponse<IEnumerable<PersonDto>>> GetAll()
+        public async Task<ApiResponse<IEnumerable<Person>>> GetAll()
         {
-            var persons = await _context.People.Include(p => p.FamilyMembers).ThenInclude(fm => fm.MemberType).AsNoTracking().ToListAsync();
+            var persons = await _context.People.AsNoTracking().ToListAsync();
+
             if (persons.Any())
             {
-                var personDtos = persons.Select(p => new PersonDto
-                {
-                    Id = p.Id,
-                    FullName = p.FullName,
-                    PhoneNumber = p.PhoneNumber,
-                    Job = p.Job,
-                    Email = p.Email,
-                    DateOfBirth = p.DateOfBirth,
-                    Gender = p.Gender,
-                    BloodType = p.BloodType,
-                    IdentityNumber = p.IdentityNumber,
-                    TypeOfIdentity = p.TypeOfIdentity,
-                    Status = p.Status,
-                    FamilyMembers = p.FamilyMembers?.Select(fm => new FamilyMemberDto
-                    {
-                        Id = fm.Id,
-                        FamilyId = fm.FamilyId,
-                        MemberTypeId = fm.MemberTypeId
-                    }).ToList()
-                }).ToList();
-
-                return ApiResponse<IEnumerable<PersonDto>>.Success(personDtos);
+                return ApiResponse<IEnumerable<Person>>.Success(persons);
             }
 
-            return ApiResponse<IEnumerable<PersonDto>>.Error(HttpStatusCode.BadRequest, "No Person Found");
+            return ApiResponse<IEnumerable<Person>>.Error(HttpStatusCode.BadRequest, "No Person Found");
         }
 
         public async Task<ApiResponse<PersonDto>> GetByIdAsync(int id)
@@ -218,12 +104,6 @@ namespace OurProjectSmartNeiborhood.Services
             existingPerson.TypeOfIdentity = personDto.TypeOfIdentity;
             existingPerson.Status = personDto.Status;
 
-            existingPerson.FamilyMembers = personDto.FamilyMembers?.Select(fm => new FamilyMember
-            {
-                FamilyId = fm.FamilyId,
-                MemberTypeId = fm.MemberTypeId
-            }).ToList();
-
             _context.People.Update(existingPerson);
             if (await _context.SaveChangesAsync() > 0)
                 return ApiResponse<string>.Success("Person Updated Successfully");
@@ -233,10 +113,3 @@ namespace OurProjectSmartNeiborhood.Services
     }
 
 }
-
-
-
-
-
-
-

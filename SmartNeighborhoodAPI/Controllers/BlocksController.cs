@@ -26,14 +26,9 @@
             return Response(await _BlockServices.AddAsync(BlockDto));
         }
         [HttpGet("[action]")]
-        public async Task<IActionResult> GetAllAsync(
-            int pageNumber = 1,
-            int pageSize = 10,
-            string? search = null)
-
+        public async Task<IActionResult> GetAllAsync()
         {
-            return Response(await _BlockServices.GetAll(pageNumber, pageSize, search));
-
+            return Response(await _BlockServices.GetAll());
         }
         [HttpGet("[action]/{id:int}")]
         public async Task<IActionResult> GetByIdAsync(int id)

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SmartNeighborhoodAPI;
 
@@ -11,9 +12,10 @@ using SmartNeighborhoodAPI;
 namespace SmartNeighborhoodAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250512135722_Add-PersonId-To-Users-Tables")]
+    partial class AddPersonIdToUsersTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -66,22 +68,22 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "33f24e79-92cc-4aa6-a258-5e1da6b22f25",
-                            ConcurrencyStamp = "3149e2a0-8607-4d79-a959-165ac8aafd14",
+                            Id = "be7da0e0-7602-41e4-b609-39725259e054",
+                            ConcurrencyStamp = "d0b08225-6c59-448c-8850-2cfca029240f",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "6884894a-9e3c-4a3d-892e-00be212edc7f",
-                            ConcurrencyStamp = "e1f3cb01-549b-4b2c-927d-263586b8b22a",
+                            Id = "a4131c98-4bc4-4050-a902-8884a8475507",
+                            ConcurrencyStamp = "8eb76cfc-1741-4b2d-a360-08eaf3e9da1f",
                             Name = "BlockManager",
                             NormalizedName = "BLOCKMANAGER"
                         },
                         new
                         {
-                            Id = "84ad31f1-8155-48e3-a5d6-724488fd7f15",
-                            ConcurrencyStamp = "8100ae6a-0c62-44b1-870a-b03b38966467",
+                            Id = "a5be1197-b7e5-4713-b032-3f38aae22c80",
+                            ConcurrencyStamp = "f63a951c-0084-4de1-bb52-c781c7932d08",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -176,8 +178,8 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = "5403d1c2-fad2-403c-b5c7-2d2fc039c01b",
-                            RoleId = "33f24e79-92cc-4aa6-a258-5e1da6b22f25"
+                            UserId = "169c5d30-1cd6-4c86-a584-489d7f88ea9c",
+                            RoleId = "be7da0e0-7602-41e4-b609-39725259e054"
                         });
                 });
 
@@ -839,19 +841,19 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "5403d1c2-fad2-403c-b5c7-2d2fc039c01b",
+                            Id = "169c5d30-1cd6-4c86-a584-489d7f88ea9c",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "4019558c-4384-4c63-bc91-444f91716eb0",
+                            ConcurrencyStamp = "138d98e3-4ec3-4658-b5f7-6336e838c770",
                             Email = "admin@example.com",
                             EmailConfirmed = true,
                             IsActive = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@EXAMPLE.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAELHpzWHrSkZPFTjXvnUkrIlm5QGt+vSKtq9O0rrriu5OuaSuatpVrTC+IFiSo6AioA==",
-                            PersonId = 2,
+                            PasswordHash = "AQAAAAEAACcQAAAAEDj66ARA/h8C9FVik0KunP/2oYC+O1k6+BEPdjrQpzZXbDaWx7FjUGtGopXXp7dNjA==",
+                            PersonId = 0,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "a6117bfa-97e6-4f30-80cc-8909d8129895",
+                            SecurityStamp = "198fbf39-f122-4ca1-938b-500bbb2fbfcc",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         });

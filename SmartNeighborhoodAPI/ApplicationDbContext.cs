@@ -56,6 +56,7 @@ namespace SmartNeighborhoodAPI
                 Email = "admin@example.com",
                 NormalizedEmail = "ADMIN@EXAMPLE.COM",
                 EmailConfirmed = true,
+                PersonId = 2,
                 PasswordHash = new PasswordHasher<AppUser>().HashPassword(null, "Admin@123")
             };
 
@@ -70,6 +71,8 @@ namespace SmartNeighborhoodAPI
             );
         }
 
+        public DbSet<TodoItem> TodoItems { get; set; }
+        public DbSet<Category> Categories { get; set; }
         public DbSet<Person> People { get; set; }
         public DbSet<Family> Families { get; set; }
         public DbSet<FamilyCatgory> FamilyCatgories { get; set; }
