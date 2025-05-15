@@ -1,26 +1,37 @@
 ﻿using System.Text.Json.Serialization;
+using SmartNeighborhoodAPI.Entites.Enums;
 
 namespace OurProjectSmartNeiborhood.Entites
 {
     public class Person
     {
         public int Id { get; set; }
-        public string FullName { get; set; }
-        public string PhoneNumber { get; set; }
+        [MaxLength(20)]
+        public string FirstName { get; set; }
+        [MaxLength(20)]
+        public string SecondName { get; set; }
+        [MaxLength(20)]
+        public string ThirdName { get; set; }
+        [MaxLength(20)]
+        public string LastName { get; set; }
         [MaxLength(30)]
-        public string? Job { get; set; }
+        public string PhoneNumber { get; set; }
+        public bool IsWhatsapp { get; set; }
+        public bool IsContactNumber { get; set; }
         [MaxLength(100)]
         public string? Email { get; set; }
         public DateTime DateOfBirth { get; set; }
-        public byte Gender { get; set; }
+        [MaxLength(10)]
+        public string Gender { get; set; }
         public string? Image { get; set; }
-        public string BloodType { get; set; }
+        public BloodType BloodType { get; set; }
         [MaxLength(100)]
         public string IdentityNumber { get; set; }
-        public string? TypeOfIdentity { get; set; }
+        public IdentityType IdentityType { get; set; }
+        public MaritalStatus MaritalStatus { get; set; }
+        public OccupationStatus OccupationStatus { get; set; }
         [MaxLength(30)]
-        public string Status { get; set; }
-        [JsonIgnore]
+        public string? Job { get; set; }
         public List<FamilyMember> FamilyMembers { get; set; }
 
     }

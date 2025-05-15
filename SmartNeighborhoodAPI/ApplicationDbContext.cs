@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using OurProjectSmartNeiborhood.Configuration;
 using SmartNeighborhoodAPI.Entites;
 
 
@@ -15,6 +17,8 @@ namespace SmartNeighborhoodAPI
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            builder.ApplyConfiguration(new PersonConfiguration());
 
             builder.Entity<MemberType>().HasData(
                 new MemberType { Id = 1, Name = "Father" },
