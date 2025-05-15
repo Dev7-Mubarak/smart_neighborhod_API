@@ -7,12 +7,10 @@ namespace SmartNeighborhoodAPI.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
-        private readonly FamilyMemberService _familyMemberService;
-        public FamilyService(ApplicationDbContext context, IMapper mapper, FamilyMemberService familyMemberService)
+        public FamilyService(ApplicationDbContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
-            _familyMemberService = familyMemberService;
         }
         // Edit
         public async Task<ApiResponse<ReturnFamilyDto>> AddAsync(FamilyDto familyDto)
@@ -83,13 +81,66 @@ namespace SmartNeighborhoodAPI.Services
             return ApiResponse<IEnumerable<Family>>.Error(HttpStatusCode.NotFound, "No Families Found");
         }
 
-        public async Task<ApiResponse<Family>> GetByIdAsync(int id)
+        public async Task<ApiResponse<ReturnFamilyInfoDto>> GetFamilyDetilesByIdAsync(int id)
         {
-            var family = await _context.Families.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+            var family = await _context.Families
+                .AsNoTracking()
+                .Include(x => x.FamilyCatgory)
+                .Include(x => x.FamilyType)
+                .Include(x => x.Block)
+                .Include(x => x.FamilyMembers)
+                .ThenInclude(x => x.MemberType)
+                .Include(x => x.FamilyMembers)
+                .ThenInclude(x => x.Person)
+                .FirstOrDefaultAsync(x => x.Id == id);
             if (family == null)
-                return ApiResponse<Family>.Error(HttpStatusCode.NotFound, "Family Not Found");
+                return ApiResponse<ReturnFamilyInfoDto>.Error(HttpStatusCode.NotFound, "Family Not Found");
 
-            return ApiResponse<Family>.Success(family);
+            var headOfTheFamily = _context.FamilyMembers
+                .AsNoTracking()
+                .Include(x => x.MemberType)
+                .Include(x => x.Person)
+                .FirstOrDefault(x => x.FamilyId == id && x.MemberType.Name == "Father");
+
+            if (headOfTheFamily == null)
+                return ApiResponse<ReturnFamilyInfoDto>.Error(HttpStatusCode.NotFound, "This Family Does Not Have A Father");
+
+            var dto = new ReturnFamilyInfoDto
+            {
+                Id = family.Id,
+                Name = family.Name,
+                Location = family.Location,
+                FamilyNotes = family.FamilyNotes,
+                FamilyCatgoryId = family.FamilyCatgoryId,
+                FamilyCatgoryName = family.FamilyCatgory.Name,
+                FamilyTypeId = family.FamilyTypeId,
+                FamilyTypeName = family.FamilyType.Name,
+                BlockId = family.BlockId,
+                BlockName = family.Block.Name,
+                HeadOfTheFamilyId = headOfTheFamily.Id,
+                HeadOfTheFamilyName = headOfTheFamily.Person.FullName,
+                FamilyMembers = family.FamilyMembers.Select(m => new FamilyMemberDto
+                {
+                    Person = new PersonDto
+                    {
+                        Id = m.Person.Id,
+                        BloodType = m.Person.BloodType,
+                        DateOfBirth = m.Person.DateOfBirth,
+                        Email = m.Person.Email,
+                        FullName = m.Person.FullName,
+                        Gender = m.Person.Gender,
+                        IdentityNumber = m.Person.IdentityNumber,
+                        Image = m.Person.Image,
+                        Job = m.Person.Job,
+                        PhoneNumber = m.Person.PhoneNumber,
+                        TypeOfIdentity = m.Person.TypeOfIdentity,
+                        Status = m.Person.Status,
+                        MemberTypeName = m.MemberType.Name
+                    }
+                }).ToList()
+            };
+
+            return ApiResponse<ReturnFamilyInfoDto>.Success(dto);
         }
 
         public async Task<ApiResponse<string>> UpdateAsync(int id, FamilyDto familyDto)

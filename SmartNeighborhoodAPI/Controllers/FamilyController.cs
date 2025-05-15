@@ -26,9 +26,9 @@
         }
 
         [HttpGet("[action]/{id:int}")]
-        public async Task<IActionResult> GetByIdAsync(int id)
+        public async Task<IActionResult> GetFamilyDetilesByIdAsync(int id)
         {
-            var result = await _FamilyService.GetByIdAsync(id);
+            var result = await _FamilyService.GetFamilyDetilesByIdAsync(id);
             return Response(result);
         }
 
