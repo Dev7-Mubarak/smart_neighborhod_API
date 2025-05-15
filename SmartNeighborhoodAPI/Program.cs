@@ -36,7 +36,7 @@ builder.Services.AddScoped<ChatService>();
 builder.Services.AddScoped<FamilyCatgoryService>();
 builder.Services.AddScoped<FamilyTypeService>();
 builder.Services.AddScoped<FamilyService>();
-builder.Services.AddScoped<MemberTypeService>();
+builder.Services.AddScoped<MemberFamilyRoleService>();
 builder.Services.AddScoped<BlockServices>();
 builder.Services.AddScoped<AdsService>();
 builder.Services.AddScoped<GroupService>();

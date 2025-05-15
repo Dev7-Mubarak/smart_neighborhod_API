@@ -2,45 +2,45 @@
 
 namespace SmartNeighborhoodAPI.Services
 {
-    public class MemberTypeService
+    public class MemberFamilyRoleService
     {
         private readonly ApplicationDbContext _context;
         readonly IMapper _mapper;
 
 
-        public MemberTypeService(ApplicationDbContext context, IMapper mapper)
+        public MemberFamilyRoleService(ApplicationDbContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
         }
-        public async Task<ApiResponse<MemberType>> AddAsync(string nameMemberType)
+        public async Task<ApiResponse<MemberFamilyRole>> AddAsync(string nameMemberFamilyRole)
         {
 
 
-            var memberType = new MemberType
+            var MemberFamilyRole = new MemberFamilyRole
             {
               
-                Name = nameMemberType
+                RoleName = nameMemberFamilyRole
 
             };
 
 
-            var existMemberType = await _context.MemberTypes.FirstOrDefaultAsync(x => x.Name == nameMemberType);
-            if (existMemberType != null)
-                return ApiResponse<MemberType>.Error(HttpStatusCode.Conflict, "MemberTypes Is Already Exist");
+            var existMemberFamilyRole = await _context.MemberFamilyRoles.FirstOrDefaultAsync(x => x.RoleName== nameMemberFamilyRole);
+            if (existMemberFamilyRole != null)
+                return ApiResponse<MemberFamilyRole>.Error(HttpStatusCode.Conflict, "MemberFamilyRoles Is Already Exist");
 
 
-            await _context.MemberTypes.AddAsync(memberType);
+            await _context.MemberFamilyRoles.AddAsync(MemberFamilyRole);
             if (await _context.SaveChangesAsync() > 0)
-                return ApiResponse<MemberType>.Success(memberType, "Added Successed");
+                return ApiResponse<MemberFamilyRole>.Success(MemberFamilyRole, "Added Successed");
 
-            return ApiResponse<MemberType>.Error(HttpStatusCode.BadRequest, "Block not add");
+            return ApiResponse<MemberFamilyRole>.Error(HttpStatusCode.BadRequest, "Block not add");
 
 
         }
         public async Task<ApiResponse<string>> DeleteAsync(int id)
         {
-            var entity = await _context.MemberTypes.FindAsync(id);
+            var entity = await _context.MemberFamilyRoles.FindAsync(id);
             if (entity == null)
                 return ApiResponse<string>.Error(HttpStatusCode.NotFound, "Block Not Found");
 
@@ -50,56 +50,56 @@ namespace SmartNeighborhoodAPI.Services
 
             return ApiResponse<string>.Error(HttpStatusCode.NotModified, "Faild To Delete the Block");
         }
-        public async Task<ApiResponse<IEnumerable<MemberTypeDto>>> GetAll()
+        public async Task<ApiResponse<IEnumerable<MemberFamilyRoleDto>>> GetAll()
         {
-            var memberTypes = _context.MemberTypes.AsNoTracking().ToList();
-            if (memberTypes.Count > 0)
+            var MemberFamilyRoles = _context.MemberFamilyRoles.AsNoTracking().ToList();
+            if (MemberFamilyRoles.Count > 0)
             {
-                var MemberTypeDtos = memberTypes.Select( x =>  new MemberTypeDto
+                var MemberFamilyRoleDtos = MemberFamilyRoles.Select( x =>  new MemberFamilyRoleDto
                 {
                     Id = x.Id,
-                    Name = x.Name,
+                    RoleName = x.RoleName,
                 }).ToList();
-                return ApiResponse<IEnumerable<MemberTypeDto>>.Success(MemberTypeDtos);
+                return ApiResponse<IEnumerable<MemberFamilyRoleDto>>.Success(MemberFamilyRoleDtos);
             }
 
-            return ApiResponse<IEnumerable<MemberTypeDto>>.Error(HttpStatusCode.NotFound, "No Block Found");
+            return ApiResponse<IEnumerable<MemberFamilyRoleDto>>.Error(HttpStatusCode.NotFound, "No Block Found");
 
 
 
         }
-        public async Task<ApiResponse<MemberTypeDto>> GetByIdAsync(int id)
+        public async Task<ApiResponse<MemberFamilyRoleDto>> GetByIdAsync(int id)
         {
-            var memberType = await _context.MemberTypes.Include(x=>x.FamilyMembers).AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
-            if (memberType == null)
-                return ApiResponse<MemberTypeDto>.Error(HttpStatusCode.NotFound, "Block Not Found");
+            var MemberFamilyRole = await _context.MemberFamilyRoles.Include(x=>x.FamilyMembers).AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+            if (MemberFamilyRole == null)
+                return ApiResponse<MemberFamilyRoleDto>.Error(HttpStatusCode.NotFound, "Block Not Found");
 
 
-            var MemberTypeDto = new MemberTypeDto
+            var MemberFamilyRoleDto = new MemberFamilyRoleDto
             {
                 Id = id,
-                Name = memberType.Name
+                RoleName = MemberFamilyRole.RoleName           
             };
-            return ApiResponse<MemberTypeDto>.Success(MemberTypeDto);
+            return ApiResponse<MemberFamilyRoleDto>.Success(MemberFamilyRoleDto);
         }
-        public async Task<ApiResponse<string>> UpdateAsync(int id, string newNameMemberType)
+        public async Task<ApiResponse<string>> UpdateAsync(int id, string newNameMemberFamilyRole)
         {
-            var exisxtMemberType = await _context.MemberTypes.FirstOrDefaultAsync(x => x.Id == id);
+            var exisxtMemberFamilyRole = await _context.MemberFamilyRoles.FirstOrDefaultAsync(x => x.Id == id);
 
-            if (exisxtMemberType is null)
+            if (exisxtMemberFamilyRole is null)
                 return ApiResponse<string>.Error(HttpStatusCode.NotFound, "Block Not Found");
 
 
 
-            if (exisxtMemberType.Name == newNameMemberType)
-                return ApiResponse<string>.Error(HttpStatusCode.Conflict, "MemberTypes Is Already Exist");
+            if (exisxtMemberFamilyRole.RoleName == newNameMemberFamilyRole)
+                return ApiResponse<string>.Error(HttpStatusCode.Conflict, "MemberFamilyRoles Is Already Exist");
 
 
             
-            exisxtMemberType.Name = newNameMemberType;
+            exisxtMemberFamilyRole.RoleName = newNameMemberFamilyRole;
            
 
-            _context.MemberTypes.Update(exisxtMemberType);
+            _context.MemberFamilyRoles.Update(exisxtMemberFamilyRole);
             if (await _context.SaveChangesAsync() > 0)
                 return ApiResponse<string>.Success("Block Updated Successfully");
 

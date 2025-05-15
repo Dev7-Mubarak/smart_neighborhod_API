@@ -58,23 +58,23 @@ namespace OurProjectSmartNeiborhood.Services
 
         public async Task<ApiResponse<PersonDto>> GetByIdAsync(int id)
         {
-            var person = await _context.People.Include(p => p.FamilyMembers).ThenInclude(fm => fm.MemberType).AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+            var person = await _context.People.Include(p => p.FamilyMembers).ThenInclude(fm => fm.MemberFamilyRole).AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
             if (person == null)
                 return ApiResponse<PersonDto>.Error(HttpStatusCode.NotFound, "Person Not Found");
 
             var personDto = new PersonDto
             {
                 Id = person.Id,
-                FullName = person.FullName,
+                FirstName = person.FirstName,
                 PhoneNumber = person.PhoneNumber,
                 Job = person.Job,
                 Email = person.Email,
                 DateOfBirth = person.DateOfBirth,
-                Gender = person.Gender,
-                BloodType = person.BloodType,
-                IdentityNumber = person.IdentityNumber,
-                TypeOfIdentity = person.TypeOfIdentity,
-                Status = person.Status,
+                //Gender = person.Gender,
+                //BloodType = person.BloodType,
+                //IdentityNumber = person.IdentityNumber,
+                //TypeOfIdentity = person.TypeOfIdentity,
+                //Status = person.Status,
                 //FamilyMembers = person.FamilyMembers?.Select(fm => new FamilyMemberDto
                 //{
                 //    Id = fm.Id,
@@ -93,16 +93,16 @@ namespace OurProjectSmartNeiborhood.Services
             if (existingPerson is null)
                 return ApiResponse<string>.Error(HttpStatusCode.NotFound, "Person Not Found");
 
-            existingPerson.FullName = personDto.FullName;
+            existingPerson.FirstName = personDto.FirstName;
             existingPerson.PhoneNumber = personDto.PhoneNumber;
             existingPerson.Job = personDto.Job;
             existingPerson.Email = personDto.Email;
             existingPerson.DateOfBirth = personDto.DateOfBirth;
-            existingPerson.Gender = personDto.Gender;
-            existingPerson.BloodType = personDto.BloodType;
-            existingPerson.IdentityNumber = personDto.IdentityNumber;
-            existingPerson.TypeOfIdentity = personDto.TypeOfIdentity;
-            existingPerson.Status = personDto.Status;
+            //existingPerson.Gender = personDto.Gender;
+            //existingPerson.BloodType = personDto.BloodType;
+            //existingPerson.IdentityNumber = personDto.IdentityNumber;
+            //existingPerson.TypeOfIdentity = personDto.TypeOfIdentity;
+            //existingPerson.Status = personDto.Status;
 
             _context.People.Update(existingPerson);
             if (await _context.SaveChangesAsync() > 0)

@@ -35,7 +35,7 @@ namespace SmartNeighborhoodAPI.Services
             {
                 FamilyId = family.Id,
                 PersonId = person.Id,
-                MemberTypeId = 1
+                MemberFamilyRoleId = 1
             };
             await _context.FamilyMembers.AddAsync(fimalyMember);
 
@@ -89,7 +89,7 @@ namespace SmartNeighborhoodAPI.Services
                 .Include(x => x.FamilyType)
                 .Include(x => x.Block)
                 .Include(x => x.FamilyMembers)
-                .ThenInclude(x => x.MemberType)
+                .ThenInclude(x => x.MemberFamilyRole)
                 .Include(x => x.FamilyMembers)
                 .ThenInclude(x => x.Person)
                 .FirstOrDefaultAsync(x => x.Id == id);
@@ -98,9 +98,9 @@ namespace SmartNeighborhoodAPI.Services
 
             var headOfTheFamily = _context.FamilyMembers
                 .AsNoTracking()
-                .Include(x => x.MemberType)
+                .Include(x => x.MemberFamilyRole)
                 .Include(x => x.Person)
-                .FirstOrDefault(x => x.FamilyId == id && x.MemberType.Name == "Father");
+                .FirstOrDefault(x => x.FamilyId == id && x.MemberFamilyRole.RoleName == "Father");
 
             if (headOfTheFamily == null)
                 return ApiResponse<ReturnFamilyInfoDto>.Error(HttpStatusCode.NotFound, "This Family Does Not Have A Father");
@@ -118,24 +118,24 @@ namespace SmartNeighborhoodAPI.Services
                 BlockId = family.BlockId,
                 BlockName = family.Block.Name,
                 HeadOfTheFamilyId = headOfTheFamily.Id,
-                HeadOfTheFamilyName = headOfTheFamily.Person.FullName,
+                HeadOfTheFamilyName = headOfTheFamily.Person.FirstName,
                 FamilyMembers = family.FamilyMembers.Select(m => new FamilyMemberDto
                 {
                     Person = new PersonDto
                     {
-                        Id = m.Person.Id,
-                        BloodType = m.Person.BloodType,
-                        DateOfBirth = m.Person.DateOfBirth,
-                        Email = m.Person.Email,
-                        FullName = m.Person.FullName,
-                        Gender = m.Person.Gender,
-                        IdentityNumber = m.Person.IdentityNumber,
-                        Image = m.Person.Image,
-                        Job = m.Person.Job,
-                        PhoneNumber = m.Person.PhoneNumber,
-                        TypeOfIdentity = m.Person.TypeOfIdentity,
-                        Status = m.Person.Status,
-                        MemberTypeName = m.MemberType.Name
+                        //Id = m.Person.Id,
+                        //BloodType = m.Person.BloodType,
+                        //DateOfBirth = m.Person.DateOfBirth,
+                        //Email = m.Person.Email,
+                        //FullName = m.Person.FullName,
+                        //Gender = m.Person.Gender,
+                        //IdentityNumber = m.Person.IdentityNumber,
+                        //Image = m.Person.Image,
+                        //Job = m.Person.Job,
+                        //PhoneNumber = m.Person.PhoneNumber,
+                        //TypeOfIdentity = m.Person.TypeOfIdentity,
+                        //Status = m.Person.Status,
+                        //MemberTypeName = m.MemberType.Name
                     }
                 }).ToList()
             };

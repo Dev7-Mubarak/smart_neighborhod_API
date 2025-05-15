@@ -7,11 +7,11 @@ namespace SmartNeighborhoodAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MemberTypeController : AppControllerBase
+    public class MemberFamilyRoleController : AppControllerBase
     {
-        private readonly MemberTypeService _memberTypeService;
+        private readonly MemberFamilyRoleService _memberTypeService;
 
-        public MemberTypeController(MemberTypeService memberTypeService)
+        public MemberFamilyRoleController(MemberFamilyRoleService memberTypeService)
         {
             _memberTypeService = memberTypeService;
         }

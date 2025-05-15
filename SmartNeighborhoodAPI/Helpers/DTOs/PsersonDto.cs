@@ -6,7 +6,8 @@ namespace SmartNeighborhoodAPI.Helpers.DTOs
     public class PersonDto
     {
         public int Id { get; set; }
-        public string FullName { get; set; }
+        public string FirstName { get; set; }
+        public string SecondName { get; set; }
         public string PhoneNumber { get; set; }
         [MaxLength(30)]
         public string? Job { get; set; }

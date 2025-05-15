@@ -90,7 +90,7 @@ namespace SmartNeighborhoodAPI.Services
                 Id = x.Id,
                 ManagerId = x.ManagerId,
                 Name = x.Name,
-                ManagerName = x.Manager.Person.FullName
+                ManagerName = x.Manager.Person.FirstName
             }).AsNoTracking().ToListAsync();
 
             return ApiResponse<IEnumerable<RetrunBlockDto>>.Success(blocks);
