@@ -3,20 +3,20 @@
     public enum BloodType
     {
         [Display(Name = "A+")]
-        A_Positive,
+        APositive,
         [Display(Name = "A-")]
-        A_Negative,
+        ANegative,
         [Display(Name = "B+")]
-        B_Positive,
+        BPositive,
         [Display(Name = "B-")]
-        B_Negative,
+        BNegative,
         [Display(Name = "AB+")]
-        AB_Positive,
+        ABPositive,
         [Display(Name = "AB-")]
-        AB_Negative,
+        ABNegative,
         [Display(Name = "O+")]
-        O_Positive,
+        OPositive,
         [Display(Name = "O-")]
-        O_Negative
+        ONegative
     }
 }

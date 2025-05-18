@@ -22,6 +22,10 @@ namespace OurProjectSmartNeiborhood.Configuration
                 .HasMaxLength(20)
                 .IsRequired();
 
+            builder.Property(p => p.DateOfBirth)
+            .HasColumnType("date")
+            .IsRequired();
+
             builder.Property(p => p.LastName)
                 .HasMaxLength(20)
                 .IsRequired();
@@ -38,7 +42,6 @@ namespace OurProjectSmartNeiborhood.Configuration
                 .IsRequired();
 
             builder.Property(p => p.BloodType)
-                .HasConversion<string>()
                 .IsRequired();
 
             builder.Property(p => p.IdentityNumber)
@@ -46,15 +49,12 @@ namespace OurProjectSmartNeiborhood.Configuration
                 .IsRequired();
 
             builder.Property(p => p.IdentityType)
-                .HasConversion<string>()
                 .IsRequired();
 
             builder.Property(p => p.OccupationStatus)
-                .HasConversion<string>()
                 .IsRequired();
 
             builder.Property(p => p.MaritalStatus)
-                .HasConversion<string>()
                 .IsRequired();
 
             builder.Property(p => p.Job)
@@ -77,7 +77,7 @@ namespace OurProjectSmartNeiborhood.Configuration
                     PhoneNumber = "0791234567",
                     Email = "ahmad@example.com",
                     Gender = "ذكر",
-                    BloodType = BloodType.A_Negative,
+                    BloodType = BloodType.ABNegative,
                     IdentityNumber = "894754369053",
                     IdentityType = IdentityType.IdentityCard,
                     OccupationStatus = OccupationStatus.Employee,
@@ -94,7 +94,7 @@ namespace OurProjectSmartNeiborhood.Configuration
                     PhoneNumber = "0789876543",
                     Email = "fatima@example.com",
                     Gender = "أنثى",
-                    BloodType = BloodType.AB_Positive,
+                    BloodType = BloodType.ABNegative,
                     IdentityNumber = "8945784903588",
                     IdentityType = IdentityType.IdentityCard,
                     OccupationStatus = OccupationStatus.Student,

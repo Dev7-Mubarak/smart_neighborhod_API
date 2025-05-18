@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using SmartNeighborhoodAPI.Helpers.DTOs.Person;
 
 namespace SmartNeighborhoodAPI.Helpers.DTOs
 {

@@ -2,44 +2,21 @@
 {
     public class FileHelper
     {
-        public static void CreateFolderIfDoesNotExist(string FolderPath)
-        {
-            if (!Directory.Exists(FolderPath))
-            {
-                try
-                {
-                    Directory.CreateDirectory(FolderPath);
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception();
-                }
-            }
-
-        }
-        private static string ReplaceFileNameWithGUID(IFormFile file)
-        {
-            string extension = Path.GetExtension(file.FileName);
-            return Guid.NewGuid() + extension;
-        }
-
+        public const string PersonImagesPath = "/People";
+        public const string AllowedExtensions = ".jpg,.jpeg,.png";
+        public const int MaxFileSizeInMB = 1;
+        public const int MaxFileSizeInBytes = MaxFileSizeInMB * 1024 * 1024;
+      
         /// <summary> 
         /// Saves the uploaded file asynchronously to the specified destination folder. 
         /// </summary> 
         /// <param name="file">The uploaded file to be saved.</param> 
         /// <param name="destination">The directory path where the file should be saved.</param> 
-        /// <returns> 
-        /// A tuple containing: 
-        /// <list type="bullet"> 
-        ///     <item><c>bool Succeeded</c> - Indicates whether the file was saved successfully.</item> 
-        ///     <item><c>string FileName</c> - The name of the saved file if successful; otherwise, an empty string.</item> 
-        /// </list> 
-        /// </returns> 
         /// <exception cref="ArgumentNullException">Thrown if the <paramref name="file"/> is null.</exception> 
         /// <exception cref="ArgumentException">Thrown if the <paramref name="destination"/> is null or empty.</exception> 
         /// <exception cref="IOException">Thrown if an I/O error occurs while saving the file.</exception> 
         /// <exception cref="Exception">Thrown if any unexpected error occurs.</exception> 
-        public static async Task<(bool Succeeded, string FileName)> SaveFileAsync(IFormFile file, string destination)
+        public static async Task<string> SaveFileAsync(IFormFile file, string destination)
         {
             try
             {
@@ -58,12 +35,12 @@
                     await file.CopyToAsync(stream);
                 }
 
-                return (true, newFileName);
+                return newFilePath;
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Unexpected error: {ex.Message}");
-                return (false, string.Empty);
+                return string.Empty;
             }
         }
 
@@ -85,6 +62,27 @@
                 Console.WriteLine($"Error deleting file: {ex.Message}");
                 return false;
             }
+        }
+
+        public static void CreateFolderIfDoesNotExist(string FolderPath)
+        {
+            if (!Directory.Exists(FolderPath))
+            {
+                try
+                {
+                    Directory.CreateDirectory(FolderPath);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception();
+                }
+            }
+
+        }
+        private static string ReplaceFileNameWithGUID(IFormFile file)
+        {
+            string extension = Path.GetExtension(file.FileName);
+            return Guid.NewGuid() + extension;
         }
     }
 }

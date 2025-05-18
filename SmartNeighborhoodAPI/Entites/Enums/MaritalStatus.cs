@@ -3,7 +3,7 @@
     public enum MaritalStatus
     {
         [Display(Name = "أعزب")]
-        Single,
+        Single = 1,
         [Display(Name = "متزوج")]
         Married
     }

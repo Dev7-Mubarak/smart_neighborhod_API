@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using OurProjectSmartNeiborhood.Services;
+using SmartNeighborhoodAPI.Helpers.DTOs.Person;
 
 namespace SmartNeighborhoodAPI.Services
 {

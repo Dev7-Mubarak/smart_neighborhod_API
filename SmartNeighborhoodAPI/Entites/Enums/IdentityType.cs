@@ -3,7 +3,7 @@
     public enum IdentityType
     {
         [Display(Name = "بطاقة شخصية")]
-        IdentityCard,
+        IdentityCard = 1,
         [Display(Name = "جواز سفر")]
         Passport,
         [Display(Name = "شهادة ميلاد")]

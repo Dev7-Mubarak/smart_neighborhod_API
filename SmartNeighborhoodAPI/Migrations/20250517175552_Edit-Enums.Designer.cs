@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SmartNeighborhoodAPI;
 
@@ -11,9 +12,10 @@ using SmartNeighborhoodAPI;
 namespace SmartNeighborhoodAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250517175552_Edit-Enums")]
+    partial class EditEnums
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -67,21 +69,21 @@ namespace SmartNeighborhoodAPI.Migrations
                         new
                         {
                             Id = "11111111-1111-1111-1111-111111111111",
-                            ConcurrencyStamp = "b621a021-4916-43cc-abfb-e66064b0328f",
+                            ConcurrencyStamp = "5f637d8e-3659-47a4-ad53-65da89e4103f",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = "22222222-2222-2222-2222-222222222222",
-                            ConcurrencyStamp = "4913c3f1-d7e1-475f-b192-d61a3eac6866",
+                            ConcurrencyStamp = "c3493947-b299-4ddf-808a-b5b18227fa76",
                             Name = "BlockManager",
                             NormalizedName = "BLOCKMANAGER"
                         },
                         new
                         {
                             Id = "33333333-3333-3333-3333-333333333333",
-                            ConcurrencyStamp = "9fcfca55-27d6-4437-9033-9b442f316b54",
+                            ConcurrencyStamp = "d4459103-8858-4e80-964b-40d05cf667af",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -537,7 +539,7 @@ namespace SmartNeighborhoodAPI.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("DateOfBirth")
-                        .HasColumnType("date");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
                         .HasMaxLength(100)
@@ -914,17 +916,17 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "aff3ea44-71eb-4f2a-97e0-e9f84a3e72f6",
+                            ConcurrencyStamp = "66d88fb3-c9d5-4eed-84be-13546aa63e5a",
                             Email = "admin@example.com",
                             EmailConfirmed = true,
                             IsActive = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@EXAMPLE.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEC8YIag6dYSOv0iS1CLEd8I8OhnSCYtTcbd0OM4o0tF7YgMh7HlhSsElvvmP8XqreQ==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEAbldH1PeuVVUCA8Rxd9ILmIBBIHcn85W+aYm9mmC5M/57nENJjCpPDs/tthjneR2Q==",
                             PersonId = 1,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "470abd3f-c76d-4cee-9181-643f382fc73c",
+                            SecurityStamp = "4e6933ca-9e75-4b69-9691-76df6d084459",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         });

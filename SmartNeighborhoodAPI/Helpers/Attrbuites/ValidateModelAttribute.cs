@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Filters;
 using System.Net;
 
-namespace SmartNeighborhoodAPI.Helpers
+namespace SmartNeighborhoodAPI.Helpers.Attrbuites
 {
     public class ValidateActionFilterAttribute : ActionFilterAttribute
     {
