@@ -39,8 +39,7 @@ public class CreatePersonDto
     public DateTime DateOfBirth { get; set; }
 
     [Required(ErrorMessage = "«·Ã‰” „ÿ·Ê».")]
-    [MaxLength(10, ErrorMessage = "ÌÃ» √·« Ì“Ìœ «·Ã‰” ⁄‰ 10 √Õ—›.")]
-    public string Gender { get; set; }
+    public Gender Gender { get; set; }
 
     [AllowedExtensions(FileHelper.AllowedExtensions)]
     [MaxFileSize(FileHelper.MaxFileSizeInBytes)]

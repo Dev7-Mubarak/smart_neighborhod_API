@@ -51,6 +51,10 @@ namespace OurProjectSmartNeiborhood.Configuration
             builder.Property(p => p.IdentityType)
                 .IsRequired();
 
+            builder.Property(p => p.Gender)
+                .IsRequired();
+
+
             builder.Property(p => p.OccupationStatus)
                 .IsRequired();
 
@@ -76,7 +80,7 @@ namespace OurProjectSmartNeiborhood.Configuration
                     LastName = "الزهيري",
                     PhoneNumber = "0791234567",
                     Email = "ahmad@example.com",
-                    Gender = "ذكر",
+                    Gender = Gender.Male,
                     BloodType = BloodType.ABNegative,
                     IdentityNumber = "894754369053",
                     IdentityType = IdentityType.IdentityCard,
@@ -93,7 +97,7 @@ namespace OurProjectSmartNeiborhood.Configuration
                     LastName = "الحسني",
                     PhoneNumber = "0789876543",
                     Email = "fatima@example.com",
-                    Gender = "أنثى",
+                    Gender = Gender.Female,
                     BloodType = BloodType.ABNegative,
                     IdentityNumber = "8945784903588",
                     IdentityType = IdentityType.IdentityCard,

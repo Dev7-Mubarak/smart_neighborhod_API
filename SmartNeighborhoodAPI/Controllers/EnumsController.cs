@@ -34,6 +34,13 @@ namespace SmartNeighborhoodAPI.Controllers
             var values = GetEnumValuesWithDisplayName<OccupationStatus>();
             return Response(ApiResponse<IEnumerable<EnumHelper>>.Success(values));
         }
+
+        [HttpGet("Gender")]
+        public IActionResult GetGender()
+        {
+            var values = GetEnumValuesWithDisplayName<Gender>();
+            return Response(ApiResponse<IEnumerable<EnumHelper>>.Success(values));
+        }
         private static IEnumerable<EnumHelper> GetEnumValuesWithDisplayName<T>() where T : Enum
         {
             return Enum.GetValues(typeof(T))

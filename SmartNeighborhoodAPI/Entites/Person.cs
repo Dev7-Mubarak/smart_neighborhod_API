@@ -22,7 +22,7 @@ namespace OurProjectSmartNeiborhood.Entites
         public string? Email { get; set; }
         public DateTime DateOfBirth { get; set; }
         [MaxLength(10)]
-        public string Gender { get; set; }
+        public Gender Gender { get; set; }
         public string? Image { get; set; }
         public BloodType BloodType { get; set; }
         [MaxLength(100)]
