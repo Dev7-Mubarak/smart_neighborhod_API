@@ -167,6 +167,8 @@ namespace OurProjectSmartNeiborhood.Services
                 ThirdName = person.ThirdName,
                 LastName = person.LastName,
                 PhoneNumber = person.PhoneNumber,
+                IsCall = person.IsContactNumber,
+                IsWhatsapp = person.IsWhatsapp,
                 DateOfBirth = person.DateOfBirth,
                 Email = person.Email,
                 Image = string.IsNullOrEmpty(person.Image) ? null : person.Image,
