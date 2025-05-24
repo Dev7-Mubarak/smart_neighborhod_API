@@ -67,21 +67,21 @@ namespace SmartNeighborhoodAPI.Migrations
                         new
                         {
                             Id = "11111111-1111-1111-1111-111111111111",
-                            ConcurrencyStamp = "aa7c0e9f-0f70-4f44-b537-388eaacfc428",
+                            ConcurrencyStamp = "a2abf634-ed00-4914-b277-c3d9a3bb73b2",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = "22222222-2222-2222-2222-222222222222",
-                            ConcurrencyStamp = "5f2e4696-e3c0-4827-81b5-7162fce215c3",
+                            ConcurrencyStamp = "38687b5a-bcc4-4e4a-8c23-1a37a2926e0d",
                             Name = "BlockManager",
                             NormalizedName = "BLOCKMANAGER"
                         },
                         new
                         {
                             Id = "33333333-3333-3333-3333-333333333333",
-                            ConcurrencyStamp = "b02ec7ae-8071-4032-a8eb-c6e89a4daf08",
+                            ConcurrencyStamp = "cc2e051c-bf34-431e-8e97-2dc35f20c488",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -407,9 +407,6 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.Property<int>("PersonId")
                         .HasColumnType("int");
 
-                    b.Property<int>("PersonId1")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("FamilyId");
@@ -417,8 +414,6 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasIndex("MemberFamilyRoleId");
 
                     b.HasIndex("PersonId");
-
-                    b.HasIndex("PersonId1");
 
                     b.ToTable("FamilyMembers");
                 });
@@ -913,17 +908,17 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "f8e8d0f1-4053-4769-a63a-70c0afeb0867",
+                            ConcurrencyStamp = "650b3bb9-b04f-42d4-aaa8-183517943c88",
                             Email = "admin@example.com",
                             EmailConfirmed = true,
                             IsActive = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@EXAMPLE.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEC4xkuTSQu13SUGdu0usopsO1zbIIw7oe1y4fQDIZQeahj09VoMqbtCZ9SOufaXZ5w==",
+                            PasswordHash = "AQAAAAEAACcQAAAAED/COppCV7dQCORtRJn2b57J7K1E6VgJPgGnJI5ebzu7Up/evnRDdHRUWdhGbVmR6Q==",
                             PersonId = 1,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "9b1bac14-ad92-4b18-bb71-aa9d1ebf6e6c",
+                            SecurityStamp = "ff506747-e928-4111-a9c1-81570cfabc24",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         });
@@ -1058,15 +1053,9 @@ namespace SmartNeighborhoodAPI.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("OurProjectSmartNeiborhood.Entites.Person", null)
+                    b.HasOne("OurProjectSmartNeiborhood.Entites.Person", "Person")
                         .WithMany("FamilyMembers")
                         .HasForeignKey("PersonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("OurProjectSmartNeiborhood.Entites.Person", "Person")
-                        .WithMany()
-                        .HasForeignKey("PersonId1")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

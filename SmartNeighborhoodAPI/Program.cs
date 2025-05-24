@@ -40,6 +40,7 @@ builder.Services.AddScoped<FamilyService>();
 builder.Services.AddScoped<MemberFamilyRoleService>();
 builder.Services.AddScoped<BlockServices>();
 builder.Services.AddScoped<AdsService>();
+builder.Services.AddScoped<ImageService>();
 builder.Services.AddScoped<GroupService>();
 builder.Services.AddScoped<ComplainService>();
 builder.Services.AddScoped<ComplainTypeService>();
@@ -88,6 +89,7 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequiredLength = 8;
 });
 
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddControllers()
         .AddJsonOptions(options =>

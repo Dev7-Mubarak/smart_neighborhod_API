@@ -21,7 +21,6 @@ namespace OurProjectSmartNeiborhood.Entites
         [MaxLength(100)]
         public string? Email { get; set; }
         public DateTime DateOfBirth { get; set; }
-        [MaxLength(10)]
         public Gender Gender { get; set; }
         public string? Image { get; set; }
         public BloodType BloodType { get; set; }

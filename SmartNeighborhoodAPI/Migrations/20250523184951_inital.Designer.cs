@@ -12,8 +12,8 @@ using SmartNeighborhoodAPI;
 namespace SmartNeighborhoodAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250517183550_add-dateOfBirth")]
-    partial class adddateOfBirth
+    [Migration("20250523184951_inital")]
+    partial class inital
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -69,21 +69,21 @@ namespace SmartNeighborhoodAPI.Migrations
                         new
                         {
                             Id = "11111111-1111-1111-1111-111111111111",
-                            ConcurrencyStamp = "b621a021-4916-43cc-abfb-e66064b0328f",
+                            ConcurrencyStamp = "a2abf634-ed00-4914-b277-c3d9a3bb73b2",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = "22222222-2222-2222-2222-222222222222",
-                            ConcurrencyStamp = "4913c3f1-d7e1-475f-b192-d61a3eac6866",
+                            ConcurrencyStamp = "38687b5a-bcc4-4e4a-8c23-1a37a2926e0d",
                             Name = "BlockManager",
                             NormalizedName = "BLOCKMANAGER"
                         },
                         new
                         {
                             Id = "33333333-3333-3333-3333-333333333333",
-                            ConcurrencyStamp = "9fcfca55-27d6-4437-9033-9b442f316b54",
+                            ConcurrencyStamp = "cc2e051c-bf34-431e-8e97-2dc35f20c488",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -409,9 +409,6 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.Property<int>("PersonId")
                         .HasColumnType("int");
 
-                    b.Property<int>("PersonId1")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("FamilyId");
@@ -419,8 +416,6 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasIndex("MemberFamilyRoleId");
 
                     b.HasIndex("PersonId");
-
-                    b.HasIndex("PersonId1");
 
                     b.ToTable("FamilyMembers");
                 });
@@ -550,10 +545,9 @@ namespace SmartNeighborhoodAPI.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<string>("Gender")
-                        .IsRequired()
+                    b.Property<int>("Gender")
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
+                        .HasColumnType("int");
 
                     b.Property<string>("IdentityNumber")
                         .IsRequired()
@@ -610,11 +604,11 @@ namespace SmartNeighborhoodAPI.Migrations
                         new
                         {
                             Id = 1,
-                            BloodType = 1,
+                            BloodType = 5,
                             DateOfBirth = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "ahmad@example.com",
                             FirstName = "أحمد",
-                            Gender = "ذكر",
+                            Gender = 0,
                             IdentityNumber = "894754369053",
                             IdentityType = 1,
                             IsContactNumber = false,
@@ -630,11 +624,11 @@ namespace SmartNeighborhoodAPI.Migrations
                         new
                         {
                             Id = 2,
-                            BloodType = 4,
+                            BloodType = 5,
                             DateOfBirth = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "fatima@example.com",
                             FirstName = "فاطمة",
-                            Gender = "أنثى",
+                            Gender = 1,
                             IdentityNumber = "8945784903588",
                             IdentityType = 1,
                             IsContactNumber = false,
@@ -916,17 +910,17 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "aff3ea44-71eb-4f2a-97e0-e9f84a3e72f6",
+                            ConcurrencyStamp = "650b3bb9-b04f-42d4-aaa8-183517943c88",
                             Email = "admin@example.com",
                             EmailConfirmed = true,
                             IsActive = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@EXAMPLE.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAEC8YIag6dYSOv0iS1CLEd8I8OhnSCYtTcbd0OM4o0tF7YgMh7HlhSsElvvmP8XqreQ==",
+                            PasswordHash = "AQAAAAEAACcQAAAAED/COppCV7dQCORtRJn2b57J7K1E6VgJPgGnJI5ebzu7Up/evnRDdHRUWdhGbVmR6Q==",
                             PersonId = 1,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "470abd3f-c76d-4cee-9181-643f382fc73c",
+                            SecurityStamp = "ff506747-e928-4111-a9c1-81570cfabc24",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         });
@@ -1061,15 +1055,9 @@ namespace SmartNeighborhoodAPI.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("OurProjectSmartNeiborhood.Entites.Person", null)
+                    b.HasOne("OurProjectSmartNeiborhood.Entites.Person", "Person")
                         .WithMany("FamilyMembers")
                         .HasForeignKey("PersonId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("OurProjectSmartNeiborhood.Entites.Person", "Person")
-                        .WithMany()
-                        .HasForeignKey("PersonId1")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

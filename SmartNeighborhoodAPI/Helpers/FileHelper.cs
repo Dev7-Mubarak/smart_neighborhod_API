@@ -6,7 +6,28 @@
         public const string AllowedExtensions = ".jpg,.jpeg,.png";
         public const int MaxFileSizeInMB = 1;
         public const int MaxFileSizeInBytes = MaxFileSizeInMB * 1024 * 1024;
-      
+
+        public async static Task<string> SaveImageAsync(IFormFile file, string baseUrl)
+        {
+            if (file == null || file.Length == 0)
+                throw new Exception("No file uploaded");
+
+            var imageFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "Images");
+            if (!Directory.Exists(imageFolderPath))
+                Directory.CreateDirectory(imageFolderPath);
+
+            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+            var fullPath = Path.Combine(imageFolderPath, fileName);
+
+            using (var stream = new FileStream(fullPath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            var imageUrl = $"{baseUrl}/Images/{fileName}";
+            return imageUrl;
+        }
+
         /// <summary> 
         /// Saves the uploaded file asynchronously to the specified destination folder. 
         /// </summary> 

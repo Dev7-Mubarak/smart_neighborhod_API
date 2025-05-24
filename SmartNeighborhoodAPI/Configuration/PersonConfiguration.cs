@@ -64,12 +64,6 @@ namespace OurProjectSmartNeiborhood.Configuration
             builder.Property(p => p.Job)
                 .HasMaxLength(30);
 
-            // Relationships
-            builder.HasMany(p => p.FamilyMembers)
-                .WithOne()
-                .HasForeignKey(f => f.PersonId)
-                .OnDelete(DeleteBehavior.Cascade);
-
             builder.HasData(
                 new Person
                 {

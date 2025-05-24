@@ -130,14 +130,14 @@ namespace SmartNeighborhoodAPI.Migrations
                     IsWhatsapp = table.Column<bool>(type: "bit", nullable: false),
                     IsContactNumber = table.Column<bool>(type: "bit", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Gender = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    DateOfBirth = table.Column<DateTime>(type: "date", nullable: false),
+                    Gender = table.Column<int>(type: "int", maxLength: 10, nullable: false),
                     Image = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    BloodType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BloodType = table.Column<int>(type: "int", nullable: false),
                     IdentityNumber = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    IdentityType = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    MaritalStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    OccupationStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IdentityType = table.Column<int>(type: "int", nullable: false),
+                    MaritalStatus = table.Column<int>(type: "int", nullable: false),
+                    OccupationStatus = table.Column<int>(type: "int", nullable: false),
                     Job = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: true)
                 },
                 constraints: table =>
@@ -530,7 +530,7 @@ namespace SmartNeighborhoodAPI.Migrations
                         column: x => x.FamilyId,
                         principalTable: "Families",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_FamilyMembers_MemberFamilyRoles_MemberFamilyRoleId",
                         column: x => x.MemberFamilyRoleId,
@@ -542,7 +542,7 @@ namespace SmartNeighborhoodAPI.Migrations
                         column: x => x.PersonId,
                         principalTable: "People",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.NoAction);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -581,9 +581,9 @@ namespace SmartNeighborhoodAPI.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "11111111-1111-1111-1111-111111111111", "5166279d-9cb2-409f-a60c-bb6d64d2a923", "Admin", "ADMIN" },
-                    { "22222222-2222-2222-2222-222222222222", "61ce0aff-16cc-41f7-b7b3-9e47e52c3193", "BlockManager", "BLOCKMANAGER" },
-                    { "33333333-3333-3333-3333-333333333333", "af0c1ad1-53fd-4224-b570-2f3cb49725e7", "User", "USER" }
+                    { "11111111-1111-1111-1111-111111111111", "a2abf634-ed00-4914-b277-c3d9a3bb73b2", "Admin", "ADMIN" },
+                    { "22222222-2222-2222-2222-222222222222", "38687b5a-bcc4-4e4a-8c23-1a37a2926e0d", "BlockManager", "BLOCKMANAGER" },
+                    { "33333333-3333-3333-3333-333333333333", "cc2e051c-bf34-431e-8e97-2dc35f20c488", "User", "USER" }
                 });
 
             migrationBuilder.InsertData(
@@ -624,14 +624,14 @@ namespace SmartNeighborhoodAPI.Migrations
                 columns: new[] { "Id", "BloodType", "DateOfBirth", "Email", "FirstName", "Gender", "IdentityNumber", "IdentityType", "Image", "IsContactNumber", "IsWhatsapp", "Job", "LastName", "MaritalStatus", "OccupationStatus", "PhoneNumber", "SecondName", "ThirdName" },
                 values: new object[,]
                 {
-                    { 1, "A_Negative", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "ahmad@example.com", "أحمد", "ذكر", "894754369053", "IdentityCard", null, false, false, "مهندس", "الزهيري", "Married", "Employee", "0791234567", "سعيد", "محمود" },
-                    { 2, "AB_Positive", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "fatima@example.com", "فاطمة", "أنثى", "8945784903588", "IdentityCard", null, false, false, "طالبة", "الحسني", "Single", "Student", "0789876543", "خالد", "عبد الله" }
+                    { 1, 5, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "ahmad@example.com", "أحمد", 0, "894754369053", 1, null, false, false, "مهندس", "الزهيري", 2, 2, "0791234567", "سعيد", "محمود" },
+                    { 2, 5, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "fatima@example.com", "فاطمة", 1, "8945784903588", 1, null, false, false, "طالبة", "الحسني", 1, 1, "0789876543", "خالد", "عبد الله" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "IsActive", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PersonId", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", 0, "c6a4ae86-ab25-4ebd-98bf-5cac054c824f", "admin@example.com", true, false, false, null, "ADMIN@EXAMPLE.COM", "ADMIN", "AQAAAAEAACcQAAAAEL5YswGo27S//6y8LO7oEs7n78kphnBRIuagZTqnlHc2Gvr76BXkNrMEgW6u4Z+5uA==", 1, null, false, "c6bdde93-097e-443e-b529-76b1f6c740d1", false, "Admin" });
+                values: new object[] { "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", 0, "650b3bb9-b04f-42d4-aaa8-183517943c88", "admin@example.com", true, false, false, null, "ADMIN@EXAMPLE.COM", "ADMIN", "AQAAAAEAACcQAAAAED/COppCV7dQCORtRJn2b57J7K1E6VgJPgGnJI5ebzu7Up/evnRDdHRUWdhGbVmR6Q==", 1, null, false, "ff506747-e928-4111-a9c1-81570cfabc24", false, "Admin" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
@@ -726,7 +726,6 @@ namespace SmartNeighborhoodAPI.Migrations
                 name: "IX_FamilyMembers_PersonId",
                 table: "FamilyMembers",
                 column: "PersonId");
-
 
             migrationBuilder.CreateIndex(
                 name: "IX_PersonComplain_ComplainId",

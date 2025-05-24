@@ -26,7 +26,7 @@ namespace SmartNeighborhoodAPI.Services
             if (await _context.Blocks.FindAsync(blockId) is null)
                 return ApiResponse<PaginatedResult<Family>>.Error(HttpStatusCode.NotFound, "Block Not Found");
 
-            var query = _context.Families.AsNoTracking().AsQueryable();
+            var query = _context.Families.AsNoTracking();
 
             if (string.IsNullOrEmpty(search))
             {

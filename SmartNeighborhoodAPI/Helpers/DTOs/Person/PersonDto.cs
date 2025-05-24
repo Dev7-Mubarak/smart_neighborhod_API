@@ -12,8 +12,8 @@ namespace SmartNeighborhoodAPI.Helpers.DTOs.Person
         public DateTime DateOfBirth { get; set; }
         public string PhoneNumber { get; set; }
         public string? Email { get; set; }
-        public string? ImageBase64 { get; set; }
-        public Gender Gender { get; set; }
+        public string? Image { get; set; }
+        public string Gender { get; set; }
         public string BloodType { get; set; }       
         public string IdentityNumber { get; set; }
         public string IdentityType { get; set; }   

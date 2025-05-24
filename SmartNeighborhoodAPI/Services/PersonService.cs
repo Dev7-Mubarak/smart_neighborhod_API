@@ -1,26 +1,29 @@
 ﻿using System.Net;
 using Microsoft.IdentityModel.Tokens;
+using OurProjectSmartNeiborhood.Entites;
 using SmartNeighborhoodAPI.Helpers;
 using SmartNeighborhoodAPI.Helpers.DTOs.Person;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace OurProjectSmartNeiborhood.Services
 {
- 
 
     public class PersonService
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly ImageService _imageService;
         private string _personImagePath;
 
 
-        public PersonService(ApplicationDbContext context, IMapper mapper, IWebHostEnvironment webHostEnvironment)
+        public PersonService(ApplicationDbContext context, IMapper mapper, IWebHostEnvironment webHostEnvironment, ImageService imageService)
         {
             _context = context;
             _mapper = mapper;
             _webHostEnvironment = webHostEnvironment;
             _personImagePath = $"{_webHostEnvironment.WebRootPath}{FileHelper.PersonImagesPath}";
+            _imageService = imageService;
         }
 
         public async Task<ApiResponse<Person>> AddAsync(CreatePersonDto dto)
@@ -28,7 +31,7 @@ namespace OurProjectSmartNeiborhood.Services
             string personImage = string.Empty;
             if (dto.Image != null)
             {
-                personImage = await FileHelper.SaveFileAsync(dto.Image, _personImagePath);
+                personImage = await _imageService.SaveImageAsync(dto.Image, _personImagePath);
             }
 
             var person= new Person
@@ -60,26 +63,39 @@ namespace OurProjectSmartNeiborhood.Services
 
             return ApiResponse<Person>.Error(HttpStatusCode.BadGateway, "فشلت عملية الاضافة");
         }
-
         public async Task<ApiResponse<string>> DeleteAsync(int id)
         {
-            var entity = await _context.People.Include(p => p.FamilyMembers).FirstOrDefaultAsync(p => p.Id == id);
+            var entity = await _context.People
+                .Include(p => p.FamilyMembers)
+                .FirstOrDefaultAsync(p => p.Id == id);
             if (entity == null)
                 return ApiResponse<string>.Error(HttpStatusCode.NotFound, "Person Not Found");
 
             _context.Remove(entity);
+            if(!string.IsNullOrEmpty(entity.Image))
+            {
+               await _imageService.DeleteImageAsync(entity.Image, _personImagePath);
+            }
+
             if (await _context.SaveChangesAsync() > 0)
                 return ApiResponse<string>.Success("Person Deleted Successfully");
 
             return ApiResponse<string>.Error(HttpStatusCode.NotModified, "Failed To Delete the Person");
         }
-        public async Task<ApiResponse<IEnumerable<PersonDto>>> GetAll()
+        public async Task<ApiResponse<PaginatedResult<PersonDto>>> GetAllAsync(
+            int pageNumber = 1,
+            int pageSize = 10,
+            string? search = null)
         {
-            var persons = await _context.People.AsNoTracking().ToListAsync();
+            var query = _context.People.AsNoTracking();
 
-            if (persons.Any())
+            if (!string.IsNullOrEmpty(search))
             {
-                var personDtos = persons.Select(p => new PersonDto
+                var resullt = await query.Where(x => x.FirstName.Contains(search) ||
+                x.SecondName.Contains(search) ||
+                x.ThirdName.Contains(search) ||
+                x.LastName.Contains(search)
+                ).Select(p => new PersonDto
                 {
                     Id = p.Id,
                     FirstName = p.FirstName,
@@ -89,65 +105,115 @@ namespace OurProjectSmartNeiborhood.Services
                     PhoneNumber = p.PhoneNumber,
                     DateOfBirth = p.DateOfBirth,
                     Email = p.Email,
-                    ImageBase64 = string.IsNullOrEmpty(p.Image)? null : GetImageBase64(p.Image),
-                    Gender = p.Gender,
+                    Image = string.IsNullOrEmpty(p.Image) ? null : p.Image,
+                    Gender = GetDisplayName(p.Gender),
                     BloodType = GetDisplayName(p.BloodType),
                     IdentityNumber = p.IdentityNumber,
                     IdentityType = GetDisplayName(p.IdentityType),
                     OccupationStatus = GetDisplayName(p.OccupationStatus),
                     MaritalStatus = GetDisplayName(p.MaritalStatus),
                     Job = p.Job
-                }).ToList();
+                })
+                .ToPaginatedListAsync(pageNumber, pageSize);
 
-                return ApiResponse<IEnumerable<PersonDto>>.Success(personDtos);
+                if (resullt == null)
+                    return ApiResponse<PaginatedResult<PersonDto>>.Error(HttpStatusCode.NotFound, "No Person Found");
+
+                return ApiResponse<PaginatedResult<PersonDto>>.Success(resullt);
             }
+            var people = await query
+                 .Select(p => new PersonDto
+                 {
+                     Id = p.Id,
+                     FirstName = p.FirstName,
+                     SecondName = p.SecondName,
+                     ThirdName = p.ThirdName,
+                     LastName = p.LastName,
+                     PhoneNumber = p.PhoneNumber,
+                     DateOfBirth = p.DateOfBirth,
+                     Email = p.Email,
+                     Image = string.IsNullOrEmpty(p.Image) ? null : p.Image,
+                     Gender = GetDisplayName(p.Gender),
+                     BloodType = GetDisplayName(p.BloodType),
+                     IdentityNumber = p.IdentityNumber,
+                     IdentityType = GetDisplayName(p.IdentityType),
+                     OccupationStatus = GetDisplayName(p.OccupationStatus),
+                     MaritalStatus = GetDisplayName(p.MaritalStatus),
+                     Job = p.Job
+                 })
+                 .ToPaginatedListAsync(pageNumber, pageSize);
 
-            return ApiResponse<IEnumerable<PersonDto>>.Error(HttpStatusCode.BadRequest, "No Person Found");
+            if(people == null )
+                return ApiResponse<PaginatedResult<PersonDto>>.Error(HttpStatusCode.NotFound, "No Person Found");
+
+
+            return ApiResponse<PaginatedResult<PersonDto>>.Success(people);
         }
+
         public async Task<ApiResponse<PersonDto>> GetByIdAsync(int id)
         {
-            var person = await _context.People.Include(p => p.FamilyMembers).ThenInclude(fm => fm.MemberFamilyRole).AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+            var person = await _context.People.Include(p => p.FamilyMembers)
+                .ThenInclude(fm => fm.MemberFamilyRole)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id);
+
             if (person == null)
                 return ApiResponse<PersonDto>.Error(HttpStatusCode.NotFound, "Person Not Found");
 
-            var personDto = new PersonDto
+            var dto = new PersonDto
             {
                 FirstName = person.FirstName,
+                SecondName = person.SecondName,
+                ThirdName = person.ThirdName,
+                LastName = person.LastName,
                 PhoneNumber = person.PhoneNumber,
-                Job = person.Job,
+                DateOfBirth = person.DateOfBirth,
                 Email = person.Email,
-                //Gender = person.Gender,
-                //BloodType = person.BloodType,
-                //IdentityNumber = person.IdentityNumber,
-                //TypeOfIdentity = person.TypeOfIdentity,
-                //Status = person.Status,
-                //FamilyMembers = person.FamilyMembers?.Select(fm => new FamilyMemberDto
-                //{
-                //    Id = fm.Id,
-                //    FamilyId = fm.FamilyId,
-                //    MemberTypeId = fm.MemberTypeId
-                //}).ToList()
+                Image = string.IsNullOrEmpty(person.Image) ? null : person.Image,
+                Gender = GetDisplayName(person.Gender),
+                BloodType = GetDisplayName(person.BloodType),
+                IdentityNumber = person.IdentityNumber,
+                IdentityType = GetDisplayName(person.IdentityType),
+                OccupationStatus = GetDisplayName(person.OccupationStatus),
+                MaritalStatus = GetDisplayName(person.MaritalStatus),
+                Job = person.Job
+
             };
 
-            return ApiResponse<PersonDto>.Success(personDto);
+            return ApiResponse<PersonDto>.Success(dto);
         }
-
-        public async Task<ApiResponse<string>> UpdateAsync(int id, PersonDto personDto)
+        public async Task<ApiResponse<string>> UpdateAsync(int id, CreatePersonDto dto)
         {
             var existingPerson = await _context.People.Include(p => p.FamilyMembers).FirstOrDefaultAsync(x => x.Id == id);
 
             if (existingPerson is null)
                 return ApiResponse<string>.Error(HttpStatusCode.NotFound, "Person Not Found");
 
-            existingPerson.FirstName = personDto.FirstName;
-            existingPerson.PhoneNumber = personDto.PhoneNumber;
-            existingPerson.Job = personDto.Job;
-            existingPerson.Email = personDto.Email;
-            //existingPerson.Gender = personDto.Gender;
-            //existingPerson.BloodType = personDto.BloodType;
-            //existingPerson.IdentityNumber = personDto.IdentityNumber;
-            //existingPerson.TypeOfIdentity = personDto.TypeOfIdentity;
-            //existingPerson.Status = personDto.Status;
+            existingPerson.FirstName = dto.FirstName;
+            existingPerson.SecondName = dto.SecondName;
+            existingPerson.ThirdName = dto.ThirdName;
+            existingPerson.LastName = dto.LastName;
+            existingPerson.PhoneNumber = dto.PhoneNumber;
+            existingPerson.Job = dto.Job;
+            existingPerson.Email = dto.Email;
+            existingPerson.Gender = dto.Gender;
+            existingPerson.BloodType = dto.BloodType;
+            existingPerson.IdentityNumber = dto.IdentityNumber;
+            existingPerson.PhoneNumber = dto.PhoneNumber;
+            existingPerson.Job = dto.Job;
+            existingPerson.MaritalStatus = dto.MaritalStatus;
+            existingPerson.OccupationStatus = dto.OccupationStatus;
+            existingPerson.IsContactNumber = dto.IsContactNumber;
+            existingPerson.IsWhatsapp = dto.IsWhatsapp;
+
+            if (dto.Image != null)
+            {
+                if (existingPerson.Image != null)
+                {
+                    await _imageService.DeleteImageAsync(existingPerson.Image, _personImagePath);
+                }
+                existingPerson.Image = await _imageService.SaveImageAsync(dto.Image, _personImagePath);
+            }
 
             _context.People.Update(existingPerson);
             if (await _context.SaveChangesAsync() > 0)
@@ -156,23 +222,13 @@ namespace OurProjectSmartNeiborhood.Services
             return ApiResponse<string>.Error(HttpStatusCode.NotModified, "Failed To Update Person");
         }
 
-
-        private  string GetDisplayName<T>(T enumValue)
+        private static string GetDisplayName<T>(T enumValue)
         {
             var memberInfo = typeof(T).GetMember(enumValue.ToString()).FirstOrDefault();
             var displayAttr = memberInfo?.GetCustomAttributes(typeof(DisplayAttribute), false)
                                         .FirstOrDefault() as DisplayAttribute;
 
             return displayAttr?.Name ?? enumValue.ToString();
-        }
-
-        private string GetImageBase64(string imagePath)
-        {
-            if (string.IsNullOrEmpty(imagePath) || !File.Exists(imagePath))
-                return null;
-
-            byte[] imageBytes = File.ReadAllBytes(imagePath);
-            return Convert.ToBase64String(imageBytes);
         }
     }
 
