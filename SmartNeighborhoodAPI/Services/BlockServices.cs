@@ -43,6 +43,10 @@ namespace SmartNeighborhoodAPI.Services
             if (existblock != null)
                 return ApiResponse<Block>.Error(HttpStatusCode.Conflict, "Block Name Is Already Exist");
 
+            var person = await _context.People.FindAsync(blockDto.PersonId);
+            if (person == null)
+                return ApiResponse<Block>.Error(HttpStatusCode.NotFound, "Person Not Found");
+
             if (await _userManager.FindByEmailAsync(blockDto.Email) is not null)
                 return ApiResponse<Block>.Error(HttpStatusCode.Conflict, "User with this email already exists.");
 

@@ -1,4 +1,6 @@
-﻿namespace SmartNeighborhoodAPI.Helpers.DTOs
+﻿using SmartNeighborhoodAPI.Entites.Enums;
+
+namespace SmartNeighborhoodAPI.Helpers.DTOs
 {
     public class FamilyDto
     {
@@ -10,14 +12,15 @@
         public int FamilyCatgoryId { get; set; }
 
         [Required(ErrorMessage = "Location is reqired")]
-        [MaxLength(40)]
         public string Location { get; set; }
+        public HousingType HousingType { get; set; }
         [Required(ErrorMessage = "Family Type id is reqired")]
         public int FamilyTypeId { get; set; }
         [MaxLength(150)]
         public string FamilyNotes { get; set; }
         [Required(ErrorMessage = "Block id is reqired")]
         public int BlockId { get; set; }
+        [Required(ErrorMessage = "Person id is reqired")]
         public int PersonId { get; set; }
     }
 }

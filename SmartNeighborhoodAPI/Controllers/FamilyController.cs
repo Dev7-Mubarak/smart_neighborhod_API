@@ -21,7 +21,7 @@
         [HttpGet("[action]")]
         public async Task<IActionResult> GetAllAsync()
         {
-            var result = await _FamilyService.GetAll();
+            var result = await _FamilyService.GetAllAsync();
             return Response(result);
         }
 
