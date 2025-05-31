@@ -1,5 +1,8 @@
+using System.Text;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 using OurProjectSmartNeiborhood.Services;
 using SmartNeighborhoodAPI.Entites;
 using SmartNeighborhoodAPI.Interfaces;
@@ -25,6 +28,28 @@ builder.Services.AddIdentity<AppUser, IdentityRole>()
     .AddDefaultTokenProviders();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = false;
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["JWT:Issuer"],
+        ValidAudience = builder.Configuration["JWT:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(builder.Configuration["JWT:SigningKey"]))
+    };
+});
+
 builder.Services.AddScoped<PersonService>();
 builder.Services.AddScoped<FamilyCatgoryService>();
 
