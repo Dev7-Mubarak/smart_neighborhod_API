@@ -30,13 +30,14 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<UserResponse>.Error(HttpStatusCode.BadRequest, "Email or Password is incorrect!");
             }
 
-            //var jwtSecurityToken = await CreateJwtToken(user);
+            var jwtSecurityToken = await CreateJwtToken(user);
 
             UserResponse userResponse = new UserResponse
             {
                 Id = user.Id,
                 Email = user.Email,
-                //Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
+                Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
+                ExpireOn = jwtSecurityToken.ValidTo
             };
 
             return ApiResponse<UserResponse>.Success(userResponse, "User Login successfully.");
@@ -58,15 +59,17 @@ namespace SmartNeighborhoodAPI.Services
 
             if (!result.Succeeded)
             {
-                return ApiResponse<UserResponse>.Error(HttpStatusCode.BadRequest, "Error acourse will create the user");
+                return ApiResponse<UserResponse>.Error(HttpStatusCode.BadRequest, "An error occurred while creating the user.");
             }
 
-            //var jwtSecurityToken = await CreateJwtToken(user);
+            var jwtSecurityToken = await CreateJwtToken(user);
 
             UserResponse userResponse = new UserResponse
             {
                 Id = user.Id,
                 Email = user.Email,
+                Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
+                ExpireOn = jwtSecurityToken.ValidTo
             };
             return ApiResponse<UserResponse>.Success(userResponse, "User registered successfully.");
         }
