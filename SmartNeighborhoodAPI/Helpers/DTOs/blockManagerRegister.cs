@@ -1,6 +1,6 @@
 ﻿namespace SmartNeighborhoodAPI.Helpers.DTOs
 {
-    public class RegisterDto
+    public class blockManagerRegister
     {
         [Required(ErrorMessage = "User Name is required")]
         [MinLength(4, ErrorMessage = "User Name must be at least 4 characters long")]

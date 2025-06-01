@@ -13,21 +13,37 @@ namespace SmartNeighborhoodAPI.Services
     public class AuthService : IAuthService
     {
         private readonly UserManager<AppUser> _userManager;
+        private readonly SignInManager<AppUser> _signInManager;
         private readonly JWT _jwt;
 
-        public AuthService(UserManager<AppUser> userManager, IOptions<JWT> jwt)
+        public AuthService(UserManager<AppUser> userManager, IOptions<JWT> jwt, SignInManager<AppUser> signInManager)
         {
             _userManager = userManager;
             _jwt = jwt.Value;
+            _signInManager = signInManager;
         }
 
         public async Task<ApiResponse<UserResponse>> LoginAsync(LoginDto loginDto)
         {
-            var user = await _userManager.FindByEmailAsync(loginDto.Email);
+            var user = await _userManager.FindByNameAsync(loginDto.UserNameOrEmail);
 
-            if (user is null || !await _userManager.CheckPasswordAsync(user, loginDto.Password))
+            if (user == null)
             {
-                return ApiResponse<UserResponse>.Error(HttpStatusCode.BadRequest, "Email or Password is incorrect!");
+                user = await _userManager.FindByEmailAsync(loginDto.UserNameOrEmail);
+            }
+
+            if (user == null)
+            {
+                return ApiResponse<UserResponse>.Error(HttpStatusCode.Unauthorized, "Invalid username or email.");
+            }
+
+            var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
+
+
+            if (!result.Succeeded)
+            {
+                return ApiResponse<UserResponse>.Error(HttpStatusCode.BadRequest, "Invalid password.");
+
             }
 
             //var jwtSecurityToken = await CreateJwtToken(user);
@@ -35,7 +51,7 @@ namespace SmartNeighborhoodAPI.Services
             UserResponse userResponse = new UserResponse
             {
                 Id = user.Id,
-                Email = user.Email,
+                UserNameOrEmail = loginDto.UserNameOrEmail,
                 //Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
             };
 
@@ -44,17 +60,17 @@ namespace SmartNeighborhoodAPI.Services
 
         public async Task<ApiResponse<UserResponse>> RegisterAsync(RegisterDto registerDto)
         {
-            if (await _userManager.FindByEmailAsync(registerDto.Email) is not null)
-                return ApiResponse<UserResponse>.Error(HttpStatusCode.Conflict, "User with this email already exists.");
+            if (await _userManager.FindByNameAsync(registerDto.UserName) is not null)
+                return ApiResponse<UserResponse>.Error(HttpStatusCode.Conflict, "UserName already exists.");
 
             AppUser user = new()
             {
-                Email = registerDto.Email,
-                UserName = registerDto.Email,
+                UserName = registerDto.UserName,
                 PersonId = registerDto.PersonId,
+                IsActive = true
             };
 
-            IdentityResult? result = await _userManager.CreateAsync(user, registerDto.Password);
+            var result = await _userManager.CreateAsync(user, registerDto.Password);
 
             if (!result.Succeeded)
             {
@@ -66,7 +82,7 @@ namespace SmartNeighborhoodAPI.Services
             UserResponse userResponse = new UserResponse
             {
                 Id = user.Id,
-                Email = user.Email,
+                UserNameOrEmail = user.UserName,
             };
             return ApiResponse<UserResponse>.Success(userResponse, "User registered successfully.");
         }

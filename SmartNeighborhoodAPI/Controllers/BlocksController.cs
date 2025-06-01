@@ -28,7 +28,7 @@
         [HttpGet("[action]")]
         public async Task<IActionResult> GetAllAsync()
         {
-            return Response(await _BlockServices.GetAll());
+            return Response(await _BlockServices.GetAllAsync());
         }
         [HttpGet("[action]/{id:int}")]
         public async Task<IActionResult> GetByIdAsync(int id)

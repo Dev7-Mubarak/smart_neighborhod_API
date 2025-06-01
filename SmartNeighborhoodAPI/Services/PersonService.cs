@@ -98,6 +98,7 @@ namespace OurProjectSmartNeiborhood.Services
                 ).Select(p => new PersonDto
                 {
                     Id = p.Id,
+                    FullName = p.FirstName,
                     FirstName = p.FirstName,
                     SecondName = p.SecondName,
                     ThirdName = p.ThirdName,
@@ -162,6 +163,7 @@ namespace OurProjectSmartNeiborhood.Services
 
             var dto = new PersonDto
             {
+                FullName = person.FullName,
                 FirstName = person.FirstName,
                 SecondName = person.SecondName,
                 ThirdName = person.ThirdName,

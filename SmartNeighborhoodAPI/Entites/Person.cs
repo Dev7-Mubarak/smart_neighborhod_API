@@ -33,5 +33,11 @@ namespace OurProjectSmartNeiborhood.Entites
         public string? Job { get; set; }
         public List<FamilyMember> FamilyMembers { get; set; }
 
+        [JsonIgnore]
+        public string FullName =>
+        $"{FirstName} {SecondName} {ThirdName} {LastName}".Replace("  ", " ").Trim();
+
+
+
     }
 }
