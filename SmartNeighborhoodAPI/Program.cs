@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using OurProjectSmartNeiborhood.Services;
+using Serilog;
 using SmartNeighborhoodAPI.Entites;
 using SmartNeighborhoodAPI.Interfaces;
 
@@ -54,6 +55,15 @@ builder.Services.AddScoped<TeamMemberService>();
 builder.Services.AddScoped<FamilyMemberService>();
 
 
+
+// Configure Serilog
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .Enrich.FromLogContext()
+    .CreateLogger();
+
+
+builder.Host.UseSerilog();
 
 //var jwt = builder.Configuration.GetSection("Jwt").Get<JWT>();
 //builder.Services.AddAuthentication(options =>

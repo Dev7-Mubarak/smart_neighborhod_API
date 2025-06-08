@@ -11,17 +11,20 @@ namespace SmartNeighborhoodAPI.Services
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
         private readonly IAuthService _authService;
+        private readonly ILogger<Block> _logger;
 
 
-        public BlockServices(ApplicationDbContext context, IMapper mapper, IAuthService authService)
+        public BlockServices(ApplicationDbContext context, IMapper mapper, IAuthService authService, ILogger<Block> logger)
         {
             _context = context;
             _mapper = mapper;
             _authService = authService;
+            _logger = logger;
         }
 
         public async Task<ApiResponse<IEnumerable<RetrunBlockDto>>> GetAllAsync()
         {
+            _logger.LogInformation("hi");
             var blocks = await _context.Blocks.Select(x => new RetrunBlockDto
             {
                 Id = x.Id,
