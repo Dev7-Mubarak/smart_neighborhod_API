@@ -11,15 +11,13 @@ namespace SmartNeighborhoodAPI.Services
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
         private readonly IAuthService _authService;
-        private readonly PersonService _personService;
 
 
-        public BlockServices(ApplicationDbContext context, IMapper mapper, IAuthService authService, PersonService personService)
+        public BlockServices(ApplicationDbContext context, IMapper mapper, IAuthService authService)
         {
             _context = context;
             _mapper = mapper;
             _authService = authService;
-            _personService = personService;
         }
 
         public async Task<ApiResponse<IEnumerable<RetrunBlockDto>>> GetAllAsync()
@@ -29,7 +27,7 @@ namespace SmartNeighborhoodAPI.Services
                 Id = x.Id,
                 ManagerId = x.ManagerId,
                 Name = x.Name,
-                UserName = x.Manager.UserName,
+                Email = x.Manager.Email,
                 PersonId = x.Manager.Person.Id,
                 FullName = x.Manager.Person.FullName
             }).AsNoTracking().ToListAsync();
@@ -47,18 +45,18 @@ namespace SmartNeighborhoodAPI.Services
             if (person == null)
                 return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.NotFound, "Person Not Found");
 
-            RegisterDto registerDto = new RegisterDto
+            CreateBlockManagerDto blockManagerDto = new CreateBlockManagerDto
             {
-                UserName = blockDto.UserName,
-                Password = blockDto.Password,
+                Email = blockDto.Email,
                 PersonId = blockDto.PersonId,
+                Password = blockDto.Password
             };
 
-            var response = await _authService.RegisterAsync(registerDto);
+            var response = await _authService.CreateBlockManagerAsync(blockManagerDto);
 
             if (!response.IsSuccess)
             {
-                return ApiResponse<RetrunBlockDto>.Error(response.StatusCode, response.Message);
+                return ApiResponse<RetrunBlockDto>.Error(response.StatusCode, response.Message, response.Errors);
             }
 
             var block = new Block
@@ -77,11 +75,11 @@ namespace SmartNeighborhoodAPI.Services
                     Name = blockDto.Name,
                     PersonId = blockDto.PersonId,
                     ManagerId = response.Data.Id,
-                    UserName = response.Data.UserNameOrEmail,
-                    FullName = _personService.GetByIdAsync(blockDto.PersonId).Result.Data.FullName,
+                    Email = response.Data.Email,
+                    FullName = person.FullName
                 };
 
-                return ApiResponse<RetrunBlockDto>.Success(retrunBlock, "Added Successfully");
+                return ApiResponse<RetrunBlockDto>.Success(retrunBlock, "User added successfully. Confirmation code delivered via email.");
             }
 
             return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.BadRequest, "Block not added");
@@ -102,6 +100,7 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<string>.Error(HttpStatusCode.NotFound, "Block Not Found");
 
             existingBlock.Name = blockDto.Name;
+            //existingBlock.ManagerId = blockDto.PersonId;
             //existingBlock.ManagerId = blockDto.UserId;
 
             if (await _context.SaveChangesAsync() > 0)

@@ -1,4 +1,5 @@
-﻿using SmartNeighborhoodAPI.Interfaces;
+﻿using SmartNeighborhoodAPI.Helpers.DTOs.Auth;
+using SmartNeighborhoodAPI.Interfaces;
 
 namespace SmartNeighborhoodAPI.Controllers
 {
@@ -15,6 +16,13 @@ namespace SmartNeighborhoodAPI.Controllers
         public async Task<IActionResult> Login(LoginDto loginDto)
         {
             return Response(await _authService.LoginAsync(loginDto));
+        }
+
+
+        [HttpPost("[action]")]
+        public async Task<IActionResult> ConfirmEmailOtp([FromBody] ConfirmEmailOtpDto emailOtpDto)
+        {
+            return Response(await _authService.ConfirmEmailOtp(emailOtpDto));
         }
 
     }

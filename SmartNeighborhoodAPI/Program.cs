@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using OurProjectSmartNeiborhood.Services;
 using SmartNeighborhoodAPI.Entites;
 using SmartNeighborhoodAPI.Interfaces;
@@ -76,6 +77,8 @@ builder.Services.AddScoped<FamilyMemberService>();
 //        };
 //    });
 
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddTransient<IEmailSender, EmailSender>();
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
     options.SuppressModelStateInvalidFilter = true);

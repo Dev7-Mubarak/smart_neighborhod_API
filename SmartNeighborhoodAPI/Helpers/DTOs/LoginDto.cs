@@ -6,7 +6,8 @@ namespace SmartNeighborhoodAPI.Helpers.DTOs
     public class LoginDto
     {
         [Required]
-        public string UserNameOrEmail { get; set; }
+        [EmailAddress]
+        public string Email { get; set; }
         [Required]
         [PasswordPropertyText(true)]
         public string Password { get; set; }
