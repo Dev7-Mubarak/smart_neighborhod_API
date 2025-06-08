@@ -24,7 +24,7 @@ namespace SmartNeighborhoodAPI.Services
 
         public async Task<ApiResponse<IEnumerable<RetrunBlockDto>>> GetAllAsync()
         {
-            _logger.LogInformation("hi");
+            _logger.LogInformation("Fetching all blocks");
             var blocks = await _context.Blocks.Select(x => new RetrunBlockDto
             {
                 Id = x.Id,
@@ -35,18 +35,28 @@ namespace SmartNeighborhoodAPI.Services
                 FullName = x.Manager.Person.FullName
             }).AsNoTracking().ToListAsync();
 
+
+            _logger.LogInformation("Fetched {Count} blocks", blocks.Count);
+
             return ApiResponse<IEnumerable<RetrunBlockDto>>.Success(blocks);
         }
         public async Task<ApiResponse<RetrunBlockDto>> AddAsync(BlockDto blockDto)
         {
+            _logger.LogInformation("Attempting to add a new block with name: {BlockName}", blockDto.Name);
 
             var existblock = await _context.Blocks.FirstOrDefaultAsync(x => x.Name == blockDto.Name);
             if (existblock != null)
+            {
+                _logger.LogWarning("Block with name '{BlockName}' already exists", blockDto.Name);
                 return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.Conflict, "Block Name Is Already Exist");
+            }
 
             var person = await _context.People.FindAsync(blockDto.PersonId);
             if (person == null)
+            {
+                _logger.LogWarning("Person with ID {PersonId} not found", blockDto.PersonId);
                 return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.NotFound, "Person Not Found");
+            }
 
             CreateBlockManagerDto blockManagerDto = new CreateBlockManagerDto
             {
@@ -82,9 +92,11 @@ namespace SmartNeighborhoodAPI.Services
                     FullName = person.FullName
                 };
 
+                _logger.LogInformation("Successfully added block '{BlockName}' with ID {BlockId}", block.Name, block.Id);
                 return ApiResponse<RetrunBlockDto>.Success(retrunBlock, "User added successfully. Confirmation code delivered via email.");
             }
 
+            _logger.LogError("Failed to create block manager: {Error}", response.Message);
             return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.BadRequest, "Block not added");
         }
         public async Task<ApiResponse<Block>> GetByIdAsync(int id)

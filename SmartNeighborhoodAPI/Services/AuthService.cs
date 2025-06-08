@@ -18,13 +18,16 @@ namespace SmartNeighborhoodAPI.Services
         private readonly SignInManager<AppUser> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly JWT _jwt;
+        private readonly ILogger<AuthService> _logger;
 
-        public AuthService(UserManager<AppUser> userManager, IOptions<JWT> jwt, SignInManager<AppUser> signInManager, IEmailSender emailSender)
+
+        public AuthService(UserManager<AppUser> userManager, IOptions<JWT> jwt, SignInManager<AppUser> signInManager, IEmailSender emailSender, ILogger<AuthService> logger)
         {
             _userManager = userManager;
             _jwt = jwt.Value;
             _signInManager = signInManager;
             _emailSender = emailSender;
+            _logger = logger;
         }
 
         public async Task<ApiResponse<UserResponse>> LoginAsync(LoginDto loginDto)
@@ -59,13 +62,18 @@ namespace SmartNeighborhoodAPI.Services
 
         public async Task<ApiResponse<UserResponse>> CreateBlockManagerAsync(CreateBlockManagerDto dto)
         {
+            _logger.LogInformation("Attempting to create a Block Manager for email: {Email}", dto.Email);
+
             if (await _userManager.FindByNameAsync(dto.Email) is not null)
+            {
+                _logger.LogWarning("User creation failed: Email {Email} already exists.", dto.Email);
                 return ApiResponse<UserResponse>.Error(HttpStatusCode.Conflict, "Email already exists.");
+            }
 
             AppUser user = new()
             {
                 Email = dto.Email,
-                UserName = dto.Email, 
+                UserName = dto.Email,
                 PersonId = dto.PersonId,
                 IsActive = true
             };
@@ -78,12 +86,13 @@ namespace SmartNeighborhoodAPI.Services
                 {
                     Field = e.Code,
                     ErrorMessage = e.Description
-                }).ToList(); 
+                }).ToList();
+
+                _logger.LogError("User creation failed for email {Email}. Errors: {@Errors}", dto.Email, errors);
                 return ApiResponse<UserResponse>.Error(HttpStatusCode.BadRequest, "An error occurred while creating the user.", errors);
             }
 
             var otp = new Random().Next(100000, 999999).ToString();
-
             user.EmailConfirmationCode = otp;
             user.EmailConfirmationCodeExpiresAt = DateTime.UtcNow.AddHours(1);
 
@@ -91,6 +100,8 @@ namespace SmartNeighborhoodAPI.Services
 
             await _emailSender.SendEmailAsync(user.Email, "Email Confirmation Code",
                 $"Hello,<br/><br/>Your email confirmation code is: <strong>{otp}</strong><br/>This code will expire in 1 Hour.");
+
+            _logger.LogInformation("User created successfully: {Email}. OTP sent to email.", user.Email);
 
             UserResponse userResponse = new UserResponse
             {
