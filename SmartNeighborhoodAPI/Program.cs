@@ -9,6 +9,7 @@ using OurProjectSmartNeiborhood.Services;
 using Serilog;
 using SmartNeighborhoodAPI.Entites;
 using SmartNeighborhoodAPI.Interfaces;
+using SmartNeighborhoodAPI.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -160,13 +161,14 @@ app.UseSwaggerUI(options =>
 {
     options.RoutePrefix = "swagger";
 });
+
 app.UseRateLimiter();
+app.UseMiddleware<RequestTimingMiddleware>();
 
-app.UseStaticFiles(); 
-
-app.UseCors("AllowAll");
+app.UseStaticFiles();
 app.UseHttpsRedirection();
 
+app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
 
