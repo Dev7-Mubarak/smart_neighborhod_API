@@ -1,10 +1,12 @@
 ﻿using System.Net;
+using Microsoft.AspNetCore.RateLimiting;
 using SmartNeighborhoodAPI.Helpers.Attrbuites;
 
 namespace SmartNeighborhoodAPI.Controllers
 {
     [ApiController]
     [ValidateActionFilter]
+    [EnableRateLimiting("fixed-window")]
     [Route("api/[controller]")]
     public class AppControllerBase : ControllerBase
     {

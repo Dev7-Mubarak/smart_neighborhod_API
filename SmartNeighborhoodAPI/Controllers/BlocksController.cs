@@ -1,4 +1,6 @@
-﻿namespace SmartNeighborhoodAPI.Controllers
+﻿using Microsoft.AspNetCore.RateLimiting;
+
+namespace SmartNeighborhoodAPI.Controllers
 {
     public class BlocksController : AppControllerBase
     {

@@ -1,6 +1,10 @@
+using System.Net;
+using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.RateLimiting;
 using OurProjectSmartNeiborhood.Services;
 using Serilog;
 using SmartNeighborhoodAPI.Entites;
@@ -9,7 +13,6 @@ using SmartNeighborhoodAPI.Interfaces;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 
 builder.Services.AddCors(options =>
 {
@@ -64,6 +67,41 @@ Log.Logger = new LoggerConfiguration()
 
 
 builder.Host.UseSerilog();
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddPolicy("fixed-window", context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 5,
+                Window = TimeSpan.FromSeconds(10),
+                QueueLimit = 0,
+                QueueProcessingOrder = QueueProcessingOrder.OldestFirst
+            }
+        )
+    );
+
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+    options.OnRejected = async (context, token) =>
+    {
+        context.HttpContext.Response.ContentType = "application/json";
+
+        var response = ApiResponse<object>.Error(
+            HttpStatusCode.TooManyRequests,
+            "You have exceeded the allowed number of requests. Try again later."
+        );
+
+        var json = JsonSerializer.Serialize(response);
+        context.HttpContext.Response.StatusCode = (int)HttpStatusCode.TooManyRequests;
+
+        await context.HttpContext.Response.WriteAsync(json, token);
+    };
+});
+
+
 
 //var jwt = builder.Configuration.GetSection("Jwt").Get<JWT>();
 //builder.Services.AddAuthentication(options =>
@@ -122,6 +160,8 @@ app.UseSwaggerUI(options =>
 {
     options.RoutePrefix = "swagger";
 });
+app.UseRateLimiter();
+
 app.UseStaticFiles(); 
 
 app.UseCors("AllowAll");
