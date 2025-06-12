@@ -12,17 +12,18 @@ using SmartNeighborhoodAPI;
 namespace SmartNeighborhoodAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250523184951_inital")]
-    partial class inital
+    [Migration("20250612235350_intial-create")]
+    partial class intialcreate
     {
+        /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.36")
+                .HasAnnotation("ProductVersion", "8.0.16")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
             modelBuilder.Entity("AdGroup", b =>
                 {
@@ -69,21 +70,18 @@ namespace SmartNeighborhoodAPI.Migrations
                         new
                         {
                             Id = "11111111-1111-1111-1111-111111111111",
-                            ConcurrencyStamp = "a2abf634-ed00-4914-b277-c3d9a3bb73b2",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = "22222222-2222-2222-2222-222222222222",
-                            ConcurrencyStamp = "38687b5a-bcc4-4e4a-8c23-1a37a2926e0d",
                             Name = "BlockManager",
                             NormalizedName = "BLOCKMANAGER"
                         },
                         new
                         {
                             Id = "33333333-3333-3333-3333-333333333333",
-                            ConcurrencyStamp = "cc2e051c-bf34-431e-8e97-2dc35f20c488",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -95,7 +93,7 @@ namespace SmartNeighborhoodAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("nvarchar(max)");
@@ -120,7 +118,7 @@ namespace SmartNeighborhoodAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
                         .HasColumnType("nvarchar(max)");
@@ -208,7 +206,7 @@ namespace SmartNeighborhoodAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("AdsText")
                         .IsRequired()
@@ -231,7 +229,7 @@ namespace SmartNeighborhoodAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ManagerId")
                         .IsRequired()
@@ -254,7 +252,7 @@ namespace SmartNeighborhoodAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("ComplainTypeId")
                         .HasColumnType("int");
@@ -286,7 +284,7 @@ namespace SmartNeighborhoodAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -303,7 +301,7 @@ namespace SmartNeighborhoodAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -320,7 +318,7 @@ namespace SmartNeighborhoodAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("BlockId")
                         .HasColumnType("int");
@@ -363,7 +361,7 @@ namespace SmartNeighborhoodAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -398,7 +396,7 @@ namespace SmartNeighborhoodAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("FamilyId")
                         .HasColumnType("int");
@@ -426,7 +424,7 @@ namespace SmartNeighborhoodAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -461,7 +459,7 @@ namespace SmartNeighborhoodAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -478,7 +476,7 @@ namespace SmartNeighborhoodAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("RoleName")
                         .IsRequired()
@@ -528,7 +526,7 @@ namespace SmartNeighborhoodAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("BloodType")
                         .HasColumnType("int");
@@ -649,7 +647,7 @@ namespace SmartNeighborhoodAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("ComplainId")
                         .HasColumnType("int");
@@ -680,10 +678,14 @@ namespace SmartNeighborhoodAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<double?>("Budget")
-                        .HasColumnType("float");
+                    b.Property<decimal?>("Budget")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
@@ -693,30 +695,43 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Procedures")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Proiorty")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
 
                     b.Property<int>("ProjectCatogoryId")
                         .HasColumnType("int");
 
-                    b.Property<string>("ProjectStatus")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("ProjectPriority")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProjectStatus")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ManagerId");
+
                     b.HasIndex("ProjectCatogoryId");
 
-                    b.ToTable("Projects");
+                    b.ToTable("Projects", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Budget = 100000m,
+                            Description = "هذا مشروع تمهيدي",
+                            EndDate = new DateTime(2025, 12, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ManagerId = 1,
+                            Name = "مشروع تجريبي",
+                            ProjectCatogoryId = 1,
+                            ProjectPriority = 1,
+                            ProjectStatus = 0,
+                            StartDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        });
                 });
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.ProjectCatogory", b =>
@@ -725,19 +740,50 @@ namespace SmartNeighborhoodAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Name")
+                        .IsUnique();
+
                     b.ToTable("ProjectCatogories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "مشاريع سكنية",
+                            Name = "سكني"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "مشاريع تجارية",
+                            Name = "تجاري"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Description = "مشاريع تعليمية",
+                            Name = "تعليمي"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Description = "مشاريع مساعدات",
+                            Name = "مساعدات"
+                        });
                 });
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.ProjectFamily", b =>
@@ -746,7 +792,7 @@ namespace SmartNeighborhoodAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("BlockId")
                         .HasColumnType("int");
@@ -778,7 +824,7 @@ namespace SmartNeighborhoodAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
@@ -806,7 +852,7 @@ namespace SmartNeighborhoodAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("DateOfJoin")
                         .HasColumnType("datetime2");
@@ -848,6 +894,13 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("EmailConfirmationCode")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<DateTime?>("EmailConfirmationCodeExpiresAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
@@ -910,17 +963,17 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "650b3bb9-b04f-42d4-aaa8-183517943c88",
+                            ConcurrencyStamp = "1750a3c0-a1f0-4331-acca-41ae98d2e743",
                             Email = "admin@example.com",
                             EmailConfirmed = true,
                             IsActive = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@EXAMPLE.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAEAACcQAAAAED/COppCV7dQCORtRJn2b57J7K1E6VgJPgGnJI5ebzu7Up/evnRDdHRUWdhGbVmR6Q==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEIKFp2z2kUHjXhpv/yG3l0q/b81uBrmYnIHwoUQoHoVvb21M1RRG9hcFIENyL2jBHA==",
                             PersonId = 1,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "ff506747-e928-4111-a9c1-81570cfabc24",
+                            SecurityStamp = "0d89e63f-432f-4631-ba69-fe80de98505c",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         });
@@ -1097,11 +1150,19 @@ namespace SmartNeighborhoodAPI.Migrations
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.Project", b =>
                 {
+                    b.HasOne("OurProjectSmartNeiborhood.Entites.Person", "Manager")
+                        .WithMany()
+                        .HasForeignKey("ManagerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("OurProjectSmartNeiborhood.Entites.ProjectCatogory", "ProjectCatogory")
                         .WithMany("Projects")
                         .HasForeignKey("ProjectCatogoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Manager");
 
                     b.Navigation("ProjectCatogory");
                 });
