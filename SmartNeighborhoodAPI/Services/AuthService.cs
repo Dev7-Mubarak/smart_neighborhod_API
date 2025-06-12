@@ -60,7 +60,7 @@ namespace SmartNeighborhoodAPI.Services
         }
 
 
-        public async Task<ApiResponse<UserResponse>> CreateBlockManagerAsync(CreateBlockManagerDto dto)
+        public async Task<ApiResponse<UserResponse>> CreateBlockManagerAccountAsync(CreateBlockManagerDto dto)
         {
             _logger.LogInformation("Attempting to create a Block Manager for email: {Email}", dto.Email);
 
@@ -75,7 +75,7 @@ namespace SmartNeighborhoodAPI.Services
                 Email = dto.Email,
                 UserName = dto.Email,
                 PersonId = dto.PersonId,
-                IsActive = true
+                IsActive = false,
             };
 
             var result = await _userManager.CreateAsync(user, dto.Password);
@@ -111,6 +111,37 @@ namespace SmartNeighborhoodAPI.Services
 
             return ApiResponse<UserResponse>.Success(userResponse, "User registered successfully. OTP sent to email.");
         }
+
+        public async Task<ApiResponse<UserResponse>> DeleteBlockManagerAccountByIdAsync(string managerId)
+        {
+            _logger.LogInformation("Deleting Block Manager with ID: {ManagerId}", managerId);
+
+            var user = await _userManager.FindByIdAsync(managerId);
+            if (user == null)
+            {
+                _logger.LogWarning("Block Manager with ID '{ManagerId}' not found.", managerId);
+                return ApiResponse<UserResponse>.Error(HttpStatusCode.NotFound, "User not found.");
+            }
+
+            var deletionResult = await _userManager.DeleteAsync(user);
+            if (!deletionResult.Succeeded)
+            {
+                _logger.LogError("Failed to delete Block Manager with ID: {ManagerId}. Errors: {Errors}",
+                                 managerId, string.Join(", ", deletionResult.Errors.Select(e => e.Description)));
+                return ApiResponse<UserResponse>.Error(HttpStatusCode.InternalServerError, "Failed to delete user.");
+            }
+
+            var userResponse = new UserResponse
+            {
+                Id = user.Id,
+                Email = user.Email,
+            };
+
+            _logger.LogInformation("Successfully deleted Block Manager with ID: {ManagerId}", managerId);
+
+            return ApiResponse<UserResponse>.Success(userResponse);
+        }
+
 
         public async Task<ApiResponse<UserResponse>> ConfirmEmailOtp(ConfirmEmailOtpDto emailOtpDto)
         {
