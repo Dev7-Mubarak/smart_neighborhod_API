@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using OurProjectSmartNeiborhood.Services;
-using SmartNeighborhoodAPI.Entites;
+﻿using SmartNeighborhoodAPI.Helpers.DTOs.Auth;
 using SmartNeighborhoodAPI.Interfaces;
 using System.Net;
 
@@ -40,6 +38,84 @@ namespace SmartNeighborhoodAPI.Services
 
             return ApiResponse<IEnumerable<RetrunBlockDto>>.Success(blocks);
         }
+
+        public async Task<ApiResponse<RetrunBlockDto>> ChangeBlockManager(ChangeBlockManagerDto blockManagerDto)
+        {
+            _logger.LogInformation("Initiating change of block manager for BlockId: {BlockId}, PersonId: {PersonId}",
+                blockManagerDto.BlockId, blockManagerDto.PersonId);
+
+            // Step 1: Validate Block
+            var block = await _context.Blocks.FindAsync(blockManagerDto.BlockId);
+            if (block == null)
+            {
+                _logger.LogWarning("Block with ID '{BlockId}' not found.", blockManagerDto.BlockId);
+                return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.NotFound, "Block not found.");
+            }
+
+            // Step 2: Validate Person
+            var person = await _context.People.FindAsync(blockManagerDto.PersonId);
+            if (person == null)
+            {
+                _logger.LogWarning("Person with ID '{PersonId}' not found.", blockManagerDto.PersonId);
+                return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.NotFound, "Person not found.");
+            }
+
+            // Step 3: Ensure the person is not already managing another block
+            var isAlreadyManager = _context.Blocks.Any(x => x.Manager.PersonId == person.Id);
+            if (isAlreadyManager)
+            {
+                _logger.LogWarning("Person with ID '{PersonId}' is already a manager of another block.", person.Id);
+                return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.Conflict, "This person is already assigned as a manager to another block.");
+            }
+
+            // Step 4: Create new manager account
+            var createResult = await _authService.CreateBlockManagerAccountAsync(new CreateBlockManagerDto
+            {
+                Email = blockManagerDto.Email,
+                Password = blockManagerDto.Password,
+                PersonId = blockManagerDto.PersonId
+            });
+
+            if (!createResult.IsSuccess)
+            {
+                _logger.LogError("Failed to create new block manager. Reason: {Reason}", createResult.Message);
+                return ApiResponse<RetrunBlockDto>.Error(createResult.StatusCode, createResult.Message, createResult.Errors);
+            }
+
+            string oldManagerId = block.ManagerId;
+            block.ManagerId = createResult.Data.Id;
+
+            // Step 5: Update block
+            _logger.LogInformation("Update Block with ID '{BlockId}'.", blockManagerDto.BlockId);
+            _context.Blocks.Update(block);
+            await _context.SaveChangesAsync();
+
+            // Step 6: Delete old manager
+            var deleteResult = await _authService.DeleteBlockManagerAccountByIdAsync(oldManagerId);
+            if (!deleteResult.IsSuccess)
+            {
+                _logger.LogError("Failed to delete old block manager with ID: {OldManagerId}", oldManagerId);
+                return ApiResponse<RetrunBlockDto>.Error(deleteResult.StatusCode, deleteResult.Message, deleteResult.Errors);
+            }
+
+            // Step 7: Prepare response
+            var returnBlockDto = new RetrunBlockDto
+            {
+                Id = block.Id,
+                Name = block.Name,
+                ManagerId = block.ManagerId,
+                PersonId = person.Id,
+                Email = createResult.Data.Email,
+                FullName = person.FullName
+            };
+
+            _logger.LogInformation("Block manager updated successfully for block '{BlockName}' (ID: {BlockId})",
+                block.Name, block.Id);
+
+            return ApiResponse<RetrunBlockDto>.Success(returnBlockDto,
+                "Block manager updated successfully. Login credentials sent via email.");
+        }
+
         public async Task<ApiResponse<RetrunBlockDto>> AddAsync(BlockDto blockDto)
         {
             _logger.LogInformation("Attempting to add a new block with name: {BlockName}", blockDto.Name);
@@ -65,7 +141,7 @@ namespace SmartNeighborhoodAPI.Services
                 Password = blockDto.Password
             };
 
-            var response = await _authService.CreateBlockManagerAsync(blockManagerDto);
+            var response = await _authService.CreateBlockManagerAccountAsync(blockManagerDto);
 
             if (!response.IsSuccess)
             {

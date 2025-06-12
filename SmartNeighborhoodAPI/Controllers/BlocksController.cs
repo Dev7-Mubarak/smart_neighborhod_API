@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.RateLimiting;
+using SmartNeighborhoodAPI.Helpers.DTOs.Auth;
 
 namespace SmartNeighborhoodAPI.Controllers
 {
@@ -26,6 +27,11 @@ namespace SmartNeighborhoodAPI.Controllers
         public async Task<IActionResult> AddAsync(BlockDto BlockDto)
         {
             return Response(await _BlockServices.AddAsync(BlockDto));
+        }
+        [HttpPost("[action]")]
+        public async Task<IActionResult> ChangeBlockManager(ChangeBlockManagerDto blockManagerDto)
+        {
+            return Response(await _BlockServices.ChangeBlockManager(blockManagerDto));
         }
         [HttpGet("[action]")]
         public async Task<IActionResult> GetAllAsync()
