@@ -98,10 +98,10 @@ namespace SmartNeighborhoodAPI.Services
 
             await _userManager.UpdateAsync(user);
 
-            await _emailSender.SendEmailAsync(user.Email, "Email Confirmation Code",
-                $"Hello,<br/><br/>Your email confirmation code is: <strong>{otp}</strong><br/>This code will expire in 1 Hour.");
+            //await _emailSender.SendEmailAsync(user.Email, "Email Confirmation Code",
+            //    $"Hello,<br/><br/>Your email confirmation code is: <strong>{otp}</strong><br/>This code will expire in 1 Hour.");
 
-            _logger.LogInformation("User created successfully: {Email}. OTP sent to email.", user.Email);
+            //_logger.LogInformation("User created successfully: {Email}. OTP sent to email.", user.Email);
 
             UserResponse userResponse = new UserResponse
             {

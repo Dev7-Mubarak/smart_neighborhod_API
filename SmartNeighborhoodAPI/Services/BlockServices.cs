@@ -1,4 +1,6 @@
-﻿using SmartNeighborhoodAPI.Helpers.DTOs.Auth;
+﻿using Microsoft.AspNetCore.Identity;
+using SmartNeighborhoodAPI.Entites;
+using SmartNeighborhoodAPI.Helpers.DTOs.Auth;
 using SmartNeighborhoodAPI.Interfaces;
 using System.Net;
 
@@ -10,14 +12,16 @@ namespace SmartNeighborhoodAPI.Services
         private readonly IMapper _mapper;
         private readonly IAuthService _authService;
         private readonly ILogger<Block> _logger;
+        private readonly UserManager<AppUser> _userManager;
 
 
-        public BlockServices(ApplicationDbContext context, IMapper mapper, IAuthService authService, ILogger<Block> logger)
+        public BlockServices(ApplicationDbContext context, IMapper mapper, IAuthService authService, ILogger<Block> logger, UserManager<AppUser> userManager)
         {
             _context = context;
             _mapper = mapper;
             _authService = authService;
             _logger = logger;
+            _userManager = userManager;
         }
 
         public async Task<ApiResponse<IEnumerable<RetrunBlockDto>>> GetAllAsync()
@@ -49,7 +53,7 @@ namespace SmartNeighborhoodAPI.Services
             if (block == null)
             {
                 _logger.LogWarning("Block with ID '{BlockId}' not found.", blockManagerDto.BlockId);
-                return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.NotFound, "Block not found.");
+                return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.NotFound, "لم يتم العثور على مربع.");
             }
 
             // Step 2: Validate Person
@@ -57,7 +61,7 @@ namespace SmartNeighborhoodAPI.Services
             if (person == null)
             {
                 _logger.LogWarning("Person with ID '{PersonId}' not found.", blockManagerDto.PersonId);
-                return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.NotFound, "Person not found.");
+                return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.NotFound, "لم يتم العثور على الشخص.");
             }
 
             // Step 3: Ensure the person is not already managing another block
@@ -65,7 +69,7 @@ namespace SmartNeighborhoodAPI.Services
             if (isAlreadyManager)
             {
                 _logger.LogWarning("Person with ID '{PersonId}' is already a manager of another block.", person.Id);
-                return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.Conflict, "This person is already assigned as a manager to another block.");
+                return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.Conflict, "هذا الشخص مدير بالفعل مربع آخر.");
             }
 
             // Step 4: Create new manager account
@@ -113,8 +117,9 @@ namespace SmartNeighborhoodAPI.Services
                 block.Name, block.Id);
 
             return ApiResponse<RetrunBlockDto>.Success(returnBlockDto,
-                "Block manager updated successfully. Login credentials sent via email.");
+                "تم تحديث مدير المربع بنجاح. تم إرسال بيانات تسجيل الدخول عبر البريد الإلكتروني.");
         }
+
 
         public async Task<ApiResponse<RetrunBlockDto>> AddAsync(BlockDto blockDto)
         {
