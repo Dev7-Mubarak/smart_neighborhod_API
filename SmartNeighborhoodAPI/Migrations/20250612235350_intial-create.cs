@@ -3,10 +3,14 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace SmartNeighborhoodAPI.Migrations
 {
-    public partial class inital : Migration
+    /// <inheritdoc />
+    public partial class intialcreate : Migration
     {
+        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -151,8 +155,8 @@ namespace SmartNeighborhoodAPI.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(60)", maxLength: 60, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(120)", maxLength: 120, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -234,6 +238,8 @@ namespace SmartNeighborhoodAPI.Migrations
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     PersonId = table.Column<int>(type: "int", nullable: false),
+                    EmailConfirmationCode = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
+                    EmailConfirmationCodeExpiresAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -266,19 +272,25 @@ namespace SmartNeighborhoodAPI.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     ManagerId = table.Column<int>(type: "int", nullable: false),
                     ProjectCatogoryId = table.Column<int>(type: "int", nullable: false),
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    Procedures = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ProjectStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Budget = table.Column<double>(type: "float", nullable: true),
-                    Proiorty = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    ProjectStatus = table.Column<int>(type: "int", nullable: false),
+                    Budget = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    ProjectPriority = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Projects", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Projects_People_ManagerId",
+                        column: x => x.ManagerId,
+                        principalTable: "People",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Projects_ProjectCatogories_ProjectCatogoryId",
                         column: x => x.ProjectCatogoryId,
@@ -509,7 +521,7 @@ namespace SmartNeighborhoodAPI.Migrations
                         column: x => x.TeamId,
                         principalTable: "Teams",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -530,7 +542,7 @@ namespace SmartNeighborhoodAPI.Migrations
                         column: x => x.FamilyId,
                         principalTable: "Families",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_FamilyMembers_MemberFamilyRoles_MemberFamilyRoleId",
                         column: x => x.MemberFamilyRoleId,
@@ -542,7 +554,7 @@ namespace SmartNeighborhoodAPI.Migrations
                         column: x => x.PersonId,
                         principalTable: "People",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -581,9 +593,9 @@ namespace SmartNeighborhoodAPI.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "11111111-1111-1111-1111-111111111111", "a2abf634-ed00-4914-b277-c3d9a3bb73b2", "Admin", "ADMIN" },
-                    { "22222222-2222-2222-2222-222222222222", "38687b5a-bcc4-4e4a-8c23-1a37a2926e0d", "BlockManager", "BLOCKMANAGER" },
-                    { "33333333-3333-3333-3333-333333333333", "cc2e051c-bf34-431e-8e97-2dc35f20c488", "User", "USER" }
+                    { "11111111-1111-1111-1111-111111111111", null, "Admin", "ADMIN" },
+                    { "22222222-2222-2222-2222-222222222222", null, "BlockManager", "BLOCKMANAGER" },
+                    { "33333333-3333-3333-3333-333333333333", null, "User", "USER" }
                 });
 
             migrationBuilder.InsertData(
@@ -629,9 +641,25 @@ namespace SmartNeighborhoodAPI.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "ProjectCatogories",
+                columns: new[] { "Id", "Description", "Name" },
+                values: new object[,]
+                {
+                    { 1, "مشاريع سكنية", "سكني" },
+                    { 2, "مشاريع تجارية", "تجاري" },
+                    { 3, "مشاريع تعليمية", "تعليمي" },
+                    { 4, "مشاريع مساعدات", "مساعدات" }
+                });
+
+            migrationBuilder.InsertData(
                 table: "AspNetUsers",
-                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "IsActive", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PersonId", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", 0, "650b3bb9-b04f-42d4-aaa8-183517943c88", "admin@example.com", true, false, false, null, "ADMIN@EXAMPLE.COM", "ADMIN", "AQAAAAEAACcQAAAAED/COppCV7dQCORtRJn2b57J7K1E6VgJPgGnJI5ebzu7Up/evnRDdHRUWdhGbVmR6Q==", 1, null, false, "ff506747-e928-4111-a9c1-81570cfabc24", false, "Admin" });
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmationCode", "EmailConfirmationCodeExpiresAt", "EmailConfirmed", "IsActive", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PersonId", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[] { "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", 0, "1750a3c0-a1f0-4331-acca-41ae98d2e743", "admin@example.com", null, null, true, false, false, null, "ADMIN@EXAMPLE.COM", "ADMIN", "AQAAAAIAAYagAAAAEIKFp2z2kUHjXhpv/yG3l0q/b81uBrmYnIHwoUQoHoVvb21M1RRG9hcFIENyL2jBHA==", 1, null, false, "0d89e63f-432f-4631-ba69-fe80de98505c", false, "Admin" });
+
+            migrationBuilder.InsertData(
+                table: "Projects",
+                columns: new[] { "Id", "Budget", "Description", "EndDate", "ManagerId", "Name", "ProjectCatogoryId", "ProjectPriority", "ProjectStatus", "StartDate" },
+                values: new object[] { 1, 100000m, "هذا مشروع تمهيدي", new DateTime(2025, 12, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), 1, "مشروع تجريبي", 1, 1, 0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
@@ -743,6 +771,12 @@ namespace SmartNeighborhoodAPI.Migrations
                 column: "PersonId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ProjectCatogories_Name",
+                table: "ProjectCatogories",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ProjectFamilies_BlockId",
                 table: "ProjectFamilies",
                 column: "BlockId");
@@ -756,6 +790,11 @@ namespace SmartNeighborhoodAPI.Migrations
                 name: "IX_ProjectFamilies_ProjectId",
                 table: "ProjectFamilies",
                 column: "ProjectId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Projects_ManagerId",
+                table: "Projects",
+                column: "ManagerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Projects_ProjectCatogoryId",
@@ -778,6 +817,7 @@ namespace SmartNeighborhoodAPI.Migrations
                 column: "ProjectId");
         }
 
+        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

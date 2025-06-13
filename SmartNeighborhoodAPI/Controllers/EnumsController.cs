@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using OurProjectSmartNeiborhood.Entites;
-using SmartNeighborhoodAPI.Entites.Enums;
+﻿using SmartNeighborhoodAPI.Entites.Enums;
 
 namespace SmartNeighborhoodAPI.Controllers
 {
@@ -41,24 +38,30 @@ namespace SmartNeighborhoodAPI.Controllers
             var values = GetEnumValuesWithDisplayName<Gender>();
             return Response(ApiResponse<IEnumerable<EnumHelper>>.Success(values));
         }
+
+
+        [HttpGet("GetProjectStatus")]
+        public IActionResult GetProjectStatus()
+        {
+            var values = GetEnumValuesWithDisplayName<ProjectStatus>();
+            return Response(ApiResponse<IEnumerable<EnumHelper>>.Success(values));
+        }
+
+        [HttpGet("GetProjectPriority")]
+        public IActionResult GetProjectPriority()
+        {
+            var values = GetEnumValuesWithDisplayName<ProjectPriority>();
+            return Response(ApiResponse<IEnumerable<EnumHelper>>.Success(values));
+        }
         private static IEnumerable<EnumHelper> GetEnumValuesWithDisplayName<T>() where T : Enum
         {
             return Enum.GetValues(typeof(T))
                 .Cast<T>()
                 .Select(e => new EnumHelper
                 {
-                    Name = GetDisplayName(e),
+                    Name = e.ToString(),
                     Value = Convert.ToInt32(e)
                 });
-        }
-
-        private static string GetDisplayName<T>(T enumValue)
-        {
-            var memberInfo = typeof(T).GetMember(enumValue.ToString()).FirstOrDefault();
-            var displayAttr = memberInfo?.GetCustomAttributes(typeof(DisplayAttribute), false)
-                                        .FirstOrDefault() as DisplayAttribute;
-
-            return displayAttr?.Name ?? enumValue.ToString();
         }
     }
 }

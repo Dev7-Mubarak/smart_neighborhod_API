@@ -1,5 +1,6 @@
 ﻿using OurProjectSmartNeiborhood.Services;
 using SmartNeighborhoodAPI.Helpers.DTOs.Person;
+using SmartNeighborhoodAPI.Helpers.DTOs.Project;
 
 public class MappingProfile : Profile
 {
