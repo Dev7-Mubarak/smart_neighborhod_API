@@ -2,6 +2,7 @@
 using SmartNeighborhoodAPI.Entites;
 using SmartNeighborhoodAPI.Helpers.DTOs.Auth;
 using SmartNeighborhoodAPI.Interfaces;
+using System.Data;
 using System.Net;
 
 namespace SmartNeighborhoodAPI.Services
@@ -48,7 +49,7 @@ namespace SmartNeighborhoodAPI.Services
             _logger.LogInformation("Initiating change of block manager for BlockId: {BlockId}, PersonId: {PersonId}",
                 blockManagerDto.BlockId, blockManagerDto.PersonId);
 
-            // Step 1: Validate Block
+            // Step 1: Validate block
             var block = await _context.Blocks.FindAsync(blockManagerDto.BlockId);
             if (block == null)
             {
@@ -56,7 +57,7 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.NotFound, "لم يتم العثور على مربع.");
             }
 
-            // Step 2: Validate Person
+            // Step 2: Validate person
             var person = await _context.People.FindAsync(blockManagerDto.PersonId);
             if (person == null)
             {
@@ -64,10 +65,30 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.NotFound, "لم يتم العثور على الشخص.");
             }
 
-            // Step 3: Ensure the person is not already managing another block
-            var isAlreadyManager = _context.Blocks.Any(x => x.Manager.PersonId == person.Id);
-            if (isAlreadyManager)
+            // Step 3: Check if person is already a user
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.PersonId == person.Id);
+            if (user != null)
             {
+                var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+                if (isAdmin)
+                {
+                    block.ManagerId = user.Id;
+                    _context.Blocks.Update(block);
+                    await _context.SaveChangesAsync();
+
+                    _logger.LogInformation("Block manager updated for existing admin. Block ID: {BlockId}", block.Id);
+
+                    return ApiResponse<RetrunBlockDto>.Success(new RetrunBlockDto
+                    {
+                        Id = block.Id,
+                        Name = block.Name,
+                        ManagerId = user.Id,
+                        PersonId = person.Id,
+                        Email = user.Email,
+                        FullName = person.FullName
+                    }, "تم تحديث مدير المربع بنجاح.");
+                }
+
                 _logger.LogWarning("Person with ID '{PersonId}' is already a manager of another block.", person.Id);
                 return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.Conflict, "هذا الشخص مدير بالفعل مربع آخر.");
             }
@@ -86,15 +107,16 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<RetrunBlockDto>.Error(createResult.StatusCode, createResult.Message, createResult.Errors);
             }
 
-            string oldManagerId = block.ManagerId;
-            block.ManagerId = createResult.Data.Id;
+            var oldManagerId = block.ManagerId;
 
-            // Step 5: Update block
-            _logger.LogInformation("Update Block with ID '{BlockId}'.", blockManagerDto.BlockId);
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            // Step 5: Update block manager
+            block.ManagerId = createResult.Data.Id;
             _context.Blocks.Update(block);
             await _context.SaveChangesAsync();
 
-            // Step 6: Delete old manager
+            // Step 6: Delete old manager account (if any)
             var deleteResult = await _authService.DeleteBlockManagerAccountByIdAsync(oldManagerId);
             if (!deleteResult.IsSuccess)
             {
@@ -102,7 +124,9 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<RetrunBlockDto>.Error(deleteResult.StatusCode, deleteResult.Message, deleteResult.Errors);
             }
 
-            // Step 7: Prepare response
+            await transaction.CommitAsync();
+
+            // Step 7: Return success response
             var returnBlockDto = new RetrunBlockDto
             {
                 Id = block.Id,
