@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using Microsoft.Extensions.Logging;
+using OurProjectSmartNeiborhood.Entites;
 using SmartNeighborhoodAPI.Helpers.DTOs.Project;
 namespace SmartNeighborhoodAPI.Services
 {
@@ -15,19 +16,19 @@ namespace SmartNeighborhoodAPI.Services
             _mapper = mapper;
             _logger = logger;
         }
-        public async Task<ApiResponse<ProjectDto>> AddAsync(ProjectDto projectDto)
+        public async Task<ApiResponse<ReturnProjectDto>> AddAsync(ProjectDto projectDto)
         {
             var managerExists = await _context.People.AnyAsync(u => u.Id == projectDto.ManagerId);
             if (!managerExists)
             {
                 _logger.LogWarning("AddAsync failed: Manager with ID {ManagerId} does not exist.", projectDto.ManagerId);
-                return ApiResponse<ProjectDto>.Error(HttpStatusCode.NotFound, $"المدير برقم {projectDto.ManagerId} غير موجود");
+                return ApiResponse<ReturnProjectDto>.Error(HttpStatusCode.NotFound, $"المدير برقم {projectDto.ManagerId} غير موجود");
             }
             var categoryExists = await _context.ProjectCatogories.AnyAsync(u => u.Id == projectDto.ProjectCatgoryId);
             if (!categoryExists)
             {
                 _logger.LogWarning("AddAsync failed: Project Category with ID {ProjectCatgoryId} does not exist.", projectDto.ProjectCatgoryId);
-                return ApiResponse<ProjectDto>.Error(HttpStatusCode.NotFound, $" {projectDto.ProjectCatgoryId} غير موجود");
+                return ApiResponse<ReturnProjectDto>.Error(HttpStatusCode.NotFound, $" {projectDto.ProjectCatgoryId} غير موجود");
             }
 
             var project = new Project
@@ -46,26 +47,44 @@ namespace SmartNeighborhoodAPI.Services
             await _context.Projects.AddAsync(project);
             if (await _context.SaveChangesAsync() > 0)
             {
-                _logger.LogInformation("Project added successfully: {@Project}", project);
-                return ApiResponse<ProjectDto>.Success(projectDto, "تمت إضافة المشروع بنجاح");
+
+                var projectResult = await GetByIdAsync(project.Id);
+                if (!projectResult.IsSuccess)
+                    return projectResult;
+
+                _logger.LogInformation("Project added successfully: {@Project}", projectResult.Data);
+
+                return ApiResponse<ReturnProjectDto>.Success(projectResult.Data, "تمت إضافة المشروع بنجاح");
             }
 
             _logger.LogWarning("AddAsync failed: SaveChanges returned 0.");
-            return ApiResponse<ProjectDto>.Error(HttpStatusCode.BadRequest, "لم يتم حفظ المشروع");
+            return ApiResponse<ReturnProjectDto>.Error(HttpStatusCode.BadRequest, "لم يتم حفظ المشروع");
         }
 
         public async Task<ApiResponse<string>> DeleteAsync(int id)
         {
-            var entity = await _context.Projects.FirstOrDefaultAsync(x => x.Id == id); ;
+            _logger.LogInformation("Delete request received for Project with ID: {ProjectId}", id);
+
+            var entity = await _context.Projects.FirstOrDefaultAsync(x => x.Id == id);
             if (entity == null)
-                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "Project Not Found");
+            {
+                _logger.LogWarning("Delete failed: Project with ID {ProjectId} not found.", id);
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "المشروع غير موجود");
+            }
 
             _context.Projects.Remove(entity);
-            if (await _context.SaveChangesAsync() > 0)
-                return ApiResponse<string>.Success("Project Deleted Successfully");
 
-            return ApiResponse<string>.Error(HttpStatusCode.NotModified, "Faild To Delete the Project");
+            var result = await _context.SaveChangesAsync();
+            if (result > 0)
+            {
+                _logger.LogInformation("Project with ID {ProjectId} deleted successfully.", id);
+                return ApiResponse<string>.Success("تم حذف المشروع بنجاح");
+            }
+
+            _logger.LogError("Delete failed: SaveChanges returned 0 for Project ID {ProjectId}.", id);
+            return ApiResponse<string>.Error(HttpStatusCode.NotModified, "فشل حذف المشروع");
         }
+
         public async Task<ApiResponse<IEnumerable<ReturnProjectDto>>> GetAll()
         {
             _logger.LogInformation("Fetching all Projects");
@@ -80,6 +99,7 @@ namespace SmartNeighborhoodAPI.Services
             {
                 var projectDtos = projects.Select(project => new ReturnProjectDto
                 {
+                    Id = project.Id,
                     Name = project.Name,
                     Description = project.Description,
                     StartDate = project.StartDate,
@@ -101,16 +121,41 @@ namespace SmartNeighborhoodAPI.Services
             return ApiResponse<IEnumerable<ReturnProjectDto>>.Error(HttpStatusCode.NotFound, "لا توجد مشاريع");
         }
 
-        public async Task<ApiResponse<ProjectDto>> GetByIdAsync(int id)
+        public async Task<ApiResponse<ReturnProjectDto>> GetByIdAsync(int id)
         {
-            var Project = await _context.Projects.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
-            if (Project == null)
-                return ApiResponse<ProjectDto>.Error(HttpStatusCode.NotFound, "Project Not Found");
+            var project = await _context.Projects
+                .Include(x => x.Manager)
+                .Include(x => x.ProjectCatogory)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id);
 
+            if (project == null)
+            {
+                _logger.LogError("Project not found with ID {ProjectId}.", id);
+                return ApiResponse<ReturnProjectDto>.Error(HttpStatusCode.NotFound, "المشروع غير موجود");
+            }
 
-            var ProjectDto = _mapper.Map<ProjectDto>(Project);
-            return ApiResponse<ProjectDto>.Success(ProjectDto);
+            var returnDto = new ReturnProjectDto
+            {
+                Id = project.Id,
+                Name = project.Name,
+                Budget = project.Budget,
+                Description = project.Description,
+                StartDate = project.StartDate,
+                EndDate = project.EndDate,
+                ProjectStatus = GetDisplayName(project.ProjectStatus),
+                ProjectPriority = GetDisplayName(project.ProjectPriority),
+                Manager = new CustomPersonDto
+                {
+                    Id = project.Manager.Id,
+                    FullName = project.Manager.FullName
+                },
+                ProjectCatgory = project.ProjectCatogory
+            };
+
+            return ApiResponse<ReturnProjectDto>.Success(returnDto);
         }
+
         public async Task<ApiResponse<string>> UpdateAsync(int id, ProjectDto ProjectDto)
         {
             var ExsitProject = await _context.Projects.FirstOrDefaultAsync(x => x.Id == id);

@@ -9,7 +9,6 @@ namespace SmartNeighborhoodAPI.Helpers.DTOs.Project
         public string Name { get; set; }
 
         [Required(ErrorMessage = "الوصف مطلوب")]
-        [MaxLength(40, ErrorMessage = "الحد الأقصى للوصف هو 40 حرفًا")]
         public string? Description { get; set; }
 
         [Required(ErrorMessage = "رقم المدير مطلوب")]
@@ -22,8 +21,6 @@ namespace SmartNeighborhoodAPI.Helpers.DTOs.Project
         public DateTime StartDate { get; set; }
 
         public DateTime? EndDate { get; set; }
-
-        public string? Procedures { get; set; }
 
         [Required(ErrorMessage = "حالة المشروع مطلوبة")]
         public ProjectStatus ProjectStatus { get; set; }

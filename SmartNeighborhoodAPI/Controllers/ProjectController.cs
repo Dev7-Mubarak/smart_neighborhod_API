@@ -10,9 +10,6 @@ namespace SmartNeighborhoodAPI.Controllers
     {
         private readonly ProjectService _ProjectService;
 
-
-
-
         public ProjectsController(ProjectService ProjectService)
         {
             _ProjectService = ProjectService;
