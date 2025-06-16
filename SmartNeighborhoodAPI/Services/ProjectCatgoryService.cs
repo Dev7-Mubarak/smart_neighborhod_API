@@ -5,13 +5,15 @@ namespace SmartNeighborhoodAPI.Services
     public class ProjectCatgoryService
     {
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<ProjectCatogory> _logger;
         readonly IMapper _mapper;
 
-        public ProjectCatgoryService(ApplicationDbContext context, IMapper mapper)
+        public ProjectCatgoryService(ApplicationDbContext context, IMapper mapper, ILogger<ProjectCatogory> logger)
         {
-            
+
             _context = context;
             _mapper = mapper;
+            _logger = logger;
         }
         public async Task<ApiResponse<ProjectCatgoryDto>> AddAsync(ProjectCatgoryDto ProjectCatgoryDto)
         {
@@ -46,20 +48,24 @@ namespace SmartNeighborhoodAPI.Services
 
             return ApiResponse<string>.Error(HttpStatusCode.NotModified, "Faild To Delete the ProjectCatogory");
         }
-        public async Task<ApiResponse<IEnumerable<ProjectCatgoryDto>>> GetAll()
+        public async Task<ApiResponse<IEnumerable<ProjectCatogory>>> GetAll()
         {
-            var ProjectCatogorys = await _context.ProjectCatogories.AsNoTracking().ToListAsync();
-            if (ProjectCatogorys.Count > 0)
+            _logger.LogInformation("Fetching all project categories...");
+
+            var projectCategories = await _context.ProjectCatogories
+                .AsNoTracking()
+                .ToListAsync();
+
+            if (projectCategories == null || projectCategories.Count == 0)
             {
-                var ProjectCatgoryDtos = _mapper.Map<IEnumerable<ProjectCatgoryDto>>(ProjectCatogorys);
-                return ApiResponse<IEnumerable<ProjectCatgoryDto>>.Success(ProjectCatgoryDtos);
+                _logger.LogWarning("No project categories found.");
+                return ApiResponse<IEnumerable<ProjectCatogory>>.Error(HttpStatusCode.NotFound, "لا توجد تصنيفات مشاريع");
             }
 
-            return ApiResponse<IEnumerable<ProjectCatgoryDto>>.Error(HttpStatusCode.NotFound, "No ProjectCatogorys Found");
-
-
-
+            _logger.LogInformation("Retrieved {Count} project categories.", projectCategories.Count);
+            return ApiResponse<IEnumerable<ProjectCatogory>>.Success(projectCategories, "تم جلب تصنيفات المشاريع بنجاح");
         }
+
         public async Task<ApiResponse<ProjectCatgoryDto>> GetByIdAsync(int id)
         {
             var ProjectCatogory = await _context.ProjectCatogories.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
