@@ -38,19 +38,21 @@ namespace SmartNeighborhoodAPI.Services
 
             return ApiResponse<string>.Error(HttpStatusCode.NotModified, "Faild To Delete the team");
         }
-        public async Task<ApiResponse<IEnumerable<TeamDto>>> GetAll()
+        public async Task<ApiResponse<IEnumerable<TeamWithMembersDto>>> GetAllWithMembers()
         {
-            var teams = await _context.Teams.AsNoTracking().ToListAsync();
+            var teams = await _context.Teams
+                .Include(t => t.TeamMembers)
+                    .ThenInclude(tm => tm.Person)
+                .AsNoTracking()
+                .ToListAsync();
+
             if (teams.Count > 0)
             {
-                var TeamDtos = _mapper.Map<IEnumerable<TeamDto>>(teams);
-                return ApiResponse<IEnumerable<TeamDto>>.Success(TeamDtos);
+                var dto = _mapper.Map<IEnumerable<TeamWithMembersDto>>(teams);
+                return ApiResponse<IEnumerable<TeamWithMembersDto>>.Success(dto);
             }
 
-            return ApiResponse<IEnumerable<TeamDto>>.Error(HttpStatusCode.NotFound, "No teams Found");
-
-
-
+            return ApiResponse<IEnumerable<TeamWithMembersDto>>.Error(HttpStatusCode.NotFound, "No teams found");
         }
         public async Task<ApiResponse<TeamDto>> GetByIdAsync(int id)
         {

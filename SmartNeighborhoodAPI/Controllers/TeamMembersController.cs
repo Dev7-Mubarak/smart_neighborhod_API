@@ -16,7 +16,7 @@
 
         }
         [HttpPost("[action]")]
-        public async Task<IActionResult> AddAsync(TeamMemberDto TeamMemberDto)
+        public async Task<IActionResult> AddAsync(TeamWithMembersDto TeamMemberDto)
         {
             var result = await _TeamMemberService.AddAsync(TeamMemberDto);
             return Response(result);
@@ -39,7 +39,7 @@
 
         }
         [HttpPut("[action]/{id:int}")]
-        public async Task<IActionResult> UpdateAsync(int id, TeamMemberDto TeamMemberDto)
+        public async Task<IActionResult> UpdateAsync(int id, TeamWithMembersDto TeamMemberDto)
         {
             var result = await _TeamMemberService.UpdateAsync(id, TeamMemberDto);
 

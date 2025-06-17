@@ -1,4 +1,6 @@
-﻿namespace SmartNeighborhoodAPI.Controllers
+﻿using SmartNeighborhoodAPI.Services;
+
+namespace SmartNeighborhoodAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -21,11 +23,10 @@
             var result = await _TeamsService.AddAsync(TeamDto);
             return Response(result);
         }
-        [HttpGet("[action]")]
-        public async Task<IActionResult> GetAllAsync()
+        [HttpGet("action")]
+        public async Task<IActionResult> GetAllWithMembersAsync()
         {
-            var result = await _TeamsService.GetAll();
-
+            var result = await _TeamsService.GetAllWithMembers();
             return Response(result);
         }
         [HttpGet("[action]/{id:int}")]
