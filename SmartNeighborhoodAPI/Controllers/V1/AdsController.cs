@@ -1,13 +1,18 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SmartNeighborhoodAPI.Services.V1;
 
-namespace SmartNeighborhoodAPI.Controllers
+namespace SmartNeighborhoodAPI.Controllers.V1
 {
+    [ApiController]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
+
     public class AdController : AppControllerBase
     {
-        private readonly AdsService _AdsService;
+        private readonly AdsV1Service _AdsService;
 
-        public AdController(AdsService adsService)
+        public AdController(AdsV1Service adsService)
         {
             _AdsService = adsService;
         }
