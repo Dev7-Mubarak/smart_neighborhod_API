@@ -156,22 +156,57 @@ namespace SmartNeighborhoodAPI.Services
             return ApiResponse<ReturnProjectDto>.Success(returnDto);
         }
 
-        public async Task<ApiResponse<string>> UpdateAsync(int id, ProjectDto ProjectDto)
+        public async Task<ApiResponse<string>> UpdateAsync(int id, ProjectDto projectDto)
         {
-            var ExsitProject = await _context.Projects.FirstOrDefaultAsync(x => x.Id == id);
+            _logger.LogInformation("Starting update process for project with ID {ProjectId}.", id);
 
-            if (ExsitProject is null)
-                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "Project Not Found");
-            var UpdateProject = _mapper.Map(ProjectDto, ExsitProject);
+            // Check if project exists
+            var existingProject = await _context.Projects.FirstOrDefaultAsync(x => x.Id == id);
+            if (existingProject is null)
+            {
+                _logger.LogWarning("Project with ID {ProjectId} not found.", id);
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "المشروع غير موجود");
+            }
 
-            _context.Projects.Update(UpdateProject);
+            // Check if Manager exists
+            var managerExists = await _context.People.AnyAsync(p => p.Id == projectDto.ManagerId);
+            if (!managerExists)
+            {
+                _logger.LogWarning("Manager with ID {ManagerId} not found.", projectDto.ManagerId);
+                return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "المدير غير موجود");
+            }
+
+            // Check if Project Category exists
+            var categoryExists = await _context.ProjectCatogories.AnyAsync(c => c.Id == projectDto.ProjectCatgoryId);
+            if (!categoryExists)
+            {
+                _logger.LogWarning("Project category with ID {CategoryId} not found.", projectDto.ProjectCatgoryId);
+                return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "فئة المشروع غير موجودة");
+            }
+
+            // Manual property update
+            existingProject.Name = projectDto.Name;
+            existingProject.Description = projectDto.Description;
+            existingProject.ManagerId = projectDto.ManagerId;
+            existingProject.ProjectCatogoryId = projectDto.ProjectCatgoryId;
+            existingProject.StartDate = projectDto.StartDate;
+            existingProject.EndDate = projectDto.EndDate;
+            existingProject.ProjectStatus = projectDto.ProjectStatus;
+            existingProject.Budget = projectDto.Budget;
+            existingProject.ProjectPriority = projectDto.ProjectPriority;
+
+            _context.Projects.Update(existingProject);
+
             if (await _context.SaveChangesAsync() > 0)
-                return ApiResponse<string>.Success("Project Updated Successfully");
+            {
+                _logger.LogInformation("Project with ID {ProjectId} updated successfully.", id);
+                return ApiResponse<string>.Success("تم تحديث المشروع بنجاح");
+            }
 
-            return ApiResponse<string>.Error(HttpStatusCode.NotModified, "Faild To Update Project");
-
-
+            _logger.LogError("Failed to update project with ID {ProjectId}.", id);
+            return ApiResponse<string>.Error(HttpStatusCode.NotModified, "فشل في تحديث المشروع");
         }
+
 
         private static string GetDisplayName<T>(T enumValue)
         {
