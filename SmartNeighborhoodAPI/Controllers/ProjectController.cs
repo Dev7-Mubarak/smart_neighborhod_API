@@ -23,9 +23,9 @@ namespace SmartNeighborhoodAPI.Controllers
             return Response(result);
         }
         [HttpGet("[action]")]
-        public async Task<IActionResult> GetAllAsync(int? categoryId)
+        public async Task<IActionResult> GetAllAsync(int? ProjectCategoryId)
         {
-            var result = await _ProjectService.GetAll(categoryId);
+            var result = await _ProjectService.GetAll(ProjectCategoryId);
 
             return Response(result);
         }

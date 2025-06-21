@@ -85,10 +85,10 @@ namespace SmartNeighborhoodAPI.Services
             return ApiResponse<string>.Error(HttpStatusCode.NotModified, "فشل حذف المشروع");
         }
 
-        public async Task<ApiResponse<IEnumerable<ReturnProjectDto>>> GetAll(int? categoryId)
+        public async Task<ApiResponse<IEnumerable<ReturnProjectDto>>> GetAll(int? ProjectCategoryId)
         {
             _logger.LogInformation("Fetching all Projects{CategoryFilter}",
-                categoryId.HasValue ? $" with CategoryId = {categoryId}" : "");
+                ProjectCategoryId.HasValue ? $" with CategoryId = {ProjectCategoryId}" : "");
 
             var query = _context.Projects
                 .Include(x => x.ProjectCatogory)
@@ -96,9 +96,9 @@ namespace SmartNeighborhoodAPI.Services
                 .AsNoTracking()
                 .AsQueryable();
 
-            if (categoryId.HasValue)
+            if (ProjectCategoryId.HasValue)
             {
-                query = query.Where(p => p.ProjectCatogoryId == categoryId.Value);
+                query = query.Where(p => p.ProjectCatogoryId == ProjectCategoryId.Value);
             }
 
             var projects = await query.ToListAsync();
@@ -125,7 +125,7 @@ namespace SmartNeighborhoodAPI.Services
             }
 
             _logger.LogWarning("No projects found{Filter}.",
-                categoryId.HasValue ? $" for CategoryId {categoryId}" : "");
+                ProjectCategoryId.HasValue ? $" for CategoryId {ProjectCategoryId}" : "");
 
             return ApiResponse<IEnumerable<ReturnProjectDto>>.Error(HttpStatusCode.NotFound, "لا توجد مشاريع");
         }
