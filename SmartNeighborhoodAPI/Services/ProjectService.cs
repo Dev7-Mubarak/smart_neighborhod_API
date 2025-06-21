@@ -85,7 +85,7 @@ namespace SmartNeighborhoodAPI.Services
             return ApiResponse<string>.Error(HttpStatusCode.NotModified, "فشل حذف المشروع");
         }
 
-        public async Task<ApiResponse<IEnumerable<ReturnProjectDto>>> GetAll(int? categoryId = null)
+        public async Task<ApiResponse<IEnumerable<ReturnProjectDto>>> GetAll(int? categoryId)
         {
             _logger.LogInformation("Fetching all Projects{CategoryFilter}",
                 categoryId.HasValue ? $" with CategoryId = {categoryId}" : "");
