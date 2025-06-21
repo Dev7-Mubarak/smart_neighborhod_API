@@ -1,15 +1,17 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 
 namespace SmartNeighborhoodAPI.Controllers
 {
     public class AdController : AppControllerBase
     {
         private readonly AdsService _AdsService;
-
-        public AdController(AdsService adsService)
+        private readonly IStringLocalizer<AdController> _stringLocalizer;
+        public AdController(AdsService adsService, IStringLocalizer<AdController> stringLocalizer)
         {
             _AdsService = adsService;
+            _stringLocalizer = stringLocalizer;
         }
         [HttpPost("[action]")]
         public async Task<IActionResult> AddAsync(AdDto AdDto)
@@ -21,6 +23,7 @@ namespace SmartNeighborhoodAPI.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> GetAllAsync()
         {
+            var localizerTitle = _stringLocalizer["Welcome"];
             var result = await _AdsService.GetAll();
 
             return Response(result);
