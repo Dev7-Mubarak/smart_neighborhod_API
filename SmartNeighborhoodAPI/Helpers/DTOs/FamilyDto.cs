@@ -13,7 +13,7 @@ namespace SmartNeighborhoodAPI.Helpers.DTOs
 
         [Required(ErrorMessage = "Location is reqired")]
         public string Location { get; set; }
-        public HousingType HousingType { get; set; }
+
         [Required(ErrorMessage = "Family Type id is reqired")]
         public int FamilyTypeId { get; set; }
         [MaxLength(150)]
@@ -21,6 +21,6 @@ namespace SmartNeighborhoodAPI.Helpers.DTOs
         [Required(ErrorMessage = "Block id is reqired")]
         public int BlockId { get; set; }
         [Required(ErrorMessage = "Person id is reqired")]
-        public int PersonId { get; set; }
+        public int FamilyHeadId { get; set; }
     }
 }

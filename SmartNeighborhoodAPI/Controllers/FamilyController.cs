@@ -32,6 +32,14 @@
             return Response(result);
         }
 
+
+        [HttpGet("[action]/{id:int}")]
+        public async Task<IActionResult> GetFamilyByIdAsync(int id)
+        {
+            var result = await _FamilyService.GetFamilyById(id);
+            return Response(result);
+        }
+
         [HttpPut("[action]/{id:int}")]
         public async Task<IActionResult> UpdateAsync(int id, FamilyDto FamilyDto)
         {
