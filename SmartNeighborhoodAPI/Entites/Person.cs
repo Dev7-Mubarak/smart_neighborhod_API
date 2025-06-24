@@ -37,7 +37,5 @@ namespace OurProjectSmartNeiborhood.Entites
         public string FullName =>
         $"{FirstName} {SecondName} {ThirdName} {LastName}".Replace("  ", " ").Trim();
 
-
-
     }
 }
