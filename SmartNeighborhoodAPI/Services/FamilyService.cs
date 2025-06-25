@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using OurProjectSmartNeiborhood.Entites;
 using SmartNeighborhoodAPI.Entites.Enums;
 using SmartNeighborhoodAPI.Helpers.DTOs.FamilyMember;
 using SmartNeighborhoodAPI.Helpers.DTOs.Person;
@@ -106,24 +107,40 @@ namespace SmartNeighborhoodAPI.Services
         }
         public async Task<ApiResponse<IEnumerable<ReturnFamilyDto>>> GetAllAsync()
         {
-            var families = await _context.Families.AsNoTracking().ToListAsync();
-            if (families.Count > 0)
+            _logger.LogInformation("Retrieving all families from the database");
+            var familyDtos = await _context.Families
+                    .AsNoTracking()
+                    .Select(family => new ReturnFamilyDto
+                    {
+                        Id = family.Id,
+                        Name = family.Name,
+                        Location = family.Location,
+                        FamilyNotes = family.FamilyNotes,
+                        FamilyCategoryId = family.FamilyCatgoryId,
+                        FamilyCategoryName = family.FamilyCatgory.Name,
+                        FamilyTypeId = family.FamilyTypeId,
+                        FamilyTypeName = family.FamilyType.Name,
+                        BlockId = family.BlockId,
+                        BlockName = family.Block.Name,
+                        FamilyMembers = family.FamilyMembers.Select(member => new ReturnFamilyMemberDto
+                        {
+                            PersonId = member.Person.Id,
+                            PersonFullName = member.Person.FullName,
+                            RoleId = member.MemberFamilyRole.Id,
+                            RoleName = member.MemberFamilyRole.RoleName
+                        }).ToList()
+                    })
+                    .ToListAsync();
+
+
+            if (familyDtos.Count == 0)
             {
-                var returnFamilyDto = families.Select(x => new ReturnFamilyDto
-                {
-                    Id = x.Id,
-                    Name = x.Name,
-                    BlockId = x.BlockId,
-                    //FamilyCatgoryId = x.FamilyCatgoryId,
-                    FamilyNotes = x.FamilyNotes,
-                    FamilyTypeId = x.FamilyTypeId,
-                    Location = x.Location,
-                    //FamilyHeadId = x.Id,
-                });
-                return ApiResponse<IEnumerable<ReturnFamilyDto>>.Success(returnFamilyDto);
+                _logger.LogWarning("No families found in the database");
+                return ApiResponse<IEnumerable<ReturnFamilyDto>>.Error(HttpStatusCode.NotFound, "No Families Found");
             }
 
-            return ApiResponse<IEnumerable<ReturnFamilyDto>>.Error(HttpStatusCode.NotFound, "No Families Found");
+            _logger.LogInformation("Successfully retrieved {FamilyCount} families from the database", familyDtos.Count);
+            return ApiResponse<IEnumerable<ReturnFamilyDto>>.Success(familyDtos, "All families retrieved successfully.");
         }
         public async Task<ApiResponse<ReturnFamilyDto>> GetFamilyById(int id)
         {
