@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using SmartNeighborhoodAPI.Entites;
 using SmartNeighborhoodAPI.Helpers.DTOs.Auth;
+using SmartNeighborhoodAPI.Helpers.DTOs.block;
+using SmartNeighborhoodAPI.Helpers.DTOs.Families;
 using SmartNeighborhoodAPI.Interfaces;
 using System.Data;
+using System.Linq;
 using System.Net;
 
 namespace SmartNeighborhoodAPI.Services
@@ -143,8 +146,6 @@ namespace SmartNeighborhoodAPI.Services
             return ApiResponse<RetrunBlockDto>.Success(returnBlockDto,
                 "تم تحديث مدير المربع بنجاح. تم إرسال بيانات تسجيل الدخول عبر البريد الإلكتروني.");
         }
-
-
         public async Task<ApiResponse<RetrunBlockDto>> AddAsync(BlockDto blockDto)
         {
             _logger.LogInformation("Attempting to add a new block with name: {BlockName}", blockDto.Name);
@@ -212,8 +213,7 @@ namespace SmartNeighborhoodAPI.Services
 
             return ApiResponse<Block>.Success(block);
         }
-
-             public async Task<ApiResponse<string>> UpdateAsync(int id, BlockDto blockDto)
+        public async Task<ApiResponse<string>> UpdateAsync(int id, BlockDto blockDto)
         {
             var existingBlock = await _context.Blocks.FirstOrDefaultAsync(x => x.Id == id);
             if (existingBlock == null)
@@ -240,21 +240,61 @@ namespace SmartNeighborhoodAPI.Services
 
             return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "Failed To Delete the Block");
         }
-
-
-        public async Task<ApiResponse<PaginatedResult<Family>>> GetBlockFamiliesById(int blockId, int pageNumber, int pageSize, string? search)
+        public async Task<ApiResponse<BlockDetailesDto>> GetDetails(int blockId, int pageNumber, int pageSize, string? search)
         {
-            if (await _context.Blocks.FindAsync(blockId) is null)
-                return ApiResponse<PaginatedResult<Family>>.Error(HttpStatusCode.NotFound, "Block Not Found");
+            var block = await _context.Blocks
+                 .AsNoTracking()
+                 .Where(x => x.Id == blockId)
+                 .Select(x => new BlockDetailesDto
+                 {
+                     Block = new BlockWithStatsDto
+                     {
+                         Id = x.Id,
+                         Name = x.Name,
+                         ManagerName = x.Manager.Person.FullName,
+                         TotalFamilies = x.Families.Count,
+                         totalOrphans = x.Families.Count(f => f.FamilyCatgory.Id == 2),
+                         TotalWidows = x.Families.Count(f => f.FamilyCatgory.Id == 1),
+                     },
+                     Families = x.Families.Select(f => new FamilyDetailsDto
+                     {
+                         Id = f.Id,
+                         Name = f.Name,
+                         FamilyCatgoryId = f.FamilyCatgoryId,
+                         FamilyCatgoryName = f.FamilyCatgory.Name,
+                         BlockId = f.BlockId,
+                         BlockName = f.Block.Name,
 
-            var query = _context.Families.AsNoTracking();
+                         FamilyNotes = f.FamilyNotes,
+                         FamilyTypeId = f.FamilyTypeId,
+                         FamilyTypeName = f.FamilyType.Name,
+                         Location = f.Location,
+                         FamilyHeadId = f.FamilyMembers
+                             .Where(fm => fm.MemberFamilyRoleId == 1)
+                             .Select(fm => fm.PersonId)
+                             .FirstOrDefault(),
 
-            if (string.IsNullOrEmpty(search))
+                         FamilyHeadName = f.FamilyMembers
+                             .Where(fm => fm.MemberFamilyRoleId == 1)
+                             .Select(fm => fm.Person.FullName)
+                             .FirstOrDefault() ?? string.Empty,
+
+                         PhoneNumber = f.FamilyMembers
+                             .Where(fm => fm.MemberFamilyRoleId == 1)
+                             .Select(fm => fm.Person.PhoneNumber)
+                             .FirstOrDefault() ?? string.Empty,
+
+                     }).ToList()
+                 })
+                 .FirstOrDefaultAsync();
+
+            if (block == null)
             {
-                return ApiResponse<PaginatedResult<Family>>.Success(await query.Where(x => x.BlockId == blockId).ToPaginatedListAsync(pageNumber, pageSize));
+                _logger.LogWarning("Block with ID {BlockId} not found", blockId);
+                return ApiResponse<BlockDetailesDto>.Error(HttpStatusCode.NotFound, "Block Not Found");
             }
 
-            return ApiResponse<PaginatedResult<Family>>.Success(await query.Where(x => x.BlockId == blockId).Where(x => x.Name.Contains(search)).ToPaginatedListAsync(pageNumber, pageSize));
+            return ApiResponse<BlockDetailesDto>.Success(block);
         }
     }
 }

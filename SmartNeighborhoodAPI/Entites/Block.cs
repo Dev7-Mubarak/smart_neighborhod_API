@@ -13,6 +13,4 @@ namespace OurProjectSmartNeiborhood.Entites
         [JsonIgnore]
         public ICollection<Family> Families { get; set; } = new List<Family>();
     }
-
-
 }
