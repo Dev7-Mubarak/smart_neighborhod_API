@@ -1,18 +1,14 @@
 ﻿namespace OurProjectSmartNeiborhood.Entites
 {
-    public class Complain
+    public class Conflict
     {
         public int Id { get; set; }
-  
-
-  
-        public string Outcome { get; set; }
-        public int ComplainTypeId { get; set; }
-        public string Notes { get; set; }
-        public ComplainType ComplainType { get; set; }
-        public DateTime SessionDate { get; set; }
-        public List<PersonComplain> PersonComplains { get; set; }
+        public string ManagerId { get; set; }
+        public string? Notes { get; set; }
         public bool IsResolved { get; set; }
+        public int ConflictTypeId { get; set; }
+        public ConflictType ConflictType { get; set; }
+        public List<ConfilctParty>? PersonComplains { get; set; }
     }
 
 }

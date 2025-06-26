@@ -38,7 +38,7 @@ namespace SmartNeighborhoodAPI
         public DbSet<Block> Blocks { get; set; }
         public DbSet<Ad> Ads { get; set; }
         public DbSet<Group> Groups { get; set; }
-        public DbSet<ConfilctParty> ConfilctParties { get; set; }
+        //public DbSet<ConfilctParty> ConfilctParties { get; set; }
         public DbSet<Project> Projects { get; set; }
         public DbSet<Complain> Complains { get; set; }
         public DbSet<ComplainType> ComplainTypes { get; set; }
