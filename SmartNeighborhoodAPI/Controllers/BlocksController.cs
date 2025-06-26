@@ -13,14 +13,14 @@ namespace SmartNeighborhoodAPI.Controllers
         }
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> GetBlockFamiliesById(
+        public async Task<IActionResult> GetDetails(
             int blockId,
             int pageNumber = 1,
             int pageSize = 10,
             string? search = null)
 
         {
-            return Response(await _BlockServices.GetBlockFamiliesById(blockId, pageNumber, pageSize, search));
+            return Response(await _BlockServices.GetDetails(blockId, pageNumber, pageSize, search));
         }
 
         [HttpPost("[action]")]
