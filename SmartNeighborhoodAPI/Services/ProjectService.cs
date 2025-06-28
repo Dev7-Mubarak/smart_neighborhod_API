@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using Microsoft.Extensions.Logging;
 using OurProjectSmartNeiborhood.Entites;
+using SmartNeighborhoodAPI.Entites;
 using SmartNeighborhoodAPI.Helpers.DTOs.Project;
 namespace SmartNeighborhoodAPI.Services
 {
@@ -214,6 +215,50 @@ namespace SmartNeighborhoodAPI.Services
 
             _logger.LogError("Failed to update project with ID {ProjectId}.", id);
             return ApiResponse<string>.Error(HttpStatusCode.NotModified, "فشل في تحديث المشروع");
+        }
+
+        public async Task<ApiResponse<string>> AssignTeamToProjectAsync(int projectId, int teamId)
+        {
+            _logger.LogInformation("Starting assignment of Team {TeamId} to Project {ProjectId}", teamId, projectId);
+
+            var project = await _context.Projects.FindAsync(projectId);
+            if (project == null)
+            {
+                _logger.LogWarning("Project with ID {ProjectId} not found.", projectId);
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "المشروع غير موجود");
+            }
+
+            var team = await _context.Teams.FindAsync(teamId);
+            if (team == null)
+            {
+                _logger.LogWarning("Team with ID {TeamId} not found.", teamId);
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "الفريق غير موجود");
+            }
+
+            var exists = await _context.ProjectTeams.AnyAsync(pt => pt.ProjectId == projectId && pt.TeamId == teamId);
+            if (exists)
+            {
+                _logger.LogWarning("Team {TeamId} is already assigned to Project {ProjectId}.", teamId, projectId);
+                return ApiResponse<string>.Error(HttpStatusCode.Conflict, "الفريق مرتبط بالفعل بالمشروع");
+            }
+
+            var projectTeam = new ProjectTeam
+            {
+                ProjectId = projectId,
+                TeamId = teamId
+            };
+
+            await _context.ProjectTeams.AddAsync(projectTeam);
+
+            var saveResult = await _context.SaveChangesAsync();
+            if (saveResult > 0)
+            {
+                _logger.LogInformation("Successfully assigned Team {TeamId} to Project {ProjectId}.", teamId, projectId);
+                return ApiResponse<string>.Success("تم ربط الفريق بالمشروع بنجاح");
+            }
+
+            _logger.LogError("Failed to assign Team {TeamId} to Project {ProjectId}.", teamId, projectId);
+            return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "فشل في ربط الفريق بالمشروع");
         }
 
 

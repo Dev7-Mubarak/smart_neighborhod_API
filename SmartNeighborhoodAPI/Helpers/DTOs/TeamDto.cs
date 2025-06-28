@@ -4,10 +4,8 @@
     {
         [Required(ErrorMessage ="Name is required")]
         [MaxLength(30)]
-        public string Name { get; set; }
-        [Required(ErrorMessage ="Project id is required")]
-        public int ProjectId { get; set; }
-        public DateTime? StartDate { get; set; }
-        public DateTime? EndDate { get; set; }
+        public required string Name { get; set; }
+        public required int TeamLeadId { get; set; }
+        public DateTime InJoiedDate { get; set; } = DateTime.Now;
     }
 }

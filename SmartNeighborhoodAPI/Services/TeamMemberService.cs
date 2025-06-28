@@ -1,4 +1,6 @@
 ﻿using System.Net;
+using Microsoft.Extensions.Logging;
+using SmartNeighborhoodAPI.Helpers.DTOs.TeamMembers;
 
 namespace SmartNeighborhoodAPI.Services
 {
@@ -7,53 +9,113 @@ namespace SmartNeighborhoodAPI.Services
         {
             private readonly ApplicationDbContext _context;
             readonly IMapper _mapper;
+            private readonly ILogger<TeamMember> _logger;
 
-            public TeamMemberService(ApplicationDbContext context, IMapper mapper)
+        public TeamMemberService(ApplicationDbContext context, IMapper mapper, ILogger<TeamMember> logger)
+        {
+            _context = context;
+            _mapper = mapper;
+            _logger = logger;
+        }
+        public async Task<ApiResponse<string>> AddAsync(AddTeamMemberDto dto)
+        {
+            _logger.LogInformation("Adding member {PersonId} to team {TeamId}", dto.PersonId, dto.TeamId);
+
+            var teamExists = await _context.Teams.AnyAsync(t => t.Id == dto.TeamId);
+            if (!teamExists)
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "لم يتم العثور على الفريق");
+
+            var personExists = await _context.People.AnyAsync(p => p.Id == dto.PersonId);
+            if (!personExists)
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "لم يتم العثور على الشخص");
+
+            var roleExists = await _context.TeamRoles.AnyAsync(r => r.Id == dto.TeamRoleId);
+            if (!roleExists)
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "لم يتم العثور على الدور");
+
+            var alreadyMember = await _context.TeamMembers.AnyAsync(m => m.TeamId == dto.TeamId && m.PersonId == dto.PersonId);
+            if (alreadyMember)
+                return ApiResponse<string>.Error(HttpStatusCode.Conflict, "الشخص عضو بالفعل في الفريق");
+
+            var teamMember = new TeamMember
             {
-                _context = context;
-                _mapper = mapper;
-            }
-            public async Task<ApiResponse<TeamMemberDto>> AddAsync(TeamMemberDto TeamMemberDto)
+                TeamId = dto.TeamId,
+                PersonId = dto.PersonId,
+                TeamRoleId = dto.TeamRoleId,
+                DateOfJoin = dto.DateOfJoin
+            };
+
+            await _context.TeamMembers.AddAsync(teamMember);
+            if (await _context.SaveChangesAsync() > 0)
             {
-
-                var TeamMember = _mapper.Map<TeamMember>(TeamMemberDto);
-
-
-                await _context.AddAsync(TeamMember);
-                if (await _context.SaveChangesAsync() > 0)
-                    return ApiResponse<TeamMemberDto>.Success(TeamMemberDto, "Added Successed");
-
-                return ApiResponse<TeamMemberDto>.Error(HttpStatusCode.BadRequest, "TeamMember not add");
-
-
+                _logger.LogInformation("Team member added successfully.");
+                return ApiResponse<string>.Success("تمت إضافة العضو إلى الفريق بنجاح");
             }
-            public async Task<ApiResponse<string>> DeleteAsync(int id)
+
+            _logger.LogError("Failed to add team member.");
+            return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "فشل في إضافة العضو");
+        }
+
+        public async Task<ApiResponse<string>> DeleteAsync(int id)
+        {
+            _logger.LogInformation("Attempting to delete TeamMember with ID {TeamMemberId}", id);
+
+            var entity = await _context.TeamMembers.FirstOrDefaultAsync(x => x.Id == id);
+            if (entity == null)
             {
-                var entity = await _context.TeamMembers.FirstOrDefaultAsync(x => x.Id == id); ;
-                if (entity == null)
-                    return ApiResponse<string>.Error(HttpStatusCode.NotFound, "TeamMember Not Found");
-
-                _context.TeamMembers.Remove(entity);
-                if (await _context.SaveChangesAsync() > 0)
-                    return ApiResponse<string>.Success("TeamMember Deleted Successfully");
-
-                return ApiResponse<string>.Error(HttpStatusCode.NotModified, "Faild To Delete the TeamMember");
+                _logger.LogWarning("TeamMember with ID {TeamMemberId} not found.", id);
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "لم يتم العثور على عضو الفريق");
             }
-            public async Task<ApiResponse<IEnumerable<TeamMemberDto>>> GetAll()
+
+            _context.TeamMembers.Remove(entity);
+
+            var result = await _context.SaveChangesAsync();
+
+            if (result <= 0)
             {
-                var TeamMembers = await _context.TeamMembers.AsNoTracking().ToListAsync();
-                if (TeamMembers.Count > 0)
-                {
-                    var TeamMemberDtos = _mapper.Map<IEnumerable<TeamMemberDto>>(TeamMembers);
-                    return ApiResponse<IEnumerable<TeamMemberDto>>.Success(TeamMemberDtos);
-                }
-
-                return ApiResponse<IEnumerable<TeamMemberDto>>.Error(HttpStatusCode.NotFound, "No TeamMembers Found");
-
-
-
+                _logger.LogError("Failed to delete TeamMember with ID {TeamMemberId}", id);
+                return ApiResponse<string>.Error(HttpStatusCode.NotModified, "فشل في حذف عضو الفريق");
             }
-            public async Task<ApiResponse<TeamMemberDto>> GetByIdAsync(int id)
+
+            _logger.LogInformation("TeamMember with ID {TeamMemberId} deleted successfully.", id);
+            return ApiResponse<string>.Success("تم حذف عضو الفريق بنجاح");
+        }
+
+        public async Task<ApiResponse<IEnumerable<TeamMemberDetailsDto>>> GetAll()
+        {
+            _logger.LogInformation("Fetching all team members with related data...");
+
+            var teamMembers = await _context.TeamMembers
+                .Include(tm => tm.Person)
+                .Include(tm => tm.Team)
+                .Include(tm => tm.TeamRole)
+                .AsNoTracking()
+                .ToListAsync();
+
+            if (!teamMembers.Any())
+            {
+                _logger.LogWarning("No team members found.");
+                return ApiResponse<IEnumerable<TeamMemberDetailsDto>>.Error(HttpStatusCode.NotFound, "لا يوجد أعضاء في الفريق");
+            }
+
+            var dtos = teamMembers.Select(tm => new TeamMemberDetailsDto
+            {
+                Id = tm.Id,
+                PersonId = tm.PersonId,
+                PersonName = tm.Person?.FullName ?? "غير معروف",
+                TeamId = tm.TeamId,
+                TeamName = tm.Team?.Name ?? "غير معروف",
+                DateOfJoin = tm.DateOfJoin,
+                TeamRoleId = tm.TeamRoleId,
+                TeamRoleName = tm.TeamRole?.Name ?? "غير معروف"
+            }).ToList();
+
+            _logger.LogInformation("{Count} team members retrieved and mapped.", dtos.Count);
+
+            return ApiResponse<IEnumerable<TeamMemberDetailsDto>>.Success(dtos);
+        }
+
+        public async Task<ApiResponse<TeamMemberDto>> GetByIdAsync(int id)
             {
                 var TeamMember = await _context.TeamMembers.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
                 if (TeamMember == null)

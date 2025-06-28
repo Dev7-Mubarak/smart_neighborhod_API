@@ -1,4 +1,6 @@
-﻿namespace SmartNeighborhoodAPI.Controllers
+﻿using SmartNeighborhoodAPI.Helpers.DTOs.TeamMembers;
+
+namespace SmartNeighborhoodAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -16,9 +18,9 @@
 
         }
         [HttpPost("[action]")]
-        public async Task<IActionResult> AddAsync(TeamMemberDto TeamMemberDto)
+        public async Task<IActionResult> AddAsync(AddTeamMemberDto dto)
         {
-            var result = await _TeamMemberService.AddAsync(TeamMemberDto);
+            var result = await _TeamMemberService.AddAsync(dto);
             return Response(result);
         }
         [HttpGet("[action]")]
@@ -34,9 +36,6 @@
             var result = await _TeamMemberService.GetByIdAsync(id);
 
             return Response(result);
-
-
-
         }
         [HttpPut("[action]/{id:int}")]
         public async Task<IActionResult> UpdateAsync(int id, TeamMemberDto TeamMemberDto)
