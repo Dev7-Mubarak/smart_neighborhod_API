@@ -23,7 +23,7 @@ namespace SmartNeighborhoodAPI.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> GetAllAsync()
         {
-            var result = await _familyMemberService.GetAll();
+            var result = await _familyMemberService.GetAllAsync();
             return Response(result);
         }
 
@@ -42,10 +42,11 @@ namespace SmartNeighborhoodAPI.Controllers
         }
 
         [HttpDelete("[action]/{id:int}")]
-        public async Task<IActionResult> DeleteAsync(int id)
+        public async Task<IActionResult> DeleteAsync(int id, [FromQuery] int familyId)
         {
-            var result = await _familyMemberService.DeleteAsync(id);
+            var result = await _familyMemberService.DeleteAsync(id, familyId);
             return Response(result);
         }
+
     }
 }

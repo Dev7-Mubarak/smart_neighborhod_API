@@ -69,10 +69,10 @@ namespace SmartNeighborhoodAPI.Services
             await _context.Families.AddAsync(family);
 
             _logger.LogInformation("Get Head Of Falimy Role");
-            var HeadOfFamilyRole = await _context.MemberFamilyRoles
+            var headOfFamilyRole = await _context.MemberFamilyRoles
                 .FirstOrDefaultAsync(x => x.RoleName == "أب");
 
-            if (HeadOfFamilyRole == null)
+            if (headOfFamilyRole == null)
             {
                 _logger.LogError("Head of family role 'أب' not found");
                 return ApiResponse<ReturnFamilyDto>.Error(HttpStatusCode.InternalServerError, "Head of family role not found");
@@ -82,7 +82,7 @@ namespace SmartNeighborhoodAPI.Services
             {
                 Family = family,
                 PersonId = familyDto.FamilyHeadId,
-                MemberFamilyRoleId = HeadOfFamilyRole.Id
+                MemberFamilyRoleId = headOfFamilyRole.Id
             };
 
             _logger.LogInformation("Creating a new family member with details: {@FamilyMember}", familyMember);
@@ -94,7 +94,7 @@ namespace SmartNeighborhoodAPI.Services
             _logger.LogInformation("Family with ID {FamilyId} added successfully", family.Id);
 
             _logger.LogInformation("Call GetFamilyByIdAsync with familId {FamilyId}", family.Id);
-            var response = await GetFamilyById(family.Id);
+            var response = await GetById(family.Id);
 
             if (!response.IsSuccess)
             {
@@ -104,28 +104,54 @@ namespace SmartNeighborhoodAPI.Services
 
             return ApiResponse<ReturnFamilyDto>.Success(response.Data, response.Message);
         }
-        public async Task<ApiResponse<IEnumerable<ReturnFamilyDto>>> GetAllAsync()
+        public async Task<ApiResponse<List<ReturnFamilyDto>>> GetAllAsync()
         {
-            var families = await _context.Families.AsNoTracking().ToListAsync();
-            if (families.Count > 0)
+            _logger.LogInformation("Retrieving all families");
+
+            var families = await _context.Families
+                .AsNoTracking()
+                .Include(x => x.FamilyCatgory)
+                .Include(x => x.FamilyType)
+                .Include(x => x.Block)
+                .Include(x => x.FamilyMembers)
+                    .ThenInclude(x => x.MemberFamilyRole)
+                .Include(x => x.FamilyMembers)
+                    .ThenInclude(x => x.Person)
+                .ToListAsync();
+
+            if (!families.Any())
             {
-                var returnFamilyDto = families.Select(x => new ReturnFamilyDto
-                {
-                    Id = x.Id,
-                    Name = x.Name,
-                    BlockId = x.BlockId,
-                    //FamilyCatgoryId = x.FamilyCatgoryId,
-                    FamilyNotes = x.FamilyNotes,
-                    FamilyTypeId = x.FamilyTypeId,
-                    Location = x.Location,
-                    //FamilyHeadId = x.Id,
-                });
-                return ApiResponse<IEnumerable<ReturnFamilyDto>>.Success(returnFamilyDto);
+                _logger.LogWarning("No families found");
+                return ApiResponse<List<ReturnFamilyDto>>.Error(HttpStatusCode.NotFound, "No families found");
             }
 
-            return ApiResponse<IEnumerable<ReturnFamilyDto>>.Error(HttpStatusCode.NotFound, "No Families Found");
+            var familyDtos = families.Select(family => new ReturnFamilyDto
+            {
+                Id = family.Id,
+                Name = family.Name,
+                Location = family.Location,
+                FamilyCategoryId = family.FamilyCatgoryId,
+                FamilyCategoryName = family.FamilyCatgory.Name,
+                FamilyNotes = family.FamilyNotes,
+                FamilyTypeId = family.FamilyTypeId,
+                FamilyTypeName = family.FamilyType.Name,
+                BlockId = family.BlockId,
+                BlockName = family.Block.Name,
+                FamilyMembers = family.FamilyMembers.Select(x => new ReturnFamilyMemberDto
+                {
+                    PersonFullName = x.Person.FullName,
+                    PersonId = x.PersonId,
+                    RoleId = x.MemberFamilyRoleId,
+                    RoleName = x.MemberFamilyRole.RoleName,
+                }).ToList(),
+            }).ToList();
+
+            _logger.LogInformation("Successfully retrieved all families");
+
+            return ApiResponse<List<ReturnFamilyDto>>.Success(familyDtos);
         }
-        public async Task<ApiResponse<ReturnFamilyDto>> GetFamilyById(int id)
+
+        public async Task<ApiResponse<ReturnFamilyDto>> GetById(int id)
         {
             _logger.LogInformation("Retrieving family details for Family ID: {FamilyId}", id);
 
@@ -171,7 +197,7 @@ namespace SmartNeighborhoodAPI.Services
 
             return ApiResponse<ReturnFamilyDto>.Success(returnFamilyDto);
         }
-        public async Task<ApiResponse<ReturnFamilyInfoDto>> GetFamilyDetilesByIdAsync(int id)
+        public async Task<ApiResponse<ReturnFamilyInfoDto>> GetDetailesAsync(int id)
         {
             var family = await _context.Families
                 .AsNoTracking()
@@ -209,31 +235,31 @@ namespace SmartNeighborhoodAPI.Services
                 BlockName = family.Block.Name,
                 HeadOfTheFamilyId = headOfTheFamily.Id,
                 HeadOfTheFamilyName = headOfTheFamily.Person.FirstName,
-                FamilyMembers = family.FamilyMembers.Select(m => new FamilyMemberDto
-                {
-                    Person = new PersonDto
-                    {
-                        Id = m.Person.Id,
-                        FirstName = m.Person.FirstName,
-                        SecondName = m.Person.LastName,
-                        ThirdName = m.Person.ThirdName,
-                        LastName = m.Person.LastName,
-                        BloodType = GetDisplayName(m.Person.BloodType),
-                        DateOfBirth = m.Person.DateOfBirth,
-                        Email = m.Person.Email,
-                        Gender = GetDisplayName(m.Person.Gender),
-                        IdentityNumber = m.Person.IdentityNumber,
-                        Image = m.Person.Image,
-                        Job = m.Person.Job,
-                        PhoneNumber = m.Person.PhoneNumber,
-                        MaritalStatus = GetDisplayName(m.Person.MaritalStatus),
-                        IsCall = m.Person.IsContactNumber,
-                        IdentityType = GetDisplayName(m.Person.IdentityType),
-                        IsWhatsapp = m.Person.IsWhatsapp,
-                        OccupationStatus = GetDisplayName(m.Person.OccupationStatus)
-                    },
-                    RoleName = m.MemberFamilyRole.RoleName
-                }).ToList()
+                //FamilyMembers = family.FamilyMembers.Select(m => new FamilyMemberDto
+                //{
+                //    Person = new PersonDto
+                //    {
+                //        Id = m.Person.Id,
+                //        FirstName = m.Person.FirstName,
+                //        SecondName = m.Person.LastName,
+                //        ThirdName = m.Person.ThirdName,
+                //        LastName = m.Person.LastName,
+                //        BloodType = GetDisplayName(m.Person.BloodType),
+                //        DateOfBirth = m.Person.DateOfBirth,
+                //        Email = m.Person.Email,
+                //        Gender = GetDisplayName(m.Person.Gender),
+                //        IdentityNumber = m.Person.IdentityNumber,
+                //        Image = m.Person.Image,
+                //        Job = m.Person.Job,
+                //        PhoneNumber = m.Person.PhoneNumber,
+                //        MaritalStatus = GetDisplayName(m.Person.MaritalStatus),
+                //        IsCall = m.Person.IsContactNumber,
+                //        IdentityType = GetDisplayName(m.Person.IdentityType),
+                //        IsWhatsapp = m.Person.IsWhatsapp,
+                //        OccupationStatus = GetDisplayName(m.Person.OccupationStatus)
+                //    },
+                //    RoleName = m.MemberFamilyRole.RoleName
+                //}).ToList()
             };
 
             return ApiResponse<ReturnFamilyInfoDto>.Success(dto);
@@ -289,14 +315,6 @@ namespace SmartNeighborhoodAPI.Services
             }
 
             return ApiResponse<string>.Success("Family Deleted Successfully");
-        }
-        private static string GetDisplayName<T>(T enumValue)
-        {
-            var memberInfo = typeof(T).GetMember(enumValue.ToString()).FirstOrDefault();
-            var displayAttr = memberInfo?.GetCustomAttributes(typeof(DisplayAttribute), false)
-                                        .FirstOrDefault() as DisplayAttribute;
-
-            return displayAttr?.Name ?? enumValue.ToString();
         }
     }
 }
