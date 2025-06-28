@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.Reflection.Emit;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using OurProjectSmartNeiborhood.Configuration;
@@ -27,6 +28,12 @@ namespace SmartNeighborhoodAPI
             builder.ApplyConfiguration(new IdentityUserRoleSeedConfiguration());
             builder.ApplyConfiguration(new ProjectCatgoryEntityTypeConfiguration());
             builder.ApplyConfiguration(new ProjectConfiguration());
+
+            builder.Entity<TeamRole>().HasData(
+                   new TeamRole { Id = 1, Name = "مدير المشروع"},
+                   new TeamRole { Id = 2, Name = "النائب"},
+                   new TeamRole { Id = 3, Name = "عضو" }
+               );
         }
 
         public DbSet<Person> People { get; set; }
@@ -46,5 +53,7 @@ namespace SmartNeighborhoodAPI
         public DbSet<ProjectCatogory> ProjectCatogories { get; set; }
         public DbSet<Team> Teams { get; set; }
         public DbSet<TeamMember> TeamMembers { get; set; }
+        public DbSet<ProjectTeam> ProjectTeams { get; set; }
+        public DbSet<TeamRole> TeamRoles { get; set; }
     }
 }

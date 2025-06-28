@@ -1,4 +1,5 @@
-﻿using SmartNeighborhoodAPI.Entites.Enums;
+﻿using SmartNeighborhoodAPI.Entites;
+using SmartNeighborhoodAPI.Entites.Enums;
 
 namespace OurProjectSmartNeiborhood.Entites
 {
@@ -16,6 +17,8 @@ namespace OurProjectSmartNeiborhood.Entites
         public ProjectStatus ProjectStatus { get; set; }
         public double? Budget { get; set; }
         public ProjectPriority ProjectPriority { get; set; }
-        public List<Team>? Teams { get; set; }
+
+        public ICollection<ProjectTeam> ProjectTeams { get; set; }
+        public ICollection<ProjectFamily> ProjectFamilies { get; set; }
     }
 }

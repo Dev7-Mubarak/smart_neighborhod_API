@@ -1,13 +1,13 @@
-﻿namespace OurProjectSmartNeiborhood.Entites
+﻿using SmartNeighborhoodAPI.Entites;
+
+namespace OurProjectSmartNeiborhood.Entites
 {
     public class Team
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public int ProjectId { get; set; }
-        public DateTime? StartDate { get; set; }
-        public DateTime? EndDate { get; set; }
-        public Project? Project { get; set; }
-        public List<TeamMember>? TeamMembers { get; set; }
+
+        public ICollection<ProjectTeam> ProjectTeams { get; set; }
+        public ICollection<TeamMember> TeamMembers { get; set; }
     }
 }

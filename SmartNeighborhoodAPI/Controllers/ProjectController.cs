@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SmartNeighborhoodAPI.Helpers.DTOs.Project;
+using SmartNeighborhoodAPI.Services;
 
 namespace SmartNeighborhoodAPI.Controllers
 {
@@ -35,9 +36,6 @@ namespace SmartNeighborhoodAPI.Controllers
             var result = await _ProjectService.GetByIdAsync(id);
 
             return Response(result);
-
-
-
         }
         [HttpPut("[action]/{id:int}")]
         public async Task<IActionResult> UpdateAsync(int id, ProjectDto ProjectDto)
@@ -53,6 +51,14 @@ namespace SmartNeighborhoodAPI.Controllers
 
             return Response(result);
         }
+
+        [HttpPost("assign-team/{projectId:int}")]
+        public async Task<IActionResult> AssignTeamToProject(int projectId, [FromQuery] int teamId)
+        {
+            var result = await _ProjectService.AssignTeamToProjectAsync(projectId, teamId);
+            return Response(result);
+        }
+
     }
 
 

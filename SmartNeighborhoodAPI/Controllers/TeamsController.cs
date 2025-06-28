@@ -5,9 +5,6 @@
     public class TeamsController : AppControllerBase
     {
         private readonly TeamsService _TeamsService;
-        
-
-
 
         public TeamsController(TeamsService TeamsService)
         {
