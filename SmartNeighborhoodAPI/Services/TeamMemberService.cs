@@ -182,7 +182,6 @@ namespace SmartNeighborhoodAPI.Services
             return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "فشل في تحديث العضو");
         }
 
-
     }
 
 

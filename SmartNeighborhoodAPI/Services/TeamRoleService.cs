@@ -36,6 +36,7 @@ namespace SmartNeighborhoodAPI.Services
             return ApiResponse<IEnumerable<TeamRole>>.Success(teamRoles, "تم جلب أدوار الفرق بنجاح");
         }
 
+
         public async Task<ApiResponse<TeamRole>> UpdateAsync(int id, string newRoleName)
         {
             var teamRole = await _context.TeamRoles.FindAsync(id);
