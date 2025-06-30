@@ -1,5 +1,4 @@
 ﻿using System.Text.Json.Serialization;
-using SmartNeighborhoodAPI.Entites;
 
 namespace OurProjectSmartNeiborhood.Entites
 {

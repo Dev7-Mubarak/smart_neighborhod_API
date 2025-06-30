@@ -76,8 +76,6 @@ namespace SmartNeighborhoodAPI.Services
                     return ApiResponse<string>.Success("TeamMember Updated Successfully");
 
                 return ApiResponse<string>.Error(HttpStatusCode.NotModified, "Faild To Update TeamMember");
-
-
             }
         }
     

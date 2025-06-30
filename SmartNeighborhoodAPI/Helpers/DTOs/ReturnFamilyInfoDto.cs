@@ -1,19 +1,20 @@
-﻿namespace SmartNeighborhoodAPI.Helpers.DTOs
+﻿using SmartNeighborhoodAPI.Helpers.DTOs.FamilyMember;
+
+namespace SmartNeighborhoodAPI.Helpers.DTOs
 {
     public class ReturnFamilyInfoDto
     {
         public int Id { get; set; }
-        public string Name { get; set; }
-        public string Location { get; set; }
-        public string FamilyNotes { get; set; }
-        public int FamilyCatgoryId { get; set; }
-        public string FamilyCatgoryName { get; set; } 
+        public required string Name { get; set; }
+        public  string? Location { get; set; }
+        public required string FamilyNotes { get; set; }
+        public int FamilyCategoryId { get; set; }
+        public required string FamilyCategoryName { get; set; }
         public int FamilyTypeId { get; set; }
-        public string FamilyTypeName { get; set; }
+        public required string FamilyTypeName { get; set; }
         public int BlockId { get; set; }
-        public string BlockName { get; set; }
-        public int HeadOfTheFamilyId { get; set; }
-        public string HeadOfTheFamilyName { get; set; }
-        public List<FamilyMemberDto> FamilyMembers { get; set; }
+        public required string BlockName { get; set; }
+        public List<ReturnFamilyMemberWithFullInfo> FamilyMembers { get; set; }
+        public List<ReturnFamilyMemberWithFullInfo> FamilyMembers { get; set; }
     }
 }

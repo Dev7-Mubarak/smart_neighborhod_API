@@ -150,7 +150,6 @@ namespace SmartNeighborhoodAPI.Services
 
             return ApiResponse<List<ReturnFamilyDto>>.Success(familyDtos);
         }
-
         public async Task<ApiResponse<ReturnFamilyDto>> GetById(int id)
         {
             _logger.LogInformation("Retrieving family details for Family ID: {FamilyId}", id);
