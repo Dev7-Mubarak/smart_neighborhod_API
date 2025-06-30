@@ -91,9 +91,21 @@ namespace SmartNeighborhoodAPI.Services
             _logger.LogInformation("Getting all teams from the database...");
 
             var teams = await _context.Teams
-                .Include(t => t.TeamMembers)
-                    .ThenInclude(tm => tm.TeamRole) // Include TeamRole for each member
                 .AsNoTracking()
+                .Select(t => new CustomTeamDto
+                {
+                    Id = t.Id,
+                    Name = t.Name,
+                    Members = t.TeamMembers.Select(m => new CustomTeamMemberDto
+                    {
+                        Id = m.Id,
+                        PersonId = m.PersonId,
+                        DateOfJoin = m.DateOfJoin,
+                        TeamRoleId = m.TeamRoleId,
+                        TeamRoleName = m.TeamRole.Name ,
+                        FullName = m.Person.FullName 
+                    }).ToList()
+                })
                 .ToListAsync();
 
             if (!teams.Any())
@@ -103,24 +115,9 @@ namespace SmartNeighborhoodAPI.Services
             }
 
             _logger.LogInformation("{Count} teams retrieved from the database.", teams.Count);
-
-            var customTeamDtos = teams.Select(t => new CustomTeamDto
-            {
-                Id = t.Id,
-                Name = t.Name,
-                Members = t.TeamMembers.Select(m => new CustomTeamMemberDto
-                {
-                    Id = m.Id,
-                    PersonId = m.PersonId,
-                    DateOfJoin = m.DateOfJoin,
-                    TeamRoleId = m.TeamRoleId,
-                    TeamRoleName = m.TeamRole.Name ?? "غير معروف"
-                }).ToList()
-            }).ToList();
-
             _logger.LogInformation("Successfully mapped teams to CustomTeamDto objects.");
 
-            return ApiResponse<IEnumerable<CustomTeamDto>>.Success(customTeamDtos, "تم جلب الفرق بنجاح");
+            return ApiResponse<IEnumerable<CustomTeamDto>>.Success(teams, "تم جلب الفرق بنجاح");
         }
         public async Task<ApiResponse<TeamDto>> GetByIdAsync(int id)
         {
