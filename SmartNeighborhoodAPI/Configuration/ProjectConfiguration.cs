@@ -46,10 +46,6 @@ namespace SmartNeighborhoodAPI.Configuration
                 .HasForeignKey(p => p.ProjectCatogoryId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.HasMany(p => p.Teams)
-                .WithOne(t => t.Project)
-                .HasForeignKey(t => t.ProjectId)
-                .OnDelete(DeleteBehavior.Cascade);
 
             // 🌱 Seed one project (assumes ManagerId = 1 and ProjectCatogoryId = 1 already exist)
             builder.HasData(new Project

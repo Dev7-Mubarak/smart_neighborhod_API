@@ -32,6 +32,7 @@ namespace OurProjectSmartNeiborhood.Entites
         [MaxLength(30)]
         public string? Job { get; set; }
         public List<FamilyMember> FamilyMembers { get; set; }
+        public ICollection<TeamMember> TeamMemberships { get; set; }
 
         [JsonIgnore]
         public string FullName =>

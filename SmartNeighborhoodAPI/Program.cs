@@ -73,6 +73,7 @@ builder.Services.AddScoped<ProjectFamilieservice>();
 builder.Services.AddScoped<TeamsService>();
 builder.Services.AddScoped<TeamMemberService>();
 builder.Services.AddScoped<FamilyMemberService>();
+builder.Services.AddScoped<TeamRoleService>();
 
 
 
