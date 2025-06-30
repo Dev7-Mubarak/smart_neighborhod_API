@@ -6,7 +6,6 @@ using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.RateLimiting;
 using OurProjectSmartNeiborhood.Services;
 using Serilog;
 using SmartNeighborhoodAPI.Entites;

@@ -1,4 +1,4 @@
-﻿namespace SmartNeighborhoodAPI.Helpers.DTOs.FamilyMember
+﻿namespace SmartNeighborhoodAPI.Helpers.DTOs.FamilyMembers
 {
     public class ReturnFamilyMemberDto
     {

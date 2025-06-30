@@ -25,18 +25,18 @@
             return Response(result);
         }
 
-        [HttpGet("[action]/{id:int}")]
-        public async Task<IActionResult> GetFamilyDetilesByIdAsync(int id)
+        [HttpGet("[action]")]
+        public async Task<IActionResult> GetDetailesAsync(int id)
         {
-            var result = await _FamilyService.GetFamilyDetilesByIdAsync(id);
+            var result = await _FamilyService.GetDetailesAsync(id);
             return Response(result);
-        }
+        }      
 
 
         [HttpGet("[action]/{id:int}")]
-        public async Task<IActionResult> GetFamilyByIdAsync(int id)
+        public async Task<IActionResult> GetByIdAsync(int id)
         {
-            var result = await _FamilyService.GetFamilyById(id);
+            var result = await _FamilyService.GetById(id);
             return Response(result);
         }
 

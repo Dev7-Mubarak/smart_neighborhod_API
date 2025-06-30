@@ -5,8 +5,9 @@ namespace SmartNeighborhoodAPI.Helpers.DTOs
 {
     public class FamilyMemberDto
     {
-        public PersonDto Person { get; set; }
-        public string RoleName { get; set; }
+        public int PersonId { get; set; }
+        public int FamilyId { get; set; }
+        public int RoleId { get; set; }
     }
 }
 
