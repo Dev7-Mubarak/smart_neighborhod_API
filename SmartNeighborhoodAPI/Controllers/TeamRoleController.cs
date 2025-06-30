@@ -30,9 +30,9 @@ namespace SmartNeighborhoodAPI.Controllers
         }
 
         [HttpPut("[action]/{id:int}")]
-        public async Task<IActionResult> UpdateAsync(int roleId, string newRoleName)
+        public async Task<IActionResult> UpdateAsync(int id,[FromBody] string newRoleName)
         {
-            return Response(await _teamRoleService.UpdateAsync(roleId, newRoleName));
+            return Response(await _teamRoleService.UpdateAsync(id, newRoleName));
         }
 
         [HttpDelete("[action]/{id:int}")]

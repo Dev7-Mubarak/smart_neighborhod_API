@@ -36,17 +36,17 @@ namespace SmartNeighborhoodAPI.Services
             return ApiResponse<IEnumerable<TeamRole>>.Success(teamRoles, "تم جلب أدوار الفرق بنجاح");
         }
 
-        public async Task<ApiResponse<TeamRole>> UpdateAsync(int roleId, string newRoleName)
+        public async Task<ApiResponse<TeamRole>> UpdateAsync(int id, string newRoleName)
         {
-            var teamRole = await _context.TeamRoles.FindAsync(roleId);
+            var teamRole = await _context.TeamRoles.FindAsync(id);
             if (teamRole == null)
             {
-                _logger.LogWarning("Team role with ID {RoleId} not found", roleId);
+                _logger.LogWarning("Team role with ID {RoleId} not found", id);
                 return ApiResponse<TeamRole>.Error(HttpStatusCode.NotFound, "الدور غير موجود");
             }
 
             var isNameExists = await _context.TeamRoles
-                .AnyAsync(x => x.Name == newRoleName && x.Id != roleId);
+                .AnyAsync(x => x.Name == newRoleName && x.Id != id);
             if (isNameExists)
             {
                 _logger.LogWarning("Team role name '{RoleName}' is already in use", newRoleName);
@@ -58,11 +58,11 @@ namespace SmartNeighborhoodAPI.Services
             _context.TeamRoles.Update(teamRole);
             if (await _context.SaveChangesAsync() <= 0)
             {
-                _logger.LogError("Failed to update team role with ID {RoleId}", roleId);
+                _logger.LogError("Failed to update team role with ID {RoleId}", id);
                 return ApiResponse<TeamRole>.Error(HttpStatusCode.BadRequest, "فشل في تحديث الدور");
             }
 
-            _logger.LogInformation("Team role with ID {RoleId} updated successfully", roleId);
+            _logger.LogInformation("Team role with ID {RoleId} updated successfully", id);
             return ApiResponse<TeamRole>.Success(teamRole, "تم تحديث الدور بنجاح");
         }
 
