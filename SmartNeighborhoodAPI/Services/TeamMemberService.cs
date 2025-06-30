@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Security.Cryptography;
 using Microsoft.Extensions.Logging;
 using SmartNeighborhoodAPI.Helpers.DTOs.TeamMembers;
 
@@ -125,23 +126,52 @@ namespace SmartNeighborhoodAPI.Services
                 var TeamMemberDto = _mapper.Map<TeamMemberDto>(TeamMember);
                 return ApiResponse<TeamMemberDto>.Success(TeamMemberDto);
             }
-            public async Task<ApiResponse<string>> UpdateAsync(int id, TeamMemberDto TeamMemberDto)
+
+
+        public async Task<ApiResponse<string>> UpdateAsync(int id, UpdateTeamMemberDto dto)
+        {
+            _logger.LogInformation("Updating team member with ID {TeamMemberId}", id);
+
+            var teamMember = await _context.TeamMembers.FindAsync(id);
+            if (teamMember == null)
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "لم يتم العثور على العضو في الفريق");
+
+            var teamExists = await _context.Teams.AnyAsync(t => t.Id == dto.TeamId);
+            if (!teamExists)
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "لم يتم العثور على الفريق");
+
+            var personExists = await _context.People.AnyAsync(p => p.Id == dto.PersonId);
+            if (!personExists)
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "لم يتم العثور على الشخص");
+
+            var roleExists = await _context.TeamRoles.AnyAsync(r => r.Id == dto.TeamRoleId);
+            if (!roleExists)
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "لم يتم العثور على الدور");
+
+            // Optional: prevent duplicate team member update (e.g., assigning same person to same team again)
+            var duplicate = await _context.TeamMembers
+                .AnyAsync(m => m.TeamId == dto.TeamId && m.PersonId == dto.PersonId && m.Id != id);
+            if (duplicate)
+                return ApiResponse<string>.Error(HttpStatusCode.Conflict, "الشخص عضو بالفعل في الفريق");
+
+            // Update fields
+            teamMember.TeamId = dto.TeamId;
+            teamMember.PersonId = dto.PersonId;
+            teamMember.TeamRoleId = dto.TeamRoleId;
+            teamMember.DateOfJoin = dto.DateOfJoin;
+
+            _context.TeamMembers.Update(teamMember);
+            if (await _context.SaveChangesAsync() > 0)
             {
-                var ExsitTeamMember = await _context.TeamMembers.FirstOrDefaultAsync(x => x.Id == id);
-
-                if (ExsitTeamMember is null)
-                    return ApiResponse<string>.Error(HttpStatusCode.NotFound, "TeamMember Not Found");
-                var UpdateTeamMember = _mapper.Map(TeamMemberDto, ExsitTeamMember);
-
-                _context.TeamMembers.Update(UpdateTeamMember);
-                if (await _context.SaveChangesAsync() > 0)
-                    return ApiResponse<string>.Success("TeamMember Updated Successfully");
-
-                return ApiResponse<string>.Error(HttpStatusCode.NotModified, "Faild To Update TeamMember");
-
-
+                _logger.LogInformation("Team member with ID {TeamMemberId} updated successfully.", id);
+                return ApiResponse<string>.Success("تم تحديث العضو في الفريق بنجاح");
             }
+
+            _logger.LogError("Failed to update team member with ID {TeamMemberId}", id);
+            return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "فشل في تحديث العضو");
         }
-    
+
+    }
+
 
 }

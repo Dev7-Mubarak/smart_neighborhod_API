@@ -38,9 +38,9 @@ namespace SmartNeighborhoodAPI.Controllers
             return Response(result);
         }
         [HttpPut("[action]/{id:int}")]
-        public async Task<IActionResult> UpdateAsync(int id, TeamMemberDto TeamMemberDto)
+        public async Task<IActionResult> UpdateAsync(int id, [FromBody] UpdateTeamMemberDto dto)
         {
-            var result = await _TeamMemberService.UpdateAsync(id, TeamMemberDto);
+            var result = await _TeamMemberService.UpdateAsync(id, dto);
 
             return Response(result);
         }
