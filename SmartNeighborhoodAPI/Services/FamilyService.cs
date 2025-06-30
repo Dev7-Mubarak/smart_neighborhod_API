@@ -19,7 +19,6 @@ namespace SmartNeighborhoodAPI.Services
             _mapper = mapper;
             _logger = logger;
         }
-
         public async Task<ApiResponse<ReturnFamilyDto>> AddAsync(FamilyDto familyDto)
         {
             _logger. LogInformation("Adding a new family with details: {@FamilyDto}", familyDto);
@@ -285,7 +284,6 @@ namespace SmartNeighborhoodAPI.Services
 
             return ApiResponse<ReturnFamilyInfoDto>.Success(family, "تم جلب تفاصيل الأسرة بنجاح.");
         }
-
         public async Task<ApiResponse<string>> UpdateAsync(int id, FamilyDto familyDto)
         {
             var existingFamily = await _context.Families.FirstOrDefaultAsync(x => x.Id == id);

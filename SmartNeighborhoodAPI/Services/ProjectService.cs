@@ -261,6 +261,42 @@ namespace SmartNeighborhoodAPI.Services
             return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "فشل في ربط الفريق بالمشروع");
         }
 
+        public async Task<ApiResponse<string>> AssignFamilyToProjectAsync(int projectId, int familyId)
+        {
+            _logger.LogInformation("Starting assignment of Family {FamilyId} to Project {ProjectId}", familyId, projectId);
+
+            var isProjectExists = await _context.Projects.AnyAsync(x => x.Id == projectId);
+            if (!isProjectExists)
+            {
+                _logger.LogWarning("Project with ID {ProjectId} not found.", projectId);
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "المشروع غير موجود.");
+            }
+
+            var isFamilyExists = await _context.Families.AnyAsync(x => x.Id == familyId);
+            if (!isFamilyExists)
+            {
+                _logger.LogWarning("Family with ID {FamilyId} not found.", familyId);
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "الأسرة غير موجودة.");
+            }
+
+            var projectFamily = new ProjectFamily
+            {
+                FamilyID = familyId,
+                ProjectID = projectId
+            };
+
+            await _context.ProjectFamilies.AddAsync(projectFamily);
+
+            var saveResult = await _context.SaveChangesAsync();
+            if (saveResult <= 0)
+            {
+                _logger.LogError("Failed to assign Family {FamilyId} to Project {ProjectId}.", familyId, projectId);
+                return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "فشل في ربط الأسرة بالمشروع.");
+            }
+
+            _logger.LogInformation("Successfully assigned Family {FamilyId} to Project {ProjectId}.", familyId, projectId);
+            return ApiResponse<string>.Success("تم ربط الأسرة بالمشروع بنجاح.");
+        }
 
         private static string GetDisplayName<T>(T enumValue)
         {
