@@ -30,13 +30,24 @@ namespace SmartNeighborhoodAPI.Services
             if (!personExists)
                 return ApiResponse<string>.Error(HttpStatusCode.NotFound, "لم يتم العثور على الشخص");
 
-            var roleExists = await _context.TeamRoles.AnyAsync(r => r.Id == dto.TeamRoleId);
-            if (!roleExists)
+            var role = await _context.TeamRoles.FirstOrDefaultAsync(r => r.Id == dto.TeamRoleId);
+            if (role == null)
                 return ApiResponse<string>.Error(HttpStatusCode.NotFound, "لم يتم العثور على الدور");
 
-            var alreadyMember = await _context.TeamMembers.AnyAsync(m => m.TeamId == dto.TeamId && m.PersonId == dto.PersonId);
+            var alreadyMember = await _context.TeamMembers
+                .AnyAsync(m => m.TeamId == dto.TeamId && m.PersonId == dto.PersonId);
             if (alreadyMember)
                 return ApiResponse<string>.Error(HttpStatusCode.Conflict, "الشخص عضو بالفعل في الفريق");
+
+            if (role.Name == "مدير المشروع")
+            {
+                var hasManager = await _context.TeamMembers
+                    .Include(m => m.TeamRole)
+                    .AnyAsync(m => m.TeamId == dto.TeamId && m.TeamRole.Name == "مدير المشروع");
+
+                if (hasManager)
+                    return ApiResponse<string>.Error(HttpStatusCode.Conflict, "لا يمكن إضافة أكثر من مدير مشروع واحد إلى نفس الفريق");
+            }
 
             var teamMember = new TeamMember
             {
@@ -56,6 +67,7 @@ namespace SmartNeighborhoodAPI.Services
             _logger.LogError("Failed to add team member.");
             return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "فشل في إضافة العضو");
         }
+
 
         public async Task<ApiResponse<string>> DeleteAsync(int id)
         {
@@ -101,7 +113,7 @@ namespace SmartNeighborhoodAPI.Services
 
             var dtos = teamMembers.Select(tm => new TeamMemberDetailsDto
             {
-                Id = tm.Id,
+                TeamMemberId = tm.Id,
                 PersonId = tm.PersonId,
                 PersonName = tm.Person?.FullName ?? "غير معروف",
                 TeamId = tm.TeamId,
@@ -127,7 +139,6 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<TeamMemberDto>.Success(TeamMemberDto);
             }
 
-
         public async Task<ApiResponse<string>> UpdateAsync(int id, UpdateTeamMemberDto dto)
         {
             _logger.LogInformation("Updating team member with ID {TeamMemberId}", id);
@@ -140,23 +151,23 @@ namespace SmartNeighborhoodAPI.Services
             if (!teamExists)
                 return ApiResponse<string>.Error(HttpStatusCode.NotFound, "لم يتم العثور على الفريق");
 
-            var personExists = await _context.People.AnyAsync(p => p.Id == dto.PersonId);
-            if (!personExists)
-                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "لم يتم العثور على الشخص");
-
             var roleExists = await _context.TeamRoles.AnyAsync(r => r.Id == dto.TeamRoleId);
             if (!roleExists)
                 return ApiResponse<string>.Error(HttpStatusCode.NotFound, "لم يتم العثور على الدور");
 
-            // Optional: prevent duplicate team member update (e.g., assigning same person to same team again)
-            var duplicate = await _context.TeamMembers
-                .AnyAsync(m => m.TeamId == dto.TeamId && m.PersonId == dto.PersonId && m.Id != id);
-            if (duplicate)
-                return ApiResponse<string>.Error(HttpStatusCode.Conflict, "الشخص عضو بالفعل في الفريق");
+            var personId = teamMember.PersonId;
+
+            // Optional: restrict "مدير المشروع" to only one per team
+            if (dto.TeamRoleId == 1)
+            {
+                var anotherManagerExists = await _context.TeamMembers
+                    .AnyAsync(m => m.Id != id && m.TeamId == dto.TeamId && m.TeamRoleId == 1);
+                if (anotherManagerExists)
+                    return ApiResponse<string>.Error(HttpStatusCode.Conflict, "لا يمكن تعيين أكثر من مدير مشروع واحد في الفريق");
+            }
 
             // Update fields
             teamMember.TeamId = dto.TeamId;
-            teamMember.PersonId = dto.PersonId;
             teamMember.TeamRoleId = dto.TeamRoleId;
             teamMember.DateOfJoin = dto.DateOfJoin;
 
