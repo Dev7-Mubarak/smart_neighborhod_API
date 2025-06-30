@@ -1,7 +1,10 @@
 ﻿using System.Net;
 using SmartNeighborhoodAPI.Entites.Enums;
+using SmartNeighborhoodAPI.Helpers.DTOs.Families;
 using SmartNeighborhoodAPI.Helpers.DTOs.FamilyMember;
+using SmartNeighborhoodAPI.Helpers.DTOs.FamilyMembers;
 using SmartNeighborhoodAPI.Helpers.DTOs.Person;
+using SmartNeighborhoodAPI.Helpers.DTOs.ProjectFamily;
 
 namespace SmartNeighborhoodAPI.Services
 {
@@ -198,71 +201,91 @@ namespace SmartNeighborhoodAPI.Services
         }
         public async Task<ApiResponse<ReturnFamilyInfoDto>> GetDetailesAsync(int id)
         {
+            _logger.LogInformation("Starting to retrieve family details for Family ID: {FamilyId}", id);
+
             var family = await _context.Families
                 .AsNoTracking()
-                .Include(x => x.FamilyCatgory)
-                .Include(x => x.FamilyType)
-                .Include(x => x.Block)
-                .Include(x => x.FamilyMembers)
-                .ThenInclude(x => x.MemberFamilyRole)
-                .Include(x => x.FamilyMembers)
-                .ThenInclude(x => x.Person)
+                .Select(x => new ReturnFamilyInfoDto
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Location = x.Location,
+                    FamilyCategoryId = x.FamilyCatgoryId,
+                    FamilyCategoryName = x.FamilyCatgory.Name,
+                    FamilyNotes = x.FamilyNotes,
+                    FamilyTypeId = x.FamilyTypeId,
+                    FamilyTypeName = x.FamilyType.Name,
+                    BlockId = x.BlockId,
+                    BlockName = x.Block.Name,
+                    FamilyMembers = x.FamilyMembers.Select(fm => new ReturnFamilyMemberWithFullInfo
+                    {
+                        FamilyMemberId = fm.Id,
+                        Role = new MemberFamilyRole
+                        {
+                            Id = fm.MemberFamilyRole.Id,
+                            RoleName = fm.MemberFamilyRole.RoleName
+                        },
+                        Person = new PersonDto
+                        {
+                            Id = fm.Person.Id,
+                            FullName = $"{fm.Person.FirstName} {fm.Person.SecondName} {fm.Person.ThirdName} {fm.Person.LastName}",
+                            FirstName = fm.Person.FirstName,
+                            SecondName = fm.Person.SecondName,
+                            ThirdName = fm.Person.ThirdName,
+                            LastName = fm.Person.LastName,
+                            PhoneNumber = fm.Person.PhoneNumber,
+                            DateOfBirth = fm.Person.DateOfBirth,
+                            Email = fm.Person.Email,
+                            Image = string.IsNullOrEmpty(fm.Person.Image) ? null : fm.Person.Image,
+                            Gender = fm.Person.Gender.ToString(),
+                            BloodType = fm.Person.BloodType.ToString(),
+                            IdentityNumber = fm.Person.IdentityNumber,
+                            IdentityType = fm.Person.IdentityType.ToString(),
+                            OccupationStatus = fm.Person.OccupationStatus.ToString(),
+                            MaritalStatus = fm.Person.MaritalStatus.ToString(),
+                            Job = fm.Person.Job ?? "NAN"
+                        }
+                    }).ToList(),
+                    Assistances = x.ProjectFamilies.Select(pfm => new Assistances
+                    {
+                        Id = pfm.Project.Id,
+                        Name = pfm.Project.Name
+                    }).ToList()
+                })
                 .FirstOrDefaultAsync(x => x.Id == id);
-            if (family == null)
-                return ApiResponse<ReturnFamilyInfoDto>.Error(HttpStatusCode.NotFound, "Family Not Found");
 
-            var headOfTheFamily = _context.FamilyMembers
+            if (family == null)
+            {
+                _logger.LogWarning("Family with ID {FamilyId} was not found.", id);
+                return ApiResponse<ReturnFamilyInfoDto>.Error(HttpStatusCode.NotFound, "الأسرة غير موجودة.");
+            }
+
+            _logger.LogInformation("Family found. Retrieving head of the family...");
+
+            var headOfTheFamily = await _context.FamilyMembers
                 .AsNoTracking()
-                .Include(x => x.MemberFamilyRole)
-                .Include(x => x.Person)
-                .FirstOrDefault(x => x.FamilyId == id && x.MemberFamilyRole.Id == 1);
+                .Where(x => x.FamilyId == id && x.MemberFamilyRole.Id == 1)
+                .Select(x => new HeadOfFamilyDto
+                {
+                    IdentityNumber = x.Person.IdentityNumber,
+                    FullName = x.Person.FullName,
+                    PhoneNumber = x.Person.PhoneNumber
+                })
+                .FirstOrDefaultAsync();
 
             if (headOfTheFamily == null)
-                return ApiResponse<ReturnFamilyInfoDto>.Error(HttpStatusCode.NotFound, "This Family Does Not Have A Father");
-
-            var dto = new ReturnFamilyInfoDto
             {
-                Id = family.Id,
-                Name = family.Name,
-                Location = family.Location,
-                FamilyNotes = family.FamilyNotes,
-                FamilyCatgoryId = family.FamilyCatgoryId,
-                FamilyCatgoryName = family.FamilyCatgory.Name,
-                FamilyTypeId = family.FamilyTypeId,
-                FamilyTypeName = family.FamilyType.Name,
-                BlockId = family.BlockId,
-                BlockName = family.Block.Name,
-                HeadOfTheFamilyId = headOfTheFamily.Id,
-                HeadOfTheFamilyName = headOfTheFamily.Person.FirstName,
-                //FamilyMembers = family.FamilyMembers.Select(m => new FamilyMemberDto
-                //{
-                //    Person = new PersonDto
-                //    {
-                //        Id = m.Person.Id,
-                //        FirstName = m.Person.FirstName,
-                //        SecondName = m.Person.LastName,
-                //        ThirdName = m.Person.ThirdName,
-                //        LastName = m.Person.LastName,
-                //        BloodType = GetDisplayName(m.Person.BloodType),
-                //        DateOfBirth = m.Person.DateOfBirth,
-                //        Email = m.Person.Email,
-                //        Gender = GetDisplayName(m.Person.Gender),
-                //        IdentityNumber = m.Person.IdentityNumber,
-                //        Image = m.Person.Image,
-                //        Job = m.Person.Job,
-                //        PhoneNumber = m.Person.PhoneNumber,
-                //        MaritalStatus = GetDisplayName(m.Person.MaritalStatus),
-                //        IsCall = m.Person.IsContactNumber,
-                //        IdentityType = GetDisplayName(m.Person.IdentityType),
-                //        IsWhatsapp = m.Person.IsWhatsapp,
-                //        OccupationStatus = GetDisplayName(m.Person.OccupationStatus)
-                //    },
-                //    RoleName = m.MemberFamilyRole.RoleName
-                //}).ToList()
-            };
+                _logger.LogWarning("Family ID {FamilyId} does not have a head of family (role ID 1).", id);
+                return ApiResponse<ReturnFamilyInfoDto>.Error(HttpStatusCode.NotFound, "لا يوجد عائل محدد لهذه الأسرة.");
+            }
 
-            return ApiResponse<ReturnFamilyInfoDto>.Success(dto);
+            _logger.LogInformation("Head of family found. Returning family details.");
+
+            family.HeadOfFamily = headOfTheFamily;
+
+            return ApiResponse<ReturnFamilyInfoDto>.Success(family, "تم جلب تفاصيل الأسرة بنجاح.");
         }
+
         public async Task<ApiResponse<string>> UpdateAsync(int id, FamilyDto familyDto)
         {
             var existingFamily = await _context.Families.FirstOrDefaultAsync(x => x.Id == id);

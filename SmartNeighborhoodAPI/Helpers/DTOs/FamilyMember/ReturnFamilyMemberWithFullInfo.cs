@@ -6,7 +6,7 @@ namespace SmartNeighborhoodAPI.Helpers.DTOs.FamilyMember
     {
         public int FamilyMemberId { get; set; }
         public MemberFamilyRole Role { get; set; }
-        public List<PersonDto> Person { get; set; }
+        public PersonDto Person { get; set; }
 
     }
 }

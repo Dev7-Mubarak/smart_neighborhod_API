@@ -17,6 +17,9 @@ namespace OurProjectSmartNeiborhood.Entites
         public List<FamilyMember> FamilyMembers { get; set; }
         public int BlockId { get; set; }
         public Block Block { get; set; }
+
+        public ICollection<ProjectFamily> ProjectFamilies { get; set; }
+
     }
 
 
