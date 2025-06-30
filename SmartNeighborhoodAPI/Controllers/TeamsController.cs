@@ -32,8 +32,6 @@
 
             return Response(result);
 
-
-
         }
         [HttpPut("[action]/{id:int}")]
         public async Task<IActionResult> UpdateAsync(int id, TeamDto TeamDto)
