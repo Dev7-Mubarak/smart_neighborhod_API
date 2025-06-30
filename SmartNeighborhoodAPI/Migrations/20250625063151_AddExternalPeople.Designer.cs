@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SmartNeighborhoodAPI;
 
@@ -11,9 +12,11 @@ using SmartNeighborhoodAPI;
 namespace SmartNeighborhoodAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250625063151_AddExternalPeople")]
+    partial class AddExternalPeople
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -254,24 +257,16 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.Property<int>("ComplainTypeId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Image")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsResolved")
                         .HasColumnType("bit");
 
-                    b.Property<int>("ManagerId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Notes")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Outcome")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("SessionDate")
                         .HasColumnType("datetime2");
@@ -279,8 +274,6 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ComplainTypeId");
-
-                    b.HasIndex("ManagerId");
 
                     b.ToTable("Complains");
                 });
@@ -316,19 +309,15 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.Property<int?>("ExternalPersonId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsFirstParty")
-                        .HasColumnType("bit");
-
-                    b.Property<int?>("PersonId")
-                        .HasColumnType("int");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ComplainId");
 
                     b.HasIndex("ExternalPersonId");
-
-                    b.HasIndex("PersonId");
 
                     b.ToTable("ConfilctParties");
                 });
@@ -662,6 +651,37 @@ namespace SmartNeighborhoodAPI.Migrations
                         });
                 });
 
+            modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.PersonComplain", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ComplainId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ConfilctPartyId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PersonId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PesonId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ComplainId");
+
+                    b.HasIndex("ConfilctPartyId");
+
+                    b.HasIndex("PersonId");
+
+                    b.ToTable("PersonComplain");
+                });
+
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.Project", b =>
                 {
                     b.Property<int>("Id")
@@ -953,17 +973,17 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "0f03f41b-9069-4446-b5e0-81d737210dc1",
+                            ConcurrencyStamp = "cf03eb7c-d7ee-4fd2-844e-bd60ab4ab814",
                             Email = "admin@example.com",
                             EmailConfirmed = true,
                             IsActive = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@EXAMPLE.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEJ/3Y7s4ORyKJ6tWg3M6dQEhrfosu8HqedH7WOgKq0J+8dZvqPCzzMfrWR4o9IEKRg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEDOPyRppJdxM7W5kQOaL++vyzqH2ASENKb29zhEAcdB8MexfJfeEQZ263/cPUES6TQ==",
                             PersonId = 1,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "a3beaae7-9f7c-4533-a662-c57c3f9c7df5",
+                            SecurityStamp = "b00439fb-879a-4d41-bc4f-f98924a62159",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         });
@@ -1077,15 +1097,7 @@ namespace SmartNeighborhoodAPI.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("OurProjectSmartNeiborhood.Entites.Person", "Manager")
-                        .WithMany()
-                        .HasForeignKey("ManagerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("ComplainType");
-
-                    b.Navigation("Manager");
                 });
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.ConfilctParty", b =>
@@ -1096,19 +1108,11 @@ namespace SmartNeighborhoodAPI.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SmartNeighborhoodAPI.Entites.ExternalPerson", "ExternalPerson")
+                    b.HasOne("SmartNeighborhoodAPI.Entites.ExternalPerson", null)
                         .WithMany("ConfilctParties")
                         .HasForeignKey("ExternalPersonId");
 
-                    b.HasOne("OurProjectSmartNeiborhood.Entites.Person", "Person")
-                        .WithMany()
-                        .HasForeignKey("PersonId");
-
                     b.Navigation("Complain");
-
-                    b.Navigation("ExternalPerson");
-
-                    b.Navigation("Person");
                 });
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.Family", b =>
@@ -1165,6 +1169,33 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.Navigation("Person");
                 });
 
+            modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.PersonComplain", b =>
+                {
+                    b.HasOne("OurProjectSmartNeiborhood.Entites.Complain", "Complain")
+                        .WithMany("PersonComplains")
+                        .HasForeignKey("ComplainId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("OurProjectSmartNeiborhood.Entites.ConfilctParty", "ConfilctParty")
+                        .WithMany("PersonComplains")
+                        .HasForeignKey("ConfilctPartyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("OurProjectSmartNeiborhood.Entites.Person", "Person")
+                        .WithMany()
+                        .HasForeignKey("PersonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Complain");
+
+                    b.Navigation("ConfilctParty");
+
+                    b.Navigation("Person");
+                });
+
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.Project", b =>
                 {
                     b.HasOne("OurProjectSmartNeiborhood.Entites.Person", "Manager")
@@ -1195,7 +1226,7 @@ namespace SmartNeighborhoodAPI.Migrations
                         .HasForeignKey("FamilyId");
 
                     b.HasOne("OurProjectSmartNeiborhood.Entites.Project", "Project")
-                        .WithMany("ProjectFamilies")
+                        .WithMany()
                         .HasForeignKey("ProjectId");
 
                     b.Navigation("Block");
@@ -1254,11 +1285,18 @@ namespace SmartNeighborhoodAPI.Migrations
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.Complain", b =>
                 {
                     b.Navigation("ConfilctParties");
+
+                    b.Navigation("PersonComplains");
                 });
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.ComplainType", b =>
                 {
                     b.Navigation("Complains");
+                });
+
+            modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.ConfilctParty", b =>
+                {
+                    b.Navigation("PersonComplains");
                 });
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.Family", b =>
@@ -1288,8 +1326,6 @@ namespace SmartNeighborhoodAPI.Migrations
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.Project", b =>
                 {
-                    b.Navigation("ProjectFamilies");
-
                     b.Navigation("Teams");
                 });
 

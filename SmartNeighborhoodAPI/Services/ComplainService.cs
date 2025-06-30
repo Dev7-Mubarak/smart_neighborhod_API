@@ -1,30 +1,86 @@
-﻿using System.Net;
+﻿using SmartNeighborhoodAPI.Entites;
+using System.Net;
 
 namespace SmartNeighborhoodAPI.Services
 {
     public class ComplainService
     {
         private readonly ApplicationDbContext _context;
-        readonly IMapper _mapper;
+        private readonly IMapper _mapper;
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly ImageService _imageService;
+        private readonly string _complainImagePath;
 
-        public ComplainService(ApplicationDbContext context, IMapper mapper)
+        public ComplainService(
+            ApplicationDbContext context,
+            IMapper mapper,
+            IWebHostEnvironment webHostEnvironment,
+            ImageService imageService)
         {
             _context = context;
             _mapper = mapper;
+            _webHostEnvironment = webHostEnvironment;
+            _imageService = imageService;
+            _complainImagePath = $"{_webHostEnvironment.WebRootPath}{FileHelper.ComplainImagesPath}";
         }
-        public async Task<ApiResponse<ComplainDTo>> AddAsync(ComplainDTo ComplainDTo)
+
+        public async Task<ApiResponse<string>> UpdateAsync(int id, AddComplainDto dto)
         {
+            var exist = await _context.Complains
+                .Include(x => x.ConfilctParties)
+                .FirstOrDefaultAsync(x => x.Id == id);
 
-            var Complain = _mapper.Map<Complain>(ComplainDTo);
+            if (exist == null)
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "Complain not found");
+
+            var managerExists = await _context.People.AnyAsync(p => p.Id == dto.ManagerId);
+            if (!managerExists)
+                return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "Manager not found");
+
+            if (dto.Image != null)
+                exist.Image = await _imageService.SaveImageAsync(dto.Image, _complainImagePath);
+
+            // Use AutoMapper to map updated fields
+            _mapper.Map(dto, exist);
+
+            // Update conflict parties if necessary
+
+            _context.Complains.Update(exist);
+            await _context.SaveChangesAsync();
+
+            return ApiResponse<string>.Success("Complain Updated Successfully");
+        }
+     
 
 
-            await _context.Complains.AddAsync(Complain);
-            if (await _context.SaveChangesAsync() > 0)
-                return ApiResponse<ComplainDTo>.Success(ComplainDTo, "Added Successed");
+        public async Task<ApiResponse<ComplainDTo>> AddAsync(AddComplainDto dto)
+        {
+            // Validate that the Manager exists
+            var managerExists = await _context.People.AnyAsync(p => p.Id == dto.ManagerId);
+            if (!managerExists)
+                return ApiResponse<ComplainDTo>.Error(HttpStatusCode.BadRequest, "Manager not found");
 
-            return ApiResponse<ComplainDTo>.Error(HttpStatusCode.BadRequest, "Complain not add");
+            // Validate that the ComplainType exists
+            var typeExists = await _context.ComplainTypes.AnyAsync(c => c.Id == dto.ComplainTypeId);
+            if (!typeExists)
+                return ApiResponse<ComplainDTo>.Error(HttpStatusCode.BadRequest, "Complain type not found");
 
+            // Handle image saving if provided
+            string complainImage = string.Empty;
+            if (dto.Image != null)
+            {
+                complainImage = await _imageService.SaveImageAsync(dto.Image, _complainImagePath);
+            }
 
+            // Map DTO to Entity
+            var complain = _mapper.Map<Complain>(dto);
+            complain.Image = complainImage;
+
+            await _context.Complains.AddAsync(complain);
+            await _context.SaveChangesAsync();
+
+            var complainDto = _mapper.Map<ComplainDTo>(complain);
+            return ApiResponse<ComplainDTo>.Success(complainDto, "Added Successfully");
         }
         public async Task<ApiResponse<string>> DeleteAsync(int id)
         {
@@ -38,45 +94,47 @@ namespace SmartNeighborhoodAPI.Services
 
             return ApiResponse<string>.Error(HttpStatusCode.NotModified, "Faild To Delete the Complain");
         }
-        public async Task<ApiResponse<IEnumerable<ComplainDTo>>> GetAll()
-        {
-            var Complains = await _context.Complains.AsNoTracking().ToListAsync();
-            if (Complains.Count > 0)
-            {
-                var ComplainDTos = _mapper.Map<IEnumerable<ComplainDTo>>(Complains);
-                return ApiResponse<IEnumerable<ComplainDTo>>.Success(ComplainDTos);
-            }
-
-            return ApiResponse<IEnumerable<ComplainDTo>>.Error(HttpStatusCode.NotFound, "No Complains Found");
+   
+       
 
 
-
-        }
         public async Task<ApiResponse<ComplainDTo>> GetByIdAsync(int id)
         {
-            var Complain = await _context.Complains.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
-            if (Complain == null)
-                return ApiResponse<ComplainDTo>.Error(HttpStatusCode.NotFound, "Complain Not Found");
+            var complain = await _context.Complains
+                .Include(c => c.ConfilctParties)
+                    .ThenInclude(cp => cp.Person)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.Id == id);
 
+            if (complain == null)
+                return ApiResponse<ComplainDTo>.Error(HttpStatusCode.NotFound, "Complain not found");
 
-            var ComplainDTo = _mapper.Map<ComplainDTo>(Complain);
-            return ApiResponse<ComplainDTo>.Success(ComplainDTo);
+            var dto = _mapper.Map<ComplainDTo>(complain);
+            return ApiResponse<ComplainDTo>.Success(dto);
         }
-        public async Task<ApiResponse<string>> UpdateAsync(int id, ComplainDTo ComplainDTo)
+
+
+
+        public async Task<ApiResponse<List<ManagerDropdownDto>>> GetAllManagersAsync()
         {
-            var ExsitComplain = await _context.Complains.FirstOrDefaultAsync(x => x.Id == id);
+            var managers = await _context.Blocks
+                .Where(b => b.Manager != null && b.Manager.Person != null)
+                .Select(b => new ManagerDropdownDto
+                {
+                    Id = b.Manager.Person.Id,
+                    FullName = b.Manager.Person.FirstName + " " +
+                               b.Manager.Person.SecondName + " " +
+                               b.Manager.Person.ThirdName + " " +
+                               b.Manager.Person.LastName
+                })
+                .Distinct()
+                .ToListAsync();
 
-            if (ExsitComplain is null)
-                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "Complain Not Found");
-            var UpdateComplain = _mapper.Map(ComplainDTo, ExsitComplain);
+            if (managers.Count == 0)
+                return ApiResponse<List<ManagerDropdownDto>>.Error(HttpStatusCode.NotFound, "No managers found");
 
-            _context.Complains.Update(UpdateComplain);
-            if (await _context.SaveChangesAsync() > 0)
-                return ApiResponse<string>.Success("Complain Updated Successfully");
-
-            return ApiResponse<string>.Error(HttpStatusCode.NotModified, "Faild To Update Complain");
-
-
+            return ApiResponse<List<ManagerDropdownDto>>.Success(managers);
         }
     }
 }
+

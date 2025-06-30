@@ -1,32 +1,29 @@
 ﻿namespace SmartNeighborhoodAPI.Helpers.DTOs
 {
-    public class ComplainDTo
+    public class AddComplainDto
     {
-        public int Id { get; set; }
-
-        [Required]
-        [MaxLength(300)]
+        [Required(ErrorMessage = "Outcome is required")]
         public string Outcome { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Complain Type is required")]
         public int ComplainTypeId { get; set; }
 
-        [Required]
-        [MaxLength(500)]
+        [Required(ErrorMessage = "Notes are required")]
         public string Notes { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Session Date is required")]
         public DateTime SessionDate { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Manager is required")]
         public int ManagerId { get; set; }
 
         public bool IsResolved { get; set; }
 
-        public string? Image { get; set; }
+        public IFormFile? Image { get; set; }
 
         public ConflictPartyDto? FirstParty { get; set; }
 
         public ConflictPartyDto? SecondParty { get; set; }
     }
+
 }

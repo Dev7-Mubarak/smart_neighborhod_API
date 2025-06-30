@@ -3,6 +3,7 @@
     public class FileHelper
     {
         public const string PersonImagesPath = "/People";
+        public const string ComplainImagesPath = "/Complain";
         public const string AllowedExtensions = ".jpg,.jpeg,.png";
         public const int MaxFileSizeInMB = 1;
         public const int MaxFileSizeInBytes = MaxFileSizeInMB * 1024 * 1024;

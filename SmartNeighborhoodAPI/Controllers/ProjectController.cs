@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SmartNeighborhoodAPI.Helpers.DTOs.Project;
+using SmartNeighborhoodAPI.Services;
 
 namespace SmartNeighborhoodAPI.Controllers
 {
@@ -52,6 +53,15 @@ namespace SmartNeighborhoodAPI.Controllers
             var result = await _ProjectService.DeleteAsync(id);
 
             return Response(result);
+        }
+        [HttpGet("{id}/details")]
+        public async Task<IActionResult> GetProjectDetails(int id)
+        {
+            var result = await _ProjectService.GetProjectDetailsAsync(id);
+            if (result == null)
+                return NotFound();
+
+            return Ok(result);
         }
     }
 

@@ -18,19 +18,14 @@ namespace SmartNeighborhoodAPI.Controllers
 
 
         }
-        [HttpPost("[action]")]
-        public async Task<IActionResult> AddAsync(ComplainDTo ComplainDto)
+   
+        [HttpGet("GetAllManagers")]
+        public async Task<IActionResult> GetAllManagers()
         {
-            var result = await _ComplainService.AddAsync(ComplainDto);
+            var result = await _ComplainService.GetAllManagersAsync();
             return Response(result);
         }
-        [HttpGet("[action]")]
-        public async Task<IActionResult> GetAllAsync()
-        {
-            var result = await _ComplainService.GetAll();
-
-            return Response(result);
-        }
+    
         [HttpGet("[action]/{id:int}")]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
@@ -42,10 +37,9 @@ namespace SmartNeighborhoodAPI.Controllers
 
         }
         [HttpPut("[action]/{id:int}")]
-        public async Task<IActionResult> UpdateAsync(int id, ComplainDTo ComplainDto)
+        public async Task<IActionResult> UpdateAsync(int id, AddComplainDto dto)
         {
-            var result = await _ComplainService.UpdateAsync(id, ComplainDto);
-
+            var result = await _ComplainService.UpdateAsync(id, dto);
             return Response(result);
         }
         [HttpDelete("[action]/{id:int}")]

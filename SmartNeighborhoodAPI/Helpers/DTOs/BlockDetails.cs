@@ -1,9 +1,8 @@
 ﻿namespace SmartNeighborhoodAPI.Helpers.DTOs
 {
-    public class ConfilctPartyDto
+    public class BlockDetails
     {
-        [Required]
-        [MaxLength(30)]
+        public int BlockId { get; set; }
         public string Name { get; set; }
     }
 }

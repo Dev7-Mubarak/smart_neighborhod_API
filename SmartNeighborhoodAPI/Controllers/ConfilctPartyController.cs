@@ -12,15 +12,22 @@
             _ConfilctPartyService = ConfilctPartyService;
 
         }
-        [HttpPost("[action]")]
-        public async Task<IActionResult> AddAsync(ConfilctPartyDto ConfilctPartyDto)
-        {
+
+        //[HttpPost("AddFirstParty")]
+        //public async Task<IActionResult> AddFirstParty([FromForm] AddConfilctPartyDto dto)
+        //{
+        //    var result = await _ConfilctPartyService.AddFirstPartyAsync(dto);
+        //    return Response(result);
+        //}
+
+        //[HttpPost("AddSecondParty")]
+        //public async Task<IActionResult> AddSecondParty([FromForm] AddConfilctPartyDto dto)
+        //{
+        //    var result = await _ConfilctPartyService.AddSecondPartyAsync(dto);
+        //    return Response(result);
+        //}
 
 
-            var result = await _ConfilctPartyService.AddAsync(ConfilctPartyDto);
-
-            return Response(result);
-        }
         [HttpGet("[action]")]
         public async Task<IActionResult> GetAllAsync()
         {
@@ -39,7 +46,7 @@
 
         }
         [HttpPut("[action]/{id:int}")]
-        public async Task<IActionResult> UpdateAsync(int id, ConfilctPartyDto ConfilctPartyDto)
+        public async Task<IActionResult> UpdateAsync(int id, AddConfilctPartyDto ConfilctPartyDto)
         {
 
             var result = await _ConfilctPartyService.UpdateAsync(id, ConfilctPartyDto);

@@ -9,6 +9,7 @@
 
 
 
+
         public ComplainTypesController(ComplainTypeService ComplainTypeService)
         {
             _ComplainTypeService = ComplainTypeService;

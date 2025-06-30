@@ -10,6 +10,7 @@ namespace SmartNeighborhoodAPI.Services
         private readonly IMapper _mapper;
         private readonly ILogger<Project> _logger;
 
+
         public ProjectService(ApplicationDbContext context, IMapper mapper, ILogger<Project> logger)
         {
             _context = context;
@@ -225,5 +226,30 @@ namespace SmartNeighborhoodAPI.Services
 
             return displayAttr?.Name ?? enumValue.ToString();
         }
+        public async Task<ProjectDetailsDto> GetProjectDetailsAsync(int projectId)
+        {
+            var project = await _context.Projects
+                .Include(p => p.ProjectCatogory)
+                .Include(p => p.Teams)
+                    .ThenInclude(t => t.TeamMembers)
+                        .ThenInclude(tm => tm.Person)
+                .Include(p => p.ProjectFamilies)
+                    .ThenInclude(pf => pf.Family)
+                        .ThenInclude(f => f.FamilyCatgory)
+                .Include(p => p.ProjectFamilies)
+                    .ThenInclude(pf => pf.Family)
+                        .ThenInclude(f => f.FamilyType)
+                .Include(p => p.ProjectFamilies)
+                    .ThenInclude(pf => pf.Block)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.Id == projectId);
+
+            if (project == null)
+                return null;
+
+            var result = _mapper.Map<ProjectDetailsDto>(project);
+            return result;
+        }
+
     }
 }

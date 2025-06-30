@@ -17,5 +17,7 @@ namespace OurProjectSmartNeiborhood.Entites
         public double? Budget { get; set; }
         public ProjectPriority ProjectPriority { get; set; }
         public List<Team>? Teams { get; set; }
+        public ICollection<ProjectFamily> ProjectFamilies { get; set; }
+
     }
 }

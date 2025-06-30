@@ -26,6 +26,7 @@ namespace SmartNeighborhoodAPI.Controllers
 
         [HttpPost("[action]")]
         [Consumes("multipart/form-data")]
+
         public async Task<IActionResult> AddAsync([FromForm] CreatePersonDto createPersonDto)
         {
             var result = await _PersonService.AddAsync(createPersonDto);
