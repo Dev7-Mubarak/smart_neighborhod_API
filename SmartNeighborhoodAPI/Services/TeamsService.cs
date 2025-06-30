@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using Microsoft.Extensions.Logging;
 using SmartNeighborhoodAPI.Helpers.DTOs.TeamMembers;
 using SmartNeighborhoodAPI.Helpers.DTOs.Teams;
 
@@ -96,14 +97,16 @@ namespace SmartNeighborhoodAPI.Services
                 {
                     Id = t.Id,
                     Name = t.Name,
-                    Members = t.TeamMembers.Select(m => new CustomTeamMemberDto
+                    Members = t.TeamMembers.Select(tm => new TeamMemberDetailsDto
                     {
-                        Id = m.Id,
-                        PersonId = m.PersonId,
-                        DateOfJoin = m.DateOfJoin,
-                        TeamRoleId = m.TeamRoleId,
-                        TeamRoleName = m.TeamRole.Name ,
-                        FullName = m.Person.FullName 
+                        TeamMemberId = tm.Id,
+                        PersonId = tm.PersonId,
+                        PersonName = tm.Person.FullName,
+                        TeamId = tm.TeamId,
+                        TeamName = tm.Team.Name,
+                        DateOfJoin = tm.DateOfJoin,
+                        TeamRoleId = tm.TeamRoleId,
+                        TeamRoleName = tm.TeamRole.Name
                     }).ToList()
                 })
                 .ToListAsync();
@@ -119,6 +122,8 @@ namespace SmartNeighborhoodAPI.Services
 
             return ApiResponse<IEnumerable<CustomTeamDto>>.Success(teams, "تم جلب الفرق بنجاح");
         }
+
+
         public async Task<ApiResponse<TeamDto>> GetByIdAsync(int id)
         {
             //    var team = await _context.Teams.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
