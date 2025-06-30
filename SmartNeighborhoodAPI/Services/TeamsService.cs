@@ -132,21 +132,74 @@ namespace SmartNeighborhoodAPI.Services
             //    var TeamDto = _mapper.Map<TeamDto>(team);
             return ApiResponse<TeamDto>.Success();
         }
-        public async Task<ApiResponse<string>> UpdateAsync(int id, TeamDto TeamDto)
+        public async Task<ApiResponse<TeamDto>> UpdateAsync(int teamId, TeamDto dto)
         {
-            var ExsitTeam = await _context.Ads.FirstOrDefaultAsync(x => x.Id == id);
+            var team = await _context.Teams.FindAsync(teamId);
+            if (team == null)
+            {
+                _logger.LogWarning("Team with ID {TeamId} not found", teamId);
+                return ApiResponse<TeamDto>.Error(HttpStatusCode.NotFound, "الفريق غير موجود");
+            }
 
-            if (ExsitTeam is null)
-                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "Team Not Found");
-            var UpdateTeam = _mapper.Map(TeamDto, ExsitTeam);
+            var isPersonExists = await _context.People.AnyAsync(x => x.Id == dto.TeamLeadId);
+            if (!isPersonExists)
+            {
+                _logger.LogWarning("Team Lead with ID {TeamLeadId} not found", dto.TeamLeadId);
+                return ApiResponse<TeamDto>.Error(HttpStatusCode.NotFound, "لم يتم العثور على قائد الفريق");
+            }
 
-            _context.Ads.Update(UpdateTeam);
-            if (await _context.SaveChangesAsync() > 0)
-                return ApiResponse<string>.Success("Team Updated Successfully");
+            var isTeamNameExists = await _context.Teams
+                .AnyAsync(t => t.Name.ToLower() == dto.Name.Trim().ToLower() && t.Id != teamId);
 
-            return ApiResponse<string>.Error(HttpStatusCode.NotModified, "Faild To Update Team");
+            if (isTeamNameExists)
+            {
+                _logger.LogWarning("Team name '{TeamName}' already exists", dto.Name);
+                return ApiResponse<TeamDto>.Error(HttpStatusCode.Conflict, "اسم الفريق مستخدم من قبل");
+            }
 
+            // Update team info
+            team.Name = dto.Name;
 
+            // Check if the team already has a team lead, remove or update if needed
+            var currentTeamLead = await _context.TeamMembers
+                .FirstOrDefaultAsync(tm => tm.TeamId == teamId && tm.TeamRole.Name == "مدير المشروع");
+
+            if (currentTeamLead != null)
+            {
+                // Update existing team lead
+                currentTeamLead.PersonId = dto.TeamLeadId;
+                currentTeamLead.DateOfJoin = dto.InJoiedDate;
+            }
+            else
+            {
+                // Add new team lead
+                var teamLeadRole = await _context.TeamRoles.FirstOrDefaultAsync(x => x.Name == "مدير المشروع");
+                if (teamLeadRole == null)
+                {
+                    _logger.LogError("Team role 'مدير المشروع' not found");
+                    return ApiResponse<TeamDto>.Error(HttpStatusCode.NotFound, "الدور 'مدير المشروع' غير موجود");
+                }
+
+                var teamLead = new TeamMember
+                {
+                    TeamId = teamId,
+                    PersonId = dto.TeamLeadId,
+                    DateOfJoin = dto.InJoiedDate,
+                    TeamRoleId = teamLeadRole.Id
+                };
+
+                await _context.TeamMembers.AddAsync(teamLead);
+            }
+
+            if (await _context.SaveChangesAsync() <= 0)
+            {
+                _logger.LogError("Failed to update team with ID {TeamId}", teamId);
+                return ApiResponse<TeamDto>.Error(HttpStatusCode.BadRequest, "فشل في تحديث الفريق");
+            }
+
+            _logger.LogInformation("Team with ID {TeamId} updated successfully", teamId);
+            return ApiResponse<TeamDto>.Success(dto, "تم تحديث الفريق بنجاح");
         }
+
     }
 }
