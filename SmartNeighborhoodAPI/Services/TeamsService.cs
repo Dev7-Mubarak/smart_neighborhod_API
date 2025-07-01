@@ -68,7 +68,7 @@ namespace SmartNeighborhoodAPI.Services
         {
             _logger.LogInformation("Attempting to delete team with ID {TeamId}", id);
 
-            var entity = await _context.Teams.FirstOrDefaultAsync(x => x.Id == id);
+            var entity = await _context.Teams.Include(x => x.TeamMembers).FirstOrDefaultAsync(x => x.Id == id);
             if (entity == null)
             {
                 _logger.LogWarning("Team with ID {TeamId} not found.", id);
@@ -122,8 +122,6 @@ namespace SmartNeighborhoodAPI.Services
 
             return ApiResponse<IEnumerable<CustomTeamDto>>.Success(teams, "تم جلب الفرق بنجاح");
         }
-
-
         public async Task<ApiResponse<TeamDto>> GetByIdAsync(int id)
         {
             //    var team = await _context.Teams.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
