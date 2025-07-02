@@ -1,4 +1,6 @@
-﻿namespace SmartNeighborhoodAPI.Controllers
+﻿using SmartNeighborhoodAPI.Services;
+
+namespace SmartNeighborhoodAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -32,6 +34,12 @@
 
             return Response(result);
 
+        }
+        [HttpGet("by-team/{teamId:int}")]
+        public async Task<IActionResult> GetProjectsByTeamId(int teamId)
+        {
+            var result = await _TeamsService.GetProjectsByTeamIdAsync(teamId);
+            return Response(result);
         }
         [HttpPut("[action]/{id:int}")]
         public async Task<IActionResult> UpdateAsync(int id, TeamDto TeamDto)
