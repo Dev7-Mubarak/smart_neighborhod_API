@@ -4,9 +4,6 @@ using SmartNeighborhoodAPI.Services;
 
 namespace SmartNeighborhoodAPI.Controllers
 {
-
-    [Route("api/[controller]")]
-    [ApiController]
     public class ProjectsController : AppControllerBase
     {
         private readonly ProjectService _projectService;

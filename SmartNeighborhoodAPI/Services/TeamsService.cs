@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using Microsoft.Extensions.Logging;
+using SmartNeighborhoodAPI.Helpers.DTOs.Project;
 using SmartNeighborhoodAPI.Helpers.DTOs.TeamMembers;
 using SmartNeighborhoodAPI.Helpers.DTOs.Teams;
 
@@ -124,13 +125,13 @@ namespace SmartNeighborhoodAPI.Services
         }
         public async Task<ApiResponse<TeamDto>> GetByIdAsync(int id)
         {
-            //    var team = await _context.Teams.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
-            //    if (team == null)
-            //        return ApiResponse<TeamDto>.Error(HttpStatusCode.NotFound, "team Not Found");
+            var team = await _context.Teams.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+            if (team == null)
+                return ApiResponse<TeamDto>.Error(HttpStatusCode.NotFound, "team Not Found");
 
 
-            //    var TeamDto = _mapper.Map<TeamDto>(team);
-            return ApiResponse<TeamDto>.Success();
+            var TeamDto = _mapper.Map<TeamDto>(team);
+            return ApiResponse<TeamDto>.Success(TeamDto, "تم جلب الفريق بنجاح");
         }
         public async Task<ApiResponse<TeamDto>> UpdateAsync(int teamId, TeamDto dto)
         {
@@ -199,6 +200,56 @@ namespace SmartNeighborhoodAPI.Services
 
             _logger.LogInformation("Team with ID {TeamId} updated successfully", teamId);
             return ApiResponse<TeamDto>.Success(dto, "تم تحديث الفريق بنجاح");
+        }
+        public async Task<ApiResponse<IEnumerable<ReturnProjectDto>>> GetProjectsByTeamIdAsync(int teamId)
+        {
+            _logger.LogInformation("Fetching projects assigned to team with ID {TeamId}.", teamId);
+
+            var projects = await _context.ProjectTeams
+                .Where(pt => pt.TeamId == teamId)
+                .Include(pt => pt.Project)
+                    .ThenInclude(p => p.Manager)
+                .Include(pt => pt.Project)
+                    .ThenInclude(p => p.ProjectCatogory)
+                .Select(pt => pt.Project)
+                .AsNoTracking()
+                .ToListAsync();
+
+
+            if (projects.Count == 0)
+            {
+                _logger.LogWarning("No projects found for team with ID {TeamId}.", teamId);
+                return ApiResponse<IEnumerable<ReturnProjectDto>>.Error(HttpStatusCode.NotFound, "لا توجد مشاريع لهذا الفريق");
+            }
+
+            var projectDtos = projects.Select(project => new ReturnProjectDto
+            {
+                Id = project.Id,
+                Name = project.Name,
+                Description = project.Description,
+                StartDate = project.StartDate,
+                EndDate = project.EndDate,
+                ProjectStatus = GetDisplayName(project.ProjectStatus),
+                ProjectPriority = GetDisplayName(project.ProjectPriority),
+                Budget = project.Budget,
+                Manager = new CustomPersonDto
+                {
+                    Id = project.Manager.Id,
+                    FullName = project.Manager.FullName
+                },
+                ProjectCatgory = project.ProjectCatogory
+            }).ToList();
+
+            return ApiResponse<IEnumerable<ReturnProjectDto>>.Success(projectDtos);
+        }
+
+        private static string GetDisplayName<T>(T enumValue)
+        {
+            var memberInfo = typeof(T).GetMember(enumValue.ToString()).FirstOrDefault();
+            var displayAttr = memberInfo?.GetCustomAttributes(typeof(DisplayAttribute), false)
+                                        .FirstOrDefault() as DisplayAttribute;
+
+            return displayAttr?.Name ?? enumValue.ToString();
         }
 
     }
