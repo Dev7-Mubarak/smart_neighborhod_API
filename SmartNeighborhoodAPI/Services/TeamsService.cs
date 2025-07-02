@@ -133,7 +133,7 @@ namespace SmartNeighborhoodAPI.Services
 
 
             var TeamDto = _mapper.Map<TeamDto>(team);
-            return ApiResponse<TeamDto>.Success();
+            return ApiResponse<TeamDto>.Success(TeamDto, "تم جلب الفريق بنجاح");
         }
         public async Task<ApiResponse<IEnumerable<ReturnProjectDto>>> GetProjectsByTeamIdAsync(int teamId)
         {
