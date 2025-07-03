@@ -5,124 +5,138 @@ namespace SmartNeighborhoodAPI.Services
     public class FamilyCatgoryService
     {
         private readonly ApplicationDbContext _context;
-        readonly IMapper _mapper;
+        private readonly IMapper _mapper;
+        private readonly ILogger<FamilyCatgoryService> _logger;
 
-        public FamilyCatgoryService(ApplicationDbContext context, IMapper mapper)
+        public FamilyCatgoryService(ApplicationDbContext context, IMapper mapper, ILogger<FamilyCatgoryService> logger)
         {
             _context = context;
             _mapper = mapper;
+            _logger = logger;
         }
 
-        public async Task<ApiResponse<string>> AddAsync(string nameFamilyCatgory)
+        public async Task<ApiResponse<string>> AddAsync(string name)
         {
+            _logger.LogInformation("Attempting to add new FamilyCategory with name: {Name}", name);
 
-
-            var FamilyCatgory = new FamilyCatgory
-            {
-                Name = nameFamilyCatgory
-            };
-
-            var existFamilyCategory = await _context.FamilyCatgories.FirstOrDefaultAsync(x => x.Name == nameFamilyCatgory);
+            var existFamilyCategory = await _context.FamilyCatgories.FirstOrDefaultAsync(x => x.Name == name);
 
             if (existFamilyCategory != null)
             {
-
-                return ApiResponse<string>.Error(HttpStatusCode.Conflict, "FamilyCatgory Is Already Exist");
-
+                _logger.LogWarning("Add failed: FamilyCategory with name '{Name}' already exists.", name);
+                return ApiResponse<string>.Error(HttpStatusCode.Conflict, "الفئة العائلية موجودة بالفعل");
             }
 
+            var familyCatgory = new FamilyCatgory { Name = name };
+            await _context.FamilyCatgories.AddAsync(familyCatgory);
 
-            await _context.FamilyCatgories.AddAsync(FamilyCatgory);
             if (await _context.SaveChangesAsync() > 0)
-                return ApiResponse<string>.Success(nameFamilyCatgory, "Added Successed");
+            {
+                _logger.LogInformation("FamilyCategory '{Name}' added successfully.", name);
+                return ApiResponse<string>.Success(name, "تمت الإضافة بنجاح");
+            }
 
-            return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "FamilyCatgory not add");
-
-
+            _logger.LogError("Failed to add FamilyCategory '{Name}'.", name);
+            return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "فشل في إضافة الفئة العائلية");
         }
-
 
         public async Task<ApiResponse<IEnumerable<FamilyCatgoryDto>>> GetAll()
         {
-            var FamilyCatgorys = await _context.FamilyCatgories.AsNoTracking().ToListAsync();
-            if (FamilyCatgorys.Count > 0)
-            {
+            _logger.LogInformation("Fetching all FamilyCategories.");
 
-                var FamilyCatgoryDtos = FamilyCatgorys.Select(x => new FamilyCatgoryDto
+            var familyCategories = await _context.FamilyCatgories.AsNoTracking().ToListAsync();
+
+            if (familyCategories.Count > 0)
+            {
+                var dtos = familyCategories.Select(x => new FamilyCatgoryDto
                 {
                     Id = x.Id,
                     Name = x.Name,
-
                 });
 
-
-                return ApiResponse<IEnumerable<FamilyCatgoryDto>>.Success(FamilyCatgoryDtos);
-
-
+                _logger.LogInformation("Retrieved {Count} FamilyCategories.", dtos.Count());
+                return ApiResponse<IEnumerable<FamilyCatgoryDto>>.Success(dtos);
             }
 
-            return ApiResponse<IEnumerable<FamilyCatgoryDto>>.Error(HttpStatusCode.NotFound, "No FamilyCatgory Found");
-
-
-
+            _logger.LogWarning("No FamilyCategories found.");
+            return ApiResponse<IEnumerable<FamilyCatgoryDto>>.Error(HttpStatusCode.NotFound, "لم يتم العثور على أي فئة عائلية");
         }
+
         public async Task<ApiResponse<FamilyCatgoryDto>> GetByIdAsync(int id)
         {
-            var FamilyCatgory = await _context.FamilyCatgories.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
-            if (FamilyCatgory == null)
-                return ApiResponse<FamilyCatgoryDto>.Error(HttpStatusCode.NotFound, "FamilyCatgory Not Found");
+            _logger.LogInformation("Fetching FamilyCategory by ID: {Id}", id);
 
+            var familyCategory = await _context.FamilyCatgories.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
 
-            var FamilyCatgoryDto = new FamilyCatgoryDto
+            if (familyCategory == null)
             {
-                Id = FamilyCatgory.Id,
-                Name = FamilyCatgory.Name,
-            };
-            return ApiResponse<FamilyCatgoryDto>.Success(FamilyCatgoryDto);
-        }
-    
-        public async Task<ApiResponse<string>> DeleteAsync(int id)
-        {
-            var FamilyCatgory = await _context.FamilyCatgories.FirstOrDefaultAsync(x => x.Id == id);
-
-            if (FamilyCatgory == null)
-                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "FamilyCatgory Not Found");
-
-            _context.FamilyCatgories.Remove(FamilyCatgory);
-            if (await _context.SaveChangesAsync() > 0)
-                return ApiResponse<string>.Success("FamilyCatgory Deleted Successfully");
-
-            return ApiResponse<string>.Error(HttpStatusCode.NotModified, "Faild To Delete the FamilyCatgory");
-        }
-        public async Task<ApiResponse<string>> UpdateAsync(int id, string nameFamilyCatgory)
-        {
-            var ExsitFamilyCatgory = await _context.FamilyCatgories.FirstOrDefaultAsync(x => x.Id == id);
-            if(ExsitFamilyCatgory.Name == nameFamilyCatgory)
-            {
-                return ApiResponse<string>.Error(HttpStatusCode.Conflict, "FamilyCatgory Is Already Exist");
-
+                _logger.LogWarning("FamilyCategory with ID {Id} not found.", id);
+                return ApiResponse<FamilyCatgoryDto>.Error(HttpStatusCode.NotFound, "الفئة العائلية غير موجودة");
             }
 
+            var dto = new FamilyCatgoryDto
+            {
+                Id = familyCategory.Id,
+                Name = familyCategory.Name,
+            };
 
+            _logger.LogInformation("FamilyCategory with ID {Id} retrieved successfully.", id);
+            return ApiResponse<FamilyCatgoryDto>.Success(dto);
+        }
 
-            if (ExsitFamilyCatgory is null)
-                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "FamilyCatgory Not Found");
+        public async Task<ApiResponse<string>> DeleteAsync(int id)
+        {
+            _logger.LogInformation("Attempting to delete FamilyCategory with ID: {Id}", id);
 
-            if (ExsitFamilyCatgory.Name == nameFamilyCatgory)
-                return ApiResponse<string>.Error(HttpStatusCode.Conflict, "FamilyCatgory Is Already Exist");
+            var familyCategory = await _context.FamilyCatgories.FirstOrDefaultAsync(x => x.Id == id);
 
+            if (familyCategory == null)
+            {
+                _logger.LogWarning("Delete failed: FamilyCategory with ID {Id} not found.", id);
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "الفئة العائلية غير موجودة");
+            }
 
+            _context.FamilyCatgories.Remove(familyCategory);
 
-            ExsitFamilyCatgory.Name = nameFamilyCatgory;  
-
-            _context.FamilyCatgories.Update(ExsitFamilyCatgory);
             if (await _context.SaveChangesAsync() > 0)
-                return ApiResponse<string>.Success("FamilyCatgory Updated Successfully");
+            {
+                _logger.LogInformation("FamilyCategory with ID {Id} deleted successfully.", id);
+                return ApiResponse<string>.Success("تم حذف الفئة العائلية بنجاح");
+            }
 
+            _logger.LogError("Failed to delete FamilyCategory with ID {Id}.", id);
+            return ApiResponse<string>.Error(HttpStatusCode.NotModified, "فشل في حذف الفئة العائلية");
+        }
 
-            return ApiResponse<string>.Error(HttpStatusCode.NotModified, "Faild To Update FamilyCatgory");
+        public async Task<ApiResponse<string>> UpdateAsync(int id, string nameFamilyCatgory)
+        {
+            _logger.LogInformation("Attempting to update FamilyCategory ID {Id} with new name: {Name}", id, nameFamilyCatgory);
 
+            var existing = await _context.FamilyCatgories.FirstOrDefaultAsync(x => x.Id == id);
 
+            if (existing == null)
+            {
+                _logger.LogWarning("Update failed: FamilyCategory with ID {Id} not found.", id);
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "الفئة العائلية غير موجودة");
+            }
+
+            if (existing.Name == nameFamilyCatgory)
+            {
+                _logger.LogWarning("Update skipped: New name is the same as the current name for FamilyCategory ID {Id}.", id);
+                return ApiResponse<string>.Error(HttpStatusCode.Conflict, "الاسم الجديد موجود مسبقاً");
+            }
+
+            existing.Name = nameFamilyCatgory;
+            _context.FamilyCatgories.Update(existing);
+
+            if (await _context.SaveChangesAsync() > 0)
+            {
+                _logger.LogInformation("FamilyCategory with ID {Id} updated successfully.", id);
+                return ApiResponse<string>.Success("تم التحديث بنجاح");
+            }
+
+            _logger.LogError("Failed to update FamilyCategory with ID {Id}.", id);
+            return ApiResponse<string>.Error(HttpStatusCode.NotModified, "فشل في تحديث الفئة العائلية");
         }
     }
 }

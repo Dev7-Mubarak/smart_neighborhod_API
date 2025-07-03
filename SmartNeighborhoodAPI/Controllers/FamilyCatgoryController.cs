@@ -1,45 +1,43 @@
 ﻿namespace SmartNeighborhoodAPI.Controllers
 {
-    public class FamilyTypesController : AppControllerBase
+    public class FamilyCatgoryController : AppControllerBase
     {
-        private readonly FamilyTypeService _FamilyTypeService;
+        private readonly FamilyCatgoryService _familyCatgoryService;
 
-
-        public FamilyTypesController(FamilyTypeService FamilyTypeService)
+        public FamilyCatgoryController(FamilyCatgoryService familyCatgoryService)
         {
-            _FamilyTypeService = FamilyTypeService;
-
+            _familyCatgoryService = familyCatgoryService;
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> AddAsync(string nameFamilyTypeDto)
+        public async Task<IActionResult> AddAsync(string name)
         {
-            var result = await _FamilyTypeService.AddAsync(nameFamilyTypeDto);
+            var result = await _familyCatgoryService.AddAsync(name);
             return Response(result);
         }
         [HttpGet("[action]")]
         public async Task<IActionResult> GetAllAsync()
         {
-            var result = await _FamilyTypeService.GetAll();
+            var result = await _familyCatgoryService.GetAll();
             return Response(result);
 
         }
         [HttpGet("[action]/{id:int}")]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
-            var result = await _FamilyTypeService.GetByIdAsync(id);
+            var result = await _familyCatgoryService.GetByIdAsync(id);
             return Response(result);
         }
         [HttpPut("[action]/{id:int}")]
         public async Task<IActionResult> UpdateAsync(int id, string nameFamilyTypeDto)
         {
-            var result = await _FamilyTypeService.UpdateAsync(id, nameFamilyTypeDto);
+            var result = await _familyCatgoryService.UpdateAsync(id, nameFamilyTypeDto);
             return Response(result);
         }
         [HttpDelete("[action]/{id:int}")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
-            var result = await _FamilyTypeService.DeleteAsync(id);
+            var result = await _familyCatgoryService.DeleteAsync(id);
             return Response(result);
         }
     }
