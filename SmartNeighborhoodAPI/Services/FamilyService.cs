@@ -286,22 +286,29 @@ namespace SmartNeighborhoodAPI.Services
         }
         public async Task<ApiResponse<string>> UpdateAsync(int id, FamilyDto familyDto)
         {
-            var existingFamily = await _context.Families.FirstOrDefaultAsync(x => x.Id == id);
+            _logger.LogInformation("Attempting to update Family with ID: {Id}", id);
 
+            var existingFamily = await _context.Families.FirstOrDefaultAsync(x => x.Id == id);
             if (existingFamily is null)
-                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "Family Not Found");
+            {
+                _logger.LogWarning("Family with ID {Id} not found.", id);
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "العائلة غير موجودة");
+            }
 
             var familyCategory = await _context.FamilyCatgories.FirstOrDefaultAsync(x => x.Id == familyDto.FamilyCatgoryId);
             if (familyCategory == null)
-                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "Family Category Not Found");
+            {
+                _logger.LogWarning("Family Category with ID {Id} not found.", familyDto.FamilyCatgoryId);
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "فئة العائلة غير موجودة");
+            }
 
             var block = await _context.Blocks.FirstOrDefaultAsync(x => x.Id == familyDto.BlockId);
             if (block == null)
-                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "Block Not Found");
+            {
+                _logger.LogWarning("Block with ID {Id} not found.", familyDto.BlockId);
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "البلوك غير موجود");
+            }
 
-            //var person = await _context.People.FirstOrDefaultAsync(x => x.Id == familyDto.PersonId);
-            //if (person == null)
-            //    return ApiResponse<string>.Error(HttpStatusCode.NotFound, "Person Not Found");
 
             existingFamily.Name = familyDto.Name;
             existingFamily.FamilyCatgoryId = familyDto.FamilyCatgoryId;
@@ -309,14 +316,19 @@ namespace SmartNeighborhoodAPI.Services
             existingFamily.BlockId = familyDto.BlockId;
             existingFamily.Location = familyDto.Location;
             existingFamily.FamilyNotes = familyDto.FamilyNotes;
-            //existingFamily.HousingType = familyDto.HousingType;
 
             _context.Families.Update(existingFamily);
-            if (await _context.SaveChangesAsync() > 0)
-                return ApiResponse<string>.Success("Family Updated Successfully");
 
-            return ApiResponse<string>.Error(HttpStatusCode.NotModified, "Failed To Update Family");
+            if (await _context.SaveChangesAsync() > 0)
+            {
+                _logger.LogInformation("Family with ID {Id} updated successfully.", id);
+                return ApiResponse<string>.Success("تم تحديث العائلة بنجاح");
+            }
+
+            _logger.LogError("Failed to update Family with ID {Id}.", id);
+            return ApiResponse<string>.Error(HttpStatusCode.NotModified, "فشل في تحديث العائلة");
         }
+
         public async Task<ApiResponse<string>> DeleteAsync(int id)
         {
             _logger.LogInformation("Attempting to delete family with ID {FamilyId}", id);
