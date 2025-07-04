@@ -6,7 +6,7 @@ namespace SmartNeighborhoodAPI.Controllers
 {
     [ApiController]
     [ValidateActionFilter]
-    [EnableRateLimiting("fixed-window")]
+    //[EnableRateLimiting("fixed-window")]
     [Route("api/[controller]")]
     public class AppControllerBase : ControllerBase
     {
