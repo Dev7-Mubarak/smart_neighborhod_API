@@ -37,6 +37,12 @@ namespace SmartNeighborhoodAPI.Controllers
 
             return Response(result);
         }
+        [HttpGet("details/{projectId}")]
+        public async Task<IActionResult> GetProjectDetails(int projectId)
+        {
+            var result = await _ProjectService.GetProjectDetailsAsync(projectId);
+            return Response(result);
+        }
         [HttpPut("[action]/{id:int}")]
         public async Task<IActionResult> UpdateAsync(int id, ProjectDto ProjectDto)
         {

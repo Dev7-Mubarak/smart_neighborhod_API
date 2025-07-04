@@ -2,7 +2,11 @@
 using Microsoft.Extensions.Logging;
 using OurProjectSmartNeiborhood.Entites;
 using SmartNeighborhoodAPI.Entites;
+using SmartNeighborhoodAPI.Helpers.DTOs.Families;
 using SmartNeighborhoodAPI.Helpers.DTOs.Project;
+using SmartNeighborhoodAPI.Helpers.DTOs.TeamMembers;
+using SmartNeighborhoodAPI.Helpers.DTOs.Teams;
+using  SmartNeighborhoodAPI.Helpers.DTOs;
 namespace SmartNeighborhoodAPI.Services
 {
     public class ProjectService
@@ -42,7 +46,8 @@ namespace SmartNeighborhoodAPI.Services
                 EndDate = projectDto.EndDate,
                 ProjectStatus = projectDto.ProjectStatus,
                 ProjectPriority = projectDto.ProjectPriority,
-                Budget = projectDto.Budget
+                Budget = projectDto.Budget,
+                block
             };
 
             await _context.Projects.AddAsync(project);
@@ -61,6 +66,86 @@ namespace SmartNeighborhoodAPI.Services
             _logger.LogWarning("AddAsync failed: SaveChanges returned 0.");
             return ApiResponse<ReturnProjectDto>.Error(HttpStatusCode.BadRequest, "لم يتم حفظ المشروع");
         }
+        public async Task<ApiResponse<ProjectDetailsDto>> GetProjectDetailsAsync(int projectId)
+        {
+            var project = await _context.Projects
+                .Include(p => p.ProjectFamilies)
+                    .ThenInclude(pf => pf.Family)
+                        .ThenInclude(f => f.FamilyMembers)
+                            .ThenInclude(fm => fm.Person)
+                .Include(p => p.ProjectFamilies)
+                    .ThenInclude(pf => pf.Family)
+                        .ThenInclude(f => f.FamilyCatgory)
+                .Include(p => p.ProjectFamilies)
+                    .ThenInclude(pf => pf.Family)
+                        .ThenInclude(f => f.FamilyType)
+                .Include(p => p.ProjectFamilies)
+                    .ThenInclude(pf => pf.Family)
+                        .ThenInclude(f => f.Block)
+
+                .FirstOrDefaultAsync(p => p.Id == projectId);
+
+            if (project == null)
+            {
+                return ApiResponse<ProjectDetailsDto>.Error(HttpStatusCode.NotFound,"Project not found.");
+            }
+
+            var result = new ProjectDetailsDto
+            {
+                Id = project.Id,
+                Name = project.Name,
+                Description = project.Description,
+                StartDate = project.StartDate,
+                EndDate = project.EndDate,
+                ProjectStatus = project.ProjectStatus.ToString(),
+                ProjectPriority = project.ProjectPriority.ToString(),
+                Budget = project.Budget,
+
+                Manager = new CustomPersonDto
+                {
+                    Id = project.Manager.Id,
+                    FullName = project.Manager.FullName,
+               
+                },
+
+                ProjectCatgory = project.ProjectCatogory,
+
+                Teams = project.ProjectTeams.Select(pt => new CustomTeamDto
+                {
+                    Id = pt.Team.Id,
+                    Name = pt.Team.Name,
+                    Members = pt.Team.TeamMembers.Select(tm => new TeamMemberDetailsDto
+                    {
+                        PersonId = tm.PersonId,
+                        PersonName = tm.Person.FullName,
+                        DateOfJoin = tm.DateOfJoin,
+                        TeamRoleId = tm.TeamRoleId,
+                        TeamRoleName = tm.TeamRole.Name
+                    }).ToList()
+                }).ToList(),
+
+                Families = project.ProjectFamilies.Select(f => new FamilyDetailsDto
+                {
+                    Id = f.Family.Id,
+                    Name = f.Family.Name,
+                    Location = f.Family.Location,
+                    FamilyCatgoryId = f.Family.FamilyCatgoryId,
+                    FamilyCatgoryName = f.Family.FamilyCatgory.Name,
+                    FamilyTypeId = f.Family.FamilyTypeId,
+                    FamilyTypeName = f.Family.FamilyType.Name,
+                    BlockId = f.Family.BlockId,
+                    BlockName = f.Family.Block.Name,
+                    FamilyNotes = f.Family.FamilyNotes,
+                    PhoneNumber = f.Family.FamilyMembers
+        .Where(fm => fm.MemberFamilyRoleId == 1)
+        .Select(fm => fm.Person.PhoneNumber)
+        .FirstOrDefault() ?? string.Empty,
+                }).ToList()
+            };
+
+            return ApiResponse<ProjectDetailsDto>.Success(result);
+        }
+
 
         public async Task<ApiResponse<string>> DeleteAsync(int id)
         {

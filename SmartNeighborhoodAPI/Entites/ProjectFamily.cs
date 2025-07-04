@@ -9,5 +9,6 @@
 
         public int FamilyID { get; set; }
         public Family Family { get; set; }
+        public string FamilyHeadName { get; internal set; }
     }
 }

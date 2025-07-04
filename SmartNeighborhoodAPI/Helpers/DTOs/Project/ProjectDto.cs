@@ -29,5 +29,7 @@ namespace SmartNeighborhoodAPI.Helpers.DTOs.Project
 
         [Required(ErrorMessage = "أولوية المشروع مطلوبة")]
         public ProjectPriority ProjectPriority { get; set; }
+        public Block Block { get; set; }
+
     }
 }

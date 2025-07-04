@@ -15,6 +15,8 @@ namespace OurProjectSmartNeiborhood.Entites
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public ProjectStatus ProjectStatus { get; set; }
+        public Block block { get; set; }
+        public int BlockId { get; set; }
         public double? Budget { get; set; }
         public ProjectPriority ProjectPriority { get; set; }
 
