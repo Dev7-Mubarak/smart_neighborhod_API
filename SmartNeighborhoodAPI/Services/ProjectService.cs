@@ -281,6 +281,15 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<string>.Error(HttpStatusCode.NotFound, "الأسرة غير موجودة.");
             }
 
+            var isAlreadyAssigned = await _context.ProjectFamilies
+                .AnyAsync(pf => pf.ProjectID == projectId && pf.FamilyID == familyId);
+
+            if (isAlreadyAssigned)
+            {
+                _logger.LogWarning("Family {FamilyId} is already assigned to Project {ProjectId}.", familyId, projectId);
+                return ApiResponse<string>.Error(HttpStatusCode.Conflict, "هذه الأسرة مرتبطة بالفعل بهذا المشروع.");
+            }
+
             var projectFamily = new ProjectFamily
             {
                 FamilyID = familyId,
@@ -299,63 +308,9 @@ namespace SmartNeighborhoodAPI.Services
             _logger.LogInformation("Successfully assigned Family {FamilyId} to Project {ProjectId}.", familyId, projectId);
             return ApiResponse<string>.Success("تم ربط الأسرة بالمشروع بنجاح.");
         }
-        public async Task<ApiResponse<ProjectDetailsDto>> GetProjectDetailsAsync(int projectId)
-        {
-            var project = await _context.Projects
-                .Select(x => new ProjectDetailsDto
-                {
-                    Id = x.Id,
-                    Name = x.Name, 
-                    Description = x.Description,
-                    StartDate = x.StartDate,
-                    EndDate = x.EndDate,
-                    ProjectStatus = GetDisplayName(x.ProjectStatus),
-                    ProjectPriority = GetDisplayName(x.ProjectPriority),
-                    Budget = x.Budget,
-                    Manager = new CustomPersonDto
-                    {
-                        Id = x.Manager.Id,
-                        FullName = x.Manager.FullName
-                    },
-                    ProjectCatgory = x.ProjectCatogory,
-                    Teams = x.ProjectTeams.Select(pt => new CustomTeamDto
-                    {
-                        Id = pt.Team.Id,
-                        Name = pt.Team.Name,
-                        Members = pt.Team.TeamMembers.Select(tm => new TeamMemberDetailsDto
-                        {
-                            PersonId = tm.PersonId,
-                            TeamMemberId = tm.Id,
-                            TeamId = tm.TeamId,
-                            TeamName = tm.Team.Name,
-                            PersonName = tm.Person.FullName,
-                            DateOfJoin = tm.DateOfJoin,
-                            TeamRoleId = tm.TeamRoleId,
-                            TeamRoleName = tm.TeamRole.Name
-                        }).ToList()
-                    }).ToList(),
-                    //BeneficiaryFamilies = x.ProjectFamilies.Select(pf => new CustomPro
-                    //{
-                    //    Id = pf.Family.Id,
-                    //    Name = pf.Family.Name,
-                    //    Address = pf.Family.Address,
-                    //    PhoneNumber = pf.Family.PhoneNumber,
-                    //    MembersCount = pf.Family.MembersCount
-                    //}).ToList()
-
-                })
-                .FirstOrDefaultAsync(p => p.Id == projectId);
-
-            if (project == null)
-            {
-                return ApiResponse<ProjectDetailsDto>.Error(HttpStatusCode.NotFound, "Project not found.");
-            }
-
-            return ApiResponse<ProjectDetailsDto>.Success(project);
-        }
 
         // Reoptimize this function and query
-        public async Task<ApiResponse<List<BeneficiaryFamilies>>> GetBlocksWithFamiliesByProjectId(int projectId)
+        public async Task<ApiResponse<List<BeneficiaryFamilies>>> GetProjectBlocksWithBeneficiaryFamilies(int projectId)
         {
             var isProjectExists = await _context.Projects.AnyAsync(x => x.Id == projectId);
 
@@ -410,7 +365,44 @@ namespace SmartNeighborhoodAPI.Services
             _logger.LogInformation("Retrieved {Count} grouped blocks with families for project ID {ProjectId}.", grouped.Count, projectId);
             return ApiResponse<List<BeneficiaryFamilies>>.Success(grouped, "تم جلب العائلات حسب البلوك بنجاح");
         }
+        public async Task<ApiResponse<List<CustomTeamDto>>> GetProjectTeam(int projectId)
+        {
+            var isProjectExists = await _context.Projects.AnyAsync(x => x.Id == projectId);
 
+            if (!isProjectExists)
+            {
+                _logger.LogWarning("Project with ID {ProjectId} not found.", projectId);
+                return ApiResponse<List<CustomTeamDto>>.Error(HttpStatusCode.NotFound, "المشروع غير موجود");
+            }
+            _logger.LogInformation("Fetching project teams for project with ID {ProjectId}", projectId);
+
+            var teams = await _context.ProjectTeams
+                .Where(pt => pt.ProjectId == projectId)
+                .Select(pt => new CustomTeamDto
+                {
+                    Id = pt.Team.Id,
+                    Name = pt.Team.Name,
+                    TeamMembers = pt.Team.TeamMembers.Select(tm => new TeamMemberDetailsDto
+                    {
+                        TeamMemberId = tm.Id,
+                        TeamId = tm.TeamId,
+                        TeamName = tm.Team.Name,
+                        PersonId = tm.PersonId,
+                        PersonName = tm.Person.FullName,
+                        DateOfJoin = tm.DateOfJoin,
+                        TeamRoleId = tm.TeamRoleId,
+                        TeamRoleName = tm.TeamRole.Name
+                    }).ToList()
+                })
+                .ToListAsync();
+
+            if (teams == null || teams.Count == 0)
+            {
+                return ApiResponse<List<CustomTeamDto>>.Error(HttpStatusCode.NotFound, "لا توجد فرق مرتبطة بهذا المشروع");
+            }
+
+            return ApiResponse<List<CustomTeamDto>>.Success(teams, "تم جلب الفرق بنجاح");
+        }
         private static string GetDisplayName<T>(T enumValue)
         {
             var memberInfo = typeof(T).GetMember(enumValue.ToString()).FirstOrDefault();

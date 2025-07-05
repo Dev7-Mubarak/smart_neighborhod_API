@@ -48,10 +48,10 @@
             return Response(result);
         }
 
-        [HttpGet("by-team/{teamId:int}")]
-        public async Task<IActionResult> GetProjectsByTeamId(int teamId)
+        [HttpGet("GetTeamProjects/{teamId:int}")]
+        public async Task<IActionResult> GetTeamProjects(int teamId)
         {
-            var result = await _TeamsService.GetProjectsByTeamIdAsync(teamId);
+            var result = await _TeamsService.GetTeamProjects(teamId);
             return Response(result);
         }
     }
