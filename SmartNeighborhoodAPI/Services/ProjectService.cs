@@ -2,7 +2,9 @@
 using Microsoft.Extensions.Logging;
 using OurProjectSmartNeiborhood.Entites;
 using SmartNeighborhoodAPI.Entites;
+using SmartNeighborhoodAPI.Helpers.DTOs.Families;
 using SmartNeighborhoodAPI.Helpers.DTOs.Project;
+using SmartNeighborhoodAPI.Helpers.DTOs.Teams;
 namespace SmartNeighborhoodAPI.Services
 {
     public class ProjectService
@@ -296,6 +298,117 @@ namespace SmartNeighborhoodAPI.Services
 
             _logger.LogInformation("Successfully assigned Family {FamilyId} to Project {ProjectId}.", familyId, projectId);
             return ApiResponse<string>.Success("تم ربط الأسرة بالمشروع بنجاح.");
+        }
+        public async Task<ApiResponse<ProjectDetailsDto>> GetProjectDetailsAsync(int projectId)
+        {
+            var project = await _context.Projects
+                .Select(x => new ProjectDetailsDto
+                {
+                    Id = x.Id,
+                    Name = x.Name, 
+                    Description = x.Description,
+                    StartDate = x.StartDate,
+                    EndDate = x.EndDate,
+                    ProjectStatus = GetDisplayName(x.ProjectStatus),
+                    ProjectPriority = GetDisplayName(x.ProjectPriority),
+                    Budget = x.Budget,
+                    Manager = new CustomPersonDto
+                    {
+                        Id = x.Manager.Id,
+                        FullName = x.Manager.FullName
+                    },
+                    ProjectCatgory = x.ProjectCatogory,
+                    Teams = x.ProjectTeams.Select(pt => new CustomTeamDto
+                    {
+                        Id = pt.Team.Id,
+                        Name = pt.Team.Name,
+                        Members = pt.Team.TeamMembers.Select(tm => new TeamMemberDetailsDto
+                        {
+                            PersonId = tm.PersonId,
+                            TeamMemberId = tm.Id,
+                            TeamId = tm.TeamId,
+                            TeamName = tm.Team.Name,
+                            PersonName = tm.Person.FullName,
+                            DateOfJoin = tm.DateOfJoin,
+                            TeamRoleId = tm.TeamRoleId,
+                            TeamRoleName = tm.TeamRole.Name
+                        }).ToList()
+                    }).ToList(),
+                    //BeneficiaryFamilies = x.ProjectFamilies.Select(pf => new CustomPro
+                    //{
+                    //    Id = pf.Family.Id,
+                    //    Name = pf.Family.Name,
+                    //    Address = pf.Family.Address,
+                    //    PhoneNumber = pf.Family.PhoneNumber,
+                    //    MembersCount = pf.Family.MembersCount
+                    //}).ToList()
+
+                })
+                .FirstOrDefaultAsync(p => p.Id == projectId);
+
+            if (project == null)
+            {
+                return ApiResponse<ProjectDetailsDto>.Error(HttpStatusCode.NotFound, "Project not found.");
+            }
+
+            return ApiResponse<ProjectDetailsDto>.Success(project);
+        }
+
+        // Reoptimize this function and query
+        public async Task<ApiResponse<List<BeneficiaryFamilies>>> GetBlocksWithFamiliesByProjectId(int projectId)
+        {
+            var isProjectExists = await _context.Projects.AnyAsync(x => x.Id == projectId);
+
+            if (!isProjectExists)
+            {
+                _logger.LogWarning("Project with ID {ProjectId} not found.", projectId);
+                return ApiResponse<List<BeneficiaryFamilies>>.Error(HttpStatusCode.NotFound, "المشروع غير موجود");
+            }
+
+            _logger.LogInformation("Fetching block families for project with ID {ProjectId}", projectId);
+
+            var blockFamilies = await _context.Families
+                .Where(f => f.ProjectFamilies.Any(pf => pf.ProjectID == projectId))
+                .Include(f => f.Block)
+                .Include(f => f.FamilyCatgory)
+                .Include(f => f.FamilyType)
+                .Include(f => f.FamilyMembers)
+                    .ThenInclude(fm => fm.Person)
+                .AsNoTracking()
+                .ToListAsync();
+
+            var grouped = blockFamilies
+                .GroupBy(f => new { f.BlockId, f.Block.Name })
+                .Select(g => new BeneficiaryFamilies
+                {
+                    BlockId = g.Key.BlockId,
+                    BlockName = g.Key.Name,
+                    Families = g.Select(f =>
+                    {
+                        var head = f.FamilyMembers.FirstOrDefault(x => x.MemberFamilyRoleId == 1);
+
+                        return new FamilyDetailsDto
+                        {
+                            Id = f.Id,
+                            Name = f.Name,
+                            BlockId = f.BlockId,
+                            BlockName = f.Block.Name,
+                            FamilyCatgoryId = f.FamilyCatgoryId,
+                            FamilyCatgoryName = f.FamilyCatgory.Name,
+                            FamilyTypeId = f.FamilyTypeId,
+                            FamilyTypeName = f.FamilyType.Name,
+                            Location = f.Location,
+                            FamilyNotes = f.FamilyNotes,
+                            FamilyHeadId = head.Id,
+                            FamilyHeadName = head.Person.FullName,
+                            PhoneNumber = head.Person.PhoneNumber,
+                        };
+                    }).ToList()
+                })
+                .ToList();
+
+            _logger.LogInformation("Retrieved {Count} grouped blocks with families for project ID {ProjectId}.", grouped.Count, projectId);
+            return ApiResponse<List<BeneficiaryFamilies>>.Success(grouped, "تم جلب العائلات حسب البلوك بنجاح");
         }
 
         private static string GetDisplayName<T>(T enumValue)

@@ -63,6 +63,19 @@ namespace SmartNeighborhoodAPI.Controllers
             return Response(result);
         }
 
+        [HttpGet("details/{projectId}")]
+        public async Task<IActionResult> GetProjectDetails(int projectId)
+        {
+            var result = await _projectService.GetProjectDetailsAsync(projectId);
+            return Response(result);
+        }
+
+        [HttpGet("GetBlocksWithFamiliesByProjectId/{projectId}")]
+        public async Task<IActionResult> GetBlocksWithFamiliesByProjectId(int projectId)
+        {
+            var result = await _projectService.GetBlocksWithFamiliesByProjectId(projectId);
+            return Response(result);
+        }
 
     }
 
