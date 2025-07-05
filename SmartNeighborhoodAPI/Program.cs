@@ -85,38 +85,38 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog();
 
-//builder.Services.AddRateLimiter(options =>
-//{
-//    options.AddPolicy("fixed-window", context =>
-//        RateLimitPartition.GetFixedWindowLimiter(
-//            context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
-//            factory: _ => new FixedWindowRateLimiterOptions
-//            {
-//                PermitLimit = 1000,
-//                Window = TimeSpan.FromSeconds(1000),
-//                QueueLimit = 0,
-//                QueueProcessingOrder = QueueProcessingOrder.OldestFirst
-//            }
-//        )
-//    );
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddPolicy("fixed-window", context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 1000,
+                Window = TimeSpan.FromSeconds(1000),
+                QueueLimit = 0,
+                QueueProcessingOrder = QueueProcessingOrder.OldestFirst
+            }
+        )
+    );
 
-//    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 
-//    options.OnRejected = async (context, token) =>
-//    {
-//        context.HttpContext.Response.ContentType = "application/json";
+    options.OnRejected = async (context, token) =>
+    {
+        context.HttpContext.Response.ContentType = "application/json";
 
-//        var response = ApiResponse<object>.Error(
-//            HttpStatusCode.TooManyRequests,
-//            "You have exceeded the allowed number of requests. Try again later."
-//        );
+        var response = ApiResponse<object>.Error(
+            HttpStatusCode.TooManyRequests,
+            "You have exceeded the allowed number of requests. Try again later."
+        );
 
-//        var json = JsonSerializer.Serialize(response);
-//        context.HttpContext.Response.StatusCode = (int)HttpStatusCode.TooManyRequests;
+        var json = JsonSerializer.Serialize(response);
+        context.HttpContext.Response.StatusCode = (int)HttpStatusCode.TooManyRequests;
 
-//        await context.HttpContext.Response.WriteAsync(json, token);
-//    };
-//});
+        await context.HttpContext.Response.WriteAsync(json, token);
+    };
+});
 
 
 
