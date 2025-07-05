@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using SmartNeighborhoodAPI.Helpers.DTOs.Project;
-using SmartNeighborhoodAPI.Services;
+﻿using SmartNeighborhoodAPI.Helpers.DTOs.Project;
 
 namespace SmartNeighborhoodAPI.Controllers
 {
@@ -49,20 +47,33 @@ namespace SmartNeighborhoodAPI.Controllers
             return Response(result);
         }
 
-        [HttpPost("assign-team/{projectId:int}")]
+        [HttpPost("AssignTeamToProject/{projectId:int}")]
         public async Task<IActionResult> AssignTeamToProject(int projectId, [FromQuery] int teamId)
         {
             var result = await _projectService.AssignTeamToProjectAsync(projectId, teamId);
             return Response(result);
         }
 
-        [HttpPost("assign-family/{projectId:int}")]
+        [HttpPost("AssignFamilyToProject/{projectId:int}")]
         public async Task<IActionResult> AssignFamilyToProject(int projectId, [FromQuery] int familyId)
         {
             var result = await _projectService.AssignFamilyToProjectAsync(projectId, familyId);
             return Response(result);
         }
 
+        [HttpGet("GetProjectBlocksWithBeneficiaryFamilies/{projectId}")]
+        public async Task<IActionResult> GetProjectBlocksWithBeneficiaryFamilies(int projectId)
+        {
+            var result = await _projectService.GetProjectBlocksWithBeneficiaryFamilies(projectId);
+            return Response(result);
+        }
+
+        [HttpGet("GetProjectTeam/{projectId}")]
+        public async Task<IActionResult> GetProjectTeam(int projectId)
+        {
+            var result = await _projectService.GetProjectTeam(projectId);
+            return Response(result);
+        }
 
     }
 

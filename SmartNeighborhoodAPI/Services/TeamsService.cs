@@ -98,7 +98,7 @@ namespace SmartNeighborhoodAPI.Services
                 {
                     Id = t.Id,
                     Name = t.Name,
-                    Members = t.TeamMembers.Select(tm => new TeamMemberDetailsDto
+                    TeamMembers = t.TeamMembers.Select(tm => new TeamMemberDetailsDto
                     {
                         TeamMemberId = tm.Id,
                         PersonId = tm.PersonId,
@@ -201,7 +201,7 @@ namespace SmartNeighborhoodAPI.Services
             _logger.LogInformation("Team with ID {TeamId} updated successfully", teamId);
             return ApiResponse<TeamDto>.Success(dto, "تم تحديث الفريق بنجاح");
         }
-        public async Task<ApiResponse<IEnumerable<ReturnProjectDto>>> GetProjectsByTeamIdAsync(int teamId)
+        public async Task<ApiResponse<IEnumerable<ReturnProjectDto>>> GetTeamProjects(int teamId)
         {
             _logger.LogInformation("Fetching projects assigned to team with ID {TeamId}.", teamId);
 
