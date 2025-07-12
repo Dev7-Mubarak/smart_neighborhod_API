@@ -372,23 +372,26 @@ namespace SmartNeighborhoodAPI.Services
 
             _logger.LogInformation("Fetching block families for project with ID {ProjectId}", projectId);
 
-            var blockFamilies = await _context.Families
-                .Where(f => f.ProjectFamilies.Any(pf => pf.ProjectID == projectId))
-                .Include(f => f.Block)
-                .Include(f => f.FamilyCatgory)
-                .Include(f => f.FamilyType)
-                .Include(f => f.FamilyMembers)
-                    .ThenInclude(fm => fm.Person)
-                .AsNoTracking()
-                .ToListAsync();
+            var blocksWithFamilies = await _context.Blocks
+                 .Include(b => b.Families)
+                     .ThenInclude(f => f.ProjectFamilies)
+                 .Include(b => b.Families)
+                     .ThenInclude(f => f.FamilyCatgory)
+                 .Include(b => b.Families)
+                     .ThenInclude(f => f.FamilyType)
+                 .Include(b => b.Families)
+                     .ThenInclude(f => f.FamilyMembers)
+                         .ThenInclude(fm => fm.Person)
+                 .AsNoTracking()
+                 .ToListAsync();
 
-            var grouped = blockFamilies
-                .GroupBy(f => new { f.BlockId, f.Block.Name })
-                .Select(g => new BeneficiaryFamilies
-                {
-                    BlockId = g.Key.BlockId,
-                    BlockName = g.Key.Name,
-                    Families = g.Select(f =>
+            var result = blocksWithFamilies.Select(b => new BeneficiaryFamilies
+            {
+                BlockId = b.Id,
+                BlockName = b.Name,
+                Families = b.Families
+                    .Where(f => f.ProjectFamilies.Any(pf => pf.ProjectID == projectId))
+                    .Select(f =>
                     {
                         var head = f.FamilyMembers.FirstOrDefault(x => x.MemberFamilyRoleId == 1);
 
@@ -399,21 +402,22 @@ namespace SmartNeighborhoodAPI.Services
                             BlockId = f.BlockId,
                             BlockName = f.Block.Name,
                             FamilyCatgoryId = f.FamilyCatgoryId,
-                            FamilyCatgoryName = f.FamilyCatgory.Name,
+                            FamilyCatgoryName = f.FamilyCatgory?.Name,
                             FamilyTypeId = f.FamilyTypeId,
-                            FamilyTypeName = f.FamilyType.Name,
+                            FamilyTypeName = f.FamilyType?.Name,
                             Location = f.Location,
                             FamilyNotes = f.FamilyNotes,
                             FamilyHeadId = head.Id,
-                            FamilyHeadName = head.Person.FullName,
-                            PhoneNumber = head.Person.PhoneNumber,
+                            FamilyHeadName = head?.Person?.FullName,
+                            PhoneNumber = head?.Person?.PhoneNumber,
                         };
-                    }).ToList()
-                })
-                .ToList();
+                    })
+                    .ToList()
+            }).ToList();
 
-            _logger.LogInformation("Retrieved {Count} grouped blocks with families for project ID {ProjectId}.", grouped.Count, projectId);
-            return ApiResponse<List<BeneficiaryFamilies>>.Success(grouped, "تم جلب العائلات حسب البلوك بنجاح");
+
+            _logger.LogInformation("Retrieved {Count} grouped blocks with families for project ID {ProjectId}.", result.Count, projectId);
+            return ApiResponse<List<BeneficiaryFamilies>>.Success(result, "تم جلب العائلات حسب البلوك بنجاح");
         }
         public async Task<ApiResponse<List<CustomTeamDto>>> GetProjectTeam(int projectId)
         {
