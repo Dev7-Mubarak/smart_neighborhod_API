@@ -248,7 +248,8 @@ namespace SmartNeighborhoodAPI.Services
                     Assistances = x.ProjectFamilies.Select(pfm => new Assistances
                     {
                         Id = pfm.Project.Id,
-                        Name = pfm.Project.Name
+                        Name = pfm.Project.Name,
+                        dateReceived = pfm.dateReceived.ToString(),
                     }).ToList()
                 })
                 .FirstOrDefaultAsync(x => x.Id == id);

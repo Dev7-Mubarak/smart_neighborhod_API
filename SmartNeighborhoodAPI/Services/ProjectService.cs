@@ -293,7 +293,8 @@ namespace SmartNeighborhoodAPI.Services
             var projectFamily = new ProjectFamily
             {
                 FamilyID = familyId,
-                ProjectID = projectId
+                ProjectID = projectId,
+                dateReceived = DateTime.Now
             };
 
             await _context.ProjectFamilies.AddAsync(projectFamily);

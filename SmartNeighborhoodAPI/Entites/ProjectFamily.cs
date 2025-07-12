@@ -3,6 +3,7 @@
     public class ProjectFamily
     {
         public int Id { get; set; }
+        public DateTime dateReceived { get; set; }
 
         public int ProjectID { get; set; }
         public Project Project { get; set; }
