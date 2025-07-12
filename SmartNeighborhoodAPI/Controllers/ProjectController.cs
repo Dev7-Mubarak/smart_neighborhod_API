@@ -53,11 +53,26 @@ namespace SmartNeighborhoodAPI.Controllers
             var result = await _projectService.AssignTeamToProjectAsync(projectId, teamId);
             return Response(result);
         }
+        [HttpDelete("DeletAssignTeamFromProject")]
+        public async Task<IActionResult> DeleteAssignTeamToProject(int projectId, [FromQuery] int teamId)
+        {
+            var result = await _projectService.DeleteFamilyFromProjectAsync(projectId,teamId);
+
+            return Response(result);
+        }
+
 
         [HttpPost("AssignFamilyToProject/{projectId:int}")]
         public async Task<IActionResult> AssignFamilyToProject(int projectId, [FromQuery] int familyId)
         {
             var result = await _projectService.AssignFamilyToProjectAsync(projectId, familyId);
+            return Response(result);
+        }
+        [HttpDelete("DeleteFamilyFromProject")]
+        public async Task<IActionResult> DeleteFamilyFromProject(int projectId, [FromQuery] int famileId)
+        {
+            var result = await _projectService.DeleteFamilyFromProjectAsync(projectId, famileId);
+
             return Response(result);
         }
 

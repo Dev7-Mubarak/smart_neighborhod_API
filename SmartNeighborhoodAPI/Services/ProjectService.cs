@@ -262,6 +262,32 @@ namespace SmartNeighborhoodAPI.Services
             _logger.LogError("Failed to assign Team {TeamId} to Project {ProjectId}.", teamId, projectId);
             return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "فشل في ربط الفريق بالمشروع");
         }
+        public async Task<ApiResponse<string>> DeleteAssignTeamFromProjectAsync(int projectId, int teamId)
+        {
+            _logger.LogInformation("Attempting to remove Team {TeamId} from Project {ProjectId}", teamId, projectId);
+
+            var projectTeam = await _context.ProjectTeams
+                .FirstOrDefaultAsync(pt => pt.ProjectId == projectId && pt.TeamId == teamId);
+
+            if (projectTeam == null)
+            {
+                _logger.LogWarning("Assignment or realtions between Project ID {ProjectId} and Team ID {TeamId} not found.", projectId, teamId);
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "العلاقة بين المشروع والفريق غير موجودة");
+            }
+
+            _context.ProjectTeams.Remove(projectTeam);
+
+            var result = await _context.SaveChangesAsync();
+            if (result > 0)
+            {
+                _logger.LogInformation("Successfully removed Team {TeamId} from Project {ProjectId}", teamId, projectId);
+                return ApiResponse<string>.Success("تم إزالة الفريق من المشروع بنجاح");
+            }
+
+            _logger.LogError("Failed to remove Team {TeamId} from Project {ProjectId}", teamId, projectId);
+            return ApiResponse<string>.Error(HttpStatusCode.InternalServerError, "فشل في إزالة الفريق من المشروع");
+        }
+
 
         public async Task<ApiResponse<string>> AssignFamilyToProjectAsync(int projectId, int familyId)
         {
@@ -309,6 +335,32 @@ namespace SmartNeighborhoodAPI.Services
             return ApiResponse<string>.Success("تم ربط الأسرة بالمشروع بنجاح.");
         }
 
+        public async Task<ApiResponse<string>> DeleteFamilyFromProjectAsync(int projectId, int familyId)
+        {
+            _logger.LogInformation("Attempting to remove Family {FamilyId} from Project {ProjectId}", familyId, projectId);
+
+            var projectFamily = await _context.ProjectFamilies
+                .FirstOrDefaultAsync(pf => pf.ProjectID == projectId && pf.FamilyID == familyId);
+
+            if (projectFamily == null)
+            {
+                _logger.LogWarning("Assignment between Project ID {ProjectId} and Family ID {FamilyId} not found.", projectId, familyId);
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "العلاقة بين المشروع والعائلة غير موجودة");
+            }
+
+            _context.ProjectFamilies.Remove(projectFamily);
+
+            var result = await _context.SaveChangesAsync();
+            if (result > 0)
+            {
+                _logger.LogInformation("Successfully removed Family {FamilyId} from Project {ProjectId}", familyId, projectId);
+                return ApiResponse<string>.Success("تم إزالة العائلة من المشروع بنجاح");
+            }
+
+            _logger.LogError("Failed to remove Family ID {FamilyId} from Project {ProjectId}", familyId, projectId);
+            return ApiResponse<string>.Error(HttpStatusCode.InternalServerError, "فشل في إزالة العائلة من المشروع");
+        }
+
         // Reoptimize this function and query
         public async Task<ApiResponse<List<BeneficiaryFamilies>>> GetProjectBlocksWithBeneficiaryFamilies(int projectId)
         {
@@ -323,7 +375,6 @@ namespace SmartNeighborhoodAPI.Services
             _logger.LogInformation("Fetching block families for project with ID {ProjectId}", projectId);
 
             var blockFamilies = await _context.Families
-                .Where(f => f.ProjectFamilies.Any(pf => pf.ProjectID == projectId))
                 .Include(f => f.Block)
                 .Include(f => f.FamilyCatgory)
                 .Include(f => f.FamilyType)
@@ -362,7 +413,7 @@ namespace SmartNeighborhoodAPI.Services
                 })
                 .ToList();
 
-            _logger.LogInformation("Retrieved {Count} grouped blocks with families for project ID {ProjectId}.", grouped.Count, projectId);
+            _logger.LogInformation("Retrieved {Count} grouped blocks with families for project ID {ProjectId}.", projectId);
             return ApiResponse<List<BeneficiaryFamilies>>.Success(grouped, "تم جلب العائلات حسب البلوك بنجاح");
         }
         public async Task<ApiResponse<List<CustomTeamDto>>> GetProjectTeam(int projectId)
