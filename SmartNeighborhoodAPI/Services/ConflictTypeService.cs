@@ -32,7 +32,11 @@ namespace SmartNeighborhoodAPI.Services
             }
 
             _logger.LogInformation("Mapping and saving new ConflictType");
-            var conflictType = _mapper.Map<ConfilctType>(conflictTypeDto);
+            var conflictType = new ConfilctType
+            {
+                Name = conflictTypeDto.Name
+             
+            };
             await _context.ConfilctTypes.AddAsync(conflictType);
 
             if (await _context.SaveChangesAsync() > 0)

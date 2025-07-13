@@ -12,7 +12,6 @@ namespace SmartNeighborhoodAPI.Controllers
         {
             _conflictTypeService = conflictTypeService;
         }
-
         [HttpPost("[action]")]
         public async Task<IActionResult> AddAsync(AddConflictTypeDto addConflictTypeDto)
         {

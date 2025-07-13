@@ -9,7 +9,7 @@
         public int ConflictTypeId { get; set; }
 
         [Required(ErrorMessage = "رقم المدير مطلوب")]
-        public int ManagerId { get; set; }
+        public string ManagerId { get; set; }
 
         [Required(ErrorMessage = "رقم الطرف الأول مطلوب")]
         public int FirstPartyId { get; set; }
@@ -21,8 +21,6 @@
         public string Notes { get; set; }
 
         [Required(ErrorMessage = "نتيجة الجلسة مطلوبة")]
-        [StringLength(500, ErrorMessage = "النتيجة يجب ألا تتجاوز 500 حرف")]
-        public string OutComee { get; set; }
 
         public IFormFile? Image { get; set; }
 

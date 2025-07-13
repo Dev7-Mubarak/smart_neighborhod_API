@@ -11,5 +11,8 @@
         public string? ImageUrl { get; set; }
         public DateTime SessionDate { get; set; }
         public bool IsResolved { get; set; }
+        public int FirstPartyId { get; set; }
+        public int SecondPartyId { get; set; }
+        public string ManagerId { get; set; }
     }
 }

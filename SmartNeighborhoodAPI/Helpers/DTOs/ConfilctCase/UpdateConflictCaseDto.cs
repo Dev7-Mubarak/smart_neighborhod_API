@@ -2,9 +2,9 @@
 {
     public class UpdateConflictCaseDto
     {
-        public int Id { get; set; }
+ 
         public int ConflictTypeId { get; set; }
-        public int ManagerId { get; set; }
+        public string ManagerId { get; set; }
         public int FirstPartyId { get; set; }
         public int SecondPartyId { get; set; }
         public string? Notes { get; set; }

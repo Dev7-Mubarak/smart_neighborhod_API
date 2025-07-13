@@ -40,10 +40,9 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.ImagePath));
         CreateMap<ConflictCase, ReturnConflictCaseDto>()
     .ForMember(dest => dest.ConflictTypeName, opt => opt.MapFrom(src => src.ConflictType.Name))
-    .ForMember(dest => dest.ManagerFullName, opt => opt.MapFrom(src => src.Manager.FullName))
-    .ForMember(dest => dest.ManagerEmail, opt => opt.MapFrom(src => src.Manager.Email))
-    .ForMember(dest => dest.FirstPartyFullName, opt => opt.MapFrom(src => src.FirstParty.FullName))
-    .ForMember(dest => dest.SecondPartyFullName, opt => opt.MapFrom(src => src.SecondParty.FullName))
+    .ForMember(dest => dest.ManagerName, opt => opt.MapFrom(src => src.Manager.FullName))
+    .ForMember(dest => dest.FirstPartyName, opt => opt.MapFrom(src => src.FirstParty.FullName))
+    .ForMember(dest => dest.SecondPartyName, opt => opt.MapFrom(src => src.SecondParty.FullName))
     .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.ImagePath));
 
 
