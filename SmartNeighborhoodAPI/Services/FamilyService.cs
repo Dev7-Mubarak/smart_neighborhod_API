@@ -329,7 +329,6 @@ namespace SmartNeighborhoodAPI.Services
             _logger.LogError("Failed to update Family with ID {Id}.", id);
             return ApiResponse<string>.Error(HttpStatusCode.NotModified, "فشل في تحديث العائلة");
         }
-
         public async Task<ApiResponse<string>> DeleteAsync(int id)
         {
             _logger.LogInformation("Attempting to delete family with ID {FamilyId}", id);

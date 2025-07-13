@@ -1,4 +1,7 @@
-﻿using System.Net;
+﻿using SmartNeighborhoodAPI.Helpers.DTOs;
+using SmartNeighborhoodAPI.Helpers.DTOs.FamilyMember;
+using SmartNeighborhoodAPI.Helpers.DTOs.Person;
+using System.Net;
 
 namespace SmartNeighborhoodAPI.Services
 {
@@ -6,9 +9,9 @@ namespace SmartNeighborhoodAPI.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
-        private readonly ILogger<FamilyMemberService> _logger;
+        private readonly ILogger<FamilyMember> _logger;
 
-        public FamilyMemberService(ApplicationDbContext context, IMapper mapper, ILogger<FamilyMemberService> logger)
+        public FamilyMemberService(ApplicationDbContext context, IMapper mapper, ILogger<FamilyMember> logger)
         {
             _context = context;
             _mapper = mapper;
@@ -91,17 +94,53 @@ namespace SmartNeighborhoodAPI.Services
             return ApiResponse<string>.Success("تم حذف الفرد من العائلة بنجاح");
         }
 
-        public async Task<ApiResponse<IEnumerable<FamilyMember>>> GetAllAsync()
+        public async Task<ApiResponse<IEnumerable<ReturnFamilyMemberWithFullInfo>>> GetAllAsync()
         {
-            var FamilyMembers = _context.FamilyMembers.AsNoTracking().ToList();
-            if (FamilyMembers.Count > 0)
+            _logger.LogInformation("جاري جلب جميع أفراد الأسرة من قاعدة البيانات.");
+
+            var familyMembers = await _context.FamilyMembers
+                .Include(x => x.Person)
+                .Include(x => x.MemberFamilyRole)
+                .AsNoTracking()
+                .ToListAsync();
+
+            if (!familyMembers.Any())
             {
-                var FamilyMembersDtos = _mapper.Map<IQueryable<FamilyMember>>(FamilyMembers);
-                return ApiResponse<IEnumerable<FamilyMember>>.Success(FamilyMembersDtos);
+                _logger.LogWarning("لم يتم العثور على أي فرد من أفراد الأسرة.");
+                return ApiResponse<IEnumerable<ReturnFamilyMemberWithFullInfo>>.Error(
+                    HttpStatusCode.NotFound,
+                    "لم يتم العثور على أي فرد من أفراد الأسرة."
+                );
             }
 
-            return ApiResponse<IEnumerable<FamilyMember>>.Error(HttpStatusCode.NotFound, "No FamilyMember Found");
+            var returnFamilyMember = familyMembers.Select(x => new ReturnFamilyMemberWithFullInfo
+            {
+                FamilyMemberId = x.Id,
+                Role = x.MemberFamilyRole,
+                Person = new PersonDto
+                {
+                    BloodType = x.Person.BloodType.ToString(),
+                    DateOfBirth = x.Person.DateOfBirth,
+                    Email = x.Person.Email,
+                    FullName = x.Person.FullName,
+                    Gender = x.Person.Gender.ToString(),
+                    Id = x.Person.Id,
+                    IdentityNumber = x.Person.IdentityNumber,
+                    IdentityType = x.Person.IdentityType.ToString(),
+                    Image = x.Person.Image,
+                    IsCall = x.Person.IsContactNumber,
+                    IsWhatsapp = x.Person.IsWhatsapp,
+                    MaritalStatus = x.Person.MaritalStatus.ToString(),
+                    OccupationStatus = x.Person.OccupationStatus.ToString(),
+                    PhoneNumber = x.Person.PhoneNumber,
+                    Job = x.Person.Job?? "NAN",
+                }
+            });
+
+            _logger.LogInformation($"تم جلب {familyMembers.Count} من أفراد الأسرة بنجاح.");
+            return ApiResponse<IEnumerable<ReturnFamilyMemberWithFullInfo>>.Success(returnFamilyMember, "تم جلب أفراد الأسرة بنجاح.");
         }
+
         public async Task<ApiResponse<FamilyMemberDto>> GetByIdAsync(int id)
         {
             var FamilyMember = await _context.FamilyMembers.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
