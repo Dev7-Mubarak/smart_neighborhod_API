@@ -1,4 +1,4 @@
-﻿namespace SmartNeighborhoodAPI.Helpers.DTOs
+﻿namespace SmartNeighborhoodAPI.Helpers.DTOs.TeamMembers
 {
     public class TeamMemberDetailsDto
     {

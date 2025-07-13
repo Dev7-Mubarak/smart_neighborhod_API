@@ -5,6 +5,7 @@ using SmartNeighborhoodAPI.Helpers.DTOs.FamilyMember;
 using SmartNeighborhoodAPI.Helpers.DTOs.FamilyMembers;
 using SmartNeighborhoodAPI.Helpers.DTOs.Person;
 using SmartNeighborhoodAPI.Helpers.DTOs.ProjectFamily;
+using SmartNeighborhoodAPI.Helpers.DTOs.Teams;
 
 namespace SmartNeighborhoodAPI.Services
 {
@@ -248,8 +249,7 @@ namespace SmartNeighborhoodAPI.Services
                     Assistances = x.ProjectFamilies.Select(pfm => new Assistances
                     {
                         Id = pfm.Project.Id,
-                        Name = pfm.Project.Name,
-                        dateReceived = pfm.dateReceived.ToString(),
+                        Name = pfm.Project.Name
                     }).ToList()
                 })
                 .FirstOrDefaultAsync(x => x.Id == id);

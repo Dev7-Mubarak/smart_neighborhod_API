@@ -1,6 +1,6 @@
 ﻿using SmartNeighborhoodAPI.Entites.Enums;
 
-namespace SmartNeighborhoodAPI.Helpers.DTOs
+namespace SmartNeighborhoodAPI.Helpers.DTOs.FamilyMember
 {
     public class FamilyDto
     {

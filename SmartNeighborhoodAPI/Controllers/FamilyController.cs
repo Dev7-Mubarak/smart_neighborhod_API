@@ -1,4 +1,6 @@
-﻿namespace SmartNeighborhoodAPI.Controllers
+﻿using SmartNeighborhoodAPI.Helpers.DTOs.FamilyMember;
+
+namespace SmartNeighborhoodAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

@@ -84,12 +84,12 @@ namespace SmartNeighborhoodAPI.Controllers
             return Response(result);
         }
 
-        [HttpGet("GetProjectTeam/{projectId}")]
-        public async Task<IActionResult> GetProjectTeam(int projectId)
-        {
-            var result = await _projectService.GetProjectTeam(projectId);
-            return Response(result);
-        }
+        //[HttpGet("GetProjectTeam/{projectId}")]
+        //public async Task<IActionResult> GetProjectTeam(int projectId)
+        //{
+        //    var result = await _projectService.GetProjectTeam(projectId);
+        //    return Response(result);
+        //}
 
     }
 

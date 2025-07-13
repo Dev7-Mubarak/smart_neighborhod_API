@@ -2,7 +2,7 @@
 using SmartNeighborhoodAPI.Helpers.DTOs.FamilyMember;
 using SmartNeighborhoodAPI.Helpers.DTOs.ProjectFamily;
 
-namespace SmartNeighborhoodAPI.Helpers.DTOs
+namespace SmartNeighborhoodAPI.Helpers.DTOs.Teams
 {
     public class ReturnFamilyInfoDto
     {
