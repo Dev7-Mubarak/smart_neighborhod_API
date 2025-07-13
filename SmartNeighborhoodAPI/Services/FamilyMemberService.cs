@@ -93,7 +93,6 @@ namespace SmartNeighborhoodAPI.Services
 
             return ApiResponse<string>.Success("تم حذف الفرد من العائلة بنجاح");
         }
-
         public async Task<ApiResponse<IEnumerable<ReturnFamilyMemberWithFullInfo>>> GetAllAsync()
         {
             _logger.LogInformation("جاري جلب جميع أفراد الأسرة من قاعدة البيانات.");
@@ -140,17 +139,53 @@ namespace SmartNeighborhoodAPI.Services
             _logger.LogInformation($"تم جلب {familyMembers.Count} من أفراد الأسرة بنجاح.");
             return ApiResponse<IEnumerable<ReturnFamilyMemberWithFullInfo>>.Success(returnFamilyMember, "تم جلب أفراد الأسرة بنجاح.");
         }
-
-        public async Task<ApiResponse<FamilyMemberDto>> GetByIdAsync(int id)
+        public async Task<ApiResponse<ReturnFamilyMemberWithFullInfo>> GetByIdAsync(int id)
         {
-            var FamilyMember = await _context.FamilyMembers.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
-            if (FamilyMember == null)
-                return ApiResponse<FamilyMemberDto>.Error(HttpStatusCode.NotFound, "FamilyMember Not Found");
+            _logger.LogInformation($"جاري جلب فرد الأسرة الذي يحمل المعرف {id} من قاعدة البيانات.");
 
+            var familyMember = await _context.FamilyMembers
+                .Include(x => x.Person)
+                .Include(x => x.MemberFamilyRole)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == id);
 
-            var FamilyMemberDto = _mapper.Map<FamilyMemberDto>(FamilyMember);
-            return ApiResponse<FamilyMemberDto>.Success(FamilyMemberDto);
+            if (familyMember == null)
+            {
+                _logger.LogWarning($"لم يتم العثور على فرد الأسرة بالمعرف {id}.");
+                return ApiResponse<ReturnFamilyMemberWithFullInfo>.Error(
+                    HttpStatusCode.NotFound,
+                    "لم يتم العثور على فرد الأسرة."
+                );
+            }
+
+            var familyMemberDto = new ReturnFamilyMemberWithFullInfo
+            {
+                FamilyMemberId = familyMember.Id,
+                Role = familyMember.MemberFamilyRole,
+                Person = new PersonDto
+                {
+                    BloodType = familyMember.Person.BloodType.ToString(),
+                    DateOfBirth = familyMember.Person.DateOfBirth,
+                    Email = familyMember.Person.Email,
+                    FullName = familyMember.Person.FullName,
+                    Gender = familyMember.Person.Gender.ToString(),
+                    Id = familyMember.Person.Id,
+                    IdentityNumber = familyMember.Person.IdentityNumber,
+                    IdentityType = familyMember.Person.IdentityType.ToString(),
+                    Image = familyMember.Person.Image,
+                    IsCall = familyMember.Person.IsContactNumber,
+                    IsWhatsapp = familyMember.Person.IsWhatsapp,
+                    MaritalStatus = familyMember.Person.MaritalStatus.ToString(),
+                    OccupationStatus = familyMember.Person.OccupationStatus.ToString(),
+                    PhoneNumber = familyMember.Person.PhoneNumber,
+                    Job = familyMember.Person.Job ?? "NAN",
+                }
+            };
+
+            _logger.LogInformation($"تم جلب فرد الأسرة بالمعرف {id} بنجاح.");
+            return ApiResponse<ReturnFamilyMemberWithFullInfo>.Success(familyMemberDto, "تم جلب فرد الأسرة بنجاح.");
         }
+
         public async Task<ApiResponse<string>> UpdateAsync(int id, FamilyMember FamilyMember)
         {
             var ExsitFamilyMember = await _context.FamilyMembers.FirstOrDefaultAsync(x => x.Id == id);
