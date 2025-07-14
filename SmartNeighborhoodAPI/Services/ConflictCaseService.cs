@@ -130,9 +130,12 @@ namespace SmartNeighborhoodAPI.Services
 
             var conflictCases = await _context.ConfilctCases
                 .Include(c => c.Manager)
+                    .ThenInclude(m => m.Person)
                 .Include(c => c.ConflictType)
                 .Include(c => c.FirstParty)
+                    .ThenInclude(fp => fp.Person)
                 .Include(c => c.SecondParty)
+                   .ThenInclude(sp => sp.Person)
                 .AsNoTracking()
                 .ToListAsync();
 

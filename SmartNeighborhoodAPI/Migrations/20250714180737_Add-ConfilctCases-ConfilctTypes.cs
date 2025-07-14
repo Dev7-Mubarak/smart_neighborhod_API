@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SmartNeighborhoodAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class AddConfilctCaseTable : Migration
+    public partial class AddConfilctCasesConfilctTypes : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -44,7 +44,7 @@ namespace SmartNeighborhoodAPI.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     FirstPartyId = table.Column<int>(type: "int", nullable: false),
                     SecondPartyId = table.Column<int>(type: "int", nullable: false),
-                    ManagerId = table.Column<int>(type: "int", nullable: false),
+                    ManagerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ConflictTypeId = table.Column<int>(type: "int", nullable: false),
                     Notes = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ImagePath = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -55,27 +55,27 @@ namespace SmartNeighborhoodAPI.Migrations
                 {
                     table.PrimaryKey("PK_ConfilctCases", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_ConfilctCases_AspNetUsers_ManagerId",
+                        column: x => x.ManagerId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_ConfilctCases_ConfilctTypes_ConflictTypeId",
                         column: x => x.ConflictTypeId,
                         principalTable: "ConfilctTypes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ConfilctCases_People_FirstPartyId",
+                        name: "FK_ConfilctCases_FamilyMembers_FirstPartyId",
                         column: x => x.FirstPartyId,
-                        principalTable: "People",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ConfilctCases_People_ManagerId",
-                        column: x => x.ManagerId,
-                        principalTable: "People",
+                        principalTable: "FamilyMembers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
-                        name: "FK_ConfilctCases_People_SecondPartyId",
+                        name: "FK_ConfilctCases_FamilyMembers_SecondPartyId",
                         column: x => x.SecondPartyId,
-                        principalTable: "People",
+                        principalTable: "FamilyMembers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.NoAction);
                 });
@@ -85,7 +85,7 @@ namespace SmartNeighborhoodAPI.Migrations
                 keyColumn: "Id",
                 keyValue: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
                 columns: new[] { "ConcurrencyStamp", "PasswordHash", "SecurityStamp" },
-                values: new object[] { "275fc87a-d8a3-4640-a795-3f0e8eb99c62", "AQAAAAIAAYagAAAAECtD13HDpQgqjTSDHzwfJ1//Y5fo7+VHKcsr8W1+ybrcGsH5Xux2o2xHzX57/pqW1g==", "e05dba57-e5aa-47db-8626-a609e5aa5cfe" });
+                values: new object[] { "d7669243-5952-4c97-8f6d-71ebb4f9a689", "AQAAAAIAAYagAAAAEIQsLmPyPHxR1/0sNTse03LBCNXkL257P/m88NwUYX5k6VLGmDs+lTpNJIC64AvQuw==", "7f32e214-8c65-4937-9e66-50aeb8eceac0" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ConfilctCases_ConflictTypeId",

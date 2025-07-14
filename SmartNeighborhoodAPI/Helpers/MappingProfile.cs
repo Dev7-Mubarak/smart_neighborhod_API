@@ -34,15 +34,15 @@ public class MappingProfile : Profile
 
         CreateMap<ConflictCase, GetConflictCaseDto>()
             .ForMember(dest => dest.ConflictTypeName, opt => opt.MapFrom(src => src.ConflictType.Name))
-            .ForMember(dest => dest.ManagerName, opt => opt.MapFrom(src => src.Manager.FullName))
-            .ForMember(dest => dest.FirstPartyName, opt => opt.MapFrom(src => src.FirstParty.FullName))
-            .ForMember(dest => dest.SecondPartyName, opt => opt.MapFrom(src => src.SecondParty.FullName))
+            .ForMember(dest => dest.ManagerName, opt => opt.MapFrom(src => src.Manager.Person.FullName))
+            .ForMember(dest => dest.FirstPartyName, opt => opt.MapFrom(src => src.FirstParty.Person.FullName))
+            .ForMember(dest => dest.SecondPartyName, opt => opt.MapFrom(src => src.SecondParty.Person.FullName))
             .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.ImagePath));
         CreateMap<ConflictCase, ReturnConflictCaseDto>()
     .ForMember(dest => dest.ConflictTypeName, opt => opt.MapFrom(src => src.ConflictType.Name))
-    .ForMember(dest => dest.ManagerName, opt => opt.MapFrom(src => src.Manager.FullName))
-    .ForMember(dest => dest.FirstPartyName, opt => opt.MapFrom(src => src.FirstParty.FullName))
-    .ForMember(dest => dest.SecondPartyName, opt => opt.MapFrom(src => src.SecondParty.FullName))
+    .ForMember(dest => dest.ManagerName, opt => opt.MapFrom(src => src.Manager.Person.FullName))
+    .ForMember(dest => dest.FirstPartyName, opt => opt.MapFrom(src => src.FirstParty.Person.FullName))
+    .ForMember(dest => dest.SecondPartyName, opt => opt.MapFrom(src => src.SecondParty.Person.FullName))
     .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.ImagePath));
 
 

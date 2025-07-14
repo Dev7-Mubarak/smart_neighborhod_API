@@ -1,4 +1,6 @@
-﻿namespace OurProjectSmartNeiborhood.Entites
+﻿using SmartNeighborhoodAPI.Entites;
+
+namespace OurProjectSmartNeiborhood.Entites
 {
     public class ConflictCase
     {
@@ -12,9 +14,9 @@
         public DateTime SessionDate { get; set; }
         public bool IsResolved { get; set; }
 
-        public Person FirstParty { get; set; }
-        public Person SecondParty { get; set; }
-        public Person Manager { get; set; }
+        public FamilyMember FirstParty { get; set; }
+        public FamilyMember SecondParty { get; set; }
+        public AppUser Manager { get; set; }
         public ConfilctType ConflictType { get; set; }
     }
 

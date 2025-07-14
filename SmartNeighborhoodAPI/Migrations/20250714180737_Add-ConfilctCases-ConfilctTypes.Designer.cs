@@ -12,8 +12,8 @@ using SmartNeighborhoodAPI;
 namespace SmartNeighborhoodAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250713115805_changeManagerIdType")]
-    partial class changeManagerIdType
+    [Migration("20250714180737_Add-ConfilctCases-ConfilctTypes")]
+    partial class AddConfilctCasesConfilctTypes
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -286,10 +286,7 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     b.Property<string>("ManagerId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ManagerId1")
-                        .HasColumnType("int");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Notes")
                         .IsRequired()
@@ -307,7 +304,7 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     b.HasIndex("FirstPartyId");
 
-                    b.HasIndex("ManagerId1");
+                    b.HasIndex("ManagerId");
 
                     b.HasIndex("SecondPartyId");
 
@@ -915,17 +912,17 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "0418dca3-0106-49dc-af9d-eb175389caf8",
+                            ConcurrencyStamp = "d7669243-5952-4c97-8f6d-71ebb4f9a689",
                             Email = "admin@example.com",
                             EmailConfirmed = true,
                             IsActive = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@EXAMPLE.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAELQ3vVW8LJeJDstW4za7K+SENPfSb6sRyeWWaPCWpdU/1qCoBOD/1195SCqg/cN/KQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEIQsLmPyPHxR1/0sNTse03LBCNXkL257P/m88NwUYX5k6VLGmDs+lTpNJIC64AvQuw==",
                             PersonId = 1,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "ec6065b0-e396-485b-baf1-304abb4e0a6f",
+                            SecurityStamp = "7f32e214-8c65-4937-9e66-50aeb8eceac0",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         });
@@ -1068,24 +1065,24 @@ namespace SmartNeighborhoodAPI.Migrations
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.ConflictCase", b =>
                 {
                     b.HasOne("OurProjectSmartNeiborhood.Entites.ConfilctType", "ConflictType")
-                        .WithMany()
+                        .WithMany("Conflicts")
                         .HasForeignKey("ConflictTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("OurProjectSmartNeiborhood.Entites.Person", "FirstParty")
+                    b.HasOne("OurProjectSmartNeiborhood.Entites.FamilyMember", "FirstParty")
                         .WithMany()
                         .HasForeignKey("FirstPartyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("OurProjectSmartNeiborhood.Entites.Person", "Manager")
+                    b.HasOne("SmartNeighborhoodAPI.Entites.AppUser", "Manager")
                         .WithMany()
-                        .HasForeignKey("ManagerId1")
+                        .HasForeignKey("ManagerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("OurProjectSmartNeiborhood.Entites.Person", "SecondParty")
+                    b.HasOne("OurProjectSmartNeiborhood.Entites.FamilyMember", "SecondParty")
                         .WithMany()
                         .HasForeignKey("SecondPartyId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1252,6 +1249,11 @@ namespace SmartNeighborhoodAPI.Migrations
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.Block", b =>
                 {
                     b.Navigation("Families");
+                });
+
+            modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.ConfilctType", b =>
+                {
+                    b.Navigation("Conflicts");
                 });
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.Family", b =>
