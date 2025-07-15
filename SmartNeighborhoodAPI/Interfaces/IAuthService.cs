@@ -2,6 +2,7 @@
 
 namespace SmartNeighborhoodAPI.Interfaces
 {
+    //This service Provides methods for user authentication and account management.
     public interface IAuthService
     {
         Task<ApiResponse<UserResponse>> CreateBlockManagerAccountAsync(CreateBlockManagerDto registerDto);
