@@ -1,4 +1,5 @@
 ﻿using SmartNeighborhoodAPI.Helpers.DTOs.Auth;
+using SmartNeighborhoodAPI.Helpers.DTOs.block;
 
 namespace SmartNeighborhoodAPI.Interfaces
 {

@@ -25,7 +25,7 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("RemoteConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddLocalization(options =>
 {
     options.ResourcesPath = "Resources";
@@ -63,9 +63,8 @@ builder.Services.AddScoped<BlockServices>();
 builder.Services.AddScoped<AdsService>();
 builder.Services.AddScoped<ImageService>();
 builder.Services.AddScoped<GroupService>();
-builder.Services.AddScoped<ComplainService>();
-builder.Services.AddScoped<ComplainTypeService>();
-builder.Services.AddScoped<ConfilctPartyService>();
+builder.Services.AddScoped<ConflictCaseService>();
+builder.Services.AddScoped<ConflictTypeService>();
 builder.Services.AddScoped<ProjectCatgoryService>();
 builder.Services.AddScoped<ProjectService>();
 builder.Services.AddScoped<ProjectFamilieservice>();

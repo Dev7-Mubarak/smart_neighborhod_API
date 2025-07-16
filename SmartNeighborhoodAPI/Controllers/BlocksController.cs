@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.RateLimiting;
 using SmartNeighborhoodAPI.Helpers.DTOs.Auth;
+using SmartNeighborhoodAPI.Helpers.DTOs.block;
 
 namespace SmartNeighborhoodAPI.Controllers
 {

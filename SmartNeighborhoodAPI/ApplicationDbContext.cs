@@ -42,10 +42,9 @@ namespace SmartNeighborhoodAPI
         public DbSet<Block> Blocks { get; set; }
         public DbSet<Ad> Ads { get; set; }
         public DbSet<Group> Groups { get; set; }
-        public DbSet<ConfilctParty> ConfilctParties { get; set; }
         public DbSet<Project> Projects { get; set; }
-        public DbSet<Complain> Complains { get; set; }
-        public DbSet<ComplainType> ComplainTypes { get; set; }
+        public DbSet<ConflictCase> ConfilctCases { get; set; }
+        public DbSet<ConfilctType> ConfilctTypes { get; set; }
         public DbSet<ProjectFamily> ProjectFamilies { get; set; }
         public DbSet<ProjectCatogory> ProjectCatogories { get; set; }
         public DbSet<Team> Teams { get; set; }
