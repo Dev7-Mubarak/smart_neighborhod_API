@@ -50,12 +50,7 @@ namespace SmartNeighborhoodAPI.Services
             {
                 manager = await _userManager.FindByIdAsync(conflictCaseDto.ManagerId);
             }
-            else if (conflictCaseDto.ManagerPersonId.HasValue)
-            {
-                manager = await _userManager.Users
-                    .Include(u => u.Person)
-                    .FirstOrDefaultAsync(u => u.Person.Id == conflictCaseDto.ManagerPersonId.Value);
-            }
+           
 
             if (manager is null)
             {
@@ -222,12 +217,7 @@ namespace SmartNeighborhoodAPI.Services
             {
                 manager = await _userManager.FindByIdAsync(conflictCaseDto.ManagerId);
             }
-            else if (conflictCaseDto.ManagerPersonId.HasValue)
-            {
-                manager = await _userManager.Users
-                    .Include(u => u.Person)
-                    .FirstOrDefaultAsync(u => u.Person.Id == conflictCaseDto.ManagerPersonId.Value);
-            }
+         
 
             if (manager == null)
             {

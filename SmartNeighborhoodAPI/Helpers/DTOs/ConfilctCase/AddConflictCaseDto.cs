@@ -29,7 +29,6 @@
         [Required(ErrorMessage = "عنوان القضية مطلوب")]
         public string Title { get; set; }
         public bool IsResolved { get; set; }
-        public int? ManagerPersonId { get; set; }        
 
     }
 
