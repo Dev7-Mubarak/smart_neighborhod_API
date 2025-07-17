@@ -19,7 +19,7 @@ namespace SmartNeighborhoodAPI.Services
         private string _personImagePath;
         private readonly UserManager<AppUser> _userManager;
 
-        public ConflictCaseService(UserManager<AppUser> userManager,ApplicationDbContext context, IMapper mapper, IWebHostEnvironment webHostEnvironment, ImageService imageService, ILogger<ConflictCaseService> logger)
+        public ConflictCaseService(UserManager<AppUser> userManager, ApplicationDbContext context, IMapper mapper, IWebHostEnvironment webHostEnvironment, ImageService imageService, ILogger<ConflictCaseService> logger)
         {
             _context = context;
             _mapper = mapper;
@@ -30,37 +30,44 @@ namespace SmartNeighborhoodAPI.Services
             _userManager = userManager;
         }
 
-        public async Task<ApiResponse<ReturnConflictCaseDto>> AddAsync(AddConflictCaseDto ConfilctCaseDto)
+        public async Task<ApiResponse<ReturnConflictCaseDto>> AddAsync(AddConflictCaseDto conflictCaseDto)
         {
             _logger.LogInformation("Start adding ConflictCase");
 
             string conflictCaseImage = string.Empty;
 
-            if (ConfilctCaseDto.Image != null)
+
+            if (conflictCaseDto.Image != null)
             {
                 _logger.LogInformation("Saving image for ConflictCase");
-                conflictCaseImage = await _imageService.SaveImageAsync(ConfilctCaseDto.Image, _personImagePath);
+                conflictCaseImage = await _imageService.SaveImageAsync(conflictCaseDto.Image, _personImagePath);
             }
 
 
-            var manager = await _userManager.FindByIdAsync(ConfilctCaseDto.ManagerId);
-         
+            AppUser manager = null;
+
+            if (!string.IsNullOrWhiteSpace(conflictCaseDto.ManagerId))
+            {
+                manager = await _userManager.FindByIdAsync(conflictCaseDto.ManagerId);
+            }
+           
+
             if (manager is null)
             {
                 _logger.LogWarning("Manager not found");
                 return ApiResponse<ReturnConflictCaseDto>.Error(HttpStatusCode.NotFound, "Manager not found.");
             }
 
-    
-            var isConflictTypeExists = await _context.ConfilctTypes.AnyAsync(x => x.Id == ConfilctCaseDto.ConflictTypeId);
+
+            var isConflictTypeExists = await _context.ConfilctTypes.AnyAsync(x => x.Id == conflictCaseDto.ConflictTypeId);
             if (!isConflictTypeExists)
             {
                 _logger.LogWarning("Conflict type not found");
                 return ApiResponse<ReturnConflictCaseDto>.Error(HttpStatusCode.NotFound, "Conflict type not found.");
             }
 
-    
-            var firstParty = await _context.FamilyMembers.FindAsync(ConfilctCaseDto.FirstPartyId);
+
+            var firstParty = await _context.FamilyMembers.FindAsync(conflictCaseDto.FirstPartyId);
             if (firstParty is null)
             {
                 _logger.LogWarning("First party not found");
@@ -68,30 +75,28 @@ namespace SmartNeighborhoodAPI.Services
             }
 
 
-            var secondParty = await _context.FamilyMembers.FindAsync(ConfilctCaseDto.SecondPartyId);
+            var secondParty = await _context.FamilyMembers.FindAsync(conflictCaseDto.SecondPartyId);
             if (secondParty is null)
             {
                 _logger.LogWarning("Second party not found");
                 return ApiResponse<ReturnConflictCaseDto>.Error(HttpStatusCode.NotFound, "Second party not found.");
             }
 
-      
-            var conflictCase = _mapper.Map<ConflictCase>(ConfilctCaseDto);
+
+            var conflictCase = _mapper.Map<ConflictCase>(conflictCaseDto);
+            conflictCase.ManagerId = manager.Id;
             conflictCase.ImagePath = conflictCaseImage;
+
 
             _context.ConfilctCases.Add(conflictCase);
             await _context.SaveChangesAsync();
 
-      
+
             var returnDto = _mapper.Map<ReturnConflictCaseDto>(conflictCase);
-            returnDto.ManagerName =  manager.UserName;
-            //return null
-            //returnDto.FirstPartyName = firstParty.Person.FirstName+" "+ firstParty.Person.SecondName+" "+ firstParty.Person.ThirdName;
-            //return null try to fix if you can
-            //returnDto.SecondPartyName = secondParty.Person.FirstName + " " + secondParty.Person.SecondName + " " + secondParty.Person.ThirdName;
+            returnDto.ManagerName = manager.UserName;
 
             _logger.LogInformation("ConflictCase added successfully");
-            return ApiResponse<ReturnConflictCaseDto>.Success(returnDto, "تمت الاضافة القضية بنجاح");
+            return ApiResponse<ReturnConflictCaseDto>.Success(returnDto, "تمت اضافة القضية بنجاح");
         }
 
 
@@ -135,15 +140,16 @@ namespace SmartNeighborhoodAPI.Services
                 .Include(c => c.FirstParty)
                     .ThenInclude(fp => fp.Person)
                 .Include(c => c.SecondParty)
-                   .ThenInclude(sp => sp.Person)
+                    .ThenInclude(sp => sp.Person)
                 .AsNoTracking()
                 .ToListAsync();
 
             if (conflictCases.Count > 0)
             {
                 _logger.LogInformation("Found {Count} ConflictCases", conflictCases.Count);
-                var ConflictCaseDTos = _mapper.Map<IEnumerable<GetConflictCaseDto>>(conflictCases);
-                return ApiResponse<IEnumerable<GetConflictCaseDto>>.Success(ConflictCaseDTos);
+
+                var conflictCaseDtos = _mapper.Map<IEnumerable<GetConflictCaseDto>>(conflictCases);
+                return ApiResponse<IEnumerable<GetConflictCaseDto>>.Success(conflictCaseDtos);
             }
 
             _logger.LogWarning("No ConflictCases found");
@@ -173,9 +179,11 @@ namespace SmartNeighborhoodAPI.Services
             return ApiResponse<GetConflictCaseDto>.Success(conflictCaseDto);
         }
 
-        public async Task<ApiResponse<string>> UpdateAsync(int id,[FromBody] UpdateConflictCaseDto conflictCaseDto)
+        public async Task<ApiResponse<string>> UpdateAsync(int id, UpdateConflictCaseDto conflictCaseDto)
         {
             _logger.LogInformation("Updating ConflictCase with ID {Id}", id);
+
+
 
             var existingConflictCase = await _context.ConfilctCases.FirstOrDefaultAsync(x => x.Id == id);
 
@@ -185,8 +193,42 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<string>.Error(HttpStatusCode.NotFound, "Conflict case not found.");
             }
 
+            if (!await _context.ConfilctTypes.AnyAsync(x => x.Id == conflictCaseDto.ConflictTypeId))
+            {
+                _logger.LogWarning("Conflict type not found");
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "Conflict type not found.");
+            }
+
+            if (!await _context.FamilyMembers.AnyAsync(x => x.Id == conflictCaseDto.FirstPartyId))
+            {
+                _logger.LogWarning("First party not found");
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "First party not found.");
+            }
+
+            if (!await _context.FamilyMembers.AnyAsync(x => x.Id == conflictCaseDto.SecondPartyId))
+            {
+                _logger.LogWarning("Second party not found");
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "Second party not found.");
+            }
+
+            AppUser manager = null;
+
+            if (!string.IsNullOrWhiteSpace(conflictCaseDto.ManagerId))
+            {
+                manager = await _userManager.FindByIdAsync(conflictCaseDto.ManagerId);
+            }
+         
+
+            if (manager == null)
+            {
+                _logger.LogWarning("Manager not found during update");
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "Manager not found.");
+            }
+
             _logger.LogInformation("Mapping updates to existing ConflictCase");
             _mapper.Map(conflictCaseDto, existingConflictCase);
+
+            existingConflictCase.ManagerId = manager.Id;
 
             if (conflictCaseDto.Image != null)
             {
@@ -200,6 +242,8 @@ namespace SmartNeighborhoodAPI.Services
                 existingConflictCase.ImagePath = await _imageService.SaveImageAsync(conflictCaseDto.Image, _personImagePath);
             }
 
+            _logger.LogDebug("Title after mapping: {Title}", existingConflictCase.Title);
+
             if (await _context.SaveChangesAsync() > 0)
             {
                 _logger.LogInformation("ConflictCase updated successfully");
@@ -207,8 +251,9 @@ namespace SmartNeighborhoodAPI.Services
             }
 
             _logger.LogWarning("Failed to update ConflictCase");
+            _logger.LogWarning("Entity state: {@Entity}", existingConflictCase);
             return ApiResponse<string>.Error(HttpStatusCode.NotModified, "Failed to update conflict case.");
         }
-    }
 
+    }
 }

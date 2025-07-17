@@ -12,7 +12,10 @@ namespace OurProjectSmartNeiborhood.Entites
         public string Notes { get; set; }
         public string ImagePath { get; set; }
         public DateTime SessionDate { get; set; }
+
         public bool IsResolved { get; set; }
+        [Required]
+        public string Title { get; set; }
 
         public FamilyMember FirstParty { get; set; }
         public FamilyMember SecondParty { get; set; }
