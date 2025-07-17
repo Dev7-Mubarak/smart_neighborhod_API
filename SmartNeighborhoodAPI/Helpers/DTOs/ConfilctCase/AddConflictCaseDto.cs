@@ -26,8 +26,11 @@
 
         [Required(ErrorMessage = "تاريخ الجلسة مطلوب")]
         public DateTime SessionDate { get; set; }
-
+        [Required(ErrorMessage = "عنوان القضية مطلوب")]
+        public string Title { get; set; }
         public bool IsResolved { get; set; }
+        public int? ManagerPersonId { get; set; }        
+
     }
 
 }

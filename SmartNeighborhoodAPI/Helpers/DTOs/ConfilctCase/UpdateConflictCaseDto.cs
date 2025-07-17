@@ -2,9 +2,11 @@
 {
     public class UpdateConflictCaseDto
     {
- 
+        [Required(ErrorMessage = "عنوان القضية مطلوب")]
+        public string Title { get; set; }
         public int ConflictTypeId { get; set; }
         public string ManagerId { get; set; }
+        public int? ManagerPersonId { get; set; }
         public int FirstPartyId { get; set; }
         public int SecondPartyId { get; set; }
         public string? Notes { get; set; }

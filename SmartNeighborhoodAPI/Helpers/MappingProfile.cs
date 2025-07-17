@@ -33,6 +33,8 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.ImagePath, opt => opt.Ignore()); 
 
         CreateMap<ConflictCase, GetConflictCaseDto>()
+                .ForMember(dest => dest.ManagerPersonId, opt => opt.MapFrom(src => src.Manager.Person.Id))
+
             .ForMember(dest => dest.ConflictTypeName, opt => opt.MapFrom(src => src.ConflictType.Name))
             .ForMember(dest => dest.ManagerName, opt => opt.MapFrom(src => src.Manager.Person.FullName))
             .ForMember(dest => dest.FirstPartyName, opt => opt.MapFrom(src => src.FirstParty.Person.FullName))
