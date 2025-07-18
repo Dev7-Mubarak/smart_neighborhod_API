@@ -250,7 +250,7 @@ namespace SmartNeighborhoodAPI.Services
                     {
                         Id = pfm.Project.Id,
                         Name = pfm.Project.Name,
-                        dateReceived = pfm.dateReceived.ToString(),
+                        dateReceived = pfm.dateReceived.ToShortDateString(),
                     }).ToList()
                 })
                 .FirstOrDefaultAsync(x => x.Id == id);
