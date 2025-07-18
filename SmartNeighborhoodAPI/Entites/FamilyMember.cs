@@ -17,6 +17,9 @@ namespace OurProjectSmartNeiborhood.Entites
         public int MemberFamilyRoleId { get; set; }
         [JsonIgnore]
         public MemberFamilyRole MemberFamilyRole { get; set; }
+        [JsonIgnore]
+        public ICollection<ConflictCase> FirstPartyConflictCases { get; set; }
+        public ICollection<ConflictCase> SecondPartyConflictCases { get; set; }
     }
 
 }

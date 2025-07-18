@@ -98,8 +98,6 @@ namespace SmartNeighborhoodAPI.Services
             _logger.LogInformation("ConflictCase added successfully");
             return ApiResponse<ReturnConflictCaseDto>.Success(returnDto, "تمت اضافة القضية بنجاح");
         }
-
-
         public async Task<ApiResponse<string>> DeleteAsync(int id)
         {
             _logger.LogInformation("Attempting to delete ConflictCase with ID {Id}", id);
@@ -128,7 +126,6 @@ namespace SmartNeighborhoodAPI.Services
             _logger.LogWarning("Failed to delete ConflictCase");
             return ApiResponse<string>.Error(HttpStatusCode.NotModified, "Faild To Delete the ConfilctCases");
         }
-
         public async Task<ApiResponse<IEnumerable<GetConflictCaseDto>>> GetAll()
         {
             _logger.LogInformation("Retrieving all ConflictCases");
@@ -155,7 +152,6 @@ namespace SmartNeighborhoodAPI.Services
             _logger.LogWarning("No ConflictCases found");
             return ApiResponse<IEnumerable<GetConflictCaseDto>>.Error(HttpStatusCode.NotFound, "No ConflictCase Found");
         }
-
         public async Task<ApiResponse<GetConflictCaseDto>> GetByIdAsync(int id)
         {
             _logger.LogInformation("Retrieving ConflictCase by ID {Id}", id);
@@ -178,7 +174,6 @@ namespace SmartNeighborhoodAPI.Services
             _logger.LogInformation("ConflictCase retrieved successfully");
             return ApiResponse<GetConflictCaseDto>.Success(conflictCaseDto);
         }
-
         public async Task<ApiResponse<string>> UpdateAsync(int id, UpdateConflictCaseDto conflictCaseDto)
         {
             _logger.LogInformation("Updating ConflictCase with ID {Id}", id);
@@ -254,6 +249,27 @@ namespace SmartNeighborhoodAPI.Services
             _logger.LogWarning("Entity state: {@Entity}", existingConflictCase);
             return ApiResponse<string>.Error(HttpStatusCode.NotModified, "Failed to update conflict case.");
         }
+        public async Task<ApiResponse<IEnumerable<GetConflictCaseDto>>> GetByFamilyMemberIdAsync(int familyMemberId)
+        {
+            _logger.LogInformation("Retrieving ConflictCases for FamilyMemberId {FamilyMemberId}", familyMemberId);
 
+            var conflictCases = await _context.ConfilctCases
+                .Include(c => c.Manager)
+                .Include(c => c.ConflictType)
+                .Include(c => c.FirstParty)
+                .Include(c => c.SecondParty)
+                .Where(c => c.FirstPartyId == familyMemberId || c.SecondPartyId == familyMemberId)
+                .AsNoTracking()
+                .ToListAsync();
+
+            if (conflictCases.Count > 0)
+            {
+                var conflictCaseDtos = _mapper.Map<IEnumerable<GetConflictCaseDto>>(conflictCases);
+                return ApiResponse<IEnumerable<GetConflictCaseDto>>.Success(conflictCaseDtos);
+            }
+
+            _logger.LogWarning("No ConflictCases found for FamilyMemberId {FamilyMemberId}", familyMemberId);
+            return ApiResponse<IEnumerable<GetConflictCaseDto>>.Error(HttpStatusCode.NotFound, "No ConflictCases found for this FamilyMember.");
+        }
     }
 }

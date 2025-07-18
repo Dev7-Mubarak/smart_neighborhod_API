@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using OurProjectSmartNeiborhood.Configuration;
 using SmartNeighborhoodAPI.Configuration;
 using SmartNeighborhoodAPI.Entites;
+using System.Reflection.Emit;
 
 
 namespace SmartNeighborhoodAPI
@@ -31,6 +33,20 @@ namespace SmartNeighborhoodAPI
                    new TeamRole { Id = 2, Name = "النائب"},
                    new TeamRole { Id = 3, Name = "عضو" }
                );
+
+            builder.Entity<ConflictCase>()
+                .HasOne(c => c.FirstParty)
+                .WithMany(f => f.FirstPartyConflictCases)
+                .HasForeignKey(c => c.FirstPartyId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<ConflictCase>()
+                .HasOne(c => c.SecondParty)
+                .WithMany(f => f.SecondPartyConflictCases)
+                .HasForeignKey(c => c.SecondPartyId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
         }
 
         public DbSet<Person> People { get; set; }

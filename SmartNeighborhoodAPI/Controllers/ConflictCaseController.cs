@@ -48,7 +48,13 @@ namespace SmartNeighborhoodAPI.Controllers
             var result = await _conflictCaseService.DeleteAsync(id);
             return Response(result);
         }
-    }
 
+        [HttpGet("ByFamilyMember/{familyMemberId}")]
+        public async Task<IActionResult> GetByFamilyMemberId(int familyMemberId)
+        {
+            var result = await _conflictCaseService.GetByFamilyMemberIdAsync(familyMemberId);
+            return Response(result);
+        }
+    }
 }
 
