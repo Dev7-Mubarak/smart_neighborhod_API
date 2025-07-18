@@ -251,6 +251,18 @@ namespace SmartNeighborhoodAPI.Services
         }
         public async Task<ApiResponse<IEnumerable<GetConflictCaseDto>>> GetByFamilyMemberIdAsync(int familyMemberId)
         {
+            _logger.LogInformation("Checking existence of FamilyMemberId {FamilyMemberId}", familyMemberId);
+
+            var familyMemberExists = await _context.FamilyMembers
+                .AsNoTracking()
+                .AnyAsync(f => f.Id == familyMemberId);
+
+            if (!familyMemberExists)
+            {
+                _logger.LogWarning("FamilyMemberId {FamilyMemberId} does not exist", familyMemberId);
+                return ApiResponse<IEnumerable<GetConflictCaseDto>>.Error(HttpStatusCode.NotFound, "لم يتم العثور على هذا الفرد.");
+            }
+
             _logger.LogInformation("Retrieving ConflictCases for FamilyMemberId {FamilyMemberId}", familyMemberId);
 
             var conflictCases = await _context.ConfilctCases
@@ -262,14 +274,17 @@ namespace SmartNeighborhoodAPI.Services
                 .AsNoTracking()
                 .ToListAsync();
 
-            if (conflictCases.Count > 0)
+            var conflictCaseDtos = _mapper.Map<IEnumerable<GetConflictCaseDto>>(conflictCases);
+
+            if (!conflictCaseDtos.Any())
             {
-                var conflictCaseDtos = _mapper.Map<IEnumerable<GetConflictCaseDto>>(conflictCases);
-                return ApiResponse<IEnumerable<GetConflictCaseDto>>.Success(conflictCaseDtos);
+                _logger.LogInformation("No ConflictCases found for FamilyMemberId {FamilyMemberId}", familyMemberId);
+                return ApiResponse<IEnumerable<GetConflictCaseDto>>.Success(Array.Empty<GetConflictCaseDto>(), "لا توجد أي نزاعات لهذا الفرد.");
             }
 
-            _logger.LogWarning("No ConflictCases found for FamilyMemberId {FamilyMemberId}", familyMemberId);
-            return ApiResponse<IEnumerable<GetConflictCaseDto>>.Error(HttpStatusCode.NotFound, "No ConflictCases found for this FamilyMember.");
+            _logger.LogInformation("Found {Count} ConflictCases for FamilyMemberId {FamilyMemberId}", conflictCases.Count, familyMemberId);
+            return ApiResponse<IEnumerable<GetConflictCaseDto>>.Success(conflictCaseDtos, "تم جلب النزاعات بنجاح.");
         }
+
     }
 }
