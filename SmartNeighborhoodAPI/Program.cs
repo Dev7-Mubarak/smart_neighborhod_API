@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -11,6 +11,7 @@ using Serilog;
 using SmartNeighborhoodAPI.Entites;
 using SmartNeighborhoodAPI.Interfaces;
 using SmartNeighborhoodAPI.Middlewares;
+using SmartNeighborhoodAPI.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -182,6 +183,12 @@ app.UseRateLimiter();
 app.UseMiddleware<RequestTimingMiddleware>();
 
 app.UseStaticFiles();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+};
 app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
