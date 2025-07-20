@@ -1,11 +1,14 @@
 using System.Globalization;
 using System.Net;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.IdentityModel.Tokens;
 using OurProjectSmartNeiborhood.Services;
 using Serilog;
 using SmartNeighborhoodAPI.Entites;
@@ -118,29 +121,31 @@ builder.Services.AddRateLimiter(options =>
 });
 
 
+var jwt = builder.Configuration.GetSection("Jwt").Get<JWT>();
 
-//var jwt = builder.Configuration.GetSection("Jwt").Get<JWT>();
-//builder.Services.AddAuthentication(options =>
-//{
-//    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-//    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-//})
-//    .AddJwtBearer(e =>
-//    {
-//        e.RequireHttpsMetadata = false;
-//        e.SaveToken = false;
-//        e.TokenValidationParameters = new TokenValidationParameters
-//        {
-//            ValidateIssuer = true,
-//            ValidateAudience = true,
-//            ValidateLifetime = true,
-//            ValidateIssuerSigningKey = true,
-//            ValidIssuer = jwt?.Issuer,
-//            ValidAudience = jwt?.Audience,
-//            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt?.signingKey ?? ""))
-//        };
-//    });
+if (string.IsNullOrWhiteSpace(jwt?.signingKey))
+    throw new InvalidOperationException("JWT SigningKey is missing or empty in configuration.");
 
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(e =>
+{
+    e.RequireHttpsMetadata = false;
+    e.SaveToken = false;
+    e.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwt.Issuer,
+        ValidAudience = jwt.Audience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.signingKey))
+    };
+});
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 

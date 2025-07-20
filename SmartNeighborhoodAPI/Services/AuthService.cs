@@ -2,6 +2,7 @@
 using System.Net;
 using System.Security.Claims;
 using System.Text;
+using System.Web;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Options;
@@ -31,6 +32,7 @@ namespace SmartNeighborhoodAPI.Services
             _logger = logger;
         }
 
+
         public async Task<ApiResponse<UserResponse>> LoginAsync(LoginDto loginDto)
         {
             var user = await _userManager.FindByEmailAsync(loginDto.Email);
@@ -48,13 +50,13 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<UserResponse>.Error(HttpStatusCode.Forbidden, "Email not confirmed. Please enter the OTP sent to your email.");
             }
 
-            // var jwtSecurityToken = await CreateJwtToken(user);
+            var jwtSecurityToken = await CreateJwtToken(user);
 
             UserResponse userResponse = new UserResponse
             {
                 Id = user.Id,
                 Email = loginDto.Email,
-                // Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
+                Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
             };
 
             return ApiResponse<UserResponse>.Success(userResponse, "User login successful.");
@@ -99,10 +101,10 @@ namespace SmartNeighborhoodAPI.Services
 
             await _userManager.UpdateAsync(user);
 
-            //await _emailSender.SendEmailAsync(user.Email, "Email Confirmation Code",
-            //    $"Hello,<br/><br/>Your email confirmation code is: <strong>{otp}</strong><br/>This code will expire in 1 Hour.");
+            await _emailSender.SendEmailAsync(user.Email, "Email Confirmation Code",
+                $"Hello,<br/><br/>Your email confirmation code is: <strong>{otp}</strong><br/>This code will expire in 1 Hour.");
 
-            //_logger.LogInformation("User created successfully: {Email}. OTP sent to email.", user.Email);
+            _logger.LogInformation("User created successfully: {Email}. OTP sent to email.", user.Email);
 
             UserResponse userResponse = new UserResponse
             {
@@ -198,6 +200,42 @@ namespace SmartNeighborhoodAPI.Services
                 signingCredentials: signingCredentials);
 
             return jwtSecurityToken;
+        }
+
+        public async Task<ApiResponse<string>> ForgotPasswordAsync(ForgotPasswordDto model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+
+            if (user == null)
+            {
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "User not found.");
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var resetLink = $"https://SmartNebourhood.com/reset-password?userId={user.Id}&token={HttpUtility.UrlEncode(token)}";
+
+            await _emailSender.SendEmailAsync(
+                model.Email,
+                "Reset Your Password",
+                $"Click <a href='{resetLink}'>here</a> to reset your password.");
+
+            return ApiResponse<string>.Success("Password reset link sent to your email.");
+        }
+
+        public Task<ApiResponse<string>> ResetPasswordAsync(ResetPasswordDto model)
+        {
+            var user = _userManager.FindByIdAsync(model.UserId);
+            if (user == null)
+            {
+                return Task.FromResult(ApiResponse<string>.Error(HttpStatusCode.NotFound, "User not found."));
+            }
+            var resetResult = _userManager.ResetPasswordAsync(user.Result, model.Token, model.NewPassword);
+            if (!resetResult.Result.Succeeded)
+            {
+                return Task.FromResult(ApiResponse<string>.Error(HttpStatusCode.BadRequest, "Failed to reset password."));
+            }
+            return Task.FromResult(ApiResponse<string>.Success("Password reset successfully."));
+
         }
     }
 }
