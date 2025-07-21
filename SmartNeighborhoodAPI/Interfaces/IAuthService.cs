@@ -10,7 +10,7 @@ namespace SmartNeighborhoodAPI.Interfaces
         Task<ApiResponse<UserResponse>> LoginAsync(LoginDto loginDto);
         Task<ApiResponse<UserResponse>> ConfirmEmailOtp(ConfirmEmailOtpDto emailOtpDto);
         Task<ApiResponse<string>> ForgotPasswordAsync(ForgotPasswordDto model);
-        Task<ApiResponse<string>> ResetPasswordAsync(ResetPasswordDto model);
+       Task<ApiResponse<string>> VerifyResetCodeAndResetPasswordAsync(ResetPasswordWithCodeDto model);
         Task<ApiResponse<string>> RegisterAsync(RegisterDto model);
     }
 }

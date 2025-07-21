@@ -205,38 +205,52 @@ namespace SmartNeighborhoodAPI.Services
         public async Task<ApiResponse<string>> ForgotPasswordAsync(ForgotPasswordDto model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
-
             if (user == null)
             {
                 return ApiResponse<string>.Error(HttpStatusCode.NotFound, "User not found.");
+            }
+
+    
+            var code = new Random().Next(100000, 999999).ToString();
+
+            await _userManager.RemoveAuthenticationTokenAsync(user, "Default", "ResetPasswordCode");
+            await _userManager.SetAuthenticationTokenAsync(user, "Default", "ResetPasswordCode", code);
+
+      
+            await _emailSender.SendEmailAsync(
+                model.Email,
+                "Password Reset Code",
+                $"Your password reset code is: <b>{code}</b>. It expires in 10 minutes.");
+
+            return ApiResponse<string>.Success("A verification code has been sent to your email.");
+        }
+        public async Task<ApiResponse<string>> VerifyResetCodeAndResetPasswordAsync(ResetPasswordWithCodeDto model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "User not found.");
+            }
+
+            var storedCode = await _userManager.GetAuthenticationTokenAsync(user, "Default", "ResetPasswordCode");
+
+            if (storedCode == null || storedCode != model.Code)
+            {
+                return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "Invalid or expired reset code.");
             }
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var resetLink = $"https://localhost:44823/reset-password?userId={user.Id}&token={HttpUtility.UrlEncode(token)}";
+            var result = await _userManager.ResetPasswordAsync(user, token, model.NewPassword);
 
-            await _emailSender.SendEmailAsync(
-                model.Email,
-                "Reset Your Password",
-                $"Click <a href='{resetLink}'>here</a> to reset your password.");
-
-            return ApiResponse<string>.Success("Password reset link sent to your email.");
-        }
-
-        public async Task<ApiResponse<string>> ResetPasswordAsync(ResetPasswordDto model)
-        {
-            var user = await _userManager.FindByIdAsync(model.UserId);
-            if (user == null)
+            if (!result.Succeeded)
             {
-                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "User not found.");
-            }
-            var resetResult = await _userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
-            if (!resetResult.Succeeded)
-            {
-                var errors = string.Join(", ", resetResult.Errors.Select(e => e.Description));
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
                 return ApiResponse<string>.Error(HttpStatusCode.BadRequest, $"Failed to reset password: {errors}");
             }
-            return ApiResponse<string>.Success("Password reset successfully.");
 
+            await _userManager.RemoveAuthenticationTokenAsync(user, "Default", "ResetPasswordCode");
+
+            return ApiResponse<string>.Success("Password reset successfully.");
         }
 
         public async Task<ApiResponse<string>> RegisterAsync(RegisterDto model)

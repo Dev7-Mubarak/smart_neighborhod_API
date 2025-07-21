@@ -36,11 +36,11 @@ namespace SmartNeighborhoodAPI.Controllers
             return Response(result);
         }
 
-        [HttpPost("reset-password")]
-        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
+        [HttpPost("verify-reset-code")]
+        public async Task<IActionResult> VerifyResetCodeAndResetPassword([FromBody] ResetPasswordWithCodeDto model)
         {
-            var result = await _authService.ResetPasswordAsync(dto);
-            return Ok(result);
+            var result = await _authService.VerifyResetCodeAndResetPasswordAsync(model);
+            return Response(result); 
         }
 
     }
