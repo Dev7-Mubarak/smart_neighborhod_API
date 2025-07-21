@@ -76,14 +76,15 @@ builder.Services.AddScoped<TeamRoleService>();
 
 
 
-// Configure Serilog
-Log.Logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(builder.Configuration)
-    .Enrich.FromLogContext()
-    .CreateLogger();
+//// Configure Serilog
+//Log.Logger = new LoggerConfiguration()
+//    .ReadFrom.Configuration(builder.Configuration)
+//    .Enrich.FromLogContext()
+//    .CreateLogger();
 
 
-builder.Host.UseSerilog();
+builder.Host.UseSerilog((context, loggerConfig) => 
+loggerConfig.ReadFrom.Configuration(context.Configuration));
 
 builder.Services.AddRateLimiter(options =>
 {
