@@ -75,16 +75,17 @@ builder.Services.AddScoped<FamilyMemberService>();
 builder.Services.AddScoped<TeamRoleService>();
 
 
-
-//// Configure Serilog
-//Log.Logger = new LoggerConfiguration()
-//    .ReadFrom.Configuration(builder.Configuration)
-//    .Enrich.FromLogContext()
-//    .CreateLogger();
-
-
-builder.Host.UseSerilog((context, loggerConfig) => 
+builder.Host.UseSerilog((context, loggerConfig) =>
 loggerConfig.ReadFrom.Configuration(context.Configuration));
+
+// ✅ Configure Sentry for Production
+builder.WebHost.UseSentry(options =>
+{
+    options.Dsn = "https://a8e654fb302d229b35e1ae60d8e9838d@o4509708628525056.ingest.us.sentry.io/4509708647923712";
+    options.TracesSampleRate = 1.0; // Capture performance traces (100%)
+    options.SendDefaultPii = true; // Send user info automatically (if available)
+    options.Debug = true; // Turn off debug for production
+});
 
 builder.Services.AddRateLimiter(options =>
 {
