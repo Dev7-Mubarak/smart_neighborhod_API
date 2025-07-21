@@ -212,7 +212,7 @@ namespace SmartNeighborhoodAPI.Services
             }
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var resetLink = $"https://SmartNebourhood.com/reset-password?userId={user.Id}&token={HttpUtility.UrlEncode(token)}";
+            var resetLink = $"https://localhost:44823/reset-password?userId={user.Id}&token={HttpUtility.UrlEncode(token)}";
 
             await _emailSender.SendEmailAsync(
                 model.Email,
@@ -222,20 +222,51 @@ namespace SmartNeighborhoodAPI.Services
             return ApiResponse<string>.Success("Password reset link sent to your email.");
         }
 
-        public Task<ApiResponse<string>> ResetPasswordAsync(ResetPasswordDto model)
+        public async Task<ApiResponse<string>> ResetPasswordAsync(ResetPasswordDto model)
         {
-            var user = _userManager.FindByIdAsync(model.UserId);
+            var user = await _userManager.FindByIdAsync(model.UserId);
             if (user == null)
             {
-                return Task.FromResult(ApiResponse<string>.Error(HttpStatusCode.NotFound, "User not found."));
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "User not found.");
             }
-            var resetResult = _userManager.ResetPasswordAsync(user.Result, model.Token, model.NewPassword);
-            if (!resetResult.Result.Succeeded)
+            var resetResult = await _userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
+            if (!resetResult.Succeeded)
             {
-                return Task.FromResult(ApiResponse<string>.Error(HttpStatusCode.BadRequest, "Failed to reset password."));
+                var errors = string.Join(", ", resetResult.Errors.Select(e => e.Description));
+                return ApiResponse<string>.Error(HttpStatusCode.BadRequest, $"Failed to reset password: {errors}");
             }
-            return Task.FromResult(ApiResponse<string>.Success("Password reset successfully."));
+            return ApiResponse<string>.Success("Password reset successfully.");
 
+        }
+
+        public async Task<ApiResponse<string>> RegisterAsync(RegisterDto model)
+        {
+            var existingUser = await _userManager.FindByEmailAsync(model.Email);
+            if (existingUser != null)
+            {
+                return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "Email is already in use.");
+            }
+
+     
+            var user = new AppUser
+            {
+                UserName = model.Email,
+                Email = model.Email,
+                PersonId=1
+          
+            };
+
+            var result = await _userManager.CreateAsync(user, model.Password);
+
+            if (!result.Succeeded)
+            {
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                return ApiResponse<string>.Error(HttpStatusCode.BadRequest, $"User creation failed: {errors}");
+            }
+
+            await _userManager.AddToRoleAsync(user, "User"); 
+
+            return ApiResponse<string>.Success("User registered successfully.");
         }
     }
 }

@@ -11,7 +11,11 @@ namespace SmartNeighborhoodAPI.Controllers
         {
             _authService = authService;
         }
-
+        [HttpPost("[action]")]
+        public async Task<IActionResult> Register(RegisterDto register)
+        {
+            return Response(await _authService.RegisterAsync(register));
+        }
 
         [HttpPost("[action]")]
         public async Task<IActionResult> Login(LoginDto loginDto)
