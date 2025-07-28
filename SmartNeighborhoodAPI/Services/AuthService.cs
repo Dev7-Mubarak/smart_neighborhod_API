@@ -202,29 +202,7 @@ namespace SmartNeighborhoodAPI.Services
             return jwtSecurityToken;
         }
 
-        public async Task<ApiResponse<string>> ForgotPasswordAsync(ForgotPasswordDto model)
-        {
-            var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user == null)
-            {
-                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "User not found.");
-            }
-
-    
-            var code = new Random().Next(100000, 999999).ToString();
-
-            await _userManager.RemoveAuthenticationTokenAsync(user, "Default", "ResetPasswordCode");
-            await _userManager.SetAuthenticationTokenAsync(user, "Default", "ResetPasswordCode", code);
-
-      
-            await _emailSender.SendEmailAsync(
-                model.Email,
-                "Password Reset Code",
-                $"Your password reset code is: <b>{code}</b>. It expires in 10 minutes.");
-
-            return ApiResponse<string>.Success("A verification code has been sent to your email.");
-        }
-        public async Task<ApiResponse<string>> VerifyResetCodeAndResetPasswordAsync(ResetPasswordWithCodeDto model)
+        public async Task<ApiResponse<string>> VerifyResetCodeAsync(VerifyResetCodeDto model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
@@ -239,6 +217,28 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "Invalid or expired reset code.");
             }
 
+            return ApiResponse<string>.Success("Verification code is valid.");
+        }
+        public async Task<ApiResponse<string>> ResetPasswordAsync(ResetPasswordDto model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "User not found.");
+            }
+
+            var storedCode = await _userManager.GetAuthenticationTokenAsync(user, "Default", "ResetPasswordCode");
+
+            if (storedCode == null)
+            {
+                return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "Reset code is expired or not verified.");
+            }
+
+            if (model.NewPassword != model.ConfirmPassword)
+            {
+                return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "Passwords do not match.");
+            }
+
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var result = await _userManager.ResetPasswordAsync(user, token, model.NewPassword);
 
@@ -250,8 +250,9 @@ namespace SmartNeighborhoodAPI.Services
 
             await _userManager.RemoveAuthenticationTokenAsync(user, "Default", "ResetPasswordCode");
 
-            return ApiResponse<string>.Success("Password reset successfully.");
+            return ApiResponse<string>.Success("Password has been reset successfully.");
         }
+
 
         public async Task<ApiResponse<string>> RegisterAsync(RegisterDto model)
         {
@@ -281,6 +282,28 @@ namespace SmartNeighborhoodAPI.Services
             await _userManager.AddToRoleAsync(user, "User"); 
 
             return ApiResponse<string>.Success("User registered successfully.");
+        
         }
+        public async Task<ApiResponse<string>> SendResetCodeAsync(ForgotPasswordDto model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "User not found.");
+            }
+
+            var code = new Random().Next(100000, 999999).ToString();
+
+            await _userManager.RemoveAuthenticationTokenAsync(user, "Default", "ResetPasswordCode");
+            await _userManager.SetAuthenticationTokenAsync(user, "Default", "ResetPasswordCode", code);
+
+            await _emailSender.SendEmailAsync(
+                model.Email,
+                "Password Reset Code",
+                $"Your password reset code is: <b>{code}</b>. It expires in 10 minutes.");
+
+            return ApiResponse<string>.Success("A verification code has been sent to your email.");
+        }
+
     }
 }
