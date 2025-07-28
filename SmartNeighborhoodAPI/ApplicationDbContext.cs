@@ -67,5 +67,6 @@ namespace SmartNeighborhoodAPI
         public DbSet<TeamMember> TeamMembers { get; set; }
         public DbSet<ProjectTeam> ProjectTeams { get; set; }
         public DbSet<TeamRole> TeamRoles { get; set; }
+        public DbSet<DeliveryCaptain> DeliveryCaptains { get; set; }
     }
 }
