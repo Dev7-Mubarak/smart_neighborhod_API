@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Net;
 using System.Text;
 using System.Text.Json;
@@ -14,6 +14,7 @@ using Serilog;
 using SmartNeighborhoodAPI.Entites;
 using SmartNeighborhoodAPI.Interfaces;
 using SmartNeighborhoodAPI.Middlewares;
+using SmartNeighborhoodAPI.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -77,15 +78,17 @@ builder.Services.AddScoped<FamilyMemberService>();
 builder.Services.AddScoped<TeamRoleService>();
 
 
+builder.Host.UseSerilog((context, loggerConfig) =>
+loggerConfig.ReadFrom.Configuration(context.Configuration));
 
-// Configure Serilog
-Log.Logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(builder.Configuration)
-    .Enrich.FromLogContext()
-    .CreateLogger();
-
-
-builder.Host.UseSerilog();
+// ✅ Configure Sentry for Production
+builder.WebHost.UseSentry(options =>
+{
+    options.Dsn = "https://a8e654fb302d229b35e1ae60d8e9838d@o4509708628525056.ingest.us.sentry.io/4509708647923712";
+    options.TracesSampleRate = 1.0; // Capture performance traces (100%)
+    options.SendDefaultPii = true; // Send user info automatically (if available)
+    options.Debug = true; // Turn off debug for production
+});
 
 builder.Services.AddRateLimiter(options =>
 {
@@ -187,6 +190,12 @@ app.UseRateLimiter();
 app.UseMiddleware<RequestTimingMiddleware>();
 
 app.UseStaticFiles();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+};
 app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
