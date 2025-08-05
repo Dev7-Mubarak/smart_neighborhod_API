@@ -101,10 +101,18 @@ namespace SmartNeighborhoodAPI.Services
 
             await _userManager.UpdateAsync(user);
 
-            await _emailSender.SendEmailAsync(user.Email, "Email Confirmation Code",
-                $"Hello,<br/><br/>Your email confirmation code is: <strong>{otp}</strong><br/>This code will expire in 1 Hour.");
+            try
+            {
+                await _emailSender.SendEmailAsync(user.Email, "Email Confirmation Code",
+                    $"Hello,<br/><br/>Your email confirmation code is: <strong>{otp}</strong><br/>This code will expire in 1 Hour.");
 
-            _logger.LogInformation("User created successfully: {Email}. OTP sent to email.", user.Email);
+                _logger.LogInformation("User created successfully: {Email}. OTP sent to email.", user.Email);
+            }
+            catch (Exception emailEx)
+            {
+                _logger.LogWarning(emailEx, "User created successfully: {Email}, but failed to send OTP email.", user.Email);
+                // Don't fail the entire operation if email fails, user is still created
+            }
 
             UserResponse userResponse = new UserResponse
             {
@@ -294,15 +302,39 @@ namespace SmartNeighborhoodAPI.Services
 
             var code = new Random().Next(100000, 999999).ToString();
 
-            await _userManager.RemoveAuthenticationTokenAsync(user, "Default", "ResetPasswordCode");
-            await _userManager.SetAuthenticationTokenAsync(user, "Default", "ResetPasswordCode", code);
+            try
+            {
+                // Store the reset code
+                await _userManager.RemoveAuthenticationTokenAsync(user, "Default", "ResetPasswordCode");
+                await _userManager.SetAuthenticationTokenAsync(user, "Default", "ResetPasswordCode", code);
 
-            await _emailSender.SendEmailAsync(
-                model.Email,
-                "Password Reset Code",
-                $"Your password reset code is: <b>{code}</b>. It expires in 10 minutes.");
+                // Attempt to send the email
+                await _emailSender.SendEmailAsync(
+                    model.Email,
+                    "Password Reset Code",
+                    $"Your password reset code is: <b>{code}</b>. It expires in 10 minutes.");
 
-            return ApiResponse<string>.Success("A verification code has been sent to your email.");
+                _logger.LogInformation("Password reset code sent successfully to {Email}", model.Email);
+                return ApiResponse<string>.Success("A verification code has been sent to your email.");
+            }
+            catch (InvalidOperationException emailEx)
+            {
+                // Remove the stored code if email fails to send
+                await _userManager.RemoveAuthenticationTokenAsync(user, "Default", "ResetPasswordCode");
+                
+                _logger.LogError(emailEx, "Failed to send password reset email to {Email}", model.Email);
+                return ApiResponse<string>.Error(HttpStatusCode.InternalServerError, 
+                    "Unable to send reset code email. Please check your email address and try again later.");
+            }
+            catch (Exception ex)
+            {
+                // Remove the stored code if any other error occurs
+                await _userManager.RemoveAuthenticationTokenAsync(user, "Default", "ResetPasswordCode");
+                
+                _logger.LogError(ex, "Unexpected error while sending password reset code to {Email}", model.Email);
+                return ApiResponse<string>.Error(HttpStatusCode.InternalServerError, 
+                    "An unexpected error occurred while sending the reset code.");
+            }
         }
 
     }
