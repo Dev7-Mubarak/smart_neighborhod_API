@@ -56,7 +56,7 @@ namespace SmartNeighborhoodAPI.Services
             {
                 Id = user.Id,
                 Email = loginDto.Email,
-                Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
+                //Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
             };
 
             return ApiResponse<UserResponse>.Success(userResponse, "User login successful.");

@@ -23,15 +23,15 @@ namespace SmartNeighborhoodAPI.Helpers
 
             try
             {
-                var client = new SmtpClient(_emailSettings.Host, _emailSettings.Port)
+                var client = new SmtpClient("smtp.gmail.com", 587)
                 {
-                    Credentials = new NetworkCredential(_emailSettings.Username, _emailSettings.Password),
-                    EnableSsl = _emailSettings.EnableSSL
+                    Credentials = new NetworkCredential("sys.smartneighborhood@gmail.com", "uoxd ovjz cemn afil"),
+                    EnableSsl = true
                 };
 
                 var mailMessage = new MailMessage
                 {
-                    From = new MailAddress(_emailSettings.Username),
+                    From = new MailAddress("sys.smartneighborhood@gmail.com"),
                     Subject = subject,
                     Body = $"<html><body>{htmlMessage}</body></html>",
                     IsBodyHtml = true
