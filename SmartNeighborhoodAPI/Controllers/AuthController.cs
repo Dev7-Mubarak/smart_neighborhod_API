@@ -1,8 +1,10 @@
-﻿using SmartNeighborhoodAPI.Helpers.DTOs.Auth;
+﻿using Microsoft.AspNetCore.Authorization;
+using SmartNeighborhoodAPI.Helpers.DTOs.Auth;
 using SmartNeighborhoodAPI.Interfaces;
 
 namespace SmartNeighborhoodAPI.Controllers
 {
+    [AllowAnonymous]
     public class AuthController : AppControllerBase
     {
         private readonly IAuthService _authService;

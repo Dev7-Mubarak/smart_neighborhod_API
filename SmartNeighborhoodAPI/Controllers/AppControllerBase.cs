@@ -1,9 +1,11 @@
 ﻿using System.Net;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.RateLimiting;
 using SmartNeighborhoodAPI.Helpers.Attrbuites;
 
 namespace SmartNeighborhoodAPI.Controllers
 {
+    [Authorize]
     [ApiController]
     [ValidateActionFilter]
     //[EnableRateLimiting("fixed-window")]
