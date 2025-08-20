@@ -21,8 +21,6 @@ namespace SmartNeighborhoodAPI.Services
         private readonly IEmailSender _emailSender;
         private readonly JWT _jwt;
         private readonly ILogger<AuthService> _logger;
-
-
         public AuthService(UserManager<AppUser> userManager, IOptions<JWT> jwt, SignInManager<AppUser> signInManager, IEmailSender emailSender, ILogger<AuthService> logger)
         {
             _userManager = userManager;
@@ -31,8 +29,6 @@ namespace SmartNeighborhoodAPI.Services
             _emailSender = emailSender;
             _logger = logger;
         }
-
-
         public async Task<ApiResponse<UserResponse>> LoginAsync(LoginDto loginDto)
         {
             var user = await _userManager.FindByEmailAsync(loginDto.Email);
@@ -56,13 +52,11 @@ namespace SmartNeighborhoodAPI.Services
             {
                 Id = user.Id,
                 Email = loginDto.Email,
-                //Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
+                Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
             };
 
             return ApiResponse<UserResponse>.Success(userResponse, "User login successful.");
         }
-
-
         public async Task<ApiResponse<UserResponse>> CreateBlockManagerAccountAsync(CreateBlockManagerDto dto)
         {
             _logger.LogInformation("Attempting to create a Block Manager for email: {Email}", dto.Email);
@@ -114,7 +108,6 @@ namespace SmartNeighborhoodAPI.Services
 
             return ApiResponse<UserResponse>.Success(userResponse, "User registered successfully. OTP sent to email.");
         }
-
         public async Task<ApiResponse<UserResponse>> DeleteBlockManagerAccountByIdAsync(string managerId)
         {
             _logger.LogInformation("Deleting Block Manager with ID: {ManagerId}", managerId);
@@ -144,8 +137,6 @@ namespace SmartNeighborhoodAPI.Services
 
             return ApiResponse<UserResponse>.Success(userResponse);
         }
-
-
         public async Task<ApiResponse<UserResponse>> ConfirmEmailOtp(ConfirmEmailOtpDto emailOtpDto)
         {
             var user = await _userManager.FindByEmailAsync(emailOtpDto.Email);
@@ -201,7 +192,6 @@ namespace SmartNeighborhoodAPI.Services
 
             return jwtSecurityToken;
         }
-
         public async Task<ApiResponse<string>> VerifyResetCodeAsync(VerifyResetCodeDto model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
@@ -252,8 +242,6 @@ namespace SmartNeighborhoodAPI.Services
 
             return ApiResponse<string>.Success("Password has been reset successfully.");
         }
-
-
         public async Task<ApiResponse<string>> RegisterAsync(RegisterDto model)
         {
             var existingUser = await _userManager.FindByEmailAsync(model.Email);
