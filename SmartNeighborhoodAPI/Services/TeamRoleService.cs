@@ -1,11 +1,12 @@
 ﻿using SmartNeighborhoodAPI.Entites;
 using SmartNeighborhoodAPI.Helpers.DTOs.TeamMembers;
 using SmartNeighborhoodAPI.Helpers.DTOs.Teams;
+using SmartNeighborhoodAPI.Interfaces;
 using System.Net;
 
 namespace SmartNeighborhoodAPI.Services
 {
-    public class TeamRoleService
+    public class TeamRoleService : ITeamRoleService
     {
         private readonly ApplicationDbContext _context;
         readonly IMapper _mapper;

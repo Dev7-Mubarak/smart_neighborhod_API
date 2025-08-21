@@ -4,11 +4,12 @@ using SmartNeighborhoodAPI.Entites;
 using SmartNeighborhoodAPI.Helpers.DTOs.Families;
 using SmartNeighborhoodAPI.Helpers.DTOs.Project;
 using SmartNeighborhoodAPI.Helpers.DTOs.Teams;
+using SmartNeighborhoodAPI.Interfaces;
 using System.Net;
 using System.Xml.Linq;
 namespace SmartNeighborhoodAPI.Services
 {
-    public class ProjectService
+    public class ProjectService : IProjectService
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
@@ -272,7 +273,7 @@ namespace SmartNeighborhoodAPI.Services
 
             if (projectTeam == null)
             {
-                _logger.LogWarning("Assignment or realtions between Project ID {ProjectId} and Team ID {TeamId} not found.", projectId, teamId); 
+                _logger.LogWarning("Assignment or realtions between Project ID {ProjectId} and Team ID {TeamId} not found.", projectId, teamId);
                 return ApiResponse<string>.Error(HttpStatusCode.NotFound, "العلاقة بين المشروع والفريق غير موجودة");
             }
 

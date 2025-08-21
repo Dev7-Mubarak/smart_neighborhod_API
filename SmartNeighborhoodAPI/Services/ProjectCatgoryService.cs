@@ -1,8 +1,9 @@
-﻿using System.Net;
+﻿using SmartNeighborhoodAPI.Interfaces;
+using System.Net;
 
 namespace SmartNeighborhoodAPI.Services
 {
-    public class ProjectCatgoryService
+    public class ProjectCatgoryService : IProjectCatgoryService
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogger<ProjectCatogory> _logger;
@@ -17,11 +18,11 @@ namespace SmartNeighborhoodAPI.Services
         }
         public async Task<ApiResponse<ProjectCatgoryDto>> AddAsync(ProjectCatgoryDto ProjectCatgoryDto)
         {
-            
+
 
             var ProjectCatogory = _mapper.Map<ProjectCatogory>(ProjectCatgoryDto);
 
-            var existProjectCatgory= await _context.ProjectCatogories.FirstOrDefaultAsync(x => x.Name ==ProjectCatgoryDto.Name);
+            var existProjectCatgory = await _context.ProjectCatogories.FirstOrDefaultAsync(x => x.Name == ProjectCatgoryDto.Name);
             if (existProjectCatgory != null)
                 return ApiResponse<ProjectCatgoryDto>.Error(HttpStatusCode.Conflict, "Project Catgory Is Already Exist");
 

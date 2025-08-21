@@ -1,8 +1,9 @@
-﻿using System.Net;
+﻿using SmartNeighborhoodAPI.Interfaces;
+using System.Net;
 
 namespace SmartNeighborhoodAPI.Services
 {
-    public class FamilyTypeService
+    public class FamilyTypeService : IFamilyTypeService
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;

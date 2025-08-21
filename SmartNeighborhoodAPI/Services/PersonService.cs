@@ -3,12 +3,13 @@ using Microsoft.IdentityModel.Tokens;
 using OurProjectSmartNeiborhood.Entites;
 using SmartNeighborhoodAPI.Helpers;
 using SmartNeighborhoodAPI.Helpers.DTOs.Person;
+using SmartNeighborhoodAPI.Interfaces;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace OurProjectSmartNeiborhood.Services
 {
 
-    public class PersonService
+    public class PersonService : IPersonService
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
@@ -34,7 +35,7 @@ namespace OurProjectSmartNeiborhood.Services
                 personImage = await _imageService.SaveImageAsync(dto.Image, _personImagePath);
             }
 
-            var person= new Person
+            var person = new Person
             {
                 FirstName = dto.FirstName,
                 SecondName = dto.SecondName,
@@ -46,7 +47,7 @@ namespace OurProjectSmartNeiborhood.Services
                 Email = dto.Email,
                 DateOfBirth = dto.DateOfBirth,
                 Gender = dto.Gender,
-                Image = string.IsNullOrEmpty(personImage)? null : personImage,
+                Image = string.IsNullOrEmpty(personImage) ? null : personImage,
                 BloodType = dto.BloodType,
                 IdentityNumber = dto.IdentityNumber,
                 IdentityType = dto.IdentityType,
@@ -72,9 +73,9 @@ namespace OurProjectSmartNeiborhood.Services
                 return ApiResponse<string>.Error(HttpStatusCode.NotFound, "Person Not Found");
 
             _context.Remove(entity);
-            if(!string.IsNullOrEmpty(entity.Image))
+            if (!string.IsNullOrEmpty(entity.Image))
             {
-               await _imageService.DeleteImageAsync(entity.Image, _personImagePath);
+                await _imageService.DeleteImageAsync(entity.Image, _personImagePath);
             }
 
             if (await _context.SaveChangesAsync() > 0)
@@ -144,7 +145,7 @@ namespace OurProjectSmartNeiborhood.Services
                  })
                  .ToPaginatedListAsync(pageNumber, pageSize);
 
-            if(people == null )
+            if (people == null)
                 return ApiResponse<PaginatedResult<PersonDto>>.Error(HttpStatusCode.NotFound, "No Person Found");
 
 

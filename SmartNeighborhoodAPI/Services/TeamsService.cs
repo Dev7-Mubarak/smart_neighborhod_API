@@ -3,10 +3,11 @@ using Microsoft.Extensions.Logging;
 using SmartNeighborhoodAPI.Helpers.DTOs.Project;
 using SmartNeighborhoodAPI.Helpers.DTOs.TeamMembers;
 using SmartNeighborhoodAPI.Helpers.DTOs.Teams;
+using SmartNeighborhoodAPI.Interfaces;
 
 namespace SmartNeighborhoodAPI.Services
 {
-    public class TeamsService
+    public class TeamsService : ITeamsService
     {
         private readonly ApplicationDbContext _context;
         readonly IMapper _mapper;

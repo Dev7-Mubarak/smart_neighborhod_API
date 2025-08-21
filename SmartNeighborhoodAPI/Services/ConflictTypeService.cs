@@ -1,11 +1,12 @@
 ﻿using OurProjectSmartNeiborhood.Entites;
 using SmartNeighborhoodAPI.Helpers.DTOs.ConfilctCase;
 using SmartNeighborhoodAPI.Helpers.DTOs.ConflictType;
+using SmartNeighborhoodAPI.Interfaces;
 using System.Net;
 
 namespace SmartNeighborhoodAPI.Services
 {
-    public class ConflictTypeService
+    public class ConflictTypeService: IConflictTypeService
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;

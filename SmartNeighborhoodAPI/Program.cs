@@ -36,6 +36,8 @@ builder.Services.AddLocalization(options =>
 {
     options.ResourcesPath = "Resources";
 });
+builder.Services.Configure<JWT>(builder.Configuration.GetSection("Jwt"));
+
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
     var supportedCultures = new[]
@@ -46,43 +48,8 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     options.DefaultRequestCulture = new RequestCulture("ar-SA");
     options.SupportedCultures = supportedCultures;
 });
-
-builder.Services.AddIdentity<AppUser, IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddDefaultTokenProviders();
-
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<PersonService>();
-builder.Services.AddScoped<FamilyCatgoryService>();
-
-builder.Services.AddAutoMapper(typeof(Program));
-builder.Services.Configure<JWT>(builder.Configuration.GetSection("Jwt"));
-
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<PersonService>();
-builder.Services.AddScoped<ChatService>();
-builder.Services.AddScoped<FamilyCatgoryService>();
-builder.Services.AddScoped<FamilyTypeService>();
-builder.Services.AddScoped<FamilyService>();
-builder.Services.AddScoped<MemberFamilyRoleService>();
-builder.Services.AddScoped<BlockServices>();
-builder.Services.AddScoped<AdsService>();
-builder.Services.AddScoped<ImageService>();
-builder.Services.AddScoped<GroupService>();
-builder.Services.AddScoped<ConflictCaseService>();
-builder.Services.AddScoped<ConflictTypeService>();
-builder.Services.AddScoped<ProjectCatgoryService>();
-builder.Services.AddScoped<ProjectService>();
-builder.Services.AddScoped<ProjectFamilieservice>();
-builder.Services.AddScoped<TeamsService>();
-builder.Services.AddScoped<TeamMemberService>();
-builder.Services.AddScoped<FamilyMemberService>();
-builder.Services.AddScoped<TeamRoleService>();
-
-
 builder.Host.UseSerilog((context, loggerConfig) =>
 loggerConfig.ReadFrom.Configuration(context.Configuration));
-
 // ✅ Configure Sentry for Production
 builder.WebHost.UseSentry(options =>
 {
@@ -92,79 +59,18 @@ builder.WebHost.UseSentry(options =>
     options.Debug = true; // Turn off debug for production
 });
 
-builder.Services.AddRateLimiter(options =>
-{
-    options.AddPolicy("fixed-window", context =>
-        RateLimitPartition.GetFixedWindowLimiter(
-            context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
-            factory: _ => new FixedWindowRateLimiterOptions
-            {
-                PermitLimit = 1000,
-                Window = TimeSpan.FromSeconds(1000),
-                QueueLimit = 0,
-                QueueProcessingOrder = QueueProcessingOrder.OldestFirst
-            }
-        )
-    );
-
-    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-
-    options.OnRejected = async (context, token) =>
-    {
-        context.HttpContext.Response.ContentType = "application/json";
-
-        var response = ApiResponse<object>.Error(
-            HttpStatusCode.TooManyRequests,
-            "You have exceeded the allowed number of requests. Try again later."
-        );
-
-        var json = JsonSerializer.Serialize(response);
-        context.HttpContext.Response.StatusCode = (int)HttpStatusCode.TooManyRequests;
-
-        await context.HttpContext.Response.WriteAsync(json, token);
-    };
-});
-
-
 var jwt = builder.Configuration.GetSection("Jwt").Get<JWT>();
 
 if (string.IsNullOrWhiteSpace(jwt?.signingKey))
     throw new InvalidOperationException("JWT SigningKey is missing or empty in configuration.");
 
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(e =>
-{
-    e.RequireHttpsMetadata = false;
-    e.SaveToken = false;
-    e.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = jwt.Issuer,
-        ValidAudience = jwt.Audience,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.signingKey))
-    };
-});
+
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 
 builder.Services.Configure<ApiBehaviorOptions>(options =>
     options.SuppressModelStateInvalidFilter = true);
 
-builder.Services.Configure<IdentityOptions>(options =>
-{
-    options.Password.RequireDigit = false;
-    options.Password.RequireLowercase = false;
-    options.Password.RequireUppercase = false;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequiredLength = 8;
-});
 
 builder.Services.AddHttpContextAccessor();
 
@@ -175,47 +81,8 @@ builder.Services.AddControllers()
         });
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddSwaggerGen(c =>
-{
-    // Add JWT Authentication to Swagger
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer",
-        BearerFormat = "JWT",
-        In = ParameterLocation.Header,
-        Description = "Enter 'Bearer' [space] and then your valid token.\n\nExample: \"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6...\"",
-    });
 
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            new string[] {}
-        }
-    });
-});
 
-builder.Services.AddApiVersioning(options =>
-{
-    options.DefaultApiVersion = new ApiVersion(1, 0);
-    options.AssumeDefaultVersionWhenUnspecified = true;
-    options.ReportApiVersions = true;
-    options.ApiVersionReader = new MediaTypeApiVersionReader("v");
-});
-builder.Services.AddVersionedApiExplorer(options =>
-{
-    options.GroupNameFormat = "'v'VVV"; // e.g., v1, v1.1, v2
-    options.SubstituteApiVersionInUrl = true;
-});
 builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
 var app = builder.Build();
 app.UseRequestLocalization();

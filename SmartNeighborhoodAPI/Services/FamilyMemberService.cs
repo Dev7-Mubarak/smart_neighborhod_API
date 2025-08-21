@@ -1,11 +1,12 @@
 ﻿using SmartNeighborhoodAPI.Helpers.DTOs;
 using SmartNeighborhoodAPI.Helpers.DTOs.FamilyMember;
 using SmartNeighborhoodAPI.Helpers.DTOs.Person;
+using SmartNeighborhoodAPI.Interfaces;
 using System.Net;
 
 namespace SmartNeighborhoodAPI.Services
 {
-    public class FamilyMemberService
+    public class FamilyMemberService : IFamilyMemberService
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
@@ -132,7 +133,7 @@ namespace SmartNeighborhoodAPI.Services
                     MaritalStatus = x.Person.MaritalStatus.ToString(),
                     OccupationStatus = x.Person.OccupationStatus.ToString(),
                     PhoneNumber = x.Person.PhoneNumber,
-                    Job = x.Person.Job?? "NAN",
+                    Job = x.Person.Job ?? "NAN",
                 }
             });
 

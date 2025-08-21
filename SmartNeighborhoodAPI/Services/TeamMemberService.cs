@@ -2,15 +2,16 @@
 using System.Security.Cryptography;
 using Microsoft.Extensions.Logging;
 using SmartNeighborhoodAPI.Helpers.DTOs.TeamMembers;
+using SmartNeighborhoodAPI.Interfaces;
 
 namespace SmartNeighborhoodAPI.Services
 {
-    
-        public class TeamMemberService
-        {
-            private readonly ApplicationDbContext _context;
-            readonly IMapper _mapper;
-            private readonly ILogger<TeamMember> _logger;
+
+    public class TeamMemberService : ITeamMemberService
+    {
+        private readonly ApplicationDbContext _context;
+        readonly IMapper _mapper;
+        private readonly ILogger<TeamMember> _logger;
 
         public TeamMemberService(ApplicationDbContext context, IMapper mapper, ILogger<TeamMember> logger)
         {
@@ -129,15 +130,15 @@ namespace SmartNeighborhoodAPI.Services
         }
 
         public async Task<ApiResponse<TeamMemberDto>> GetByIdAsync(int id)
-            {
-                var TeamMember = await _context.TeamMembers.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
-                if (TeamMember == null)
-                    return ApiResponse<TeamMemberDto>.Error(HttpStatusCode.NotFound, "TeamMember Not Found");
+        {
+            var TeamMember = await _context.TeamMembers.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+            if (TeamMember == null)
+                return ApiResponse<TeamMemberDto>.Error(HttpStatusCode.NotFound, "TeamMember Not Found");
 
 
-                var TeamMemberDto = _mapper.Map<TeamMemberDto>(TeamMember);
-                return ApiResponse<TeamMemberDto>.Success(TeamMemberDto);
-            }
+            var TeamMemberDto = _mapper.Map<TeamMemberDto>(TeamMember);
+            return ApiResponse<TeamMemberDto>.Success(TeamMemberDto);
+        }
 
         public async Task<ApiResponse<string>> UpdateAsync(int id, UpdateTeamMemberDto dto)
         {
