@@ -1,57 +1,82 @@
-﻿using SmartNeighborhoodAPI.Helpers.DTOs.TeamMembers;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using SmartNeighborhoodAPI.Helpers.Attrbuites;
+using SmartNeighborhoodAPI.Helpers.DTOs.TeamMembers;
+using SmartNeighborhoodAPI.Services;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace SmartNeighborhoodAPI.Controllers.V1
 {
-    [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
+    [ValidateActionFilter]
     [ApiVersion("1.0")]
-    //[EnableRateLimiting("fixed-window")]
+    [Route("api/[controller]")]
+    [SwaggerTag("Team members management endpoints")]
     public class TeamMembersController : AppControllerBase
     {
-        private readonly TeamMemberService _TeamMemberService;
-       
+        private readonly TeamMemberService _teamMemberService;
 
-
-
-        public TeamMembersController(TeamMemberService TeamMemberService)
+        public TeamMembersController(TeamMemberService teamMemberService)
         {
-            _TeamMemberService = TeamMemberService;
-
-
+            _teamMemberService = teamMemberService;
         }
-        [HttpPost("[action]")]
-        public async Task<IActionResult> AddAsync(AddTeamMemberDto dto)
-        {
-            var result = await _TeamMemberService.AddAsync(dto);
-            return Response(result);
-        }
+
         [HttpGet("get-all")]
+        [MapToApiVersion("1.0")]
+        [SwaggerOperation(Summary = "Retrieve all team members", Description = "Retrieves all team members.")]
+        [ProducesResponseType(typeof(IEnumerable<TeamMemberDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetAllAsync()
         {
-            var result = await _TeamMemberService.GetAll();
-
-            return Response(result);
+            return Response(await _teamMemberService.GetAll());
         }
+
         [HttpGet("get-by-id/{id:int}")]
-        public async Task<IActionResult> GetByIdAsync(int id)
+        [MapToApiVersion("1.0")]
+        [SwaggerOperation(Summary = "Get team member by ID", Description = "Retrieve a team member by its ID.")]
+        [ProducesResponseType(typeof(TeamMemberDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetByIdAsync([FromRoute, SwaggerParameter("Team member ID", Required = true)] int id)
         {
-            var result = await _TeamMemberService.GetByIdAsync(id);
-
-            return Response(result);
+            return Response(await _teamMemberService.GetByIdAsync(id));
         }
+
+        [HttpPost("[action]")]
+        [MapToApiVersion("1.0")]
+        [Consumes("application/json")]
+        [SwaggerOperation(Summary = "Add a new team member", Description = "Adds a new team member.")]
+        [ProducesResponseType(typeof(TeamMemberDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+        public async Task<IActionResult> AddAsync([FromBody, SwaggerParameter("Team member data", Required = true)] AddTeamMemberDto dto)
+        {
+            return Response(await _teamMemberService.AddAsync(dto));
+        }
+
         [HttpPut("[action]/{id:int}")]
-        public async Task<IActionResult> UpdateAsync(int id, [FromBody] UpdateTeamMemberDto dto)
+        [MapToApiVersion("1.0")]
+        [Consumes("application/json")]
+        [SwaggerOperation(Summary = "Update team member", Description = "Updates an existing team member.")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+        public async Task<IActionResult> UpdateAsync(
+            [FromRoute, SwaggerParameter("Team member ID", Required = true)] int id,
+            [FromBody, SwaggerParameter("Updated team member data", Required = true)] UpdateTeamMemberDto dto)
         {
-            var result = await _TeamMemberService.UpdateAsync(id, dto);
-
-            return Response(result);
+            return Response(await _teamMemberService.UpdateAsync(id, dto));
         }
-        [HttpDelete("[action]/{id:int}")]
-        public async Task<IActionResult> DeleteAsync(int id)
-        {
-            var result = await _TeamMemberService.DeleteAsync(id);
 
-            return Response(result);
+        [HttpDelete("[action]/{id:int}")]
+        [MapToApiVersion("1.0")]
+        [SwaggerOperation(Summary = "Delete team member", Description = "Deletes a team member by ID.")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteAsync([FromRoute, SwaggerParameter("Team member ID", Required = true)] int id)
+        {
+            return Response(await _teamMemberService.DeleteAsync(id));
         }
     }
 }

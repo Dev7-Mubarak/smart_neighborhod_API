@@ -1,62 +1,90 @@
-﻿using SmartNeighborhoodAPI.Helpers.DTOs.TeamMembers;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using SmartNeighborhoodAPI.Helpers.Attrbuites;
+using SmartNeighborhoodAPI.Helpers.DTOs.Project;
+using SmartNeighborhoodAPI.Helpers.DTOs.TeamMembers;
+using SmartNeighborhoodAPI.Services;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace SmartNeighborhoodAPI.Controllers.V1
 {
-    [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
+    [ValidateActionFilter]
     [ApiVersion("1.0")]
-    //[EnableRateLimiting("fixed-window")]
+    [Route("api/[controller]")]
+    [SwaggerTag("Teams management endpoints")]
     public class TeamsController : AppControllerBase
     {
-        private readonly TeamsService _TeamsService;
+        private readonly TeamsService _teamsService;
 
-        public TeamsController(TeamsService TeamsService)
+        public TeamsController(TeamsService teamsService)
         {
-            _TeamsService = TeamsService;
-
-
+            _teamsService = teamsService;
         }
-        [HttpPost("get-all")]
-        public async Task<IActionResult> AddAsync(TeamDto TeamDto)
+
+        [HttpPost("[action]")]
+        [MapToApiVersion("1.0")]
+        [SwaggerOperation(Summary = "Add a new team", Description = "Creates a new team.")]
+        [ProducesResponseType(typeof(TeamDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+        public async Task<IActionResult> AddAsync([FromBody, SwaggerParameter("Team data to create", Required = true)] TeamDto teamDto)
         {
-            var result = await _TeamsService.AddAsync(TeamDto);
-            return Response(result);
+            return Response(await _teamsService.AddAsync(teamDto));
         }
+
         [HttpGet("get-all")]
+        [MapToApiVersion("1.0")]
+        [SwaggerOperation(Summary = "Retrieve all teams", Description = "Returns a list of all teams.")]
+        [ProducesResponseType(typeof(IEnumerable<TeamDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetAllAsync()
         {
-            var result = await _TeamsService.GetAll();
-
-            return Response(result);
+            return Response(await _teamsService.GetAll());
         }
+
         [HttpGet("get-by-id/{id:int}")]
-        public async Task<IActionResult> GetByIdAsync(int id)
+        [MapToApiVersion("1.0")]
+        [SwaggerOperation(Summary = "Get team by ID", Description = "Retrieve a team by its ID.")]
+        [ProducesResponseType(typeof(TeamDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetByIdAsync([FromRoute, SwaggerParameter("Team ID to retrieve", Required = true)] int id)
         {
-            var result = await _TeamsService.GetByIdAsync(id);
-
-            return Response(result);
-
+            return Response(await _teamsService.GetByIdAsync(id));
         }
+
         [HttpPut("[action]/{id:int}")]
-        public async Task<IActionResult> UpdateAsync(int id, TeamDto TeamDto)
+        [MapToApiVersion("1.0")]
+        [SwaggerOperation(Summary = "Update team", Description = "Updates an existing team.")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdateAsync(
+            [FromRoute, SwaggerParameter("Team ID to update", Required = true)] int id,
+            [FromBody, SwaggerParameter("Updated team data", Required = true)] TeamDto teamDto)
         {
-            var result = await _TeamsService.UpdateAsync(id, TeamDto);
-
-            return Response(result);
+            return Response(await _teamsService.UpdateAsync(id, teamDto));
         }
-        [HttpDelete("[action]/{id:int}")]
-        public async Task<IActionResult> DeleteAsync(int id)
-        {
-            var result = await _TeamsService.DeleteAsync(id);
 
-            return Response(result);
+        [HttpDelete("[action]/{id:int}")]
+        [MapToApiVersion("1.0")]
+        [SwaggerOperation(Summary = "Delete team", Description = "Deletes a specific team by ID.")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteAsync([FromRoute, SwaggerParameter("Team ID to delete", Required = true)] int id)
+        {
+            return Response(await _teamsService.DeleteAsync(id));
         }
 
         [HttpGet("get-team-projects/{teamId:int}")]
-        public async Task<IActionResult> GetTeamProjects(int teamId)
+        [MapToApiVersion("1.0")]
+        [SwaggerOperation(Summary = "Get projects of a team", Description = "Returns all projects associated with a specific team.")]
+        [ProducesResponseType(typeof(IEnumerable<ProjectDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetTeamProjects([FromRoute, SwaggerParameter("Team ID to get projects", Required = true)] int teamId)
         {
-            var result = await _TeamsService.GetTeamProjects(teamId);
-            return Response(result);
+            return Response(await _teamsService.GetTeamProjects(teamId));
         }
     }
 }

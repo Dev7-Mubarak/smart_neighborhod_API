@@ -1,65 +1,82 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using SmartNeighborhoodAPI.Controllers.V1;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using SmartNeighborhoodAPI.Helpers.Attrbuites;
+using SmartNeighborhoodAPI.Helpers.DTOs.Project;
+using Swashbuckle.AspNetCore.Annotations;
+using SmartNeighborhoodAPI.Services;
 
-namespace SmartNeighborhoodAPI.Controllers
+namespace SmartNeighborhoodAPI.Controllers.V1
 {
-    namespace SmartNeighborhoodAPI.Controllers
+    [Authorize]
+    [ApiController]
+    [ValidateActionFilter]
+    [ApiVersion("1.0")]
+    [Route("api/[controller]")]
+    [SwaggerTag("Project families management endpoints")]
+    public class ProjectFamilyController : AppControllerBase
     {
-        [Route("api/[controller]")]
-        [ApiController]
-        [ApiVersion("1.0")]
-        //[EnableRateLimiting("fixed-window")]
-        public class ProjectFamilyController : AppControllerBase
+        private readonly ProjectFamilieservice _projectFamilyService;
+
+        public ProjectFamilyController(ProjectFamilieservice projectFamilyService)
         {
-            private readonly ProjectFamilieservice _ProjectFamilieservice;
-            
+            _projectFamilyService = projectFamilyService;
+        }
 
+        [HttpGet("get-all")]
+        [MapToApiVersion("1.0")]
+        [SwaggerOperation(Summary = "Retrieve all project families", Description = "Retrieves all project families.")]
+        [ProducesResponseType(typeof(IEnumerable<ProjectFamilyDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetAllAsync()
+        {
+            return Response(await _projectFamilyService.GetAll());
+        }
 
+        [HttpGet("get-by-id/{id:int}")]
+        [MapToApiVersion("1.0")]
+        [SwaggerOperation(Summary = "Get project family by ID", Description = "Retrieve a project family by its ID.")]
+        [ProducesResponseType(typeof(ProjectFamilyDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetByIdAsync([FromRoute, SwaggerParameter("Project family ID", Required = true)] int id)
+        {
+            return Response(await _projectFamilyService.GetByIdAsync(id));
+        }
 
-            public ProjectFamilyController(ProjectFamilieservice ProjectFamilieservice)
-            {
-                _ProjectFamilieservice = ProjectFamilieservice;
+        [HttpPost("[action]")]
+        [MapToApiVersion("1.0")]
+        [Consumes("application/json")]
+        [SwaggerOperation(Summary = "Add a new project family", Description = "Adds a new project family.")]
+        [ProducesResponseType(typeof(ProjectFamilyDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+        public async Task<IActionResult> AddAsync([FromBody, SwaggerParameter("Project family data", Required = true)] ProjectFamilyDto dto)
+        {
+            return Response(await _projectFamilyService.AddAsync(dto));
+        }
 
+        [HttpPut("[action]/{id:int}")]
+        [MapToApiVersion("1.0")]
+        [Consumes("application/json")]
+        [SwaggerOperation(Summary = "Update project family", Description = "Updates an existing project family.")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+        public async Task<IActionResult> UpdateAsync(
+            [FromRoute, SwaggerParameter("Project family ID", Required = true)] int id,
+            [FromBody, SwaggerParameter("Updated project family data", Required = true)] ProjectFamilyDto dto)
+        {
+            return Response(await _projectFamilyService.UpdateAsync(id, dto));
+        }
 
-            }
-            [HttpPost("[action]")]
-            public async Task<IActionResult> AddAsync(ProjectFamilyDto ProjectFamilyDto)
-            {
-                var result = await _ProjectFamilieservice.AddAsync(ProjectFamilyDto);
-                return Response(result);
-            }
-            [HttpGet("get-all")]
-            public async Task<IActionResult> GetAllAsync()
-            {
-                var result = await _ProjectFamilieservice.GetAll();
-
-                return Response(result);
-            }
-            [HttpGet("get-by-id/{id:int}")]
-            public async Task<IActionResult> GetByIdAsync(int id)
-            {
-                var result = await _ProjectFamilieservice.GetByIdAsync(id);
-
-                return Response(result);
-
-
-
-            }
-            [HttpPut("[action]/{id:int}")]
-            public async Task<IActionResult> UpdateAsync(int id, ProjectFamilyDto ProjectFamilyDto)
-            {
-                var result = await _ProjectFamilieservice.UpdateAsync(id, ProjectFamilyDto);
-
-                return Response(result);
-            }
-            [HttpDelete("[action]/{id:int}")]
-            public async Task<IActionResult> DeleteAsync(int id)
-            {
-                var result = await _ProjectFamilieservice.DeleteAsync(id);
-
-                return Response(result);
-            }
+        [HttpDelete("[action]/{id:int}")]
+        [MapToApiVersion("1.0")]
+        [SwaggerOperation(Summary = "Delete project family", Description = "Deletes a project family by ID.")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteAsync([FromRoute, SwaggerParameter("Project family ID", Required = true)] int id)
+        {
+            return Response(await _projectFamilyService.DeleteAsync(id));
         }
     }
-
 }

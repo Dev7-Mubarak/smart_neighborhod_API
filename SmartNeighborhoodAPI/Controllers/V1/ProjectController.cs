@@ -1,101 +1,141 @@
-﻿using SmartNeighborhoodAPI.Helpers.DTOs.Project;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using SmartNeighborhoodAPI.Helpers.Attrbuites;
+using SmartNeighborhoodAPI.Helpers.DTOs.Project;
+using Swashbuckle.AspNetCore.Annotations;
+using SmartNeighborhoodAPI.Services;
 
 namespace SmartNeighborhoodAPI.Controllers.V1
 {
-    [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
+    [ValidateActionFilter]
     [ApiVersion("1.0")]
-    //[EnableRateLimiting("fixed-window")]
+    [Route("api/[controller]")]
+    [SwaggerTag("Projects management endpoints")]
     public class ProjectsController : AppControllerBase
     {
         private readonly ProjectService _projectService;
 
-        public ProjectsController(ProjectService ProjectService)
+        public ProjectsController(ProjectService projectService)
         {
-            _projectService = ProjectService;
-
-
+            _projectService = projectService;
         }
-        [HttpPost("[action]")]
-        public async Task<IActionResult> AddAsync(ProjectDto ProjectDto)
-        {
-            var result = await _projectService.AddAsync(ProjectDto);
-            return Response(result);
-        }
+
         [HttpGet("get-all")]
-        public async Task<IActionResult> GetAllAsync(int? ProjectCategoryId)
+        [MapToApiVersion("1.0")]
+        [SwaggerOperation(Summary = "Retrieve all projects", Description = "Retrieves all projects optionally filtered by category.")]
+        [ProducesResponseType(typeof(IEnumerable<ProjectDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetAllAsync([FromQuery, SwaggerParameter("Optional project category ID")] int? projectCategoryId)
         {
-            var result = await _projectService.GetAll(ProjectCategoryId);
-
-            return Response(result);
+            return Response(await _projectService.GetAll(projectCategoryId));
         }
+
         [HttpGet("get-by-id/{id:int}")]
-        public async Task<IActionResult> GetByIdAsync(int id)
+        [MapToApiVersion("1.0")]
+        [SwaggerOperation(Summary = "Get project by ID", Description = "Retrieve a project by its ID.")]
+        [ProducesResponseType(typeof(ProjectDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetByIdAsync([FromRoute, SwaggerParameter("Project ID", Required = true)] int id)
         {
-            var result = await _projectService.GetByIdAsync(id);
-
-            return Response(result);
+            return Response(await _projectService.GetByIdAsync(id));
         }
+
+        [HttpPost("[action]")]
+        [MapToApiVersion("1.0")]
+        [Consumes("application/json")]
+        [SwaggerOperation(Summary = "Add a new project", Description = "Adds a new project.")]
+        [ProducesResponseType(typeof(ProjectDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+        public async Task<IActionResult> AddAsync([FromBody, SwaggerParameter("Project data", Required = true)] ProjectDto dto)
+        {
+            return Response(await _projectService.AddAsync(dto));
+        }
+
         [HttpPut("[action]/{id:int}")]
-        public async Task<IActionResult> UpdateAsync(int id, ProjectDto ProjectDto)
+        [MapToApiVersion("1.0")]
+        [Consumes("application/json")]
+        [SwaggerOperation(Summary = "Update project", Description = "Updates an existing project.")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+        public async Task<IActionResult> UpdateAsync(
+            [FromRoute, SwaggerParameter("Project ID", Required = true)] int id,
+            [FromBody, SwaggerParameter("Updated project data", Required = true)] ProjectDto dto)
         {
-            var result = await _projectService.UpdateAsync(id, ProjectDto);
-
-            return Response(result);
+            return Response(await _projectService.UpdateAsync(id, dto));
         }
-        [HttpDelete("[action]/{id:int}")]
-        public async Task<IActionResult> DeleteAsync(int id)
-        {
-            var result = await _projectService.DeleteAsync(id);
 
-            return Response(result);
+        [HttpDelete("[action]/{id:int}")]
+        [MapToApiVersion("1.0")]
+        [SwaggerOperation(Summary = "Delete project", Description = "Deletes a project by ID.")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteAsync([FromRoute, SwaggerParameter("Project ID", Required = true)] int id)
+        {
+            return Response(await _projectService.DeleteAsync(id));
         }
 
         [HttpPost("assign-team/{projectId:int}")]
-        public async Task<IActionResult> AssignTeamToProject(int projectId, [FromQuery] int teamId)
+        [MapToApiVersion("1.0")]
+        [SwaggerOperation(Summary = "Assign team to project", Description = "Assigns a team to a project.")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> AssignTeamToProject(
+            [FromRoute, SwaggerParameter("Project ID", Required = true)] int projectId,
+            [FromQuery, SwaggerParameter("Team ID to assign", Required = true)] int teamId)
         {
-            var result = await _projectService.AssignTeamToProjectAsync(projectId, teamId);
-            return Response(result);
+            return Response(await _projectService.AssignTeamToProjectAsync(projectId, teamId));
         }
 
         [HttpDelete("remove-team/{projectId:int}")]
-        public async Task<IActionResult> DeleteAssignTeamToProject(int projectId, [FromQuery] int teamId)
+        [MapToApiVersion("1.0")]
+        [SwaggerOperation(Summary = "Remove team from project", Description = "Removes a team assignment from a project.")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteAssignTeamFromProject(
+            [FromRoute, SwaggerParameter("Project ID", Required = true)] int projectId,
+            [FromQuery, SwaggerParameter("Team ID to remove", Required = true)] int teamId)
         {
-            var result = await _projectService.DeleteAssignTeamFromProjectAsync(projectId, teamId);
-
-            return Response(result);
+            return Response(await _projectService.DeleteAssignTeamFromProjectAsync(projectId, teamId));
         }
 
         [HttpPost("assign-family/{projectId:int}")]
-        public async Task<IActionResult> AssignFamilyToProject(int projectId, [FromQuery] int familyId)
+        [MapToApiVersion("1.0")]
+        [SwaggerOperation(Summary = "Assign family to project", Description = "Assigns a family to a project.")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> AssignFamilyToProject(
+            [FromRoute, SwaggerParameter("Project ID", Required = true)] int projectId,
+            [FromQuery, SwaggerParameter("Family ID to assign", Required = true)] int familyId)
         {
-            var result = await _projectService.AssignFamilyToProjectAsync(projectId, familyId);
-            return Response(result);
+            return Response(await _projectService.AssignFamilyToProjectAsync(projectId, familyId));
         }
 
         [HttpDelete("remove-family/{projectId:int}")]
-        public async Task<IActionResult> DeleteFamilyFromProject(int projectId, [FromQuery] int famileId)
+        [MapToApiVersion("1.0")]
+        [SwaggerOperation(Summary = "Remove family from project", Description = "Removes a family assignment from a project.")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteFamilyFromProject(
+            [FromRoute, SwaggerParameter("Project ID", Required = true)] int projectId,
+            [FromQuery, SwaggerParameter("Family ID to remove", Required = true)] int familyId)
         {
-            var result = await _projectService.DeleteFamilyFromProjectAsync(projectId, famileId);
-
-            return Response(result);
+            return Response(await _projectService.DeleteFamilyFromProjectAsync(projectId, familyId));
         }
 
-        [HttpGet("get-project-blocks-with-beneficiary-families/{projectId}")]
-        public async Task<IActionResult> GetProjectBlocksWithBeneficiaryFamilies(int projectId)
+        [HttpGet("get-project-blocks-with-beneficiary-families/{projectId:int}")]
+        [MapToApiVersion("1.0")]
+        [SwaggerOperation(Summary = "Get project blocks with beneficiary families", Description = "Retrieves all blocks related to a project with their beneficiary families.")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetProjectBlocksWithBeneficiaryFamilies(
+            [FromRoute, SwaggerParameter("Project ID", Required = true)] int projectId)
         {
-            var result = await _projectService.GetProjectBlocksWithBeneficiaryFamilies(projectId);
-            return Response(result);
+            return Response(await _projectService.GetProjectBlocksWithBeneficiaryFamilies(projectId));
         }
-
-        //[HttpGet("GetProjectTeam/{projectId}")]
-        //public async Task<IActionResult> GetProjectTeam(int projectId)
-        //{
-        //    var result = await _projectService.GetProjectTeam(projectId);
-        //    return Response(result);
-        //}
-
     }
-
-
 }

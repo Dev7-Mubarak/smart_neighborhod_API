@@ -1,59 +1,81 @@
-﻿using OurProjectSmartNeiborhood.Services;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using SmartNeighborhoodAPI.Helpers.Attrbuites;
 using SmartNeighborhoodAPI.Helpers.DTOs.Person;
+using Swashbuckle.AspNetCore.Annotations;
+using System.Net;
+using OurProjectSmartNeiborhood.Services;
 
 namespace SmartNeighborhoodAPI.Controllers.V1
 {
-    [Route("api/[controller]")]
+    [Authorize]
     [ApiController]
+    [ValidateActionFilter]
     [ApiVersion("1.0")]
-    //[EnableRateLimiting("fixed-window")]
+    [Route("api/[controller]")]
+    [SwaggerTag("Person management endpoints")]
     public class PersonController : AppControllerBase
     {
-        private readonly PersonService _PersonService;
+        private readonly PersonService _personService;
 
-        public PersonController(PersonService PersonService)
+        public PersonController(PersonService personService)
         {
-            _PersonService = PersonService;
+            _personService = personService;
         }
 
         [HttpGet("get-all")]
-        public async Task<IActionResult> GetAllAsync(
-            int pageNumber = 1,
-            int pageSize = 10,
-            string? search = null)
+        [MapToApiVersion("1.0")]
+        [SwaggerOperation(Summary = "Retrieve all people", Description = "Retrieves all people in the system.")]
+        [ProducesResponseType(typeof(IEnumerable<PersonDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetAllAsync()
         {
-            var result = await _PersonService.GetAllAsync(pageNumber, pageSize, search);
-            return Response(result);
-        }
-
-        [HttpPost("[action]")]
-        [Consumes("multipart/form-data")]
-        public async Task<IActionResult> AddAsync([FromForm] CreatePersonDto createPersonDto)
-        {
-            var result = await _PersonService.AddAsync(createPersonDto);
-            return Response(result);
+            return Response(await _personService.GetAll());
         }
 
         [HttpGet("get-by-id/{id:int}")]
-        public async Task<IActionResult> GetByIdAsync(int id)
+        [MapToApiVersion("1.0")]
+        [SwaggerOperation(Summary = "Get person by ID", Description = "Retrieve a person by their ID.")]
+        [ProducesResponseType(typeof(PersonDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetByIdAsync([FromRoute, SwaggerParameter("Person ID to retrieve", Required = true)] int id)
         {
-            var result = await _PersonService.GetByIdAsync(id);
-            return Response(result);
+            return Response(await _personService.GetByIdAsync(id));
+        }
+
+        [HttpPost("[action]")]
+        [MapToApiVersion("1.0")]
+        [Consumes("multipart/form-data")]
+        [SwaggerOperation(Summary = "Add a new person", Description = "Adds a new person including optional image.")]
+        [ProducesResponseType(typeof(Person), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> AddAsync([FromForm, SwaggerParameter("Person data to create", Required = true)] CreatePersonDto dto)
+        {
+            return Response(await _personService.AddAsync(dto));
         }
 
         [HttpPut("[action]/{id:int}")]
-        public async Task<IActionResult> UpdateAsync(int id,[FromForm] CreatePersonDto dto)
+        [MapToApiVersion("1.0")]
+        [Consumes("multipart/form-data")]
+        [SwaggerOperation(Summary = "Update person", Description = "Updates an existing person including optional image.")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdateAsync(
+            [FromRoute, SwaggerParameter("Person ID to update", Required = true)] int id,
+            [FromForm, SwaggerParameter("Updated person data", Required = true)] CreatePersonDto dto)
         {
-            var result = await _PersonService.UpdateAsync(id, dto);
-            return Response(result);
+            return Response(await _personService.UpdateAsync(id, dto));
         }
 
         [HttpDelete("[action]/{id:int}")]
-        public async Task<IActionResult> DeleteAsync(int id)
+        [MapToApiVersion("1.0")]
+        [SwaggerOperation(Summary = "Delete person", Description = "Deletes a specific person by ID.")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteAsync([FromRoute, SwaggerParameter("Person ID to delete", Required = true)] int id)
         {
-            var result = await _PersonService.DeleteAsync(id);
-            return Response(result);
+            return Response(await _personService.DeleteAsync(id));
         }
     }
 }
-
