@@ -1,7 +1,9 @@
-﻿namespace SmartNeighborhoodAPI.Controllers
+﻿namespace SmartNeighborhoodAPI.Controllers.V1
 {
     [Route("api/[controller]")]
     [ApiController]
+    [ApiVersion("1.0")]
+    //[EnableRateLimiting("fixed-window")]
     public class GroupsController : AppControllerBase
     {
         private readonly GroupService _GroupService;
@@ -20,14 +22,14 @@
             var result = await _GroupService.AddAsync(GroupDto);
             return Response(result);
         }
-        [HttpGet("[action]")]
+        [HttpGet("get-all")]
         public async Task<IActionResult> GetAllAsync()
         {
             var result = await _GroupService.GetAll();
 
             return Response(result);
         }
-        [HttpGet("[action]/{id:int}")]
+        [HttpGet("get-by-id/{id:int}")]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
             var result = await _GroupService.GetByIdAsync(id);

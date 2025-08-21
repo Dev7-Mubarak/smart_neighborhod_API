@@ -1,6 +1,6 @@
 ﻿using SmartNeighborhoodAPI.Entites.Enums;
 
-namespace SmartNeighborhoodAPI.Controllers
+namespace SmartNeighborhoodAPI.Controllers.V1
 {
     public class EnumsController : AppControllerBase
     {

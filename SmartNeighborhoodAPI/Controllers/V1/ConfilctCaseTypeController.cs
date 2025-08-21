@@ -1,9 +1,11 @@
 ﻿using SmartNeighborhoodAPI.Helpers.DTOs.ConflictType;
 
-namespace SmartNeighborhoodAPI.Controllers
+namespace SmartNeighborhoodAPI.Controllers.V1
 {
     [Route("api/[controller]")]
     [ApiController]
+    [ApiVersion("1.0")]
+
     public class ConfilctCaseTypeController : AppControllerBase
     {
         private readonly ConflictTypeService _conflictTypeService;
@@ -19,14 +21,14 @@ namespace SmartNeighborhoodAPI.Controllers
             return Response(result);
         }
 
-        [HttpGet("[action]")]
+        [HttpGet("get-all")]
         public async Task<IActionResult> GetAllAsync()
         {
             var result = await _conflictTypeService.GetAll();
             return Response(result);
         }
 
-        [HttpGet("[action]/{id:int}")]
+        [HttpGet("get-by-id/{id:int}")]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
             var result = await _conflictTypeService.GetByIdAsync(id);

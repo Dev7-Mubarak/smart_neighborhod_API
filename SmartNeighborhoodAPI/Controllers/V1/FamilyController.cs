@@ -1,9 +1,11 @@
 ﻿using SmartNeighborhoodAPI.Helpers.DTOs.FamilyMember;
 
-namespace SmartNeighborhoodAPI.Controllers
+namespace SmartNeighborhoodAPI.Controllers.V1
 {
     [Route("api/[controller]")]
     [ApiController]
+    [ApiVersion("1.0")]
+    //[EnableRateLimiting("fixed-window")]
     public class FamilyController : AppControllerBase
     {
         private readonly FamilyService _FamilyService;
@@ -20,14 +22,14 @@ namespace SmartNeighborhoodAPI.Controllers
             return Response(result);
         }
 
-        [HttpGet("[action]")]
+        [HttpGet("get-all")]
         public async Task<IActionResult> GetAllAsync()
         {
             var result = await _FamilyService.GetAllAsync();
             return Response(result);
         }
 
-        [HttpGet("[action]")]
+        [HttpGet("get-details")]
         public async Task<IActionResult> GetDetailesAsync(int id)
         {
             var result = await _FamilyService.GetDetailesAsync(id);
@@ -35,7 +37,7 @@ namespace SmartNeighborhoodAPI.Controllers
         }      
 
 
-        [HttpGet("[action]/{id:int}")]
+        [HttpGet("get-by-id/{id:int}")]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
             var result = await _FamilyService.GetById(id);

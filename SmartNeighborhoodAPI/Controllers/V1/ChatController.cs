@@ -1,4 +1,4 @@
-﻿namespace SmartNeighborhoodAPI.Controllers
+﻿namespace SmartNeighborhoodAPI.Controllers.V1
 {
     public class ChatController : AppControllerBase
     {

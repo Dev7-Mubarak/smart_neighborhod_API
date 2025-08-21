@@ -1,8 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace SmartNeighborhoodAPI.Controllers
+namespace SmartNeighborhoodAPI.Controllers.V1
 {
+    [Route("api/[controller]")]
+    [ApiController]
+    [ApiVersion("1.0")]
+    //[EnableRateLimiting("fixed-window")]
 
     public class FamilyMembersController : AppControllerBase
     {
@@ -20,14 +24,14 @@ namespace SmartNeighborhoodAPI.Controllers
             return Response(result);
         }
 
-        [HttpGet("[action]")]
+        [HttpGet("get-all")]
         public async Task<IActionResult> GetAllAsync()
         {
             var result = await _familyMemberService.GetAllAsync();
             return Response(result);
         }
 
-        [HttpGet("[action]/{id:int}")]
+        [HttpGet("get-by-id/{id:int}")]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
             var result = await _familyMemberService.GetByIdAsync(id);

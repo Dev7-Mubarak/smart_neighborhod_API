@@ -3,10 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 using SmartNeighborhoodAPI.Helpers.DTOs;
 using OurProjectSmartNeiborhood.Services;
 
-namespace SmartNeighborhoodAPI.Controllers
+namespace SmartNeighborhoodAPI.Controllers.V1
 {
     [Route("api/[controller]")]
     [ApiController]
+    [ApiVersion("1.0")]
+    //[EnableRateLimiting("fixed-window")]
     public class MemberFamilyRoleController : AppControllerBase
     {
         private readonly MemberFamilyRoleService _memberTypeService;

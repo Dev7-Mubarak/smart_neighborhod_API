@@ -1,7 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 
-namespace SmartNeighborhoodAPI.Controllers
+namespace SmartNeighborhoodAPI.Controllers.V1
 {
+    [Route("api/[controller]")]
+    [ApiController]
+    [ApiVersion("1.0")]
+    //[EnableRateLimiting("fixed-window")]
     public class TeamRoleController : AppControllerBase
     {
         private readonly TeamRoleService _teamRoleService;
@@ -17,13 +21,13 @@ namespace SmartNeighborhoodAPI.Controllers
             return Response(await _teamRoleService.AddAsync(teamRole));
         }
 
-        [HttpGet("[action]")]
+        [HttpGet("get-all")]
         public async Task<IActionResult> GetAllAsync()
         {
             return Response(await _teamRoleService.GetAllAsync());
         }
 
-        [HttpGet("[action]/{id:int}")]
+        [HttpGet("get-by-id/{id:int}")]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
             return Response(await _teamRoleService.GetByIdAsync(id));

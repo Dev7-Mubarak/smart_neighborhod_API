@@ -1,10 +1,13 @@
 ﻿using SmartNeighborhoodAPI.Helpers.DTOs;
 using SmartNeighborhoodAPI.Helpers.DTOs.ConfilctCase;
 
-namespace SmartNeighborhoodAPI.Controllers
+namespace SmartNeighborhoodAPI.Controllers.V1
 {
     [Route("api/[controller]")]
     [ApiController]
+    [ApiVersion("1.0")]
+    //[EnableRateLimiting("fixed-window")]
+
     public class ConflictCaseController : AppControllerBase
     {
         private readonly ConflictCaseService _conflictCaseService;
@@ -21,14 +24,14 @@ namespace SmartNeighborhoodAPI.Controllers
             return Response(result);
         }
 
-        [HttpGet("[action]")]
+        [HttpGet("get-all")]
         public async Task<IActionResult> GetAllAsync()
         {
             var result = await _conflictCaseService.GetAll();
             return Response(result);
         }
 
-        [HttpGet("[action]/{id:int}")]
+        [HttpGet("get-by-id/{id:int}")]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
             var result = await _conflictCaseService.GetByIdAsync(id);
@@ -49,7 +52,7 @@ namespace SmartNeighborhoodAPI.Controllers
             return Response(result);
         }
 
-        [HttpGet("byfamilymember/{familyMemberId}")]
+        [HttpGet("get-by-family-member/{familyMemberId}")]
         public async Task<IActionResult> GetByFamilyMemberId(int familyMemberId)
         {
             var result = await _conflictCaseService.GetByFamilyMemberIdAsync(familyMemberId);

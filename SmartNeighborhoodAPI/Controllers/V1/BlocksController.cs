@@ -1,9 +1,17 @@
-﻿using Microsoft.AspNetCore.RateLimiting;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.RateLimiting;
+using SmartNeighborhoodAPI.Helpers.Attrbuites;
 using SmartNeighborhoodAPI.Helpers.DTOs.Auth;
 using SmartNeighborhoodAPI.Helpers.DTOs.block;
 
-namespace SmartNeighborhoodAPI.Controllers
+namespace SmartNeighborhoodAPI.Controllers.V1
 {
+    [Authorize]
+    [ApiController]
+    [ValidateActionFilter]
+    [ApiVersion("1.0")]
+    //[EnableRateLimiting("fixed-window")]
+    [Route("api/[controller]")]
     public class BlocksController : AppControllerBase
     {
         private readonly BlockServices _BlockServices;
@@ -13,7 +21,7 @@ namespace SmartNeighborhoodAPI.Controllers
             _BlockServices = BlockServices;
         }
 
-        [HttpGet("[action]")]
+        [HttpGet("get-details")]
         public async Task<IActionResult> GetDetails(
             int blockId,
             int pageNumber = 1,
@@ -29,17 +37,17 @@ namespace SmartNeighborhoodAPI.Controllers
         {
             return Response(await _BlockServices.AddAsync(BlockDto));
         }
-        [HttpPost("[action]")]
+        [HttpPost("change-block-manager")]
         public async Task<IActionResult> ChangeBlockManager(ChangeBlockManagerDto blockManagerDto)
         {
             return Response(await _BlockServices.ChangeBlockManager(blockManagerDto));
         }
-        [HttpGet("[action]")]
+        [HttpGet("get-all")]
         public async Task<IActionResult> GetAllAsync()
         {
             return Response(await _BlockServices.GetAllAsync());
         }
-        [HttpGet("[action]/{id:int}")]
+        [HttpGet("get-by-id/{id:int}")]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
             return Response(await _BlockServices.GetByIdAsync(id));

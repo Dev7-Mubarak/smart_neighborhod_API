@@ -1,20 +1,22 @@
-﻿using System.Globalization;
-using System.Net;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Threading.RateLimiting;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using OurProjectSmartNeiborhood.Services;
 using Serilog;
 using SmartNeighborhoodAPI.Entites;
 using SmartNeighborhoodAPI.Interfaces;
 using SmartNeighborhoodAPI.Middlewares;
-using Microsoft.OpenApi.Models;
+using System.Globalization;
+using System.Net;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -172,6 +174,7 @@ builder.Services.AddControllers()
             options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
         });
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen(c =>
 {
     // Add JWT Authentication to Swagger
@@ -200,6 +203,20 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
+
+builder.Services.AddApiVersioning(options =>
+{
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.ReportApiVersions = true;
+    options.ApiVersionReader = new MediaTypeApiVersionReader("v");
+});
+builder.Services.AddVersionedApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV"; // e.g., v1, v1.1, v2
+    options.SubstituteApiVersionInUrl = true;
+});
+builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
 var app = builder.Build();
 app.UseRequestLocalization();
 //app.UseMiddleware<ExceptionHandlingMiddleware>();
@@ -220,7 +237,16 @@ app.UseStaticFiles();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+    app.UseSwaggerUI(options =>
+    {
+        foreach (var description in provider.ApiVersionDescriptions)
+        {
+            options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json",
+                description.GroupName.ToUpperInvariant());
+        }
+    });
+
 };
 app.UseHttpsRedirection();
 

@@ -1,5 +1,12 @@
-﻿namespace SmartNeighborhoodAPI.Controllers
+﻿using Microsoft.AspNetCore.Authorization;
+
+namespace SmartNeighborhoodAPI.Controllers.V1
 {
+    [Authorize]
+    [ApiController]
+    [ApiVersion("1.0")]
+    //[EnableRateLimiting("fixed-window")]
+    [Route("api/[controller]")]
     public class FamilyCatgoryController : AppControllerBase
     {
         private readonly FamilyCatgoryService _familyCatgoryService;
@@ -15,14 +22,14 @@
             var result = await _familyCatgoryService.AddAsync(name);
             return Response(result);
         }
-        [HttpGet("[action]")]
+        [HttpGet("get-all")]
         public async Task<IActionResult> GetAllAsync()
         {
             var result = await _familyCatgoryService.GetAll();
             return Response(result);
 
         }
-        [HttpGet("[action]/{id:int}")]
+        [HttpGet("get-by-id/{id:int}")]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
             var result = await _familyCatgoryService.GetByIdAsync(id);

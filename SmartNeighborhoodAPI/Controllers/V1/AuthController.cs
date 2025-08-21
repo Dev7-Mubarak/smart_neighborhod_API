@@ -2,9 +2,10 @@
 using SmartNeighborhoodAPI.Helpers.DTOs.Auth;
 using SmartNeighborhoodAPI.Interfaces;
 
-namespace SmartNeighborhoodAPI.Controllers
+namespace SmartNeighborhoodAPI.Controllers.V1
 {
     [AllowAnonymous]
+    [ApiVersion("1.0")]
     public class AuthController : AppControllerBase
     {
         private readonly IAuthService _authService;

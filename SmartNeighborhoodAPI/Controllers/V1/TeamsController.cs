@@ -1,9 +1,11 @@
 ﻿using SmartNeighborhoodAPI.Helpers.DTOs.TeamMembers;
 
-namespace SmartNeighborhoodAPI.Controllers
+namespace SmartNeighborhoodAPI.Controllers.V1
 {
     [Route("api/[controller]")]
     [ApiController]
+    [ApiVersion("1.0")]
+    //[EnableRateLimiting("fixed-window")]
     public class TeamsController : AppControllerBase
     {
         private readonly TeamsService _TeamsService;
@@ -14,20 +16,20 @@ namespace SmartNeighborhoodAPI.Controllers
 
 
         }
-        [HttpPost("[action]")]
+        [HttpPost("get-all")]
         public async Task<IActionResult> AddAsync(TeamDto TeamDto)
         {
             var result = await _TeamsService.AddAsync(TeamDto);
             return Response(result);
         }
-        [HttpGet("[action]")]
+        [HttpGet("get-all")]
         public async Task<IActionResult> GetAllAsync()
         {
             var result = await _TeamsService.GetAll();
 
             return Response(result);
         }
-        [HttpGet("[action]/{id:int}")]
+        [HttpGet("get-by-id/{id:int}")]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
             var result = await _TeamsService.GetByIdAsync(id);
