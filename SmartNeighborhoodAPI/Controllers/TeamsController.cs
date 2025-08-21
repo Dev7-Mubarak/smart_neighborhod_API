@@ -50,7 +50,7 @@ namespace SmartNeighborhoodAPI.Controllers
             return Response(result);
         }
 
-        [HttpGet("GetTeamProjects/{teamId:int}")]
+        [HttpGet("get-team-projects/{teamId:int}")]
         public async Task<IActionResult> GetTeamProjects(int teamId)
         {
             var result = await _TeamsService.GetTeamProjects(teamId);

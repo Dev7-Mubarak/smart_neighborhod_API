@@ -25,19 +25,19 @@ namespace SmartNeighborhoodAPI.Controllers
             return Response(await _authService.LoginAsync(loginDto));
         }
 
-        [HttpPost("Password-reset/send-code")]
+        [HttpPost("password-reset/send-code")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto)
         {
             var result = await _authService.SendResetCodeAsync(dto);
             return Response(result);
         }
-        [HttpPost("Password-reset/verify-code")]
+        [HttpPost("password-reset/verify-code")]
         public async Task<IActionResult> VerifyResetCode([FromBody] VerifyResetCodeDto dto)
         {
             var result = await _authService.VerifyResetCodeAsync(dto);
             return Response(result);
         }
-        [HttpPost("Password-reset/confirm")]
+        [HttpPost("password-reset/confirm")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
         {
             var result = await _authService.ResetPasswordAsync(dto);

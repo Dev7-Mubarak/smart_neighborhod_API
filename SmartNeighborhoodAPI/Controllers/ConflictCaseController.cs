@@ -49,7 +49,7 @@ namespace SmartNeighborhoodAPI.Controllers
             return Response(result);
         }
 
-        [HttpGet("ByFamilyMember/{familyMemberId}")]
+        [HttpGet("byfamilymember/{familyMemberId}")]
         public async Task<IActionResult> GetByFamilyMemberId(int familyMemberId)
         {
             var result = await _conflictCaseService.GetByFamilyMemberIdAsync(familyMemberId);

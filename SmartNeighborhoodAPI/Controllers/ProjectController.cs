@@ -77,7 +77,7 @@ namespace SmartNeighborhoodAPI.Controllers
             return Response(result);
         }
 
-        [HttpGet("GetProjectBlocksWithBeneficiaryFamilies/{projectId}")]
+        [HttpGet("get-project-blocks-with-beneficiary-families/{projectId}")]
         public async Task<IActionResult> GetProjectBlocksWithBeneficiaryFamilies(int projectId)
         {
             var result = await _projectService.GetProjectBlocksWithBeneficiaryFamilies(projectId);

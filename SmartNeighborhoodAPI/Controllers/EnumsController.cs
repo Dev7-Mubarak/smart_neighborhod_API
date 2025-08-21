@@ -40,14 +40,14 @@ namespace SmartNeighborhoodAPI.Controllers
         }
 
 
-        [HttpGet("GetProjectStatus")]
+        [HttpGet("get-project-status")]
         public IActionResult GetProjectStatus()
         {
             var values = GetEnumValuesWithDisplayName<ProjectStatus>();
             return Response(ApiResponse<IEnumerable<EnumHelper>>.Success(values));
         }
 
-        [HttpGet("GetProjectPriority")]
+        [HttpGet("get-project-priority")]
         public IActionResult GetProjectPriority()
         {
             var values = GetEnumValuesWithDisplayName<ProjectPriority>();

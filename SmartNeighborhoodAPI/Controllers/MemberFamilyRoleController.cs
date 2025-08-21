@@ -16,35 +16,35 @@ namespace SmartNeighborhoodAPI.Controllers
             _memberTypeService = memberTypeService;
         }
 
-        [HttpPost("addMemberType")]
+        [HttpPost("add-member-type")]
         public async Task<IActionResult> Add(string nameMemberType)
         {
             var result = await _memberTypeService.AddAsync(nameMemberType);
             return Response(result);
         }
 
-        [HttpGet("getAllMemberTypes")]
+        [HttpGet("get-all-member-types")]
         public async Task<IActionResult> GetAll()
         {
             var result = await _memberTypeService.GetAll();
             return Response(result);
         }
 
-        [HttpGet("getMemberTypeById/{id:int}")]
+        [HttpGet("get-member-type-by-id/{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
             var result = await _memberTypeService.GetByIdAsync(id);
             return Response(result);
         }
 
-        [HttpPut("updateMemberType/{id:int}")]
+        [HttpPut("update-member-type/{id:int}")]
         public async Task<IActionResult> Update(int id, string newNameMemberType)
         {
             var result = await _memberTypeService.UpdateAsync(id, newNameMemberType);
             return Response(result);
         }
 
-        [HttpDelete("deleteMemberType/{id:int}")]
+        [HttpDelete("delete-member-type/{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
             var result = await _memberTypeService.DeleteAsync(id);
