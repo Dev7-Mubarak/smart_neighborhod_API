@@ -1,9 +1,6 @@
 ﻿namespace SmartNeighborhoodAPI.Controllers.V1
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    [ApiVersion("1.0")]
-    //[EnableRateLimiting("fixed-window")]
+ 
     public class GroupsController : AppControllerBase
     {
         private readonly GroupService _GroupService;

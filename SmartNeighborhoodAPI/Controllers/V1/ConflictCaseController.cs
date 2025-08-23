@@ -6,9 +6,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace SmartNeighborhoodAPI.Controllers.V1
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    [ApiVersion("1.0")]
+ 
     [SwaggerTag("Manage Conflict Cases")]
     public class ConflictCaseController : AppControllerBase
     {

@@ -6,7 +6,7 @@ using System.Net;
 
 namespace SmartNeighborhoodAPI.Services
 {
-    public class ConflictTypeService: IConflictTypeService
+    public class ConflictTypeService : IConflictTypeService
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
@@ -36,7 +36,7 @@ namespace SmartNeighborhoodAPI.Services
             var conflictType = new ConfilctType
             {
                 Name = conflictTypeDto.Name
-             
+
             };
             await _context.ConfilctTypes.AddAsync(conflictType);
 

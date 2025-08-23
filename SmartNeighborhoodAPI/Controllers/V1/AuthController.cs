@@ -8,9 +8,7 @@ using System.Net;
 namespace SmartNeighborhoodAPI.Controllers.V1
 {
     [AllowAnonymous]
-    [ApiController]
-    [ApiVersion("1.0")]
-    [Route("api/[controller]")]
+
     [SwaggerTag("Authentication endpoints for login, password reset, and email confirmation")]
     public class AuthController : AppControllerBase
     {
@@ -70,14 +68,14 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _authService.RegisterAsync(dto));
         }
 
-        [HttpPost("[action]")]
-        [SwaggerOperation(Summary = "Confirm email OTP", Description = "Confirms a user's email address using the OTP sent to their email.")]
-        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> ConfirmEmailOtp([FromBody, SwaggerParameter("Email confirmation OTP data", Required = true)] ConfirmEmailOtpDto dto)
-        {
-            return Response(await _authService.ConfirmEmailOtp(dto));
-        }
+        //[HttpPost("[action]")]
+        //[SwaggerOperation(Summary = "Confirm email OTP", Description = "Confirms a user's email address using the OTP sent to their email.")]
+        //[ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        //[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        //[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        //public async Task<IActionResult> ConfirmEmailOtp([FromBody, SwaggerParameter("Email confirmation OTP data", Required = true)] ConfirmEmailOtpDto dto)
+        //{
+        //    return Response(await _authService.ConfirmEmailOtp(dto));
+        //}
     }
 }

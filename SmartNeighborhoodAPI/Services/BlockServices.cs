@@ -10,7 +10,7 @@ using System.Net;
 
 namespace SmartNeighborhoodAPI.Services
 {
-    public class BlockServices:IBlockServices
+    public class BlockServices : IBlockServices
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;

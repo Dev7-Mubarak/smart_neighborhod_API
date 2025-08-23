@@ -3,7 +3,7 @@ using System.Net;
 
 namespace SmartNeighborhoodAPI.Services
 {
-    public class AdsService: IAdsService
+    public class AdsService
     {
         private readonly ApplicationDbContext _context;
         readonly IMapper _mapper;

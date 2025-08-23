@@ -8,11 +8,7 @@ using System.Net;
 
 namespace SmartNeighborhoodAPI.Controllers.V1
 {
-    [Authorize]
-    [ApiController]
-    [ValidateActionFilter]
-    [ApiVersion("1.0")]
-    [Route("api/[controller]")]
+ 
     [SwaggerTag("Blocks management endpoints")]
     public class BlocksController : AppControllerBase
     {

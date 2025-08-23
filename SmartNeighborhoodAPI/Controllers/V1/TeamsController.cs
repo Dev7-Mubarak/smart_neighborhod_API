@@ -8,11 +8,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace SmartNeighborhoodAPI.Controllers.V1
 {
-    [Authorize]
-    [ApiController]
-    [ValidateActionFilter]
-    [ApiVersion("1.0")]
-    [Route("api/[controller]")]
+
     [SwaggerTag("Teams management endpoints")]
     public class TeamsController : AppControllerBase
     {

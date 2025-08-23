@@ -7,10 +7,7 @@ using System.Collections.Generic;
 
 namespace SmartNeighborhoodAPI.Controllers.V1
 {
-    [Authorize]
-    [ApiController]
-    [ApiVersion("1.0")]
-    [Route("api/[controller]")]
+
     [SwaggerTag("Manage Member Family Roles")]
     public class MemberFamilyRoleController : AppControllerBase
     {

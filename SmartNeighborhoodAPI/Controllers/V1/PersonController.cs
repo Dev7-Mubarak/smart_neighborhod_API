@@ -8,11 +8,7 @@ using OurProjectSmartNeiborhood.Services;
 
 namespace SmartNeighborhoodAPI.Controllers.V1
 {
-    [Authorize]
-    [ApiController]
-    [ValidateActionFilter]
-    [ApiVersion("1.0")]
-    [Route("api/[controller]")]
+
     [SwaggerTag("Person management endpoints")]
     public class PersonController : AppControllerBase
     {
@@ -30,7 +26,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetAllAsync()
         {
-            return Response(await _personService.GetAll());
+            return Response(await _personService.GetAllAsync());
         }
 
         [HttpGet("get-by-id/{id:int}")]

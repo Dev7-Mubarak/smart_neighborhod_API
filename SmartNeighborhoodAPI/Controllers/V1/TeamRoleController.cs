@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SmartNeighborhoodAPI.Entites;
 using SmartNeighborhoodAPI.Helpers.Attrbuites;
 using SmartNeighborhoodAPI.Helpers.DTOs.TeamMembers;
 using SmartNeighborhoodAPI.Services;
@@ -7,11 +8,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace SmartNeighborhoodAPI.Controllers.V1
 {
-    [Authorize]
-    [ApiController]
-    [ValidateActionFilter]
-    [ApiVersion("1.0")]
-    [Route("api/[controller]")]
+
     [SwaggerTag("Team roles management endpoints")]
     public class TeamRoleController : AppControllerBase
     {
@@ -25,7 +22,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         [HttpGet("get-all")]
         [MapToApiVersion("1.0")]
         [SwaggerOperation(Summary = "Retrieve all team roles", Description = "Retrieves all available team roles.")]
-        [ProducesResponseType(typeof(IEnumerable<TeamRoleDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<TeamRole>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetAllAsync()
         {
@@ -35,7 +32,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         [HttpGet("get-by-id/{id:int}")]
         [MapToApiVersion("1.0")]
         [SwaggerOperation(Summary = "Get team role by ID", Description = "Retrieve a team role by its ID.")]
-        [ProducesResponseType(typeof(TeamRoleDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(TeamRole), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetByIdAsync([FromRoute, SwaggerParameter("Team role ID", Required = true)] int id)
         {
@@ -45,7 +42,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         [HttpPost("[action]")]
         [MapToApiVersion("1.0")]
         [SwaggerOperation(Summary = "Add a new team role", Description = "Adds a new team role.")]
-        [ProducesResponseType(typeof(TeamRoleDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(TeamRole), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
         public async Task<IActionResult> AddAsync([FromBody, SwaggerParameter("Name of the team role", Required = true)] string teamRole)

@@ -8,11 +8,7 @@ using SmartNeighborhoodAPI.Services;
 
 namespace SmartNeighborhoodAPI.Controllers.V1
 {
-    [Authorize]
-    [ApiController]
-    [ValidateActionFilter]
-    [ApiVersion("1.0")]
-    [Route("api/[controller]")]
+
     [SwaggerTag("Project categories management endpoints")]
     public class ProjectCategoriesController : AppControllerBase
     {

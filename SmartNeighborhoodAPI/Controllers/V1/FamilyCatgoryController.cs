@@ -6,10 +6,6 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace SmartNeighborhoodAPI.Controllers.V1
 {
-    [Authorize]
-    [ApiController]
-    [ApiVersion("1.0")]
-    [Route("api/[controller]")]
     [SwaggerTag("Manage Family Categories")]
     public class FamilyCatgoryController : AppControllerBase
     {
