@@ -45,7 +45,42 @@ builder.Services.AddLocalization(options =>
     options.ResourcesPath = "Resources";
 });
 builder.Services.Configure<JWT>(builder.Configuration.GetSection("Jwt"));
+builder.Services.AddIdentity<AppUser, IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    options.Password.RequireDigit = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequiredLength = 8;
+});
+var jwt = builder.Configuration.GetSection("Jwt").Get<JWT>();
 
+if (string.IsNullOrWhiteSpace(jwt?.signingKey))
+    throw new InvalidOperationException("JWT SigningKey is missing or empty in configuration.");
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(e =>
+{
+    e.RequireHttpsMetadata = false;
+    e.SaveToken = false;
+    e.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwt.Issuer,
+        ValidAudience = jwt.Audience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.signingKey))
+    };
+});
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
     var supportedCultures = new[]
@@ -67,10 +102,7 @@ builder.WebHost.UseSentry(options =>
     options.Debug = true; // Turn off debug for production
 });
 
-var jwt = builder.Configuration.GetSection("Jwt").Get<JWT>();
 
-if (string.IsNullOrWhiteSpace(jwt?.signingKey))
-    throw new InvalidOperationException("JWT SigningKey is missing or empty in configuration.");
 
 
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
@@ -94,9 +126,61 @@ builder.Services.AddVersionedApiExplorer(options =>
     options.SubstituteApiVersionInUrl = true;
 });
 
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    // Add JWT Authentication to Swagger
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Enter 'Bearer' [space] and then your valid token.\n\nExample: \"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6...\"",
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+});
 
 builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
+
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<PersonService>();
+builder.Services.AddScoped<FamilyCatgoryService>();
+
+builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.Configure<JWT>(builder.Configuration.GetSection("Jwt"));
+
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IPersonService,PersonService>();
+builder.Services.AddScoped<IFamilyCatgoryService,FamilyCatgoryService>();
+builder.Services.AddScoped<IFamilyTypeService,FamilyTypeService>();
+builder.Services.AddScoped<IFamilyService,FamilyService>();
+builder.Services.AddScoped<IMemberFamilyRoleService,MemberFamilyRoleService>();
+builder.Services.AddScoped<IBlockServices,BlockServices>();
+builder.Services.AddScoped<ImageService>();
+builder.Services.AddScoped<IConflictCaseService, ConflictCaseService>();
+builder.Services.AddScoped<IConflictTypeService, ConflictTypeService>();
+builder.Services.AddScoped<IProjectCatgoryService,ProjectCatgoryService>();
+builder.Services.AddScoped<IProjectService,ProjectService>();
+builder.Services.AddScoped<IProjectFamilieservice,ProjectFamilieservice>();
+builder.Services.AddScoped<ITeamsService,TeamsService>();
+builder.Services.AddScoped<ITeamMemberService,TeamMemberService>();
+builder.Services.AddScoped<IFamilyMemberService,FamilyMemberService>();
+builder.Services.AddScoped<ITeamRoleService,TeamRoleService>();
 var app = builder.Build();
 app.UseRequestLocalization();
 //app.UseMiddleware<ExceptionHandlingMiddleware>();
