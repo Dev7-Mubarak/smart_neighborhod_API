@@ -24,11 +24,6 @@ public class FamilyConfiguration : IEntityTypeConfiguration<Family>
             .HasForeignKey(f => f.FamilyCatgoryId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasOne(f => f.FamilyType)
-            .WithMany()
-            .HasForeignKey(f => f.FamilyTypeId)
-            .OnDelete(DeleteBehavior.Restrict);
-
         builder.Property(p => p.HousingType)
             .IsRequired();
 

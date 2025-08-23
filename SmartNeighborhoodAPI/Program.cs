@@ -60,7 +60,6 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<PersonService>();
 builder.Services.AddScoped<ChatService>();
 builder.Services.AddScoped<FamilyCatgoryService>();
-builder.Services.AddScoped<FamilyTypeService>();
 builder.Services.AddScoped<FamilyService>();
 builder.Services.AddScoped<MemberFamilyRoleService>();
 builder.Services.AddScoped<BlockServices>();
