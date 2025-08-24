@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SmartNeighborhoodAPI.AppMetaData;
 using SmartNeighborhoodAPI.Helpers.DTOs;
 using SmartNeighborhoodAPI.Helpers.DTOs.ConfilctCase;
 using SmartNeighborhoodAPI.Services;
@@ -8,6 +9,8 @@ namespace SmartNeighborhoodAPI.Controllers.V1
 {
  
     [SwaggerTag("Manage Conflict Cases")]
+    [Route(Router.ConflictCases.Prefix)]
+
     public class ConflictCaseController : AppControllerBase
     {
         private readonly ConflictCaseService _conflictCaseService;
@@ -17,7 +20,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             _conflictCaseService = conflictCaseService;
         }
 
-        [HttpPost("[action]")]
+        [HttpPost(Router.ConflictCases.Add)]
         [SwaggerOperation(Summary = "Add a new conflict case", Description = "Creates a new conflict case with optional image and manager.")]
         [ProducesResponseType(typeof(ReturnConflictCaseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -27,7 +30,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(result);
         }
 
-        [HttpGet("get-all")]
+        [HttpGet(Router.ConflictCases.GetAll)]
         [SwaggerOperation(Summary = "Get all conflict cases", Description = "Retrieves all conflict cases in the system.")]
         [ProducesResponseType(typeof(IEnumerable<GetConflictCaseDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -37,7 +40,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(result);
         }
 
-        [HttpGet("get-by-id/{id:int}")]
+        [HttpGet(Router.ConflictCases.GetById)]
         [SwaggerOperation(Summary = "Get conflict case by ID", Description = "Retrieves a specific conflict case by its ID.")]
         [ProducesResponseType(typeof(GetConflictCaseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -47,7 +50,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(result);
         }
 
-        [HttpPut("[action]/{id:int}")]
+        [HttpPut(Router.ConflictCases.Update)]
         [SwaggerOperation(Summary = "Update a conflict case", Description = "Updates an existing conflict case, including image and manager.")]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -59,7 +62,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(result);
         }
 
-        [HttpDelete("[action]/{id:int}")]
+        [HttpDelete(Router.ConflictCases.Delete)]
         [SwaggerOperation(Summary = "Delete a conflict case", Description = "Deletes a specific conflict case by its ID.")]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -69,7 +72,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(result);
         }
 
-        [HttpGet("get-by-family-member/{familyMemberId}")]
+        [HttpGet(Router.ConflictCases.GetByFamilyMember)]
         [SwaggerOperation(Summary = "Get conflict cases by family member", Description = "Retrieves all conflict cases where the specified family member is involved.")]
         [ProducesResponseType(typeof(IEnumerable<GetConflictCaseDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]

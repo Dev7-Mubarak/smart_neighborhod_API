@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SmartNeighborhoodAPI.AppMetaData;
 using SmartNeighborhoodAPI.Helpers.DTOs;
 using SmartNeighborhoodAPI.Services;
 using Swashbuckle.AspNetCore.Annotations;
@@ -7,6 +8,8 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace SmartNeighborhoodAPI.Controllers.V1
 {
     [SwaggerTag("Manage Family Categories")]
+    [Route(Router.FamilyCategories.Prefix)]
+
     public class FamilyCatgoryController : AppControllerBase
     {
         private readonly FamilyCatgoryService _familyCatgoryService;
@@ -16,7 +19,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             _familyCatgoryService = familyCatgoryService;
         }
 
-        [HttpPost("[action]")]
+        [HttpPost(Router.FamilyCategories.Add)]
         [SwaggerOperation(Summary = "Add a new family category")]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(ProblemDetails), 409)]
@@ -26,7 +29,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(result);
         }
 
-        [HttpGet("get-all")]
+        [HttpGet(Router.FamilyCategories.GetAll)]
         [SwaggerOperation(Summary = "Get all family categories")]
         [ProducesResponseType(typeof(IEnumerable<FamilyCatgoryDto>), 200)]
         [ProducesResponseType(typeof(ProblemDetails), 404)]
@@ -36,7 +39,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(result);
         }
 
-        [HttpGet("get-by-id/{id:int}")]
+        [HttpGet(Router.FamilyCategories.GetById)]
         [SwaggerOperation(Summary = "Get family category by ID")]
         [ProducesResponseType(typeof(FamilyCatgoryDto), 200)]
         [ProducesResponseType(typeof(ProblemDetails), 404)]
@@ -46,7 +49,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(result);
         }
 
-        [HttpPut("[action]/{id:int}")]
+        [HttpPut(Router.FamilyCategories.Update)]
         [SwaggerOperation(Summary = "Update a family category")]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(ProblemDetails), 404)]
@@ -57,7 +60,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(result);
         }
 
-        [HttpDelete("[action]/{id:int}")]
+        [HttpDelete(Router.FamilyCategories.Delete)]
         [SwaggerOperation(Summary = "Delete a family category")]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(ProblemDetails), 404)]

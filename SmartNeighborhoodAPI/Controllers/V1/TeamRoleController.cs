@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SmartNeighborhoodAPI.AppMetaData;
 using SmartNeighborhoodAPI.Entites;
 using SmartNeighborhoodAPI.Helpers.Attrbuites;
 using SmartNeighborhoodAPI.Helpers.DTOs.TeamMembers;
@@ -10,6 +11,8 @@ namespace SmartNeighborhoodAPI.Controllers.V1
 {
 
     [SwaggerTag("Team roles management endpoints")]
+    [Route(Router.TeamRoles.Prefix)]
+
     public class TeamRoleController : AppControllerBase
     {
         private readonly TeamRoleService _teamRoleService;
@@ -19,7 +22,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             _teamRoleService = teamRoleService;
         }
 
-        [HttpGet("get-all")]
+        [HttpGet(Router.TeamRoles.GetAll)]
         [MapToApiVersion("1.0")]
         [SwaggerOperation(Summary = "Retrieve all team roles", Description = "Retrieves all available team roles.")]
         [ProducesResponseType(typeof(IEnumerable<TeamRole>), StatusCodes.Status200OK)]
@@ -29,7 +32,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _teamRoleService.GetAllAsync());
         }
 
-        [HttpGet("get-by-id/{id:int}")]
+        [HttpGet(Router.TeamRoles.GetById)]
         [MapToApiVersion("1.0")]
         [SwaggerOperation(Summary = "Get team role by ID", Description = "Retrieve a team role by its ID.")]
         [ProducesResponseType(typeof(TeamRole), StatusCodes.Status200OK)]
@@ -39,7 +42,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _teamRoleService.GetByIdAsync(id));
         }
 
-        [HttpPost("[action]")]
+        [HttpPost(Router.TeamRoles.Add)]
         [MapToApiVersion("1.0")]
         [SwaggerOperation(Summary = "Add a new team role", Description = "Adds a new team role.")]
         [ProducesResponseType(typeof(TeamRole), StatusCodes.Status201Created)]
@@ -50,7 +53,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _teamRoleService.AddAsync(teamRole));
         }
 
-        [HttpPut("[action]/{id:int}")]
+        [HttpPut(Router.TeamRoles.Update)]
         [MapToApiVersion("1.0")]
         [SwaggerOperation(Summary = "Update team role", Description = "Updates an existing team role.")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -64,7 +67,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _teamRoleService.UpdateAsync(id, newRoleName));
         }
 
-        [HttpDelete("[action]/{id:int}")]
+        [HttpDelete(Router.TeamRoles.Delete)]
         [MapToApiVersion("1.0")]
         [SwaggerOperation(Summary = "Delete team role", Description = "Deletes a team role by ID.")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]

@@ -5,11 +5,14 @@ using SmartNeighborhoodAPI.Helpers.DTOs.Person;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
 using OurProjectSmartNeiborhood.Services;
+using SmartNeighborhoodAPI.AppMetaData;
 
 namespace SmartNeighborhoodAPI.Controllers.V1
 {
 
     [SwaggerTag("Person management endpoints")]
+    [Route(Router.Persons.Prefix)]
+
     public class PersonController : AppControllerBase
     {
         private readonly PersonService _personService;
@@ -19,7 +22,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             _personService = personService;
         }
 
-        [HttpGet("get-all")]
+        [HttpGet(Router.Persons.GetAll)]
         [MapToApiVersion("1.0")]
         [SwaggerOperation(Summary = "Retrieve all people", Description = "Retrieves all people in the system.")]
         [ProducesResponseType(typeof(IEnumerable<PersonDto>), StatusCodes.Status200OK)]
@@ -29,7 +32,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _personService.GetAllAsync());
         }
 
-        [HttpGet("get-by-id/{id:int}")]
+        [HttpGet(Router.Persons.GetById)]
         [MapToApiVersion("1.0")]
         [SwaggerOperation(Summary = "Get person by ID", Description = "Retrieve a person by their ID.")]
         [ProducesResponseType(typeof(PersonDto), StatusCodes.Status200OK)]
@@ -39,7 +42,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _personService.GetByIdAsync(id));
         }
 
-        [HttpPost("[action]")]
+        [HttpPost(Router.Persons.Add)]
         [MapToApiVersion("1.0")]
         [Consumes("multipart/form-data")]
         [SwaggerOperation(Summary = "Add a new person", Description = "Adds a new person including optional image.")]
@@ -50,7 +53,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _personService.AddAsync(dto));
         }
 
-        [HttpPut("[action]/{id:int}")]
+        [HttpPut(Router.Persons.Update)]
         [MapToApiVersion("1.0")]
         [Consumes("multipart/form-data")]
         [SwaggerOperation(Summary = "Update person", Description = "Updates an existing person including optional image.")]
@@ -64,7 +67,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _personService.UpdateAsync(id, dto));
         }
 
-        [HttpDelete("[action]/{id:int}")]
+        [HttpDelete(Router.Persons.Delete)]
         [MapToApiVersion("1.0")]
         [SwaggerOperation(Summary = "Delete person", Description = "Deletes a specific person by ID.")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]

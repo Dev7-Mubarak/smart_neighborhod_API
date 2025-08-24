@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Options;
-using Swashbuckle.AspNetCore.SwaggerGen;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
 {
@@ -16,11 +16,11 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
     {
         foreach (var description in _provider.ApiVersionDescriptions)
         {
-            options.SwaggerDoc(description.GroupName, new OpenApiInfo()
+            options.SwaggerDoc(description.GroupName, new OpenApiInfo
             {
-                Title = "My API",
+                Title = "SmartNeighborhood API",
                 Version = description.ApiVersion.ToString(),
-                Description = "API documentation with versioning support"
+                Description = "API documentation with versioning"
             });
         }
     }

@@ -4,11 +4,14 @@ using SmartNeighborhoodAPI.Helpers.Attrbuites;
 using SmartNeighborhoodAPI.Helpers.DTOs.Project;
 using Swashbuckle.AspNetCore.Annotations;
 using SmartNeighborhoodAPI.Services;
+using SmartNeighborhoodAPI.AppMetaData;
 
 namespace SmartNeighborhoodAPI.Controllers.V1
 {
 
     [SwaggerTag("Project families management endpoints")]
+    [Route(Router.ProjectFamilies.Prefix)]
+
     public class ProjectFamilyController : AppControllerBase
     {
         private readonly ProjectFamilieservice _projectFamilyService;
@@ -18,7 +21,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             _projectFamilyService = projectFamilyService;
         }
 
-        [HttpGet("get-all")]
+        [HttpGet(Router.ProjectFamilies.GetAll)]
         [MapToApiVersion("1.0")]
         [SwaggerOperation(Summary = "Retrieve all project families", Description = "Retrieves all project families.")]
         [ProducesResponseType(typeof(IEnumerable<ProjectFamilyDto>), StatusCodes.Status200OK)]
@@ -28,7 +31,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _projectFamilyService.GetAll());
         }
 
-        [HttpGet("get-by-id/{id:int}")]
+        [HttpGet(Router.ProjectFamilies.GetById)]
         [MapToApiVersion("1.0")]
         [SwaggerOperation(Summary = "Get project family by ID", Description = "Retrieve a project family by its ID.")]
         [ProducesResponseType(typeof(ProjectFamilyDto), StatusCodes.Status200OK)]
@@ -38,7 +41,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _projectFamilyService.GetByIdAsync(id));
         }
 
-        [HttpPost("[action]")]
+        [HttpPost(Router.ProjectFamilies.Add)]
         [MapToApiVersion("1.0")]
         [Consumes("application/json")]
         [SwaggerOperation(Summary = "Add a new project family", Description = "Adds a new project family.")]
@@ -50,7 +53,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _projectFamilyService.AddAsync(dto));
         }
 
-        [HttpPut("[action]/{id:int}")]
+        [HttpPut(Router.ProjectFamilies.Update)]
         [MapToApiVersion("1.0")]
         [Consumes("application/json")]
         [SwaggerOperation(Summary = "Update project family", Description = "Updates an existing project family.")]
@@ -65,7 +68,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _projectFamilyService.UpdateAsync(id, dto));
         }
 
-        [HttpDelete("[action]/{id:int}")]
+        [HttpDelete(Router.ProjectFamilies.Delete)]
         [MapToApiVersion("1.0")]
         [SwaggerOperation(Summary = "Delete project family", Description = "Deletes a project family by ID.")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]

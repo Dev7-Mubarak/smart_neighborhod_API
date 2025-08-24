@@ -5,11 +5,14 @@ using SmartNeighborhoodAPI.Helpers.DTOs.block;
 using SmartNeighborhoodAPI.Helpers.DTOs.Auth;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
+using SmartNeighborhoodAPI.AppMetaData;
 
 namespace SmartNeighborhoodAPI.Controllers.V1
 {
  
     [SwaggerTag("Blocks management endpoints")]
+    [Route(Router.Blocks.Prefix)]
+
     public class BlocksController : AppControllerBase
     {
         private readonly BlockServices _BlockServices;
@@ -19,7 +22,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             _BlockServices = BlockServices;
         }
 
-        [HttpGet("get-details")]
+        [HttpGet(Router.Blocks.GetDetails)]
         [SwaggerOperation(Summary = "Get block details", Description = "Returns details for a specific block including families.")]
         [ProducesResponseType(typeof(BlockDetailesDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -32,7 +35,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _BlockServices.GetDetails(blockId, pageNumber, pageSize, search));
         }
 
-        [HttpPost("[action]")]
+        [HttpPost(Router.Blocks.Add)]
         [MapToApiVersion("1.0")]
         [Consumes("application/json")]
         [ProducesResponseType(typeof(RetrunBlockDto), StatusCodes.Status201Created)]
@@ -47,7 +50,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _BlockServices.AddAsync(BlockDto));
         }
 
-        [HttpPost("change-block-manager")]
+        [HttpPost(Router.Blocks.ChangeBlockManager)]
         [SwaggerOperation(
             Summary = "Change block manager",
             Description = "Changes the manager of a block and optionally creates a new manager account if needed."
@@ -60,7 +63,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _BlockServices.ChangeBlockManager(blockManagerDto));
         }
 
-        [HttpGet("get-all")]
+        [HttpGet(Router.Blocks.GetAll)]
         [MapToApiVersion("1.0")]
         [SwaggerOperation(Summary = "Retrieve all blocks", Description = "Retrieves all blocks accessible by the user.")]
         [ProducesResponseType(typeof(IEnumerable<RetrunBlockDto>), StatusCodes.Status200OK)]
@@ -70,7 +73,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _BlockServices.GetAllAsync());
         }
 
-        [HttpGet("get-by-id/{id:int}")]
+        [HttpGet(Router.Blocks.GetById)]
         [MapToApiVersion("1.0")]
         [SwaggerOperation(Summary = "Get block by ID", Description = "Retrieve a block by its ID.")]
         [ProducesResponseType(typeof(Block), StatusCodes.Status200OK)]
@@ -81,7 +84,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _BlockServices.GetByIdAsync(id));
         }
 
-        [HttpPut("[action]/{id:int}")]
+        [HttpPut(Router.Blocks.Update)]
         [MapToApiVersion("1.0")]
         [Consumes("application/json")]
         [SwaggerOperation(Summary = "Update block", Description = "Updates the data of an existing block.")]
@@ -97,7 +100,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _BlockServices.UpdateAsync(id, BlockDto));
         }
 
-        [HttpDelete("[action]/{id:int}")]
+        [HttpDelete(Router.Blocks.Delete)]
         [MapToApiVersion("1.0")]
         [SwaggerOperation(Summary = "Delete block", Description = "Deletes a specific block by ID.")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]

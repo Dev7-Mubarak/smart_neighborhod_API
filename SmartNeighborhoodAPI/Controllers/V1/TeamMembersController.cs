@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SmartNeighborhoodAPI.AppMetaData;
 using SmartNeighborhoodAPI.Helpers.Attrbuites;
 using SmartNeighborhoodAPI.Helpers.DTOs.TeamMembers;
 using SmartNeighborhoodAPI.Services;
@@ -9,6 +10,8 @@ namespace SmartNeighborhoodAPI.Controllers.V1
 {
 
     [SwaggerTag("Team members management endpoints")]
+    [Route(Router.TeamMembers.Prefix)]
+
     public class TeamMembersController : AppControllerBase
     {
         private readonly TeamMemberService _teamMemberService;
@@ -18,7 +21,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             _teamMemberService = teamMemberService;
         }
 
-        [HttpGet("get-all")]
+        [HttpGet(Router.TeamMembers.GetAll)]
         [MapToApiVersion("1.0")]
         [SwaggerOperation(Summary = "Retrieve all team members", Description = "Retrieves all team members.")]
         [ProducesResponseType(typeof(IEnumerable<TeamMemberDto>), StatusCodes.Status200OK)]
@@ -28,7 +31,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _teamMemberService.GetAll());
         }
 
-        [HttpGet("get-by-id/{id:int}")]
+        [HttpGet(Router.TeamMembers.GetById)]
         [MapToApiVersion("1.0")]
         [SwaggerOperation(Summary = "Get team member by ID", Description = "Retrieve a team member by its ID.")]
         [ProducesResponseType(typeof(TeamMemberDto), StatusCodes.Status200OK)]
@@ -38,7 +41,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _teamMemberService.GetByIdAsync(id));
         }
 
-        [HttpPost("[action]")]
+        [HttpPost(Router.TeamMembers.Add)]
         [MapToApiVersion("1.0")]
         [Consumes("application/json")]
         [SwaggerOperation(Summary = "Add a new team member", Description = "Adds a new team member.")]
@@ -50,7 +53,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _teamMemberService.AddAsync(dto));
         }
 
-        [HttpPut("[action]/{id:int}")]
+        [HttpPut(Router.TeamMembers.Update)]
         [MapToApiVersion("1.0")]
         [Consumes("application/json")]
         [SwaggerOperation(Summary = "Update team member", Description = "Updates an existing team member.")]
@@ -65,7 +68,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _teamMemberService.UpdateAsync(id, dto));
         }
 
-        [HttpDelete("[action]/{id:int}")]
+        [HttpDelete(Router.TeamMembers.Delete)]
         [MapToApiVersion("1.0")]
         [SwaggerOperation(Summary = "Delete team member", Description = "Deletes a team member by ID.")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]

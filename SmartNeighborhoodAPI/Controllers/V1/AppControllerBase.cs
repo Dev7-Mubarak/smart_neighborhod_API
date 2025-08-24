@@ -10,7 +10,6 @@ namespace SmartNeighborhoodAPI.Controllers.V1
     [ValidateActionFilter]
     [ApiVersion("1.0")]
     //[EnableRateLimiting("fixed-window")]
-    [Route("api/[controller]")]
     public class AppControllerBase : ControllerBase
     {
         public new ObjectResult Response<T>(ApiResponse<T> response)

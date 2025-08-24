@@ -157,9 +157,6 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
 
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<PersonService>();
-builder.Services.AddScoped<FamilyCatgoryService>();
 
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.Configure<JWT>(builder.Configuration.GetSection("Jwt"));
@@ -184,14 +181,6 @@ builder.Services.AddScoped<ITeamRoleService,TeamRoleService>();
 var app = builder.Build();
 app.UseRequestLocalization();
 //app.UseMiddleware<ExceptionHandlingMiddleware>();
-
-
-// Configure the HTTP request pipeline.
-app.UseSwagger();
-app.UseSwaggerUI(options =>
-{
-    options.RoutePrefix = "swagger";
-});
 
 app.UseRateLimiter();
 app.UseMiddleware<RequestTimingMiddleware>();

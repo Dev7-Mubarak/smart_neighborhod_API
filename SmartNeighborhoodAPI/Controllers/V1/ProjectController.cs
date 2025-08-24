@@ -4,11 +4,14 @@ using SmartNeighborhoodAPI.Helpers.Attrbuites;
 using SmartNeighborhoodAPI.Helpers.DTOs.Project;
 using Swashbuckle.AspNetCore.Annotations;
 using SmartNeighborhoodAPI.Services;
+using SmartNeighborhoodAPI.AppMetaData;
 
 namespace SmartNeighborhoodAPI.Controllers.V1
 {
 
     [SwaggerTag("Projects management endpoints")]
+    [Route(Router.Projects.Prefix)]
+
     public class ProjectsController : AppControllerBase
     {
         private readonly ProjectService _projectService;
@@ -18,7 +21,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             _projectService = projectService;
         }
 
-        [HttpGet("get-all")]
+        [HttpGet(Router.Projects.GetAll)]
         [MapToApiVersion("1.0")]
         [SwaggerOperation(Summary = "Retrieve all projects", Description = "Retrieves all projects optionally filtered by category.")]
         [ProducesResponseType(typeof(IEnumerable<ProjectDto>), StatusCodes.Status200OK)]
@@ -28,7 +31,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _projectService.GetAll(projectCategoryId));
         }
 
-        [HttpGet("get-by-id/{id:int}")]
+        [HttpGet(Router.Projects.GetById)]
         [MapToApiVersion("1.0")]
         [SwaggerOperation(Summary = "Get project by ID", Description = "Retrieve a project by its ID.")]
         [ProducesResponseType(typeof(ProjectDto), StatusCodes.Status200OK)]
@@ -38,7 +41,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _projectService.GetByIdAsync(id));
         }
 
-        [HttpPost("[action]")]
+        [HttpPost(Router.Projects.Add)]
         [MapToApiVersion("1.0")]
         [Consumes("application/json")]
         [SwaggerOperation(Summary = "Add a new project", Description = "Adds a new project.")]
@@ -50,7 +53,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _projectService.AddAsync(dto));
         }
 
-        [HttpPut("[action]/{id:int}")]
+        [HttpPut(Router.Projects.Update)]
         [MapToApiVersion("1.0")]
         [Consumes("application/json")]
         [SwaggerOperation(Summary = "Update project", Description = "Updates an existing project.")]
@@ -65,7 +68,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _projectService.UpdateAsync(id, dto));
         }
 
-        [HttpDelete("[action]/{id:int}")]
+        [HttpDelete(Router.Projects.Delete)]
         [MapToApiVersion("1.0")]
         [SwaggerOperation(Summary = "Delete project", Description = "Deletes a project by ID.")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -75,7 +78,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _projectService.DeleteAsync(id));
         }
 
-        [HttpPost("assign-team/{projectId:int}")]
+        [HttpPost(Router.Projects.AssignTeam)]
         [MapToApiVersion("1.0")]
         [SwaggerOperation(Summary = "Assign team to project", Description = "Assigns a team to a project.")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -87,7 +90,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _projectService.AssignTeamToProjectAsync(projectId, teamId));
         }
 
-        [HttpDelete("remove-team/{projectId:int}")]
+        [HttpDelete(Router.Projects.RemoveTeam)]
         [MapToApiVersion("1.0")]
         [SwaggerOperation(Summary = "Remove team from project", Description = "Removes a team assignment from a project.")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -99,7 +102,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _projectService.DeleteAssignTeamFromProjectAsync(projectId, teamId));
         }
 
-        [HttpPost("assign-family/{projectId:int}")]
+        [HttpPost(Router.Projects.AssignFamily)]
         [MapToApiVersion("1.0")]
         [SwaggerOperation(Summary = "Assign family to project", Description = "Assigns a family to a project.")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -111,7 +114,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _projectService.AssignFamilyToProjectAsync(projectId, familyId));
         }
 
-        [HttpDelete("remove-family/{projectId:int}")]
+        [HttpDelete(Router.Projects.RemoveFamily)]
         [MapToApiVersion("1.0")]
         [SwaggerOperation(Summary = "Remove family from project", Description = "Removes a family assignment from a project.")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -123,7 +126,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _projectService.DeleteFamilyFromProjectAsync(projectId, familyId));
         }
 
-        [HttpGet("get-project-blocks-with-beneficiary-families/{projectId:int}")]
+        [HttpGet(Router.Projects.GetProjectBlocksWithBeneficiaryFamilies)]
         [MapToApiVersion("1.0")]
         [SwaggerOperation(Summary = "Get project blocks with beneficiary families", Description = "Retrieves all blocks related to a project with their beneficiary families.")]
         [ProducesResponseType(StatusCodes.Status200OK)]

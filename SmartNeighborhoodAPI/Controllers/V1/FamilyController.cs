@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SmartNeighborhoodAPI.AppMetaData;
 using SmartNeighborhoodAPI.Helpers.DTOs.Families;
 using SmartNeighborhoodAPI.Helpers.DTOs.FamilyMember;
 using SmartNeighborhoodAPI.Helpers.DTOs.Teams;
@@ -10,6 +11,8 @@ namespace SmartNeighborhoodAPI.Controllers.V1
 {
 
     [SwaggerTag("Manage Families")]
+    [Route(Router.Families.Prefix)]
+
     public class FamilyController : AppControllerBase
     {
         private readonly FamilyService _familyService;
@@ -19,7 +22,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             _familyService = familyService;
         }
 
-        [HttpPost("[action]")]
+        [HttpPost(Router.Families.Add)]
         [SwaggerOperation(Summary = "Add a new family")]
         [ProducesResponseType(typeof(ReturnFamilyDto), 200)]
         [ProducesResponseType(typeof(ProblemDetails), 400)]
@@ -31,7 +34,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(result);
         }
 
-        [HttpGet("get-all")]
+        [HttpGet(Router.Families.GetAll)]
         [SwaggerOperation(Summary = "Get all families")]
         [ProducesResponseType(typeof(List<ReturnFamilyDto>), 200)]
         [ProducesResponseType(typeof(ProblemDetails), 404)]
@@ -41,7 +44,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(result);
         }
 
-        [HttpGet("get-details")]
+        [HttpGet(Router.Families.GetDetails)]
         [SwaggerOperation(Summary = "Get full family details")]
         [ProducesResponseType(typeof(ReturnFamilyInfoDto), 200)]
         [ProducesResponseType(typeof(ProblemDetails), 404)]
@@ -51,7 +54,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(result);
         }
 
-        [HttpGet("get-by-id/{id:int}")]
+        [HttpGet(Router.Families.GetById)]
         [SwaggerOperation(Summary = "Get family by ID")]
         [ProducesResponseType(typeof(ReturnFamilyDto), 200)]
         [ProducesResponseType(typeof(ProblemDetails), 404)]
@@ -61,7 +64,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(result);
         }
 
-        [HttpPut("[action]/{id:int}")]
+        [HttpPut(Router.Families.Update)]
         [SwaggerOperation(Summary = "Update a family")]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(ProblemDetails), 404)]
@@ -74,7 +77,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(result);
         }
 
-        [HttpDelete("[action]/{id:int}")]
+        [HttpDelete(Router.Families.Delete)]
         [SwaggerOperation(Summary = "Delete a family")]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(ProblemDetails), 404)]

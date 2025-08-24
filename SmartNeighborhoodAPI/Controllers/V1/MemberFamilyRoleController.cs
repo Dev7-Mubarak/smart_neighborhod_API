@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SmartNeighborhoodAPI.AppMetaData;
 using SmartNeighborhoodAPI.Helpers.DTOs.FamilyMember;
 using SmartNeighborhoodAPI.Services;
 using Swashbuckle.AspNetCore.Annotations;
@@ -9,6 +10,8 @@ namespace SmartNeighborhoodAPI.Controllers.V1
 {
 
     [SwaggerTag("Manage Member Family Roles")]
+    [Route(Router.MemberFamilyRoles.Prefix)]
+
     public class MemberFamilyRoleController : AppControllerBase
     {
         private readonly MemberFamilyRoleService _memberTypeService;
@@ -18,7 +21,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             _memberTypeService = memberTypeService;
         }
 
-        [HttpPost("add-member-type")]
+        [HttpPost(Router.MemberFamilyRoles.Add)]
         [SwaggerOperation(Summary = "Add a new member family role")]
         [ProducesResponseType(typeof(MemberFamilyRole), 200)]
         [ProducesResponseType(typeof(ProblemDetails), 400)]
@@ -30,7 +33,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(result);
         }
 
-        [HttpGet("get-all-member-types")]
+        [HttpGet(Router.MemberFamilyRoles.GetAll)]
         [SwaggerOperation(Summary = "Get all member family roles")]
         [ProducesResponseType(typeof(IEnumerable<MemberFamilyRoleDto>), 200)]
         [ProducesResponseType(typeof(ProblemDetails), 404)]
@@ -40,7 +43,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(result);
         }
 
-        [HttpGet("get-member-type-by-id/{id:int}")]
+        [HttpGet(Router.MemberFamilyRoles.GetById)]
         [SwaggerOperation(Summary = "Get a member family role by ID")]
         [ProducesResponseType(typeof(MemberFamilyRoleDto), 200)]
         [ProducesResponseType(typeof(ProblemDetails), 404)]
@@ -51,7 +54,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(result);
         }
 
-        [HttpPut("update-member-type/{id:int}")]
+        [HttpPut(Router.MemberFamilyRoles.Update)]
         [SwaggerOperation(Summary = "Update a member family role")]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(ProblemDetails), 404)]
@@ -64,7 +67,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(result);
         }
 
-        [HttpDelete("delete-member-type/{id:int}")]
+        [HttpDelete(Router.MemberFamilyRoles.Delete)]
         [SwaggerOperation(Summary = "Delete a member family role")]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(ProblemDetails), 404)]

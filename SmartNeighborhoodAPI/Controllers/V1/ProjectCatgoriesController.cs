@@ -5,11 +5,14 @@ using SmartNeighborhoodAPI.Helpers.DTOs.Project;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
 using SmartNeighborhoodAPI.Services;
+using SmartNeighborhoodAPI.AppMetaData;
 
 namespace SmartNeighborhoodAPI.Controllers.V1
 {
 
     [SwaggerTag("Project categories management endpoints")]
+    [Route(Router.ProjectCategories.Prefix)]
+
     public class ProjectCategoriesController : AppControllerBase
     {
         private readonly ProjectCatgoryService _projectCategoryService;
@@ -19,7 +22,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             _projectCategoryService = projectCategoryService;
         }
 
-        [HttpGet("get-all")]
+        [HttpGet(Router.ProjectCategories.GetAll)]
         [MapToApiVersion("1.0")]
         [SwaggerOperation(Summary = "Retrieve all project categories", Description = "Retrieves all project categories.")]
         [ProducesResponseType(typeof(IEnumerable<ProjectCatgoryDto>), StatusCodes.Status200OK)]
@@ -29,7 +32,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _projectCategoryService.GetAll());
         }
 
-        [HttpGet("get-by-id/{id:int}")]
+        [HttpGet(Router.ProjectCategories.GetById)]
         [MapToApiVersion("1.0")]
         [SwaggerOperation(Summary = "Get project category by ID", Description = "Retrieve a project category by its ID.")]
         [ProducesResponseType(typeof(ProjectCatgoryDto), StatusCodes.Status200OK)]
@@ -39,7 +42,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _projectCategoryService.GetByIdAsync(id));
         }
 
-        [HttpPost("[action]")]
+        [HttpPost(Router.ProjectCategories.Add)]
         [MapToApiVersion("1.0")]
         [Consumes("application/json")]
         [SwaggerOperation(Summary = "Add a new project category", Description = "Adds a new project category.")]
@@ -51,7 +54,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _projectCategoryService.AddAsync(dto));
         }
 
-        [HttpPut("[action]/{id:int}")]
+        [HttpPut(Router.ProjectCategories.Update)]
         [MapToApiVersion("1.0")]
         [Consumes("application/json")]
         [SwaggerOperation(Summary = "Update project category", Description = "Updates an existing project category.")]
@@ -66,7 +69,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _projectCategoryService.UpdateAsync(id, dto));
         }
 
-        [HttpDelete("[action]/{id:int}")]
+        [HttpDelete(Router.ProjectCategories.Delete)]
         [MapToApiVersion("1.0")]
         [SwaggerOperation(Summary = "Delete project category", Description = "Deletes a project category by ID.")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]

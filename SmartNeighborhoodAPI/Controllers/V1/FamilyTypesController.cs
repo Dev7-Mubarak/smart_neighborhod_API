@@ -3,11 +3,14 @@ using Microsoft.AspNetCore.Mvc;
 using SmartNeighborhoodAPI.Services;
 using Swashbuckle.AspNetCore.Annotations;
 using SmartNeighborhoodAPI.Helpers.DTOs;
+using SmartNeighborhoodAPI.AppMetaData;
 
 namespace SmartNeighborhoodAPI.Controllers.V1
 {
 
     [SwaggerTag("Manage Family Types")]
+    [Route(Router.FamilyTypes.Prefix)]
+
     public class FamilyTypesController : AppControllerBase
     {
         private readonly FamilyTypeService _familyTypeService;
@@ -17,7 +20,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             _familyTypeService = familyTypeService;
         }
 
-        [HttpPost("[action]")]
+        [HttpPost(Router.FamilyTypes.Add)]
         [SwaggerOperation(Summary = "Add a new family type")]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(ProblemDetails), 400)]
@@ -28,7 +31,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(result);
         }
 
-        [HttpGet("get-all")]
+        [HttpGet(Router.FamilyTypes.GetAll)]
         [SwaggerOperation(Summary = "Get all family types")]
         [ProducesResponseType(typeof(IEnumerable<GetFamilyTypeDto>), 200)]
         [ProducesResponseType(typeof(ProblemDetails), 404)]
@@ -38,7 +41,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(result);
         }
 
-        [HttpGet("get-by-id/{id:int}")]
+        [HttpGet(Router.FamilyTypes.GetById)]
         [SwaggerOperation(Summary = "Get a family type by ID")]
         [ProducesResponseType(typeof(GetFamilyTypeDto), 200)]
         [ProducesResponseType(typeof(ProblemDetails), 404)]
@@ -48,7 +51,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(result);
         }
 
-        [HttpPut("[action]/{id:int}")]
+        [HttpPut(Router.FamilyTypes.Update)]
         [SwaggerOperation(Summary = "Update a family type")]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(ProblemDetails), 404)]
@@ -61,7 +64,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(result);
         }
 
-        [HttpDelete("[action]/{id:int}")]
+        [HttpDelete(Router.FamilyTypes.Delete)]
         [SwaggerOperation(Summary = "Delete a family type")]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(ProblemDetails), 404)]

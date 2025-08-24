@@ -1,15 +1,17 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using SmartNeighborhoodAPI.AppMetaData;
 using Microsoft.AspNetCore.Mvc;
 using SmartNeighborhoodAPI.Helpers.DTOs.Auth;
 using SmartNeighborhoodAPI.Interfaces;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
-
 namespace SmartNeighborhoodAPI.Controllers.V1
 {
     [AllowAnonymous]
 
     [SwaggerTag("Authentication endpoints for login, password reset, and email confirmation")]
+    [Route(Router.Auth.Prefix)]
+
     public class AuthController : AppControllerBase
     {
         private readonly IAuthService _authService;
@@ -19,7 +21,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             _authService = authService;
         }
 
-        [HttpPost("[action]")]
+        [HttpPost(Router.Auth.Login)]
         [SwaggerOperation(Summary = "User login", Description = "Authenticates a user and returns a JWT token.")]
         [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
@@ -30,7 +32,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _authService.LoginAsync(loginDto));
         }
 
-        [HttpPost("password-reset/send-code")]
+        [HttpPost(Router.Auth.PasswordReset.SendCode)]
         [SwaggerOperation(Summary = "Send password reset code", Description = "Sends a password reset verification code to the user's email.")]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -39,7 +41,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _authService.SendResetCodeAsync(dto));
         }
 
-        [HttpPost("password-reset/verify-code")]
+        [HttpPost(Router.Auth.PasswordReset.VerifyCode)]
         [SwaggerOperation(Summary = "Verify password reset code", Description = "Verifies the password reset code sent to the user's email.")]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
@@ -49,7 +51,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _authService.VerifyResetCodeAsync(dto));
         }
 
-        [HttpPost("password-reset/confirm")]
+        [HttpPost(Router.Auth.PasswordReset.Confirm)]
         [SwaggerOperation(Summary = "Reset password", Description = "Resets the password for the user after verifying the reset code.")]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
@@ -59,7 +61,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _authService.ResetPasswordAsync(dto));
         }
 
-        [HttpPost("[action]")]
+        [HttpPost(Router.Auth.Register)]
         [SwaggerOperation(Summary = "Register new user", Description = "Registers a new user account.")]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
@@ -68,7 +70,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _authService.RegisterAsync(dto));
         }
 
-        //[HttpPost("[action]")]
+        //[HttpPost(Router.Auth.ConfirmEmailOtp)]
         //[SwaggerOperation(Summary = "Confirm email OTP", Description = "Confirms a user's email address using the OTP sent to their email.")]
         //[ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         //[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
@@ -77,5 +79,6 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         //{
         //    return Response(await _authService.ConfirmEmailOtp(dto));
         //}
+
     }
 }
