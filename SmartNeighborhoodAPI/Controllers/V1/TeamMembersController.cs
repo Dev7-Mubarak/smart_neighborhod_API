@@ -10,8 +10,6 @@ namespace SmartNeighborhoodAPI.Controllers.V1
 {
 
     [SwaggerTag("Team members management endpoints")]
-    [Route(Router.TeamMembers.Prefix)]
-
     public class TeamMembersController : AppControllerBase
     {
         private readonly TeamMemberService _teamMemberService;

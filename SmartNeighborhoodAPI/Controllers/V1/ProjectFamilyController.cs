@@ -10,8 +10,6 @@ namespace SmartNeighborhoodAPI.Controllers.V1
 {
 
     [SwaggerTag("Project families management endpoints")]
-    [Route(Router.ProjectFamilies.Prefix)]
-
     public class ProjectFamilyController : AppControllerBase
     {
         private readonly ProjectFamilieservice _projectFamilyService;

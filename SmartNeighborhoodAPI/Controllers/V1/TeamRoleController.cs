@@ -11,8 +11,6 @@ namespace SmartNeighborhoodAPI.Controllers.V1
 {
 
     [SwaggerTag("Team roles management endpoints")]
-    [Route(Router.TeamRoles.Prefix)]
-
     public class TeamRoleController : AppControllerBase
     {
         private readonly TeamRoleService _teamRoleService;

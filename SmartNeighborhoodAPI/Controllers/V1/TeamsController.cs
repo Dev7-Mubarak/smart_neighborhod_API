@@ -11,8 +11,6 @@ namespace SmartNeighborhoodAPI.Controllers.V1
 {
 
     [SwaggerTag("Teams management endpoints")]
-    [Route(Router.Teams.Prefix)]
-
     public class TeamsController : AppControllerBase
     {
         private readonly TeamsService _teamsService;

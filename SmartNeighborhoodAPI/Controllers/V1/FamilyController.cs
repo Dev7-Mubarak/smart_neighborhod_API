@@ -11,8 +11,6 @@ namespace SmartNeighborhoodAPI.Controllers.V1
 {
 
     [SwaggerTag("Manage Families")]
-    [Route(Router.Families.Prefix)]
-
     public class FamilyController : AppControllerBase
     {
         private readonly FamilyService _familyService;

@@ -11,8 +11,6 @@ namespace SmartNeighborhoodAPI.Controllers.V1
 {
 
     [SwaggerTag("Project categories management endpoints")]
-    [Route(Router.ProjectCategories.Prefix)]
-
     public class ProjectCategoriesController : AppControllerBase
     {
         private readonly ProjectCatgoryService _projectCategoryService;

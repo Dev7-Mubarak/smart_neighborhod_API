@@ -11,8 +11,6 @@ namespace SmartNeighborhoodAPI.Controllers.V1
 {
  
     [SwaggerTag("Blocks management endpoints")]
-    [Route(Router.Blocks.Prefix)]
-
     public class BlocksController : AppControllerBase
     {
         private readonly BlockServices _BlockServices;
@@ -50,7 +48,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _BlockServices.AddAsync(BlockDto));
         }
 
-        [HttpPost(Router.Blocks.ChangeBlockManager)]
+        [HttpPut(Router.Blocks.ChangeBlockManager)]
         [SwaggerOperation(
             Summary = "Change block manager",
             Description = "Changes the manager of a block and optionally creates a new manager account if needed."
@@ -58,9 +56,9 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         [ProducesResponseType(typeof(RetrunBlockDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
-        public async Task<IActionResult> ChangeBlockManager([FromBody, SwaggerParameter("Manager change details", Required = true)] ChangeBlockManagerDto blockManagerDto)
+        public async Task<IActionResult> ChangeBlockManager(int id, [FromBody, SwaggerParameter("Manager change details", Required = true)] ChangeBlockManagerDto blockManagerDto)
         {
-            return Response(await _BlockServices.ChangeBlockManager(blockManagerDto));
+            return Response(await _BlockServices.ChangeBlockManager(id ,blockManagerDto));
         }
 
         [HttpGet(Router.Blocks.GetAll)]

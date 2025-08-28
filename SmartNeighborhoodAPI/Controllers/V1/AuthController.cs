@@ -8,10 +8,7 @@ using System.Net;
 namespace SmartNeighborhoodAPI.Controllers.V1
 {
     [AllowAnonymous]
-
     [SwaggerTag("Authentication endpoints for login, password reset, and email confirmation")]
-    [Route(Router.Auth.Prefix)]
-
     public class AuthController : AppControllerBase
     {
         private readonly IAuthService _authService;
@@ -61,23 +58,13 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _authService.ResetPasswordAsync(dto));
         }
 
-        [HttpPost(Router.Auth.Register)]
-        [SwaggerOperation(Summary = "Register new user", Description = "Registers a new user account.")]
-        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Register([FromBody, SwaggerParameter("User registration data", Required = true)] RegisterDto dto)
-        {
-            return Response(await _authService.RegisterAsync(dto));
-        }
-
-        //[HttpPost(Router.Auth.ConfirmEmailOtp)]
-        //[SwaggerOperation(Summary = "Confirm email OTP", Description = "Confirms a user's email address using the OTP sent to their email.")]
+        //[HttpPost(Router.Auth.Register)]
+        //[SwaggerOperation(Summary = "Register new user", Description = "Registers a new user account.")]
         //[ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         //[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        //[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        //public async Task<IActionResult> ConfirmEmailOtp([FromBody, SwaggerParameter("Email confirmation OTP data", Required = true)] ConfirmEmailOtpDto dto)
+        //public async Task<IActionResult> Register([FromBody, SwaggerParameter("User registration data", Required = true)] RegisterDto dto)
         //{
-        //    return Response(await _authService.ConfirmEmailOtp(dto));
+        //    return Response(await _authService.RegisterAsync(dto));
         //}
 
     }

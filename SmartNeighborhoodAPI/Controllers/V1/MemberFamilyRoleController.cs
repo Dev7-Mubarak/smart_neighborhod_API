@@ -10,8 +10,6 @@ namespace SmartNeighborhoodAPI.Controllers.V1
 {
 
     [SwaggerTag("Manage Member Family Roles")]
-    [Route(Router.MemberFamilyRoles.Prefix)]
-
     public class MemberFamilyRoleController : AppControllerBase
     {
         private readonly MemberFamilyRoleService _memberTypeService;

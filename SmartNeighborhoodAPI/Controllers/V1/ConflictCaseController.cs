@@ -9,8 +9,6 @@ namespace SmartNeighborhoodAPI.Controllers.V1
 {
  
     [SwaggerTag("Manage Conflict Cases")]
-    [Route(Router.ConflictCases.Prefix)]
-
     public class ConflictCaseController : AppControllerBase
     {
         private readonly ConflictCaseService _conflictCaseService;

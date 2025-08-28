@@ -6,7 +6,7 @@ namespace SmartNeighborhoodAPI.Interfaces
     public interface IBlockServices
     {
         Task<ApiResponse<RetrunBlockDto>> AddAsync(BlockDto blockDto);
-        Task<ApiResponse<RetrunBlockDto>> ChangeBlockManager(ChangeBlockManagerDto blockManagerDto);
+        Task<ApiResponse<RetrunBlockDto>> ChangeBlockManager(int id, ChangeBlockManagerDto blockManagerDto);
         Task<ApiResponse<string>> DeleteAsync(int id);
         Task<ApiResponse<IEnumerable<RetrunBlockDto>>> GetAllAsync();
         Task<ApiResponse<Block>> GetByIdAsync(int id);

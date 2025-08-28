@@ -11,8 +11,6 @@ namespace SmartNeighborhoodAPI.Controllers.V1
 {
 
     [SwaggerTag("Person management endpoints")]
-    [Route(Router.Persons.Prefix)]
-
     public class PersonController : AppControllerBase
     {
         private readonly PersonService _personService;

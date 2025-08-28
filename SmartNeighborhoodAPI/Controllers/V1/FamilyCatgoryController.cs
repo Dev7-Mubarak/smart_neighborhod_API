@@ -8,8 +8,6 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace SmartNeighborhoodAPI.Controllers.V1
 {
     [SwaggerTag("Manage Family Categories")]
-    [Route(Router.FamilyCategories.Prefix)]
-
     public class FamilyCatgoryController : AppControllerBase
     {
         private readonly FamilyCatgoryService _familyCatgoryService;

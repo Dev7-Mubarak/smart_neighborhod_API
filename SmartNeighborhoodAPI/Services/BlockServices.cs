@@ -47,16 +47,16 @@ namespace SmartNeighborhoodAPI.Services
             return ApiResponse<IEnumerable<RetrunBlockDto>>.Success(blocks);
         }
 
-        public async Task<ApiResponse<RetrunBlockDto>> ChangeBlockManager(ChangeBlockManagerDto blockManagerDto)
+        public async Task<ApiResponse<RetrunBlockDto>> ChangeBlockManager(int id, ChangeBlockManagerDto blockManagerDto)
         {
             _logger.LogInformation("Initiating change of block manager for BlockId: {BlockId}, PersonId: {PersonId}",
-                blockManagerDto.BlockId, blockManagerDto.PersonId);
+                id, blockManagerDto.PersonId);
 
             // Step 1: Validate block
-            var block = await _context.Blocks.FindAsync(blockManagerDto.BlockId);
+            var block = await _context.Blocks.FindAsync(id);
             if (block == null)
             {
-                _logger.LogWarning("Block with ID '{BlockId}' not found.", blockManagerDto.BlockId);
+                _logger.LogWarning("Block with ID '{BlockId}' not found.", id);
                 return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.NotFound, "لم يتم العثور على مربع.");
             }
 
