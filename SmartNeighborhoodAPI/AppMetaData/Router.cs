@@ -22,7 +22,7 @@ namespace SmartNeighborhoodAPI.AppMetaData
 
         public static class ConflictCaseTypes
         {
-            public const string Prefix = Rule + "conflict-case-types";
+            public const string Prefix = Rule + "conflict-case-type";
 
             public const string Add = Prefix;
             public const string GetAll = Prefix;
@@ -37,10 +37,10 @@ namespace SmartNeighborhoodAPI.AppMetaData
 
             public const string Add = Prefix;
             public const string GetAll = Prefix;
-            public const string GetById = Prefix + "id:int}";
+            public const string GetById = Prefix + "{id:int}";
             public const string Update = Prefix + "/{id:int}";
             public const string Delete = Prefix + "/{id:int}";
-            public const string GetByFamilyMember = Prefix + "/get-by-family-member/{familyMemberId}";
+            public const string GetByFamilyMember = Prefix + "/{familyMemberId}";
         }
 
         public static class FamilyCategories
@@ -70,11 +70,11 @@ namespace SmartNeighborhoodAPI.AppMetaData
         {
             public const string Prefix = Rule + "family-members";
 
-            public const string Add = Prefix + "/add";
-            public const string GetAll = Prefix + "/get-all";
-            public const string GetById = Prefix + "/get-by-id/{id:int}";
-            public const string Update = Prefix + "/update/{id:int}";
-            public const string Delete = Prefix + "/delete/{id:int}";
+            public const string Add = Prefix;
+            public const string GetAll = Prefix;
+            public const string GetById = Prefix + "/{id:int}";
+            public const string Update = Prefix + "/{id:int}";
+            public const string Delete = Prefix + "/{id:int}";
         }
 
         public static class MemberFamilyRoles
@@ -119,13 +119,23 @@ namespace SmartNeighborhoodAPI.AppMetaData
             public const string Add = Prefix;
             public const string Update = Prefix + "/{id:int}";
             public const string Delete = Prefix + "/{id:int}";
-            public const string AssignTeam = Prefix + "/assign-team/{projectId:int}";
-            public const string RemoveTeam = Prefix + "/remove-team/{projectId:int}";
-            public const string AssignFamily = Prefix + "/assign-family/{projectId:int}";
-            public const string RemoveFamily = Prefix + "/remove-family/{projectId:int}";
+
+            // Teams
+            public const string GetTeams = Prefix + "/{projectId:int}/teams";
+            public const string AssignTeam = Prefix + "/{projectId:int}/teams/{teamId:int}";         
+            public const string RemoveTeam = Prefix + "/{projectId:int}/teams/{teamId:int}";
+
+            // Families
+            public const string GetFamilies = Prefix + "/{projectId:int}/families";
+            public const string AssignFamily = Prefix + "/{projectId:int}/families/{familyId:int}";               
+            public const string RemoveFamily = Prefix + "/{projectId:int}/families/{familyId:int}"; 
+
+            // Project Blocks with Beneficiary Families
             public const string GetProjectBlocksWithBeneficiaryFamilies =
-                Prefix + "/get-project-blocks-with-beneficiary-families/{projectId:int}";
+                Prefix + "/{projectId:int}/blocks-with-families"; 
         }
+
+
 
         // -------------------- PROJECT FAMILY --------------------
         public static class ProjectFamilies
@@ -171,10 +181,21 @@ namespace SmartNeighborhoodAPI.AppMetaData
             public const string GetById = Prefix + "/{id:int}";
             public const string Update = Prefix + "/{id:int}";
             public const string Delete = Prefix + "/{id:int}";
-            public const string GetTeamProjects = Prefix + "/get-team-projects/{teamId:int}";
+            public const string GetTeamProjects = Prefix + "/{teamId:int}/projects";
         }
 
+        public static class Enums
+        {
+            public const string Prefix = Rule;
 
+            public const string MaritalStatuses = Prefix + "marital-statuses";
+            public const string BloodTypes = Prefix + "blood-types";
+            public const string IdentityTypes = Prefix + "identity-types";
+            public const string OccupationStatuses = Prefix + "occupation-statuses";
+            public const string Gender = Prefix + "gender";
+            public const string ProjectStatus = Prefix + "project-status";
+            public const string ProjectPriority = Prefix + "project-priority";
+        }
         public static class Auth
         {
             public const string Prefix = Rule + "auth";
@@ -184,7 +205,7 @@ namespace SmartNeighborhoodAPI.AppMetaData
 
             public static class PasswordReset
             {
-                public const string Prefix = Auth.Prefix + "/password-reset";
+                public const string Prefix = Auth.Prefix + "/reset-password";
 
                 public const string SendCode = Prefix + "/send-code";
                 public const string VerifyCode = Prefix + "/verify-code";

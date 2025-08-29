@@ -76,14 +76,15 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _projectService.DeleteAsync(id));
         }
 
+        // Teams
         [HttpPost(Router.Projects.AssignTeam)]
         [MapToApiVersion("1.0")]
         [SwaggerOperation(Summary = "Assign team to project", Description = "Assigns a team to a project.")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> AssignTeamToProject(
-            [FromRoute, SwaggerParameter("Project ID", Required = true)] int projectId,
-            [FromQuery, SwaggerParameter("Team ID to assign", Required = true)] int teamId)
+            [FromRoute] int projectId,
+            [FromRoute] int teamId)
         {
             return Response(await _projectService.AssignTeamToProjectAsync(projectId, teamId));
         }
@@ -94,20 +95,21 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteAssignTeamFromProject(
-            [FromRoute, SwaggerParameter("Project ID", Required = true)] int projectId,
-            [FromQuery, SwaggerParameter("Team ID to remove", Required = true)] int teamId)
+            [FromRoute] int projectId,
+            [FromRoute] int teamId)
         {
             return Response(await _projectService.DeleteAssignTeamFromProjectAsync(projectId, teamId));
         }
 
+        // Families
         [HttpPost(Router.Projects.AssignFamily)]
         [MapToApiVersion("1.0")]
         [SwaggerOperation(Summary = "Assign family to project", Description = "Assigns a family to a project.")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> AssignFamilyToProject(
-            [FromRoute, SwaggerParameter("Project ID", Required = true)] int projectId,
-            [FromQuery, SwaggerParameter("Family ID to assign", Required = true)] int familyId)
+            [FromRoute] int projectId,
+            [FromRoute] int familyId) 
         {
             return Response(await _projectService.AssignFamilyToProjectAsync(projectId, familyId));
         }
@@ -118,8 +120,8 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteFamilyFromProject(
-            [FromRoute, SwaggerParameter("Project ID", Required = true)] int projectId,
-            [FromQuery, SwaggerParameter("Family ID to remove", Required = true)] int familyId)
+            [FromRoute] int projectId,
+            [FromRoute] int familyId) 
         {
             return Response(await _projectService.DeleteFamilyFromProjectAsync(projectId, familyId));
         }
@@ -130,9 +132,10 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetProjectBlocksWithBeneficiaryFamilies(
-            [FromRoute, SwaggerParameter("Project ID", Required = true)] int projectId)
+            [FromRoute] int projectId)
         {
             return Response(await _projectService.GetProjectBlocksWithBeneficiaryFamilies(projectId));
         }
+
     }
 }

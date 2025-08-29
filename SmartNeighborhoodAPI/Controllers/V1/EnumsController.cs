@@ -1,38 +1,39 @@
-﻿using SmartNeighborhoodAPI.Entites.Enums;
+﻿using SmartNeighborhoodAPI.AppMetaData;
+using SmartNeighborhoodAPI.Entites.Enums;
 
 namespace SmartNeighborhoodAPI.Controllers.V1
 {
     public class EnumsController : AppControllerBase
     {
-        [HttpGet("marital-statuses")]
+        [HttpGet(Router.Enums.MaritalStatuses)]
         public IActionResult GetMaritalStatuses()
         {
             var values = GetEnumValuesWithDisplayName<MaritalStatus>();
             return Response(ApiResponse<IEnumerable<EnumHelper>>.Success(values));
         }
 
-        [HttpGet("blood-types")]
+        [HttpGet(Router.Enums.BloodTypes)]
         public IActionResult GetBloodTypes()
         {
             var values = GetEnumValuesWithDisplayName<BloodType>();
             return Response(ApiResponse<IEnumerable<EnumHelper>>.Success(values));
         }
 
-        [HttpGet("identity-types")]
+        [HttpGet(Router.Enums.IdentityTypes)]
         public IActionResult GetIdentityTypes()
         {
             var values = GetEnumValuesWithDisplayName<IdentityType>();
             return Response(ApiResponse<IEnumerable<EnumHelper>>.Success(values));
         }
 
-        [HttpGet("occupation-statuses")]
+        [HttpGet(Router.Enums.OccupationStatuses)]
         public IActionResult GetOccupationStatuses()
         {
             var values = GetEnumValuesWithDisplayName<OccupationStatus>();
             return Response(ApiResponse<IEnumerable<EnumHelper>>.Success(values));
         }
 
-        [HttpGet("Gender")]
+        [HttpGet(Router.Enums.Gender)]
         public IActionResult GetGender()
         {
             var values = GetEnumValuesWithDisplayName<Gender>();
@@ -40,14 +41,14 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         }
 
 
-        [HttpGet("get-project-status")]
+        [HttpGet(Router.Enums.ProjectStatus)]
         public IActionResult GetProjectStatus()
         {
             var values = GetEnumValuesWithDisplayName<ProjectStatus>();
             return Response(ApiResponse<IEnumerable<EnumHelper>>.Success(values));
         }
 
-        [HttpGet("get-project-priority")]
+        [HttpGet(Router.Enums.ProjectPriority)]
         public IActionResult GetProjectPriority()
         {
             var values = GetEnumValuesWithDisplayName<ProjectPriority>();
