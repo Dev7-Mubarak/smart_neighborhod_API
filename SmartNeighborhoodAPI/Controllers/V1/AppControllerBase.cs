@@ -8,7 +8,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
     [Authorize]
     [ApiController]
     [ValidateActionFilter]
-    //[ApiVersion("1.0")]
+    [ApiVersion("1.0")]
     //[EnableRateLimiting("fixed-window")]
     public class AppControllerBase : ControllerBase
     {
