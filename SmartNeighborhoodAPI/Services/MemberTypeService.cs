@@ -1,9 +1,10 @@
 ﻿using SmartNeighborhoodAPI.Helpers.DTOs.FamilyMember;
+using SmartNeighborhoodAPI.Interfaces;
 using System.Net;
 
 namespace SmartNeighborhoodAPI.Services
 {
-    public class MemberFamilyRoleService
+    public class MemberFamilyRoleService : IMemberFamilyRoleService
     {
         private readonly ApplicationDbContext _context;
         readonly IMapper _mapper;
@@ -20,13 +21,13 @@ namespace SmartNeighborhoodAPI.Services
 
             var MemberFamilyRole = new MemberFamilyRole
             {
-              
+
                 RoleName = nameMemberFamilyRole
 
             };
 
 
-            var existMemberFamilyRole = await _context.MemberFamilyRoles.FirstOrDefaultAsync(x => x.RoleName== nameMemberFamilyRole);
+            var existMemberFamilyRole = await _context.MemberFamilyRoles.FirstOrDefaultAsync(x => x.RoleName == nameMemberFamilyRole);
             if (existMemberFamilyRole != null)
                 return ApiResponse<MemberFamilyRole>.Error(HttpStatusCode.Conflict, "MemberFamilyRoles Is Already Exist");
 
@@ -56,7 +57,7 @@ namespace SmartNeighborhoodAPI.Services
             var MemberFamilyRoles = _context.MemberFamilyRoles.AsNoTracking().ToList();
             if (MemberFamilyRoles.Count > 0)
             {
-                var MemberFamilyRoleDtos = MemberFamilyRoles.Select( x =>  new MemberFamilyRoleDto
+                var MemberFamilyRoleDtos = MemberFamilyRoles.Select(x => new MemberFamilyRoleDto
                 {
                     Id = x.Id,
                     RoleName = x.RoleName,
@@ -71,7 +72,7 @@ namespace SmartNeighborhoodAPI.Services
         }
         public async Task<ApiResponse<MemberFamilyRoleDto>> GetByIdAsync(int id)
         {
-            var MemberFamilyRole = await _context.MemberFamilyRoles.Include(x=>x.FamilyMembers).AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+            var MemberFamilyRole = await _context.MemberFamilyRoles.Include(x => x.FamilyMembers).AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
             if (MemberFamilyRole == null)
                 return ApiResponse<MemberFamilyRoleDto>.Error(HttpStatusCode.NotFound, "Block Not Found");
 
@@ -79,7 +80,7 @@ namespace SmartNeighborhoodAPI.Services
             var MemberFamilyRoleDto = new MemberFamilyRoleDto
             {
                 Id = id,
-                RoleName = MemberFamilyRole.RoleName           
+                RoleName = MemberFamilyRole.RoleName
             };
             return ApiResponse<MemberFamilyRoleDto>.Success(MemberFamilyRoleDto);
         }
@@ -96,9 +97,9 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<string>.Error(HttpStatusCode.Conflict, "MemberFamilyRoles Is Already Exist");
 
 
-            
+
             exisxtMemberFamilyRole.RoleName = newNameMemberFamilyRole;
-           
+
 
             _context.MemberFamilyRoles.Update(exisxtMemberFamilyRole);
             if (await _context.SaveChangesAsync() > 0)

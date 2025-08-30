@@ -5,11 +5,12 @@ using SmartNeighborhoodAPI.Entites;
 using SmartNeighborhoodAPI.Helpers.DTOs.ConfilctCase;
 using SmartNeighborhoodAPI.Helpers.DTOs.Families;
 using SmartNeighborhoodAPI.Helpers.DTOs.FamilyMember;
+using SmartNeighborhoodAPI.Interfaces;
 using System.Net;
 
 namespace SmartNeighborhoodAPI.Services
 {
-    public class ConflictCaseService
+    public class ConflictCaseService : IConflictCaseService
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
@@ -50,7 +51,7 @@ namespace SmartNeighborhoodAPI.Services
             {
                 manager = await _userManager.FindByIdAsync(conflictCaseDto.ManagerId);
             }
-           
+
 
             if (manager is null)
             {
@@ -212,7 +213,7 @@ namespace SmartNeighborhoodAPI.Services
             {
                 manager = await _userManager.FindByIdAsync(conflictCaseDto.ManagerId);
             }
-         
+
 
             if (manager == null)
             {

@@ -1,8 +1,9 @@
-﻿using System.Net;
+﻿using SmartNeighborhoodAPI.Interfaces;
+using System.Net;
 
 namespace SmartNeighborhoodAPI.Services
 {
-    public class ProjectFamilieservice
+    public class ProjectFamilieservice : IProjectFamilieservice
     {
         private readonly ApplicationDbContext _context;
         readonly IMapper _mapper;

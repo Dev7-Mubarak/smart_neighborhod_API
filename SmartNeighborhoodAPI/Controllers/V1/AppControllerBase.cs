@@ -3,13 +3,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.RateLimiting;
 using SmartNeighborhoodAPI.Helpers.Attrbuites;
 
-namespace SmartNeighborhoodAPI.Controllers
+namespace SmartNeighborhoodAPI.Controllers.V1
 {
     [Authorize]
     [ApiController]
     [ValidateActionFilter]
+    [ApiVersion("1.0")]
     //[EnableRateLimiting("fixed-window")]
-    [Route("api/[controller]")]
     public class AppControllerBase : ControllerBase
     {
         public new ObjectResult Response<T>(ApiResponse<T> response)

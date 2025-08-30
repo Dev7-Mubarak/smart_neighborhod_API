@@ -6,10 +6,11 @@ using SmartNeighborhoodAPI.Helpers.DTOs.FamilyMembers;
 using SmartNeighborhoodAPI.Helpers.DTOs.Person;
 using SmartNeighborhoodAPI.Helpers.DTOs.ProjectFamily;
 using SmartNeighborhoodAPI.Helpers.DTOs.Teams;
+using SmartNeighborhoodAPI.Interfaces;
 
 namespace SmartNeighborhoodAPI.Services
 {
-    public class FamilyService
+    public class FamilyService : IFamilyService
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
@@ -22,7 +23,7 @@ namespace SmartNeighborhoodAPI.Services
         }
         public async Task<ApiResponse<ReturnFamilyDto>> AddAsync(FamilyDto familyDto)
         {
-            _logger. LogInformation("Adding a new family with details: {@FamilyDto}", familyDto);
+            _logger.LogInformation("Adding a new family with details: {@FamilyDto}", familyDto);
             var isFamilyCategoryExists = await _context.FamilyCatgories.AnyAsync(x => x.Id == familyDto.FamilyCatgoryId);
             if (!isFamilyCategoryExists)
             {
@@ -85,7 +86,7 @@ namespace SmartNeighborhoodAPI.Services
 
             if (await _context.SaveChangesAsync() <= 0)
                 return ApiResponse<ReturnFamilyDto>.Error(HttpStatusCode.BadRequest, "Failed to add family");
-          
+
             _logger.LogInformation("Family with ID {FamilyId} added successfully", family.Id);
 
             _logger.LogInformation("Call GetFamilyByIdAsync with familId {FamilyId}", family.Id);

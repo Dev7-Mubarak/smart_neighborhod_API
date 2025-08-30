@@ -2,9 +2,6 @@
 {
     public class ChangeBlockManagerDto
     {
-        [Required(ErrorMessage = "BlockId is required")]
-        public int BlockId { get; set; }
-
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress]
         public string Email { get; set; }
