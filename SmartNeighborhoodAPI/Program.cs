@@ -33,7 +33,10 @@ builder.Services.AddCors(options =>
                         .AllowAnyMethod()
                         .AllowAnyHeader());
 });
-builder.Services.AddApiVersioning(options =>
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("RemoteConnection")));
+builder.Services.AddLocalization(options =>
 {
     options.DefaultApiVersion = new ApiVersion(1, 0);
     options.AssumeDefaultVersionWhenUnspecified = true;
@@ -62,21 +65,73 @@ builder.Services.AddScoped<TeamRoleService>();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("RemoteConnection")));
 builder.Services.AddLocalization(options =>
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<PersonService>();
+builder.Services.AddScoped<ChatService>();
+builder.Services.AddScoped<FamilyCatgoryService>();
+builder.Services.AddScoped<FamilyService>();
+builder.Services.AddScoped<MemberFamilyRoleService>();
+builder.Services.AddScoped<BlockServices>();
+builder.Services.AddScoped<AdsService>();
+builder.Services.AddScoped<ImageService>();
+builder.Services.AddScoped<GroupService>();
+builder.Services.AddScoped<ConflictCaseService>();
+builder.Services.AddScoped<ConflictTypeService>();
+builder.Services.AddScoped<ProjectCatgoryService>();
+builder.Services.AddScoped<ProjectService>();
+builder.Services.AddScoped<ProjectFamilieservice>();
+builder.Services.AddScoped<TeamsService>();
+builder.Services.AddScoped<TeamMemberService>();
+builder.Services.AddScoped<FamilyMemberService>();
+builder.Services.AddScoped<TeamRoleService>();
+
+
+builder.Host.UseSerilog((context, loggerConfig) =>
+loggerConfig.ReadFrom.Configuration(context.Configuration));
+
+// ✅ Configure Sentry for Production
+builder.WebHost.UseSentry(options =>
 {
-    options.ResourcesPath = "Resources";
+    options.Dsn = "https://a8e654fb302d229b35e1ae60d8e9838d@o4509708628525056.ingest.us.sentry.io/4509708647923712";
+    options.TracesSampleRate = 1.0; // Capture performance traces (100%)
+    options.SendDefaultPii = true; // Send user info automatically (if available)
+    options.Debug = true; // Turn off debug for production
 });
-builder.Services.Configure<JWT>(builder.Configuration.GetSection("Jwt"));
-builder.Services.AddIdentity<AppUser, IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddDefaultTokenProviders();
-builder.Services.Configure<IdentityOptions>(options =>
+
+builder.Services.AddRateLimiter(options =>
 {
-    options.Password.RequireDigit = false;
-    options.Password.RequireLowercase = false;
-    options.Password.RequireUppercase = false;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequiredLength = 8;
+    options.AddPolicy("fixed-window", context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 1000,
+                Window = TimeSpan.FromSeconds(1000),
+                QueueLimit = 0,
+                QueueProcessingOrder = QueueProcessingOrder.OldestFirst
+            }
+        )
+    );
+
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+    options.OnRejected = async (context, token) =>
+    {
+        context.HttpContext.Response.ContentType = "application/json";
+
+        var response = ApiResponse<object>.Error(
+            HttpStatusCode.TooManyRequests,
+            "You have exceeded the allowed number of requests. Try again later."
+        );
+
+        var json = JsonSerializer.Serialize(response);
+        context.HttpContext.Response.StatusCode = (int)HttpStatusCode.TooManyRequests;
+
+        await context.HttpContext.Response.WriteAsync(json, token);
+    };
 });
+
+
 var jwt = builder.Configuration.GetSection("Jwt").Get<JWT>();
 
 if (string.IsNullOrWhiteSpace(jwt?.signingKey))
@@ -122,10 +177,6 @@ builder.WebHost.UseSentry(options =>
     options.SendDefaultPii = true; // Send user info automatically (if available)
     options.Debug = true; // Turn off debug for production
 });
-
-
-
-
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 
@@ -175,6 +226,29 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
+
+builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
+
+
+builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.Configure<JWT>(builder.Configuration.GetSection("Jwt"));
+
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IPersonService,PersonService>();
+builder.Services.AddScoped<IFamilyCatgoryService,FamilyCatgoryService>();
+builder.Services.AddScoped<IFamilyService,FamilyService>();
+builder.Services.AddScoped<IMemberFamilyRoleService,MemberFamilyRoleService>();
+builder.Services.AddScoped<IBlockServices,BlockServices>();
+builder.Services.AddScoped<ImageService>();
+builder.Services.AddScoped<IConflictCaseService, ConflictCaseService>();
+builder.Services.AddScoped<IConflictTypeService, ConflictTypeService>();
+builder.Services.AddScoped<IProjectCatgoryService,ProjectCatgoryService>();
+builder.Services.AddScoped<IProjectService,ProjectService>();
+builder.Services.AddScoped<IProjectFamilieservice,ProjectFamilieservice>();
+builder.Services.AddScoped<ITeamsService,TeamsService>();
+builder.Services.AddScoped<ITeamMemberService,TeamMemberService>();
+builder.Services.AddScoped<IFamilyMemberService,FamilyMemberService>();
+builder.Services.AddScoped<ITeamRoleService,TeamRoleService>();
 var app = builder.Build();
 app.UseRequestLocalization();
 //app.UseMiddleware<ExceptionHandlingMiddleware>();
