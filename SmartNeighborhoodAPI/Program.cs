@@ -23,6 +23,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddApplicationServices(builder.Configuration);
 
+// Register AutoMapper
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll",
@@ -37,6 +40,24 @@ builder.Services.AddApiVersioning(options =>
     options.ReportApiVersions = true;
     options.ApiVersionReader = new UrlSegmentApiVersionReader();
 });
+
+
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<PersonService>();
+builder.Services.AddScoped<FamilyCatgoryService>();
+builder.Services.AddScoped<FamilyService>();
+builder.Services.AddScoped<MemberFamilyRoleService>();
+builder.Services.AddScoped<BlockServices>();
+builder.Services.AddScoped<ImageService>();
+builder.Services.AddScoped<ConflictCaseService>();
+builder.Services.AddScoped<ConflictTypeService>();
+builder.Services.AddScoped<ProjectCatgoryService>();
+builder.Services.AddScoped<ProjectService>();
+builder.Services.AddScoped<ProjectFamilieservice>();
+builder.Services.AddScoped<TeamsService>();
+builder.Services.AddScoped<TeamMemberService>();
+builder.Services.AddScoped<FamilyMemberService>();
+builder.Services.AddScoped<TeamRoleService>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("RemoteConnection")));

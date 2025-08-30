@@ -47,7 +47,7 @@ namespace SmartNeighborhoodAPI.Services
             return ApiResponse<IEnumerable<RetrunBlockDto>>.Success(blocks);
         }
 
-        public async Task<ApiResponse<RetrunBlockDto>> ChangeBlockManager(int id, ChangeBlockManagerDto blockManagerDto)
+        public async Task<ApiResponse<RetrunBlockDto>> ChangeManager(int id, ChangeManagerDto blockManagerDto)
         {
             _logger.LogInformation("Initiating change of block manager for BlockId: {BlockId}, PersonId: {PersonId}",
                 id, blockManagerDto.PersonId);
@@ -213,21 +213,32 @@ namespace SmartNeighborhoodAPI.Services
 
             return ApiResponse<Block>.Success(block);
         }
-        public async Task<ApiResponse<string>> UpdateAsync(int id, BlockDto blockDto)
+        public async Task<ApiResponse<string>> UpdateAsync(int id, UpdateBlockDto blockDto)
         {
+            _logger.LogInformation("Attempting to update block with ID: {BlockId}", id);
+
             var existingBlock = await _context.Blocks.FirstOrDefaultAsync(x => x.Id == id);
             if (existingBlock == null)
-                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "Block Not Found");
+            {
+                _logger.LogWarning("Block with ID {BlockId} not found", id);
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "المربع غير موجود");
+            }
 
+            var oldName = existingBlock.Name;
             existingBlock.Name = blockDto.Name;
-            //existingBlock.ManagerId = blockDto.PersonId;
-            //existingBlock.ManagerId = blockDto.UserId;
 
             if (await _context.SaveChangesAsync() > 0)
-                return ApiResponse<string>.Success("Block Updated Successfully");
+            {
+                _logger.LogInformation("Block ID {BlockId} name updated from '{OldName}' to '{NewName}'",
+                    id, oldName, blockDto.Name);
+                return ApiResponse<string>.Success("تم تحديث اسم المربع بنجاح");
+            }
 
-            return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "Failed To Update Block");
+            _logger.LogError("Failed to update block with ID {BlockId}", id);
+            return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "فشل في تحديث المربع");
         }
+
+
         public async Task<ApiResponse<string>> DeleteAsync(int id)
         {
             var block = await _context.Blocks.FindAsync(id);

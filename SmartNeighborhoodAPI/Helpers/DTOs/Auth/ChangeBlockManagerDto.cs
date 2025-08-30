@@ -1,6 +1,6 @@
 ﻿namespace SmartNeighborhoodAPI.Helpers.DTOs.Auth
 {
-    public class ChangeBlockManagerDto
+    public class ChangeManagerDto
     {
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress]
