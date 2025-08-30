@@ -20,7 +20,6 @@ namespace SmartNeighborhoodAPI
             base.OnModelCreating(builder);
             builder.ApplyConfiguration(new PersonConfiguration());
             builder.ApplyConfiguration(new MemberFamilyRoleConfiguration());
-            builder.ApplyConfiguration(new FamilyTypeConfiguration());
             builder.ApplyConfiguration(new FamilyCatgoryConfiguration());
             builder.ApplyConfiguration(new IdentityRoleSeedConfiguration());
             builder.ApplyConfiguration(new AppUserSeedConfiguration());
@@ -53,7 +52,6 @@ namespace SmartNeighborhoodAPI
         public DbSet<Family> Families { get; set; }
         public DbSet<FamilyCatgory> FamilyCatgories { get; set; }
         public DbSet<FamilyMember> FamilyMembers { get; set; }
-        public DbSet<FamilyType> FamilyTypes { get; set; }
         public DbSet<MemberFamilyRole> MemberFamilyRoles { get; set; }
         public DbSet<Block> Blocks { get; set; }
         public DbSet<Ad> Ads { get; set; }
@@ -67,6 +65,5 @@ namespace SmartNeighborhoodAPI
         public DbSet<TeamMember> TeamMembers { get; set; }
         public DbSet<ProjectTeam> ProjectTeams { get; set; }
         public DbSet<TeamRole> TeamRoles { get; set; }
-        public DbSet<DeliveryCaptain> DeliveryCaptains { get; set; }
     }
 }

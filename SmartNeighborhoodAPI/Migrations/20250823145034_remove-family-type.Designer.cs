@@ -12,8 +12,8 @@ using SmartNeighborhoodAPI;
 namespace SmartNeighborhoodAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250719160052_Add-Delivery-table-for-tetsing")]
-    partial class AddDeliverytablefortetsing
+    [Migration("20250823145034_remove-family-type")]
+    partial class removefamilytype
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -330,11 +330,7 @@ namespace SmartNeighborhoodAPI.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("FamilyNotes")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("FamilyTypeId")
-                        .HasColumnType("int");
 
                     b.Property<int>("HousingType")
                         .HasColumnType("int");
@@ -352,8 +348,6 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasIndex("BlockId");
 
                     b.HasIndex("FamilyCatgoryId");
-
-                    b.HasIndex("FamilyTypeId");
 
                     b.ToTable("Families");
                 });
@@ -419,41 +413,6 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasIndex("PersonId");
 
                     b.ToTable("FamilyMembers");
-                });
-
-            modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.FamilyType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("FamilyTypes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "عائلة أيتام"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "عائلة أرامل"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "عائلة طبيعية"
-                        });
                 });
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.Group", b =>
@@ -916,43 +875,20 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "0521e14a-ae1c-48ce-ad1d-d7dac8158cca",
+                            ConcurrencyStamp = "ea1d2989-fd3d-416b-bd8a-71a8f4a6034e",
                             Email = "admin@example.com",
                             EmailConfirmed = true,
                             IsActive = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@EXAMPLE.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEBzUHARAzDKU+P94WRtxi24iGtyf8ewokEUgfULHVuPWZ2lmxk2hSQNWgL6BWV1FTQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEIWWeDUhtkBEGimS1lImTzpXl398ZcccWMtefd7FhPUM4CL7PkVtpcKNYu8agqO8OQ==",
                             PersonId = 1,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "b98a6484-a895-4660-b1cc-08a211a37977",
+                            SecurityStamp = "c1515a72-e51d-44b7-9926-455f3dcc73af",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         });
-                });
-
-            modelBuilder.Entity("SmartNeighborhoodAPI.Entites.DeliveryCaptain", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("FinancialAccountName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FinancialAccountNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FullName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("DeliveryCaptains");
                 });
 
             modelBuilder.Entity("SmartNeighborhoodAPI.Entites.ProjectTeam", b =>
@@ -1138,17 +1074,9 @@ namespace SmartNeighborhoodAPI.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("OurProjectSmartNeiborhood.Entites.FamilyType", "FamilyType")
-                        .WithMany("Families")
-                        .HasForeignKey("FamilyTypeId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.Navigation("Block");
 
                     b.Navigation("FamilyCatgory");
-
-                    b.Navigation("FamilyType");
                 });
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.FamilyMember", b =>
@@ -1300,11 +1228,6 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.Navigation("FirstPartyConflictCases");
 
                     b.Navigation("SecondPartyConflictCases");
-                });
-
-            modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.FamilyType", b =>
-                {
-                    b.Navigation("Families");
                 });
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.MemberFamilyRole", b =>

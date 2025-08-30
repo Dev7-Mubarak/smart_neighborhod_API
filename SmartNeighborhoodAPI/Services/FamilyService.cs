@@ -31,13 +31,6 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<ReturnFamilyDto>.Error(HttpStatusCode.NotFound, "Family Category Not Found");
             }
 
-            var isFamilyTypeExists = await _context.FamilyTypes.AnyAsync(x => x.Id == familyDto.FamilyTypeId);
-            if (!isFamilyTypeExists)
-            {
-                _logger.LogWarning("Family Type with ID {FamilyTypeId} does not exist", familyDto.FamilyTypeId);
-                return ApiResponse<ReturnFamilyDto>.Error(HttpStatusCode.NotFound, "Family Type Not Found");
-            }
-
             var isBlockExists = await _context.Blocks.AnyAsync(x => x.Id == familyDto.BlockId);
             if (!isBlockExists)
             {
@@ -63,7 +56,6 @@ namespace SmartNeighborhoodAPI.Services
             {
                 Name = familyDto.Name,
                 FamilyCatgoryId = familyDto.FamilyCatgoryId,
-                FamilyTypeId = familyDto.FamilyTypeId,
                 BlockId = familyDto.BlockId,
                 Location = familyDto.Location,
                 FamilyNotes = familyDto.FamilyNotes,
@@ -115,7 +107,6 @@ namespace SmartNeighborhoodAPI.Services
             var families = await _context.Families
                 .AsNoTracking()
                 .Include(x => x.FamilyCatgory)
-                .Include(x => x.FamilyType)
                 .Include(x => x.Block)
                 .Include(x => x.FamilyMembers)
                     .ThenInclude(x => x.MemberFamilyRole)
@@ -137,8 +128,6 @@ namespace SmartNeighborhoodAPI.Services
                 FamilyCategoryId = family.FamilyCatgoryId,
                 FamilyCategoryName = family.FamilyCatgory.Name,
                 FamilyNotes = family.FamilyNotes,
-                FamilyTypeId = family.FamilyTypeId,
-                FamilyTypeName = family.FamilyType.Name,
                 BlockId = family.BlockId,
                 BlockName = family.Block.Name,
                 FamilyMembers = family.FamilyMembers.Select(x => new ReturnFamilyMemberDto
@@ -161,7 +150,6 @@ namespace SmartNeighborhoodAPI.Services
             var family = await _context.Families
                 .AsNoTracking()
                 .Include(x => x.FamilyCatgory)
-                .Include(x => x.FamilyType)
                 .Include(x => x.Block)
                 .Include(x => x.FamilyMembers)
                     .ThenInclude(x => x.MemberFamilyRole)
@@ -181,10 +169,8 @@ namespace SmartNeighborhoodAPI.Services
                 Name = family.Name,
                 Location = family.Location,
                 FamilyCategoryId = family.FamilyCatgoryId,
-                FamilyCategoryName = family.FamilyCatgory.Name,
-                FamilyNotes = family.FamilyNotes,
-                FamilyTypeId = family.FamilyTypeId,
-                FamilyTypeName = family.FamilyType.Name,
+                FamilyCategoryName = family.FamilyCatgory.Name,    
+                FamilyNotes = family.FamilyNotes,     
                 BlockId = family.BlockId,
                 BlockName = family.Block.Name,
                 FamilyMembers = family.FamilyMembers.Select(x => new ReturnFamilyMemberDto
@@ -214,8 +200,6 @@ namespace SmartNeighborhoodAPI.Services
                     FamilyCategoryId = x.FamilyCatgoryId,
                     FamilyCategoryName = x.FamilyCatgory.Name,
                     FamilyNotes = x.FamilyNotes,
-                    FamilyTypeId = x.FamilyTypeId,
-                    FamilyTypeName = x.FamilyType.Name,
                     BlockId = x.BlockId,
                     BlockName = x.Block.Name,
                     FamilyMembers = x.FamilyMembers.Select(fm => new ReturnFamilyMemberWithFullInfo
@@ -315,7 +299,6 @@ namespace SmartNeighborhoodAPI.Services
 
             existingFamily.Name = familyDto.Name;
             existingFamily.FamilyCatgoryId = familyDto.FamilyCatgoryId;
-            existingFamily.FamilyTypeId = familyDto.FamilyTypeId;
             existingFamily.BlockId = familyDto.BlockId;
             existingFamily.Location = familyDto.Location;
             existingFamily.FamilyNotes = familyDto.FamilyNotes;

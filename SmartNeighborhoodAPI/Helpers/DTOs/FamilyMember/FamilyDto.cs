@@ -14,8 +14,6 @@ namespace SmartNeighborhoodAPI.Helpers.DTOs.FamilyMember
         [Required(ErrorMessage = "Location is reqired")]
         public string Location { get; set; }
 
-        [Required(ErrorMessage = "Family Type id is reqired")]
-        public int FamilyTypeId { get; set; }
         [MaxLength(150)]
         public string FamilyNotes { get; set; }
         [Required(ErrorMessage = "Block id is reqired")]

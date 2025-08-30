@@ -154,30 +154,6 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
-
-builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
-
-
-builder.Services.AddAutoMapper(typeof(Program));
-builder.Services.Configure<JWT>(builder.Configuration.GetSection("Jwt"));
-
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IPersonService,PersonService>();
-builder.Services.AddScoped<IFamilyCatgoryService,FamilyCatgoryService>();
-builder.Services.AddScoped<IFamilyTypeService,FamilyTypeService>();
-builder.Services.AddScoped<IFamilyService,FamilyService>();
-builder.Services.AddScoped<IMemberFamilyRoleService,MemberFamilyRoleService>();
-builder.Services.AddScoped<IBlockServices,BlockServices>();
-builder.Services.AddScoped<ImageService>();
-builder.Services.AddScoped<IConflictCaseService, ConflictCaseService>();
-builder.Services.AddScoped<IConflictTypeService, ConflictTypeService>();
-builder.Services.AddScoped<IProjectCatgoryService,ProjectCatgoryService>();
-builder.Services.AddScoped<IProjectService,ProjectService>();
-builder.Services.AddScoped<IProjectFamilieservice,ProjectFamilieservice>();
-builder.Services.AddScoped<ITeamsService,TeamsService>();
-builder.Services.AddScoped<ITeamMemberService,TeamMemberService>();
-builder.Services.AddScoped<IFamilyMemberService,FamilyMemberService>();
-builder.Services.AddScoped<ITeamRoleService,TeamRoleService>();
 var app = builder.Build();
 app.UseRequestLocalization();
 //app.UseMiddleware<ExceptionHandlingMiddleware>();
