@@ -164,7 +164,6 @@ builder.Services.Configure<JWT>(builder.Configuration.GetSection("Jwt"));
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPersonService,PersonService>();
 builder.Services.AddScoped<IFamilyCatgoryService,FamilyCatgoryService>();
-builder.Services.AddScoped<IFamilyTypeService,FamilyTypeService>();
 builder.Services.AddScoped<IFamilyService,FamilyService>();
 builder.Services.AddScoped<IMemberFamilyRoleService,MemberFamilyRoleService>();
 builder.Services.AddScoped<IBlockServices,BlockServices>();
