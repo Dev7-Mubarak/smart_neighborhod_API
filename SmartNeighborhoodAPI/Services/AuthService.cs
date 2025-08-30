@@ -2,7 +2,6 @@
 using System.Net;
 using System.Security.Claims;
 using System.Text;
-using System.Web;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Options;
@@ -180,14 +179,14 @@ namespace SmartNeighborhoodAPI.Services
             .Union(userClaims)
             .Union(roleClaims);
 
-            var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwt.signingKey));
+            var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwt.SigningKey));
             var signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
 
             var jwtSecurityToken = new JwtSecurityToken(
                 issuer: _jwt.Issuer,
                 audience: _jwt.Audience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddDays(_jwt.DurationInDays),
+                expires: DateTime.UtcNow.AddDays(30),
                 signingCredentials: signingCredentials);
 
             return jwtSecurityToken;
