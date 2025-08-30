@@ -266,8 +266,6 @@ namespace SmartNeighborhoodAPI.Services
                          BlockName = f.Block.Name,
 
                          FamilyNotes = f.FamilyNotes,
-                         FamilyTypeId = f.FamilyTypeId,
-                         FamilyTypeName = f.FamilyType.Name,
                          Location = f.Location,
                          FamilyHeadId = f.FamilyMembers
                              .Where(fm => fm.MemberFamilyRoleId == 1)

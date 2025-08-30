@@ -12,8 +12,6 @@ namespace SmartNeighborhoodAPI.Helpers.DTOs.Teams
         public required string FamilyNotes { get; set; }
         public int FamilyCategoryId { get; set; }
         public required string FamilyCategoryName { get; set; }
-        public int FamilyTypeId { get; set; }
-        public required string FamilyTypeName { get; set; }
         public int BlockId { get; set; }
         public required string BlockName { get; set; }
         public HeadOfFamilyDto HeadOfFamily { get; set; }

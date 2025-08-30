@@ -379,8 +379,6 @@ namespace SmartNeighborhoodAPI.Services
                  .Include(b => b.Families)
                      .ThenInclude(f => f.FamilyCatgory)
                  .Include(b => b.Families)
-                     .ThenInclude(f => f.FamilyType)
-                 .Include(b => b.Families)
                      .ThenInclude(f => f.FamilyMembers)
                          .ThenInclude(fm => fm.Person)
                  .AsNoTracking()
@@ -404,8 +402,6 @@ namespace SmartNeighborhoodAPI.Services
                             BlockName = f.Block.Name,
                             FamilyCatgoryId = f.FamilyCatgoryId,
                             FamilyCatgoryName = f.FamilyCatgory?.Name,
-                            FamilyTypeId = f.FamilyTypeId,
-                            FamilyTypeName = f.FamilyType?.Name,
                             Location = f.Location,
                             FamilyNotes = f.FamilyNotes,
                             FamilyHeadId = head.Id,
