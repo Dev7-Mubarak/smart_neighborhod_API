@@ -48,7 +48,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             return Response(await _BlockServices.AddAsync(BlockDto));
         }
 
-        [HttpPut(Router.Blocks.ChangeBlockManager)]
+        [HttpPut(Router.Blocks.ChangeManager)]
         [SwaggerOperation(
             Summary = "Change block manager",
             Description = "Changes the manager of a block and optionally creates a new manager account if needed."
@@ -56,9 +56,9 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         [ProducesResponseType(typeof(RetrunBlockDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
-        public async Task<IActionResult> ChangeBlockManager(int id, [FromBody, SwaggerParameter("Manager change details", Required = true)] ChangeBlockManagerDto blockManagerDto)
+        public async Task<IActionResult> ChangeBlockManager(int id, [FromBody, SwaggerParameter("Manager change details", Required = true)] ChangeManagerDto blockManagerDto)
         {
-            return Response(await _BlockServices.ChangeBlockManager(id ,blockManagerDto));
+            return Response(await _BlockServices.ChangeManager(id ,blockManagerDto));
         }
 
         [HttpGet(Router.Blocks.GetAll)]
@@ -93,7 +93,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> UpdateAsync(
             [FromRoute, SwaggerParameter("Block ID to update", Required = true)] int id,
-            [FromBody, SwaggerParameter("Updated block data", Required = true)] BlockDto BlockDto)
+            [FromBody, SwaggerParameter("Updated block data", Required = true)] UpdateBlockDto BlockDto)
         {
             return Response(await _BlockServices.UpdateAsync(id, BlockDto));
         }
