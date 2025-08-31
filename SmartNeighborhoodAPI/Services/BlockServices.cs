@@ -224,14 +224,14 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<string>.Error(HttpStatusCode.NotFound, "المربع غير موجود");
             }
 
-            var oldName = existingBlock.Name;
             existingBlock.Name = blockDto.Name;
+            _context.Blocks.Update(existingBlock);
 
             if (await _context.SaveChangesAsync() > 0)
             {
-                _logger.LogInformation("Block ID {BlockId} name updated from '{OldName}' to '{NewName}'",
-                    id, oldName, blockDto.Name);
-                return ApiResponse<string>.Success("تم تحديث اسم المربع بنجاح");
+                _logger.LogInformation("Block ID {BlockId} name updated from to '{NewName}'",
+                    id, blockDto.Name);
+                return ApiResponse<string>.Success(message: "تم تحديث اسم المربع بنجاح");
             }
 
             _logger.LogError("Failed to update block with ID {BlockId}", id);
