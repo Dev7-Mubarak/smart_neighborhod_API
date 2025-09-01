@@ -65,7 +65,7 @@ namespace SmartNeighborhoodAPI.Services
             if (person == null)
             {
                 _logger.LogWarning("Person with ID '{PersonId}' not found.", blockManagerDto.PersonId);
-                return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.NotFound, "لم يتم العثور على الشخص.");
+                return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.NotFound, "هذا الشخص غير موجود");
             }
 
             // Step 3: Check if person is already a user
@@ -110,6 +110,7 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<RetrunBlockDto>.Error(createResult.StatusCode, createResult.Message, createResult.Errors);
             }
 
+            
             var oldManagerId = block.ManagerId;
 
             using var transaction = await _context.Database.BeginTransactionAsync();
