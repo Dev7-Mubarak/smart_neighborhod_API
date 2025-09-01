@@ -90,7 +90,7 @@ namespace SmartNeighborhoodAPI.Helpers
 
         public static class Persons
         {
-            public const string Prefix = Rule + "persons";
+            public const string Prefix = Rule + "person";
 
             public const string GetAll = Prefix;
             public const string GetById = Prefix + "/{id:int}";
