@@ -4,7 +4,6 @@ using SmartNeighborhoodAPI.Helpers.Attrbuites;
 using SmartNeighborhoodAPI.Helpers.DTOs.Project;
 using Swashbuckle.AspNetCore.Annotations;
 using SmartNeighborhoodAPI.Services;
-using SmartNeighborhoodAPI.AppMetaData;
 
 namespace SmartNeighborhoodAPI.Controllers.V1
 {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Identity.Client;
 
-namespace SmartNeighborhoodAPI.AppMetaData
+namespace SmartNeighborhoodAPI.Helpers
 {
     public static class Router
     {

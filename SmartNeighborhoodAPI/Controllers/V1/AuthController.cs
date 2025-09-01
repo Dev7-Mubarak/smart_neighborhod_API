@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using SmartNeighborhoodAPI.AppMetaData;
 using Microsoft.AspNetCore.Mvc;
 using SmartNeighborhoodAPI.Helpers.DTOs.Auth;
 using SmartNeighborhoodAPI.Interfaces;

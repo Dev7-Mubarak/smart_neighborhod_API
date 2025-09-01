@@ -1,5 +1,4 @@
-﻿using SmartNeighborhoodAPI.AppMetaData;
-using SmartNeighborhoodAPI.Entites.Enums;
+﻿using SmartNeighborhoodAPI.Entites.Enums;
 
 namespace SmartNeighborhoodAPI.Controllers.V1
 {

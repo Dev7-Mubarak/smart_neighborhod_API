@@ -5,7 +5,6 @@ using SmartNeighborhoodAPI.Helpers.DTOs.block;
 using SmartNeighborhoodAPI.Helpers.DTOs.Auth;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
-using SmartNeighborhoodAPI.AppMetaData;
 
 namespace SmartNeighborhoodAPI.Controllers.V1
 {
