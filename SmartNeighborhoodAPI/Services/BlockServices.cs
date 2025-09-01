@@ -120,13 +120,13 @@ namespace SmartNeighborhoodAPI.Services
             _context.Blocks.Update(block);
             await _context.SaveChangesAsync();
 
-            // Step 6: Delete old manager account (if any)
-            var deleteResult = await _authService.DeleteBlockManagerAccountByIdAsync(oldManagerId);
-            if (!deleteResult.IsSuccess)
-            {
-                _logger.LogError("Failed to delete old block manager with ID: {OldManagerId}", oldManagerId);
-                return ApiResponse<RetrunBlockDto>.Error(deleteResult.StatusCode, deleteResult.Message, deleteResult.Errors);
-            }
+            //// Step 6: Delete old manager account (if any)
+            //var deleteResult = await _authService.DeleteBlockManagerAccountByIdAsync(oldManagerId);
+            //if (!deleteResult.IsSuccess)
+            //{
+            //    _logger.LogError("Failed to delete old block manager with ID: {OldManagerId}", oldManagerId);
+            //    return ApiResponse<RetrunBlockDto>.Error(deleteResult.StatusCode, deleteResult.Message, deleteResult.Errors);
+            //}
 
             await transaction.CommitAsync();
 
