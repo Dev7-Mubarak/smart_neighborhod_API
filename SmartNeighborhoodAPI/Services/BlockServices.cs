@@ -65,7 +65,7 @@ namespace SmartNeighborhoodAPI.Services
             if (person == null)
             {
                 _logger.LogWarning("Person with ID '{PersonId}' not found.", blockManagerDto.PersonId);
-                return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.NotFound, "لم يتم العثور على الشخص.");
+                return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.NotFound, "هذا الشخص غير موجود");
             }
 
             // Step 3: Check if person is already a user
@@ -110,6 +110,7 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<RetrunBlockDto>.Error(createResult.StatusCode, createResult.Message, createResult.Errors);
             }
 
+            
             var oldManagerId = block.ManagerId;
 
             using var transaction = await _context.Database.BeginTransactionAsync();
@@ -119,13 +120,13 @@ namespace SmartNeighborhoodAPI.Services
             _context.Blocks.Update(block);
             await _context.SaveChangesAsync();
 
-            // Step 6: Delete old manager account (if any)
-            var deleteResult = await _authService.DeleteBlockManagerAccountByIdAsync(oldManagerId);
-            if (!deleteResult.IsSuccess)
-            {
-                _logger.LogError("Failed to delete old block manager with ID: {OldManagerId}", oldManagerId);
-                return ApiResponse<RetrunBlockDto>.Error(deleteResult.StatusCode, deleteResult.Message, deleteResult.Errors);
-            }
+            //// Step 6: Delete old manager account (if any)
+            //var deleteResult = await _authService.DeleteBlockManagerAccountByIdAsync(oldManagerId);
+            //if (!deleteResult.IsSuccess)
+            //{
+            //    _logger.LogError("Failed to delete old block manager with ID: {OldManagerId}", oldManagerId);
+            //    return ApiResponse<RetrunBlockDto>.Error(deleteResult.StatusCode, deleteResult.Message, deleteResult.Errors);
+            //}
 
             await transaction.CommitAsync();
 
@@ -224,14 +225,14 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<string>.Error(HttpStatusCode.NotFound, "المربع غير موجود");
             }
 
-            var oldName = existingBlock.Name;
             existingBlock.Name = blockDto.Name;
+            _context.Blocks.Update(existingBlock);
 
             if (await _context.SaveChangesAsync() > 0)
             {
-                _logger.LogInformation("Block ID {BlockId} name updated from '{OldName}' to '{NewName}'",
-                    id, oldName, blockDto.Name);
-                return ApiResponse<string>.Success("تم تحديث اسم المربع بنجاح");
+                _logger.LogInformation("Block ID {BlockId} name updated from to '{NewName}'",
+                    id, blockDto.Name);
+                return ApiResponse<string>.Success(message: "تم تحديث اسم المربع بنجاح");
             }
 
             _logger.LogError("Failed to update block with ID {BlockId}", id);

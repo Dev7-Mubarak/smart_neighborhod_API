@@ -5,7 +5,6 @@ using SmartNeighborhoodAPI.Helpers.DTOs.Person;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
 using OurProjectSmartNeiborhood.Services;
-using SmartNeighborhoodAPI.AppMetaData;
 
 namespace SmartNeighborhoodAPI.Controllers.V1
 {
@@ -19,16 +18,29 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         {
             _personService = personService;
         }
-
         [HttpGet(Router.Persons.GetAll)]
         [MapToApiVersion("1.0")]
-        [SwaggerOperation(Summary = "Retrieve all people", Description = "Retrieves all people in the system.")]
+        [SwaggerOperation(
+            Summary = "Retrieve all people",
+            Description = "Retrieves all people in the system with optional paging and searching."
+        )]
         [ProducesResponseType(typeof(IEnumerable<PersonDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetAllAsync()
+        public async Task<IActionResult> GetAllAsync(
+            [SwaggerParameter(Description = "Page number (starting from 1). Default is 1.")]
+            int pageNumber = 1,
+
+            [SwaggerParameter(Description = "Number of records per page. Default is 10.")]
+            int pageSize = 10,
+
+            [SwaggerParameter(Description = "Optional search term to filter people by name or other criteria.")]
+            string? search = null
+        )
         {
-            return Response(await _personService.GetAllAsync());
+            return Response(await _personService.GetAllAsync(pageNumber, pageSize, search));
         }
+
+
 
         [HttpGet(Router.Persons.GetById)]
         [MapToApiVersion("1.0")]

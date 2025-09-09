@@ -60,12 +60,6 @@ namespace SmartNeighborhoodAPI.Services
         {
             _logger.LogInformation("Attempting to create a Block Manager for email: {Email}", dto.Email);
 
-            if (await _userManager.FindByNameAsync(dto.Email) is not null)
-            {
-                _logger.LogWarning("User creation failed: Email {Email} already exists.", dto.Email);
-                return ApiResponse<UserResponse>.Error(HttpStatusCode.Conflict, "Email already exists.");
-            }
-
             AppUser user = new()
             {
                 Email = dto.Email,
@@ -85,7 +79,15 @@ namespace SmartNeighborhoodAPI.Services
                 }).ToList();
 
                 _logger.LogError("User creation failed for email {Email}. Errors: {@Errors}", dto.Email, errors);
-                return ApiResponse<UserResponse>.Error(HttpStatusCode.BadRequest, "An error occurred while creating the user.", errors);
+                return ApiResponse<UserResponse>.Error(HttpStatusCode.BadRequest, "حدث خطأ أثناء إنشاء المستخدم.", errors);
+            }
+
+            // Assign BlockManager role
+            var roleResult = await _userManager.AddToRoleAsync(user, "BlockManager");
+            if (!roleResult.Succeeded)
+            {
+                _logger.LogError("Failed to assign role BlockManager to user {Email}. Errors: {@Errors}", dto.Email, roleResult.Errors);
+                return ApiResponse<UserResponse>.Error(HttpStatusCode.BadRequest, "تم إنشاء المستخدم ولكن فشل إسناد الدور BlockManager.");
             }
 
             var otp = new Random().Next(100000, 999999).ToString();
@@ -94,8 +96,11 @@ namespace SmartNeighborhoodAPI.Services
 
             await _userManager.UpdateAsync(user);
 
-            await _emailSender.SendEmailAsync(user.Email, "Email Confirmation Code",
-                $"Hello,<br/><br/>Your email confirmation code is: <strong>{otp}</strong><br/>This code will expire in 1 Hour.");
+            await _emailSender.SendEmailAsync(
+                user.Email,
+                "رمز تأكيد البريد الإلكتروني",
+                $"مرحباً,<br/><br/>رمز تأكيد البريد الإلكتروني الخاص بك هو: <strong>{otp}</strong><br/>هذا الرمز سينتهي خلال ساعة واحدة."
+            );
 
             _logger.LogInformation("User created successfully: {Email}. OTP sent to email.", user.Email);
 
@@ -105,8 +110,9 @@ namespace SmartNeighborhoodAPI.Services
                 Email = user.Email,
             };
 
-            return ApiResponse<UserResponse>.Success(userResponse, "User registered successfully. OTP sent to email.");
+            return ApiResponse<UserResponse>.Success(userResponse, "تم تسجيل المستخدم بنجاح. تم إرسال رمز التأكيد إلى البريد الإلكتروني.");
         }
+
         public async Task<ApiResponse<UserResponse>> DeleteBlockManagerAccountByIdAsync(string managerId)
         {
             _logger.LogInformation("Deleting Block Manager with ID: {ManagerId}", managerId);

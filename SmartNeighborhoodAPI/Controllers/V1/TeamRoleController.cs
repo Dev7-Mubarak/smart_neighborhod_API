@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SmartNeighborhoodAPI.AppMetaData;
 using SmartNeighborhoodAPI.Entites;
 using SmartNeighborhoodAPI.Helpers.Attrbuites;
 using SmartNeighborhoodAPI.Helpers.DTOs.TeamMembers;

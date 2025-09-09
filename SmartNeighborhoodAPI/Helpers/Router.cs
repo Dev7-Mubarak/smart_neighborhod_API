@@ -1,6 +1,6 @@
 ﻿using Microsoft.Identity.Client;
 
-namespace SmartNeighborhoodAPI.AppMetaData
+namespace SmartNeighborhoodAPI.Helpers
 {
     public static class Router
     {
@@ -13,7 +13,7 @@ namespace SmartNeighborhoodAPI.AppMetaData
 
             public const string GetDetails = Prefix + "/details";
             public const string Add = Prefix;
-            public const string ChangeManager = Prefix + "{id:int}/manager";
+            public const string ChangeManager = Prefix + "/{id:int}/manager";
             public const string GetAll = Prefix;
             public const string GetById = Prefix + "/{id:int}";
             public const string Update = Prefix + "/{id:int}";
@@ -90,7 +90,7 @@ namespace SmartNeighborhoodAPI.AppMetaData
 
         public static class Persons
         {
-            public const string Prefix = Rule + "persons";
+            public const string Prefix = Rule + "person";
 
             public const string GetAll = Prefix;
             public const string GetById = Prefix + "/{id:int}";
