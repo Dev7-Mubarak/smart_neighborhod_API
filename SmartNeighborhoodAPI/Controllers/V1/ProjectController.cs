@@ -36,7 +36,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetByIdAsync([FromRoute, SwaggerParameter("Project ID", Required = true)] int id)
         {
-            return Response(await _projectService.GetByIdAsync(id));
+            return Response(await _projectService.GetProjectTeam(id));
         }
 
         [HttpPost(Router.Projects.Add)]

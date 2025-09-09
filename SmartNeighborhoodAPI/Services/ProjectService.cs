@@ -3,6 +3,7 @@ using OurProjectSmartNeiborhood.Entites;
 using SmartNeighborhoodAPI.Entites;
 using SmartNeighborhoodAPI.Helpers.DTOs.Families;
 using SmartNeighborhoodAPI.Helpers.DTOs.Project;
+using SmartNeighborhoodAPI.Helpers.DTOs.TeamMembers;
 using SmartNeighborhoodAPI.Helpers.DTOs.Teams;
 using SmartNeighborhoodAPI.Interfaces;
 using System.Net;
@@ -416,44 +417,44 @@ namespace SmartNeighborhoodAPI.Services
             _logger.LogInformation("Retrieved {Count} grouped blocks with families for project ID {ProjectId}.", result.Count, projectId);
             return ApiResponse<List<BeneficiaryFamilies>>.Success(result, "تم جلب العائلات حسب البلوك بنجاح");
         }
-        //public async Task<ApiResponse<List<CustomTeamDto>>> GetProjectTeam(int projectId)
-        //{
-        //    var isProjectExists = await _context.Projects.AnyAsync(x => x.Id == projectId);
+        public async Task<ApiResponse<List<CustomTeamDto>>> GetProjectTeam(int projectId)
+        {
+            var isProjectExists = await _context.Projects.AnyAsync(x => x.Id == projectId);
 
-        //    if (!isProjectExists)
-        //    {
-        //        _logger.LogWarning("Project with ID {ProjectId} not found.", projectId);
-        //        return ApiResponse<List<CustomTeamDto>>.Error(HttpStatusCode.NotFound, "المشروع غير موجود");
-        //    }
-        //    _logger.LogInformation("Fetching project teams for project with ID {ProjectId}", projectId);
+            if (!isProjectExists)
+            {
+                _logger.LogWarning("Project with ID {ProjectId} not found.", projectId);
+                return ApiResponse<List<CustomTeamDto>>.Error(HttpStatusCode.NotFound, "المشروع غير موجود");
+            }
+            _logger.LogInformation("Fetching project teams for project with ID {ProjectId}", projectId);
 
-        //    var teams = await _context.ProjectTeams
-        //        .Where(pt => pt.ProjectId == projectId)
-        //        .Select(pt => new CustomTeamDto
-        //        {
-        //            Id = pt.Team.Id,
-        //            Name = pt.Team.Name,
-        //            TeamMembers = pt.Team.TeamMembers.Select(tm => new TeamMemberDetailsDto
-        //            {
-        //                TeamMemberId = tm.Id,
-        //                TeamId = tm.TeamId,
-        //                TeamName = tm.Team.Name,
-        //                PersonId = tm.PersonId,
-        //                PersonName = tm.Person.FullName,
-        //                DateOfJoin = tm.DateOfJoin,
-        //                TeamRoleId = tm.TeamRoleId,
-        //                TeamRoleName = tm.TeamRole.Name
-        //            }).ToList()
-        //        })
-        //        .ToListAsync();
+            var teams = await _context.ProjectTeams
+                .Where(pt => pt.ProjectId == projectId)
+                .Select(pt => new CustomTeamDto
+                {
+                    Id = pt.Team.Id,
+                    Name = pt.Team.Name,
+                    TeamMembers = pt.Team.TeamMembers.Select(tm => new TeamMemberDetailsDto
+                    {
+                        TeamMemberId = tm.Id,
+                        TeamId = tm.TeamId,
+                        TeamName = tm.Team.Name,
+                        PersonId = tm.PersonId,
+                        PersonName = tm.Person.FullName,
+                        DateOfJoin = tm.DateOfJoin,
+                        TeamRoleId = tm.TeamRoleId,
+                        TeamRoleName = tm.TeamRole.Name
+                    }).ToList()
+                })
+                .ToListAsync();
 
-        //    if (teams == null || teams.Count == 0)
-        //    {
-        //        return ApiResponse<List<CustomTeamDto>>.Error(HttpStatusCode.NotFound, "لا توجد فرق مرتبطة بهذا المشروع");
-        //    }
+            if (teams == null || teams.Count == 0)
+            {
+                return ApiResponse<List<CustomTeamDto>>.Error(HttpStatusCode.NotFound, "لا توجد فرق مرتبطة بهذا المشروع");
+            }
 
-        //    return ApiResponse<List<CustomTeamDto>>.Success(teams, "تم جلب الفرق بنجاح");
-        //}
+            return ApiResponse<List<CustomTeamDto>>.Success(teams, "تم جلب الفرق بنجاح");
+        }
         private static string GetDisplayName<T>(T enumValue)
         {
             var memberInfo = typeof(T).GetMember(enumValue.ToString()).FirstOrDefault();
