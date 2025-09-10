@@ -21,7 +21,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         [SwaggerOperation(Summary = "Add a new conflict case", Description = "Creates a new conflict case with optional image and manager.")]
         [ProducesResponseType(typeof(ReturnConflictCaseDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> AddAsync([FromBody, SwaggerParameter("Conflict case data to add", Required = true)] AddConflictCaseDto conflictCaseDto)
+        public async Task<IActionResult> AddAsync([FromForm, SwaggerParameter("Conflict case data to add", Required = true)] AddConflictCaseDto conflictCaseDto)
         {
             var result = await _conflictCaseService.AddAsync(conflictCaseDto);
             return Response(result);
@@ -53,7 +53,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateAsync(
             [FromRoute, SwaggerParameter("ID of the conflict case to update", Required = true)] int id,
-            [FromBody, SwaggerParameter("Updated conflict case data", Required = true)] UpdateConflictCaseDto conflictCaseDto)
+            [FromForm, SwaggerParameter("Updated conflict case data", Required = true)] UpdateConflictCaseDto conflictCaseDto)
         {
             var result = await _conflictCaseService.UpdateAsync(id, conflictCaseDto);
             return Response(result);
