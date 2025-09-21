@@ -275,36 +275,87 @@ namespace SmartNeighborhoodAPI.Services
         {
             _logger.LogInformation("Attempting to update Family with ID: {Id}", id);
 
-            var existingFamily = await _context.Families.FirstOrDefaultAsync(x => x.Id == id);
+            // Find the existing family
+            var existingFamily = await _context.Families
+                .Include(f => f.FamilyMembers) // include related members
+                .FirstOrDefaultAsync(x => x.Id == id);
+
             if (existingFamily is null)
             {
                 _logger.LogWarning("Family with ID {Id} not found.", id);
                 return ApiResponse<string>.Error(HttpStatusCode.NotFound, "العائلة غير موجودة");
             }
 
-            var familyCategory = await _context.FamilyCatgories.FirstOrDefaultAsync(x => x.Id == familyDto.FamilyCatgoryId);
-            if (familyCategory == null)
+            // Validate family category
+            var familyCategoryExists = await _context.FamilyCatgories.AnyAsync(x => x.Id == familyDto.FamilyCatgoryId);
+            if (!familyCategoryExists)
             {
                 _logger.LogWarning("Family Category with ID {Id} not found.", familyDto.FamilyCatgoryId);
                 return ApiResponse<string>.Error(HttpStatusCode.NotFound, "فئة العائلة غير موجودة");
             }
 
-            var block = await _context.Blocks.FirstOrDefaultAsync(x => x.Id == familyDto.BlockId);
-            if (block == null)
+            // Validate block
+            var blockExists = await _context.Blocks.AnyAsync(x => x.Id == familyDto.BlockId);
+            if (!blockExists)
             {
                 _logger.LogWarning("Block with ID {Id} not found.", familyDto.BlockId);
                 return ApiResponse<string>.Error(HttpStatusCode.NotFound, "البلوك غير موجود");
             }
 
+            // Validate person exists
+            var personExists = await _context.People.AnyAsync(x => x.Id == familyDto.FamilyHeadId);
+            if (!personExists)
+            {
+                _logger.LogWarning("Person with ID {Id} not found.", familyDto.FamilyHeadId);
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "الشخص غير موجود");
+            }
 
+            // Get the role for family head
+            var headOfFamilyRole = await _context.MemberFamilyRoles
+                .FirstOrDefaultAsync(r => r.RoleName == "أب");
+
+            if (headOfFamilyRole == null)
+            {
+                _logger.LogError("Head of family role 'أب' not found.");
+                return ApiResponse<string>.Error(HttpStatusCode.InternalServerError, "دور رب الأسرة غير موجود");
+            }
+
+            // Update basic family information
             existingFamily.Name = familyDto.Name;
             existingFamily.FamilyCatgoryId = familyDto.FamilyCatgoryId;
             existingFamily.BlockId = familyDto.BlockId;
             existingFamily.Location = familyDto.Location;
             existingFamily.FamilyNotes = familyDto.FamilyNotes;
 
-            _context.Families.Update(existingFamily);
+            // --- Update Family Head ---
+            var currentHead = existingFamily.FamilyMembers
+                .FirstOrDefault(m => m.MemberFamilyRoleId == headOfFamilyRole.Id);
 
+            if (currentHead != null && currentHead.PersonId != familyDto.FamilyHeadId)
+            {
+                // Update the family head to the new person
+                _logger.LogInformation("Updating family head from Person ID {OldHead} to {NewHead}",
+                    currentHead.PersonId, familyDto.FamilyHeadId);
+
+                currentHead.PersonId = familyDto.FamilyHeadId;
+                _context.FamilyMembers.Update(currentHead);
+            }
+            else if (currentHead == null)
+            {
+                // No head found, create a new record
+                _logger.LogInformation("Assigning a new family head with Person ID {NewHead}", familyDto.FamilyHeadId);
+
+                var newHead = new FamilyMember
+                {
+                    FamilyId = existingFamily.Id,
+                    PersonId = familyDto.FamilyHeadId,
+                    MemberFamilyRoleId = headOfFamilyRole.Id
+                };
+
+                await _context.FamilyMembers.AddAsync(newHead);
+            }
+
+            // Save changes
             if (await _context.SaveChangesAsync() > 0)
             {
                 _logger.LogInformation("Family with ID {Id} updated successfully.", id);
@@ -314,6 +365,7 @@ namespace SmartNeighborhoodAPI.Services
             _logger.LogError("Failed to update Family with ID {Id}.", id);
             return ApiResponse<string>.Error(HttpStatusCode.NotModified, "فشل في تحديث العائلة");
         }
+
         public async Task<ApiResponse<string>> DeleteAsync(int id)
         {
             _logger.LogInformation("Attempting to delete family with ID {FamilyId}", id);
