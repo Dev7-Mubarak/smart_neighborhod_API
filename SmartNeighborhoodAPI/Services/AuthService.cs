@@ -33,16 +33,16 @@ namespace SmartNeighborhoodAPI.Services
             var user = await _userManager.FindByEmailAsync(loginDto.Email);
 
             if (user == null)
-                return ApiResponse<UserResponse>.Error(HttpStatusCode.NotFound, "User not found.");
+                return ApiResponse<UserResponse>.Error(HttpStatusCode.NotFound, "بيانات تسجيل الدخول غير صحيحة.");
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
 
             if (!result.Succeeded)
-                return ApiResponse<UserResponse>.Error(HttpStatusCode.BadRequest, "Invalid password.");
+                return ApiResponse<UserResponse>.Error(HttpStatusCode.BadRequest, "بيانات تسجيل الدخول غير صحيحة.");
 
             if (!user.EmailConfirmed)
             {
-                return ApiResponse<UserResponse>.Error(HttpStatusCode.Forbidden, "Email not confirmed. Please enter the OTP sent to your email.");
+                return ApiResponse<UserResponse>.Error(HttpStatusCode.Forbidden, "لم يتم تأكيد البريد الإلكتروني. الرجاء إدخال رمز التحقق المرسل إلى بريدك الإلكتروني.");
             }
 
             var jwtSecurityToken = await CreateJwtToken(user);
@@ -54,8 +54,9 @@ namespace SmartNeighborhoodAPI.Services
                 Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
             };
 
-            return ApiResponse<UserResponse>.Success(userResponse, "User login successful.");
+            return ApiResponse<UserResponse>.Success(userResponse, "تم تسجيل الدخول بنجاح.");
         }
+
         public async Task<ApiResponse<UserResponse>> CreateBlockManagerAccountAsync(CreateBlockManagerDto dto)
         {
             _logger.LogInformation("Attempting to create a Block Manager for email: {Email}", dto.Email);
@@ -69,13 +70,27 @@ namespace SmartNeighborhoodAPI.Services
             };
 
             var result = await _userManager.CreateAsync(user, dto.Password);
-
             if (!result.Succeeded)
             {
-                List<ErrorDetails> errors = result.Errors.Select(e => new ErrorDetails
+                List<ErrorDetails> errors = result.Errors.Select(e =>
                 {
-                    Field = e.Code,
-                    ErrorMessage = e.Description
+                    string arabicMessage = e.Code switch
+                    {
+                        "DuplicateUserName" => "البريد الإلكتروني مستخدم مسبقاً.",
+                        "InvalidUserName" => "اسم المستخدم غير صالح.",
+                        "PasswordTooShort" => "كلمة المرور قصيرة جداً.",
+                        "PasswordRequiresNonAlphanumeric" => "كلمة المرور يجب أن تحتوي على رمز خاص.",
+                        "PasswordRequiresDigit" => "كلمة المرور يجب أن تحتوي على رقم.",
+                        "PasswordRequiresLower" => "كلمة المرور يجب أن تحتوي على حرف صغير.",
+                        "PasswordRequiresUpper" => "كلمة المرور يجب أن تحتوي على حرف كبير.",
+                        _ => e.Description // لأي خطأ غير محدد، استخدم الوصف الافتراضي
+                    };
+
+                    return new ErrorDetails
+                    {
+                        Field = e.Code,
+                        ErrorMessage = arabicMessage
+                    };
                 }).ToList();
 
                 _logger.LogError("User creation failed for email {Email}. Errors: {@Errors}", dto.Email, errors);
@@ -146,10 +161,10 @@ namespace SmartNeighborhoodAPI.Services
         {
             var user = await _userManager.FindByEmailAsync(emailOtpDto.Email);
             if (user == null)
-                return ApiResponse<UserResponse>.Error(HttpStatusCode.NotFound, "User not found.");
+                return ApiResponse<UserResponse>.Error(HttpStatusCode.NotFound, "المستخدم غير موجود.");
 
             if (user.EmailConfirmed)
-                return ApiResponse<UserResponse>.Error(HttpStatusCode.BadRequest, "Email is already confirmed.");
+                return ApiResponse<UserResponse>.Error(HttpStatusCode.BadRequest, "تم تأكيد البريد الإلكتروني مسبقًا.");
 
             if (user.EmailConfirmationCode == emailOtpDto.Code && user.EmailConfirmationCodeExpiresAt > DateTime.UtcNow)
             {
@@ -159,13 +174,14 @@ namespace SmartNeighborhoodAPI.Services
 
                 var updateResult = await _userManager.UpdateAsync(user);
                 if (!updateResult.Succeeded)
-                    return ApiResponse<UserResponse>.Error(HttpStatusCode.InternalServerError);
+                    return ApiResponse<UserResponse>.Error(HttpStatusCode.InternalServerError, "حدث خطأ أثناء تحديث بيانات المستخدم.");
 
-                return ApiResponse<UserResponse>.Success(null, "Email confirmed successfully.");
+                return ApiResponse<UserResponse>.Success(null, "تم تأكيد البريد الإلكتروني بنجاح.");
             }
 
-            return ApiResponse<UserResponse>.Error(HttpStatusCode.BadRequest, "Invalid or expired confirmation code.");
+            return ApiResponse<UserResponse>.Error(HttpStatusCode.BadRequest, "رمز التأكيد غير صحيح أو منتهي الصلاحية.");
         }
+
         private async Task<JwtSecurityToken> CreateJwtToken(AppUser user)
         {
             var userClaims = await _userManager.GetClaimsAsync(user);
@@ -202,36 +218,37 @@ namespace SmartNeighborhoodAPI.Services
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
-                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "User not found.");
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "المستخدم غير موجود.");
             }
 
             var storedCode = await _userManager.GetAuthenticationTokenAsync(user, "Default", "ResetPasswordCode");
 
             if (storedCode == null || storedCode != model.Code)
             {
-                return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "Invalid or expired reset code.");
+                return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "رمز إعادة التعيين غير صحيح أو منتهي الصلاحية.");
             }
 
-            return ApiResponse<string>.Success("Verification code is valid.");
+            return ApiResponse<string>.Success("رمز التحقق صالح.");
         }
+
         public async Task<ApiResponse<string>> ResetPasswordAsync(ResetPasswordDto model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
-                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "User not found.");
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "المستخدم غير موجود.");
             }
 
             var storedCode = await _userManager.GetAuthenticationTokenAsync(user, "Default", "ResetPasswordCode");
 
             if (storedCode == null)
             {
-                return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "Reset code is expired or not verified.");
+                return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "رمز إعادة التعيين منتهي الصلاحية أو لم يتم التحقق منه.");
             }
 
             if (model.NewPassword != model.ConfirmPassword)
             {
-                return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "Passwords do not match.");
+                return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "كلمتا المرور غير متطابقتين.");
             }
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
@@ -240,13 +257,14 @@ namespace SmartNeighborhoodAPI.Services
             if (!result.Succeeded)
             {
                 var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-                return ApiResponse<string>.Error(HttpStatusCode.BadRequest, $"Failed to reset password: {errors}");
+                return ApiResponse<string>.Error(HttpStatusCode.BadRequest, $"فشل في إعادة تعيين كلمة المرور: {errors}");
             }
 
             await _userManager.RemoveAuthenticationTokenAsync(user, "Default", "ResetPasswordCode");
 
-            return ApiResponse<string>.Success("Password has been reset successfully.");
+            return ApiResponse<string>.Success("تمت إعادة تعيين كلمة المرور بنجاح.");
         }
+
         public async Task<ApiResponse<string>> RegisterAsync(RegisterDto model)
         {
             var existingUser = await _userManager.FindByEmailAsync(model.Email);
@@ -282,7 +300,7 @@ namespace SmartNeighborhoodAPI.Services
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
-                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "User not found.");
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "المستخدم غير موجود.");
             }
 
             var code = new Random().Next(100000, 999999).ToString();
@@ -292,11 +310,13 @@ namespace SmartNeighborhoodAPI.Services
 
             await _emailSender.SendEmailAsync(
                 model.Email,
-                "Password Reset Code",
-                $"Your password reset code is: <b>{code}</b>. It expires in 10 minutes.");
+                "رمز إعادة تعيين كلمة المرور",
+                $"رمز إعادة تعيين كلمة المرور الخاص بك هو: <b>{code}</b>.<br/>" +
+                "سينتهي صلاحيته خلال 10 دقائق.");
 
-            return ApiResponse<string>.Success("A verification code has been sent to your email.");
+            return ApiResponse<string>.Success("تم إرسال رمز التحقق إلى بريدك الإلكتروني.");
         }
+
 
     }
 }

@@ -70,7 +70,7 @@ namespace OurProjectSmartNeiborhood.Services
                 .Include(p => p.FamilyMembers)
                 .FirstOrDefaultAsync(p => p.Id == id);
             if (entity == null)
-                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "Person Not Found");
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "الشخص غير موجود.");
 
             _context.Remove(entity);
             if (!string.IsNullOrEmpty(entity.Image))
@@ -79,9 +79,9 @@ namespace OurProjectSmartNeiborhood.Services
             }
 
             if (await _context.SaveChangesAsync() > 0)
-                return ApiResponse<string>.Success("Person Deleted Successfully");
+                return ApiResponse<string>.Success("تم حذف الشخص بنجاح.");
 
-            return ApiResponse<string>.Error(HttpStatusCode.NotModified, "Failed To Delete the Person");
+            return ApiResponse<string>.Error(HttpStatusCode.NotModified, "فشل في حذف الشخص.");
         }
         public async Task<ApiResponse<PaginatedResult<PersonDto>>> GetAllAsync(
             int pageNumber = 1,
@@ -92,64 +92,62 @@ namespace OurProjectSmartNeiborhood.Services
 
             if (!string.IsNullOrEmpty(search))
             {
-                var resullt = await query.Where(x => x.FirstName.Contains(search) ||
-                x.SecondName.Contains(search) ||
-                x.ThirdName.Contains(search) ||
-                x.LastName.Contains(search)
-                ).Select(p => new PersonDto
-                {
-                    Id = p.Id,
-                    FullName = p.FirstName,
-                    FirstName = p.FirstName,
-                    SecondName = p.SecondName,
-                    ThirdName = p.ThirdName,
-                    LastName = p.LastName,
-                    PhoneNumber = p.PhoneNumber,
-                    DateOfBirth = p.DateOfBirth,
-                    Email = p.Email,
-                    Image = string.IsNullOrEmpty(p.Image) ? null : p.Image,
-                    Gender = GetDisplayName(p.Gender),
-                    BloodType = GetDisplayName(p.BloodType),
-                    IdentityNumber = p.IdentityNumber,
-                    IdentityType = GetDisplayName(p.IdentityType),
-                    OccupationStatus = GetDisplayName(p.OccupationStatus),
-                    MaritalStatus = GetDisplayName(p.MaritalStatus),
-                    Job = p.Job
-                })
-                .ToPaginatedListAsync(pageNumber, pageSize);
+                var result = await query.Where(x => x.FirstName.Contains(search) ||
+                                                    x.SecondName.Contains(search) ||
+                                                    x.ThirdName.Contains(search) ||
+                                                    x.LastName.Contains(search))
+                                        .Select(p => new PersonDto
+                                        {
+                                            Id = p.Id,
+                                            FullName = p.FirstName,
+                                            FirstName = p.FirstName,
+                                            SecondName = p.SecondName,
+                                            ThirdName = p.ThirdName,
+                                            LastName = p.LastName,
+                                            PhoneNumber = p.PhoneNumber,
+                                            DateOfBirth = p.DateOfBirth,
+                                            Email = p.Email,
+                                            Image = string.IsNullOrEmpty(p.Image) ? null : p.Image,
+                                            Gender = GetDisplayName(p.Gender),
+                                            BloodType = GetDisplayName(p.BloodType),
+                                            IdentityNumber = p.IdentityNumber,
+                                            IdentityType = GetDisplayName(p.IdentityType),
+                                            OccupationStatus = GetDisplayName(p.OccupationStatus),
+                                            MaritalStatus = GetDisplayName(p.MaritalStatus),
+                                            Job = p.Job
+                                        })
+                                        .ToPaginatedListAsync(pageNumber, pageSize);
 
-                if (resullt == null)
-                    return ApiResponse<PaginatedResult<PersonDto>>.Error(HttpStatusCode.NotFound, "No Person Found");
+                if (result == null)
+                    return ApiResponse<PaginatedResult<PersonDto>>.Error(HttpStatusCode.NotFound, "لا يوجد أشخاص مطابقين للبحث.");
 
-                return ApiResponse<PaginatedResult<PersonDto>>.Success(resullt);
+                return ApiResponse<PaginatedResult<PersonDto>>.Success(result, "تم جلب الأشخاص بنجاح.");
             }
-            var people = await query
-                 .Select(p => new PersonDto
-                 {
-                     Id = p.Id,
-                     FirstName = p.FirstName,
-                     SecondName = p.SecondName,
-                     ThirdName = p.ThirdName,
-                     LastName = p.LastName,
-                     PhoneNumber = p.PhoneNumber,
-                     DateOfBirth = p.DateOfBirth,
-                     Email = p.Email,
-                     Image = string.IsNullOrEmpty(p.Image) ? null : p.Image,
-                     Gender = GetDisplayName(p.Gender),
-                     BloodType = GetDisplayName(p.BloodType),
-                     IdentityNumber = p.IdentityNumber,
-                     IdentityType = GetDisplayName(p.IdentityType),
-                     OccupationStatus = GetDisplayName(p.OccupationStatus),
-                     MaritalStatus = GetDisplayName(p.MaritalStatus),
-                     Job = p.Job
-                 })
-                 .ToPaginatedListAsync(pageNumber, pageSize);
+
+            var people = await query.Select(p => new PersonDto
+            {
+                Id = p.Id,
+                FirstName = p.FirstName,
+                SecondName = p.SecondName,
+                ThirdName = p.ThirdName,
+                LastName = p.LastName,
+                PhoneNumber = p.PhoneNumber,
+                DateOfBirth = p.DateOfBirth,
+                Email = p.Email,
+                Image = string.IsNullOrEmpty(p.Image) ? null : p.Image,
+                Gender = GetDisplayName(p.Gender),
+                BloodType = GetDisplayName(p.BloodType),
+                IdentityNumber = p.IdentityNumber,
+                IdentityType = GetDisplayName(p.IdentityType),
+                OccupationStatus = GetDisplayName(p.OccupationStatus),
+                MaritalStatus = GetDisplayName(p.MaritalStatus),
+                Job = p.Job
+            }).ToPaginatedListAsync(pageNumber, pageSize);
 
             if (people == null)
-                return ApiResponse<PaginatedResult<PersonDto>>.Error(HttpStatusCode.NotFound, "No Person Found");
+                return ApiResponse<PaginatedResult<PersonDto>>.Error(HttpStatusCode.NotFound, "لا يوجد أشخاص.");
 
-
-            return ApiResponse<PaginatedResult<PersonDto>>.Success(people);
+            return ApiResponse<PaginatedResult<PersonDto>>.Success(people, "تم جلب الأشخاص بنجاح.");
         }
 
         public async Task<ApiResponse<PersonDto>> GetByIdAsync(int id)
@@ -160,7 +158,7 @@ namespace OurProjectSmartNeiborhood.Services
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (person == null)
-                return ApiResponse<PersonDto>.Error(HttpStatusCode.NotFound, "Person Not Found");
+                return ApiResponse<PersonDto>.Error(HttpStatusCode.NotFound, "الشخص غير موجود.");
 
             var dto = new PersonDto
             {
@@ -182,17 +180,16 @@ namespace OurProjectSmartNeiborhood.Services
                 OccupationStatus = GetDisplayName(person.OccupationStatus),
                 MaritalStatus = GetDisplayName(person.MaritalStatus),
                 Job = person.Job
-
             };
 
-            return ApiResponse<PersonDto>.Success(dto);
+            return ApiResponse<PersonDto>.Success(dto, "تم جلب بيانات الشخص بنجاح.");
         }
         public async Task<ApiResponse<string>> UpdateAsync(int id, CreatePersonDto dto)
         {
             var existingPerson = await _context.People.Include(p => p.FamilyMembers).FirstOrDefaultAsync(x => x.Id == id);
 
             if (existingPerson is null)
-                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "Person Not Found");
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "الشخص غير موجود.");
 
             existingPerson.FirstName = dto.FirstName;
             existingPerson.SecondName = dto.SecondName;
@@ -204,8 +201,6 @@ namespace OurProjectSmartNeiborhood.Services
             existingPerson.Gender = dto.Gender;
             existingPerson.BloodType = dto.BloodType;
             existingPerson.IdentityNumber = dto.IdentityNumber;
-            existingPerson.PhoneNumber = dto.PhoneNumber;
-            existingPerson.Job = dto.Job;
             existingPerson.MaritalStatus = dto.MaritalStatus;
             existingPerson.OccupationStatus = dto.OccupationStatus;
             existingPerson.IsContactNumber = dto.IsContactNumber;
@@ -222,11 +217,10 @@ namespace OurProjectSmartNeiborhood.Services
 
             _context.People.Update(existingPerson);
             if (await _context.SaveChangesAsync() > 0)
-                return ApiResponse<string>.Success("Person Updated Successfully");
+                return ApiResponse<string>.Success("تم تحديث بيانات الشخص بنجاح.");
 
-            return ApiResponse<string>.Error(HttpStatusCode.NotModified, "Failed To Update Person");
+            return ApiResponse<string>.Error(HttpStatusCode.NotModified, "فشل في تحديث بيانات الشخص.");
         }
-
         private static string GetDisplayName<T>(T enumValue)
         {
             var memberInfo = typeof(T).GetMember(enumValue.ToString()).FirstOrDefault();
