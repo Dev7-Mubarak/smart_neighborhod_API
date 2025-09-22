@@ -61,7 +61,36 @@ namespace SmartNeighborhoodAPI.Services
         {
             _logger.LogInformation("Attempting to create a Block Manager for email: {Email}", dto.Email);
 
-            AppUser user = new()
+            // Step 1: Check if user already exists
+            var existingUser = await _userManager.FindByEmailAsync(dto.Email);
+            if (existingUser != null)
+            {
+                var roles = await _userManager.GetRolesAsync(existingUser);
+
+                // If user is already an Admin, return success with user info
+                if (roles.Contains("Admin"))
+                {
+                    _logger.LogInformation("User {Email} is an Admin. Returning existing user info.", dto.Email);
+                    UserResponse adminResponse = new UserResponse
+                    {
+                        Id = existingUser.Id,
+                        Email = existingUser.Email
+                    };
+                    return ApiResponse<UserResponse>.Success(adminResponse, "المستخدم هو بالفعل.");
+                }
+
+                // If user is already a BlockManager, return error
+                if (roles.Contains("BlockManager"))
+                {
+                    _logger.LogWarning("User {Email} is already assigned as a Block Manager.", dto.Email);
+                    return ApiResponse<UserResponse>.Error(HttpStatusCode.BadRequest, "هذا المستخدم هو مدير بالفعل لإحدى المربعات.");
+                }
+
+                _logger.LogInformation("User {Email} exists but is not a Block Manager. Proceeding to assign role.", dto.Email);
+            }
+
+            // Step 2: Create new user if not exists
+            AppUser user = existingUser ?? new AppUser
             {
                 Email = dto.Email,
                 UserName = dto.Email,
@@ -69,35 +98,38 @@ namespace SmartNeighborhoodAPI.Services
                 IsActive = false,
             };
 
-            var result = await _userManager.CreateAsync(user, dto.Password);
-            if (!result.Succeeded)
+            if (existingUser == null)
             {
-                List<ErrorDetails> errors = result.Errors.Select(e =>
+                var result = await _userManager.CreateAsync(user, dto.Password);
+                if (!result.Succeeded)
                 {
-                    string arabicMessage = e.Code switch
+                    List<ErrorDetails> errors = result.Errors.Select(e =>
                     {
-                        "DuplicateUserName" => "البريد الإلكتروني مستخدم مسبقاً.",
-                        "InvalidUserName" => "اسم المستخدم غير صالح.",
-                        "PasswordTooShort" => "كلمة المرور قصيرة جداً.",
-                        "PasswordRequiresNonAlphanumeric" => "كلمة المرور يجب أن تحتوي على رمز خاص.",
-                        "PasswordRequiresDigit" => "كلمة المرور يجب أن تحتوي على رقم.",
-                        "PasswordRequiresLower" => "كلمة المرور يجب أن تحتوي على حرف صغير.",
-                        "PasswordRequiresUpper" => "كلمة المرور يجب أن تحتوي على حرف كبير.",
-                        _ => e.Description // لأي خطأ غير محدد، استخدم الوصف الافتراضي
-                    };
+                        string arabicMessage = e.Code switch
+                        {
+                            "DuplicateUserName" => "البريد الإلكتروني مستخدم مسبقاً.",
+                            "InvalidUserName" => "اسم المستخدم غير صالح.",
+                            "PasswordTooShort" => "كلمة المرور قصيرة جداً.",
+                            "PasswordRequiresNonAlphanumeric" => "كلمة المرور يجب أن تحتوي على رمز خاص.",
+                            "PasswordRequiresDigit" => "كلمة المرور يجب أن تحتوي على رقم.",
+                            "PasswordRequiresLower" => "كلمة المرور يجب أن تحتوي على حرف صغير.",
+                            "PasswordRequiresUpper" => "كلمة المرور يجب أن تحتوي على حرف كبير.",
+                            _ => e.Description
+                        };
 
-                    return new ErrorDetails
-                    {
-                        Field = e.Code,
-                        ErrorMessage = arabicMessage
-                    };
-                }).ToList();
+                        return new ErrorDetails
+                        {
+                            Field = e.Code,
+                            ErrorMessage = arabicMessage
+                        };
+                    }).ToList();
 
-                _logger.LogError("User creation failed for email {Email}. Errors: {@Errors}", dto.Email, errors);
-                return ApiResponse<UserResponse>.Error(HttpStatusCode.BadRequest, "حدث خطأ أثناء إنشاء المستخدم.", errors);
+                    _logger.LogError("User creation failed for email {Email}. Errors: {@Errors}", dto.Email, errors);
+                    return ApiResponse<UserResponse>.Error(HttpStatusCode.BadRequest, "حدث خطأ أثناء إنشاء المستخدم.", errors);
+                }
             }
 
-            // Assign BlockManager role
+            // Step 3: Assign BlockManager role
             var roleResult = await _userManager.AddToRoleAsync(user, "BlockManager");
             if (!roleResult.Succeeded)
             {
@@ -105,6 +137,7 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<UserResponse>.Error(HttpStatusCode.BadRequest, "تم إنشاء المستخدم ولكن فشل إسناد الدور BlockManager.");
             }
 
+            // Step 4: Generate OTP and send email
             var otp = new Random().Next(100000, 999999).ToString();
             user.EmailConfirmationCode = otp;
             user.EmailConfirmationCodeExpiresAt = DateTime.UtcNow.AddHours(1);
@@ -127,6 +160,7 @@ namespace SmartNeighborhoodAPI.Services
 
             return ApiResponse<UserResponse>.Success(userResponse, "تم تسجيل المستخدم بنجاح. تم إرسال رمز التأكيد إلى البريد الإلكتروني.");
         }
+
 
         public async Task<ApiResponse<UserResponse>> DeleteBlockManagerAccountByIdAsync(string managerId)
         {

@@ -74,6 +74,14 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.NotFound, "هذا الشخص غير موجود");
             }
 
+            var existingUser = await _userManager.FindByEmailAsync(blockManagerDto.Email);
+
+            if (existingUser != null)
+            {
+                _logger.LogWarning("Person with ID '{PersonId}' not found.", blockManagerDto.Email);
+                return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.Conflict, "هذا الايميل مستخدم بالفعل ");
+            }
+
             // Step 3: Check if person is already a user
             var user = await _context.Users.FirstOrDefaultAsync(x => x.PersonId == person.Id);
             if (user != null)
@@ -161,7 +169,7 @@ namespace SmartNeighborhoodAPI.Services
             if (existblock != null)
             {
                 _logger.LogWarning("Block with name '{BlockName}' already exists", blockDto.Name);
-                return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.Conflict, "اسم البلوك موجود مسبقًا.");
+                return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.Conflict, "اسم المربع موجود مسبقًا.");
             }
 
             var person = await _context.People.FindAsync(blockDto.PersonId);
@@ -182,9 +190,7 @@ namespace SmartNeighborhoodAPI.Services
 
             if (!response.IsSuccess)
             {
-                var resp = ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.BadRequest, response.Message, response.Errors);
-
-                return resp;
+                return ApiResponse<RetrunBlockDto>.Error(response.StatusCode, response.Message, response.Errors);
             }
 
             var block = new Block
