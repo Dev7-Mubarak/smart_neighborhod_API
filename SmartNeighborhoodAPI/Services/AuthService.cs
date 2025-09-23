@@ -54,6 +54,7 @@ namespace SmartNeighborhoodAPI.Services
             {
                 Id = user.Id,
                 Email = loginDto.Email,
+                Role = (await _userManager.GetRolesAsync(user)).FirstOrDefault(),
                 Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
             };
 
