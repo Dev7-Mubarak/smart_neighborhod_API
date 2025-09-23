@@ -12,5 +12,6 @@ namespace SmartNeighborhoodAPI.Interfaces
         Task<ApiResponse<string>> RegisterAsync(RegisterDto model);
         Task<ApiResponse<string>> VerifyResetCodeAsync(VerifyResetCodeDto dto);
         Task<ApiResponse<string>> ResetPasswordAsync(ResetPasswordDto dto);
+        Task<string?> GetUserRole(string userId);
     }
 }

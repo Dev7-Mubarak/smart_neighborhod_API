@@ -37,6 +37,7 @@ namespace SmartNeighborhoodAPI.Services
                 {
                     Id = x.Id,
                     ManagerId = x.ManagerId,
+                    Role =  _authService.GetUserRole(x.ManagerId).Result,
                     Name = x.Name,
                     Email = x.Manager.Email,
                     PersonId = x.Manager.Person.Id,
@@ -230,14 +231,26 @@ namespace SmartNeighborhoodAPI.Services
         }
         public async Task<ApiResponse<string>> DeleteAsync(int id)
         {
-            var block = await _context.Blocks.FindAsync(id);
+            var block = await _context.Blocks.FirstOrDefaultAsync(x => x.Id == id);
             if (block == null)
                 return ApiResponse<string>.Error(HttpStatusCode.NotFound, "المربع غير موجود.");
 
-            _context.ConfilctCases.RemoveRange(_context.ConfilctCases.Where(x => x.FirstPartyId == id || x.SecondPartyId == id));
-            _context.Blocks.Remove(block);
-            if (await _context.SaveChangesAsync() > 0)
-                return ApiResponse<string>.Success("تم حذف المربع بنجاح.");
+            var userRole = await _authService.GetUserRole(block.ManagerId);
+            if (userRole != null && userRole == "BlockManager")
+            {
+                var deleteResult = await _authService.DeleteBlockManagerAccountByIdAsync(block.ManagerId);
+                if (!deleteResult.IsSuccess)
+                {
+                    _logger.LogError("Failed to delete block manager with ID: {ManagerId}", block.ManagerId);
+                    return ApiResponse<string>.Error(deleteResult.StatusCode, deleteResult.Message, deleteResult.Errors);
+                }
+            }
+            else
+            {
+                _context.Blocks.Remove(block);
+                 return ApiResponse<string>.Success("تم حذف المربع بنجاح.");
+            }
+
 
             return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "فشل في حذف المربع.");
         }
