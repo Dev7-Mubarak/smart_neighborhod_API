@@ -37,6 +37,7 @@ namespace SmartNeighborhoodAPI.Services
                 {
                     Id = x.Id,
                     ManagerId = x.ManagerId,
+                    Role =  _authService.GetUserRole(x.ManagerId).Result,
                     Name = x.Name,
                     Email = x.Manager.Email,
                     PersonId = x.Manager.Person.Id,
@@ -82,34 +83,6 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.Conflict, "هذا الايميل مستخدم بالفعل ");
             }
 
-            // Step 3: Check if person is already a user
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.PersonId == person.Id);
-            if (user != null)
-            {
-                var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
-                if (isAdmin)
-                {
-                    block.ManagerId = user.Id;
-                    _context.Blocks.Update(block);
-                    await _context.SaveChangesAsync();
-
-                    _logger.LogInformation("Block manager updated for existing admin. Block ID: {BlockId}", block.Id);
-
-                    return ApiResponse<RetrunBlockDto>.Success(new RetrunBlockDto
-                    {
-                        Id = block.Id,
-                        Name = block.Name,
-                        ManagerId = user.Id,
-                        PersonId = person.Id,
-                        Email = user.Email,
-                        FullName = person.FullName
-                    }, "تم تحديث مدير المربع بنجاح.");
-                }
-
-                _logger.LogWarning("Person with ID '{PersonId}' is already a manager of another block.", person.Id);
-                return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.Conflict, "هذا الشخص مدير بالفعل مربع آخر.");
-            }
-
             // Step 4: Create new manager account
             var createResult = await _authService.CreateBlockManagerAccountAsync(new CreateBlockManagerDto
             {
@@ -124,25 +97,25 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<RetrunBlockDto>.Error(createResult.StatusCode, createResult.Message, createResult.Errors);
             }
 
-            
+
             var oldManagerId = block.ManagerId;
 
-            using var transaction = await _context.Database.BeginTransactionAsync();
 
             // Step 5: Update block manager
             block.ManagerId = createResult.Data.Id;
             _context.Blocks.Update(block);
             await _context.SaveChangesAsync();
 
-            //// Step 6: Delete old manager account (if any)
-            //var deleteResult = await _authService.DeleteBlockManagerAccountByIdAsync(oldManagerId);
-            //if (!deleteResult.IsSuccess)
-            //{
-            //    _logger.LogError("Failed to delete old block manager with ID: {OldManagerId}", oldManagerId);
-            //    return ApiResponse<RetrunBlockDto>.Error(deleteResult.StatusCode, deleteResult.Message, deleteResult.Errors);
-            //}
+            if (createResult.Data.Role == "BlockManager") { 
+                // Step 6: Delete old manager account (if any)
+                var deleteResult = await _authService.DeleteBlockManagerAccountByIdAsync(oldManagerId);
+                if (!deleteResult.IsSuccess)
+                {
+                    _logger.LogError("Failed to delete old block manager with ID: {OldManagerId}", oldManagerId);
+                    return ApiResponse<RetrunBlockDto>.Error(deleteResult.StatusCode, deleteResult.Message, deleteResult.Errors);
+                }
+            }
 
-            await transaction.CommitAsync();
 
             // Step 7: Return success response
             var returnBlockDto = new RetrunBlockDto
@@ -152,6 +125,7 @@ namespace SmartNeighborhoodAPI.Services
                 ManagerId = block.ManagerId,
                 PersonId = person.Id,
                 Email = createResult.Data.Email,
+                Role = createResult.Data.Role,
                 FullName = person.FullName
             };
 
@@ -209,6 +183,7 @@ namespace SmartNeighborhoodAPI.Services
                     Name = blockDto.Name,
                     PersonId = blockDto.PersonId,
                     ManagerId = response.Data.Id,
+                    Role = response.Data.Role,
                     Email = response.Data.Email,
                     FullName = person.FullName
                 };
@@ -256,13 +231,26 @@ namespace SmartNeighborhoodAPI.Services
         }
         public async Task<ApiResponse<string>> DeleteAsync(int id)
         {
-            var block = await _context.Blocks.FindAsync(id);
+            var block = await _context.Blocks.FirstOrDefaultAsync(x => x.Id == id);
             if (block == null)
                 return ApiResponse<string>.Error(HttpStatusCode.NotFound, "المربع غير موجود.");
 
-            _context.Blocks.Remove(block);
-            if (await _context.SaveChangesAsync() > 0)
-                return ApiResponse<string>.Success("تم حذف المربع بنجاح.");
+            var userRole = await _authService.GetUserRole(block.ManagerId);
+            if (userRole != null && userRole == "BlockManager")
+            {
+                var deleteResult = await _authService.DeleteBlockManagerAccountByIdAsync(block.ManagerId);
+                if (!deleteResult.IsSuccess)
+                {
+                    _logger.LogError("Failed to delete block manager with ID: {ManagerId}", block.ManagerId);
+                    return ApiResponse<string>.Error(deleteResult.StatusCode, deleteResult.Message, deleteResult.Errors);
+                }
+            }
+            else
+            {
+                _context.Blocks.Remove(block);
+                 return ApiResponse<string>.Success("تم حذف المربع بنجاح.");
+            }
+
 
             return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "فشل في حذف المربع.");
         }

@@ -20,13 +20,16 @@ namespace SmartNeighborhoodAPI.Services
         private readonly IEmailSender _emailSender;
         private readonly JWT _jwt;
         private readonly ILogger<AuthService> _logger;
-        public AuthService(UserManager<AppUser> userManager, IOptions<JWT> jwt, SignInManager<AppUser> signInManager, IEmailSender emailSender, ILogger<AuthService> logger)
+        private readonly ApplicationDbContext _context;
+
+        public AuthService(UserManager<AppUser> userManager, IOptions<JWT> jwt, SignInManager<AppUser> signInManager, IEmailSender emailSender, ILogger<AuthService> logger, ApplicationDbContext context)
         {
             _userManager = userManager;
             _jwt = jwt.Value;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _logger = logger;
+            _context = context;
         }
         public async Task<ApiResponse<UserResponse>> LoginAsync(LoginDto loginDto)
         {
@@ -51,6 +54,7 @@ namespace SmartNeighborhoodAPI.Services
             {
                 Id = user.Id,
                 Email = loginDto.Email,
+                Role = (await _userManager.GetRolesAsync(user)).FirstOrDefault(),
                 Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
             };
 
@@ -62,24 +66,11 @@ namespace SmartNeighborhoodAPI.Services
             _logger.LogInformation("Attempting to create a Block Manager for email: {Email}", dto.Email);
 
             // Step 1: Check if user already exists
-            var existingUser = await _userManager.FindByEmailAsync(dto.Email);
+            var existingUser = await _context.Users.FirstOrDefaultAsync(x => x.PersonId == dto.PersonId);
             if (existingUser != null)
             {
                 var roles = await _userManager.GetRolesAsync(existingUser);
 
-                // If user is already an Admin, return success with user info
-                if (roles.Contains("Admin"))
-                {
-                    _logger.LogInformation("User {Email} is an Admin. Returning existing user info.", dto.Email);
-                    UserResponse adminResponse = new UserResponse
-                    {
-                        Id = existingUser.Id,
-                        Email = existingUser.Email
-                    };
-                    return ApiResponse<UserResponse>.Success(adminResponse, "المستخدم هو بالفعل.");
-                }
-
-                // If user is already a BlockManager, return error
                 if (roles.Contains("BlockManager"))
                 {
                     _logger.LogWarning("User {Email} is already assigned as a Block Manager.", dto.Email);
@@ -156,6 +147,7 @@ namespace SmartNeighborhoodAPI.Services
             {
                 Id = user.Id,
                 Email = user.Email,
+                Role = "BlockManager"
             };
 
             return ApiResponse<UserResponse>.Success(userResponse, "تم تسجيل المستخدم بنجاح. تم إرسال رمز التأكيد إلى البريد الإلكتروني.");
@@ -170,7 +162,7 @@ namespace SmartNeighborhoodAPI.Services
             if (user == null)
             {
                 _logger.LogWarning("Block Manager with ID '{ManagerId}' not found.", managerId);
-                return ApiResponse<UserResponse>.Error(HttpStatusCode.NotFound, "User not found.");
+                return ApiResponse<UserResponse>.Error(HttpStatusCode.NotFound, "المستخدم غير موجود.");
             }
 
             var deletionResult = await _userManager.DeleteAsync(user);
@@ -178,18 +170,35 @@ namespace SmartNeighborhoodAPI.Services
             {
                 _logger.LogError("Failed to delete Block Manager with ID: {ManagerId}. Errors: {Errors}",
                                  managerId, string.Join(", ", deletionResult.Errors.Select(e => e.Description)));
-                return ApiResponse<UserResponse>.Error(HttpStatusCode.InternalServerError, "Failed to delete user.");
+
+                return ApiResponse<UserResponse>.Error(HttpStatusCode.InternalServerError, "فشل في حذف حساب المستخدم.");
             }
 
             var userResponse = new UserResponse
             {
                 Id = user.Id,
                 Email = user.Email,
+                Role = "BlockManager"
             };
 
             _logger.LogInformation("Successfully deleted Block Manager with ID: {ManagerId}", managerId);
 
-            return ApiResponse<UserResponse>.Success(userResponse);
+            return ApiResponse<UserResponse>.Success(userResponse, "تم حذف حساب مدير الحي بنجاح.");
+        }
+
+
+        public async Task<string?> GetUserRole(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user != null)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                if (roles.Any())
+                {
+                    return roles.First(); 
+                }
+            }
+            return null;
         }
         public async Task<ApiResponse<UserResponse>> ConfirmEmailOtp(ConfirmEmailOtpDto emailOtpDto)
         {
