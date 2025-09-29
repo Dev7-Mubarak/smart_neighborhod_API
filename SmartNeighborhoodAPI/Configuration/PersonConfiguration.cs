@@ -34,21 +34,13 @@ namespace OurProjectSmartNeiborhood.Configuration
                 .HasMaxLength(30)
                 .IsRequired();
 
-            builder.Property(p => p.Email)
-                .HasMaxLength(100);
+         
 
             builder.Property(p => p.Gender)
                 .HasMaxLength(10)
                 .IsRequired();
 
             builder.Property(p => p.BloodType)
-                .IsRequired();
-
-            builder.Property(p => p.IdentityNumber)
-                .HasMaxLength(100)
-                .IsRequired();
-
-            builder.Property(p => p.IdentityType)
                 .IsRequired();
 
             builder.Property(p => p.Gender)
@@ -73,11 +65,8 @@ namespace OurProjectSmartNeiborhood.Configuration
                     ThirdName = "محمود",
                     LastName = "الزهيري",
                     PhoneNumber = "0791234567",
-                    Email = "ahmad@example.com",
                     Gender = Gender.Male,
                     BloodType = BloodType.ABNegative,
-                    IdentityNumber = "894754369053",
-                    IdentityType = IdentityType.IdentityCard,
                     OccupationStatus = OccupationStatus.Employee,
                     MaritalStatus = MaritalStatus.Married,
                     Job = "مهندس"
@@ -90,11 +79,8 @@ namespace OurProjectSmartNeiborhood.Configuration
                     ThirdName = "عبد الله",
                     LastName = "الحسني",
                     PhoneNumber = "0789876543",
-                    Email = "fatima@example.com",
                     Gender = Gender.Female,
                     BloodType = BloodType.ABNegative,
-                    IdentityNumber = "8945784903588",
-                    IdentityType = IdentityType.IdentityCard,
                     OccupationStatus = OccupationStatus.Student,
                     MaritalStatus = MaritalStatus.Single,
                     Job = "طالبة"

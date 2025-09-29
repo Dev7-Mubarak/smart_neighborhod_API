@@ -30,10 +30,6 @@ public class CreatePersonDto
     [Required(ErrorMessage = "ÍŞá ÑŞã ááÊæÇÕá ãØáæÈ.")]
     public bool IsContactNumber { get; set; }
 
-    [MaxLength(100, ErrorMessage = "íÌÈ ÃáÇ íÊÌÇæÒ ÇáÈÑíÏ ÇáÅáßÊÑæäí 100 ÍÑİ.")]
-    [EmailAddress(ErrorMessage = "ÕíÛÉ ÇáÈÑíÏ ÇáÅáßÊÑæäí ÛíÑ ÕÍíÍÉ.")]
-    public string? Email { get; set; }
-
     [Required(ErrorMessage = "ÊÇÑíÎ ÇáãíáÇÏ ãØáæÈ.")]
     [DataType(DataType.Date, ErrorMessage = "ÕíÛÉ ÇáÊÇÑíÎ ÛíÑ ÕÍíÍÉ.")]
     public DateTime DateOfBirth { get; set; }
@@ -47,13 +43,6 @@ public class CreatePersonDto
 
     [Required(ErrorMessage = "İÕíáÉ ÇáÏã ãØáæÈÉ.")]
     public BloodType BloodType { get; set; }
-
-    [Required(ErrorMessage = "ÑŞã ÇáåæíÉ ãØáæÈ.")]
-    [MaxLength(100, ErrorMessage = "íÌÈ ÃáÇ íÒíÏ ÑŞã ÇáåæíÉ Úä 100 ÍÑİ.")]
-    public string IdentityNumber { get; set; }
-
-    [Required(ErrorMessage = "äæÚ ÇáåæíÉ ãØáæÈ.")]
-    public IdentityType IdentityType { get; set; }
 
     [Required(ErrorMessage = "ÇáÍÇáÉ ÇáÇÌÊãÇÚíÉ ãØáæÈÉ.")]
     public MaritalStatus MaritalStatus { get; set; }

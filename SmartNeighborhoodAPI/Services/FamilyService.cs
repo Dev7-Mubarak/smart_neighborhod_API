@@ -220,12 +220,9 @@ namespace SmartNeighborhoodAPI.Services
                             LastName = fm.Person.LastName,
                             PhoneNumber = fm.Person.PhoneNumber,
                             DateOfBirth = fm.Person.DateOfBirth,
-                            Email = fm.Person.Email,
                             Image = string.IsNullOrEmpty(fm.Person.Image) ? null : fm.Person.Image,
                             Gender = fm.Person.Gender.ToString(),
                             BloodType = fm.Person.BloodType.ToString(),
-                            IdentityNumber = fm.Person.IdentityNumber,
-                            IdentityType = fm.Person.IdentityType.ToString(),
                             OccupationStatus = fm.Person.OccupationStatus.ToString(),
                             MaritalStatus = fm.Person.MaritalStatus.ToString(),
                             Job = fm.Person.Job ?? "NAN"
@@ -253,7 +250,6 @@ namespace SmartNeighborhoodAPI.Services
                 .Where(x => x.FamilyId == id && x.MemberFamilyRole.Id == 1)
                 .Select(x => new HeadOfFamilyDto
                 {
-                    IdentityNumber = x.Person.IdentityNumber,
                     FullName = x.Person.FullName,
                     PhoneNumber = x.Person.PhoneNumber
                 })

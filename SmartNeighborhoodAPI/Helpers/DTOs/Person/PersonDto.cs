@@ -14,12 +14,9 @@ namespace SmartNeighborhoodAPI.Helpers.DTOs.Person
         public string PhoneNumber { get; set; }
         public bool IsWhatsapp { get; set; }
         public bool IsCall { get; set; }
-        public string? Email { get; set; }
         public string? Image { get; set; }
         public string Gender { get; set; }
         public string BloodType { get; set; }       
-        public string IdentityNumber { get; set; }
-        public string IdentityType { get; set; }   
         public string OccupationStatus { get; set; } 
         public string MaritalStatus { get; set; }    
         public string Job { get; set; }
