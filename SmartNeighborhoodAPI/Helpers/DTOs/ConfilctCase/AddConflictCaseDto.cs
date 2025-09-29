@@ -19,9 +19,6 @@
 
         [StringLength(1000, ErrorMessage = "الملاحظات يجب ألا تتجاوز 1000 حرف")]
         public string Notes { get; set; }
-
-        [Required(ErrorMessage = "نتيجة الجلسة مطلوبة")]
-
         public IFormFile? Image { get; set; }
 
         [Required(ErrorMessage = "تاريخ الجلسة مطلوب")]
