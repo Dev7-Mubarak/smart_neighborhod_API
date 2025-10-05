@@ -24,7 +24,7 @@ public class CreatePersonDto
     public string PhoneNumber { get; set; }
 
     [DataType(DataType.Date, ErrorMessage = "صيغة التاريخ غير صحيحة.")]
-    public DateTime DateOfBirth { get; set; }
+    public DateTime? DateOfBirth { get; set; }
 
     public Gender Gender { get; set; }
 
