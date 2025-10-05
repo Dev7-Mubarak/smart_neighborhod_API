@@ -21,7 +21,7 @@ public class CreatePersonDto
 
     [MaxLength(30, ErrorMessage = "يجب ألا يزيد رقم الهاتف عن 30 رقمًا.")]
     [Phone(ErrorMessage = "صيغة رقم الهاتف غير صحيحة.")]
-    public string PhoneNumber { get; set; }
+    public string? PhoneNumber { get; set; }
 
     [DataType(DataType.Date, ErrorMessage = "صيغة التاريخ غير صحيحة.")]
     public DateTime? DateOfBirth { get; set; }
