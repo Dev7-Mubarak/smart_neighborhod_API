@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SmartNeighborhoodAPI;
 
@@ -11,9 +12,11 @@ using SmartNeighborhoodAPI;
 namespace SmartNeighborhoodAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251005033752_edit-people-table")]
+    partial class editpeopletable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -506,10 +509,10 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.Property<string>("Image")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool?>("IsContactNumber")
+                    b.Property<bool>("IsContactNumber")
                         .HasColumnType("bit");
 
-                    b.Property<bool?>("IsWhatsapp")
+                    b.Property<bool>("IsWhatsapp")
                         .HasColumnType("bit");
 
                     b.Property<string>("Job")
@@ -552,6 +555,8 @@ namespace SmartNeighborhoodAPI.Migrations
                             BloodType = 5,
                             FirstName = "أحمد",
                             Gender = 0,
+                            IsContactNumber = false,
+                            IsWhatsapp = false,
                             Job = "مهندس",
                             LastName = "الزهيري",
                             MaritalStatus = 2,
@@ -566,6 +571,8 @@ namespace SmartNeighborhoodAPI.Migrations
                             BloodType = 5,
                             FirstName = "فاطمة",
                             Gender = 1,
+                            IsContactNumber = false,
+                            IsWhatsapp = false,
                             Job = "طالبة",
                             LastName = "الحسني",
                             MaritalStatus = 1,
@@ -848,17 +855,17 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "0a81216d-5342-4974-8f79-39edbeeda934",
+                            ConcurrencyStamp = "faa06007-82b7-4a01-91c1-11004344aa5f",
                             Email = "admin@example.com",
                             EmailConfirmed = true,
                             IsActive = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@EXAMPLE.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEG1lXTnNOz040/Vv77tU7Phatd8lTszwJHFjQVPGrHJONmkrUsywdoaxGQ7nDu4YAA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEE6E60hGHYnksHnlQvmaOvlsgvDrX+E/I47pq1ABDcNr/xzkxew/ULlSR1PfnfBR6g==",
                             PersonId = 1,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "9fe6f59c-8931-44c7-8269-c94ad5fa0360",
+                            SecurityStamp = "5459f40e-d2f3-4f91-aaa6-216f1022bcd6",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         });

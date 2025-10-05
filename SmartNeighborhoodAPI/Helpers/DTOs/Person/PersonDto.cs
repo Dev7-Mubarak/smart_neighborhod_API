@@ -10,12 +10,10 @@ namespace SmartNeighborhoodAPI.Helpers.DTOs.Person
         public string SecondName { get; set; }
         public string ThirdName { get; set; }
         public string LastName { get; set; }
-        public DateTime DateOfBirth { get; set; }
-        public string PhoneNumber { get; set; }
-        public bool IsWhatsapp { get; set; }
-        public bool IsCall { get; set; }
+        public DateTime? DateOfBirth { get; set; }
+        public string? PhoneNumber { get; set; }
         public string? Image { get; set; }
-        public string Gender { get; set; }
+        public string? Gender { get; set; }
         public string BloodType { get; set; }       
         public string OccupationStatus { get; set; } 
         public string MaritalStatus { get; set; }    

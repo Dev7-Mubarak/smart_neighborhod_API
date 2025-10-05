@@ -1,56 +1,46 @@
-using SmartNeighborhoodAPI.Entites.Enums;
+ï»¿using SmartNeighborhoodAPI.Entites.Enums;
 using SmartNeighborhoodAPI.Helpers.Attrbuites;
 
 public class CreatePersonDto
 {
-    [Required(ErrorMessage = "ÇáÇÓã ÇáÃæá ãØáæÈ.")]
-    [MaxLength(20, ErrorMessage = "íÌÈ ÃáÇ íÒíÏ ÇáÇÓã ÇáÃæá Úä 20 ÍÑİğÇ.")]
+    [Required(ErrorMessage = "Ø§Ù„Ø§Ø³Ù… Ø§Ù„Ø£ÙˆÙ„ Ù…Ø·Ù„ÙˆØ¨.")]
+    [MaxLength(20, ErrorMessage = "ÙŠØ¬Ø¨ Ø£Ù„Ø§ ÙŠØ²ÙŠØ¯ Ø§Ù„Ø§Ø³Ù… Ø§Ù„Ø£ÙˆÙ„ Ø¹Ù† 20 Ø­Ø±ÙÙ‹Ø§.")]
     public string FirstName { get; set; }
 
-    [Required(ErrorMessage = "ÇáÇÓã ÇáËÇäí ãØáæÈ.")]
-    [MaxLength(20, ErrorMessage = "íÌÈ ÃáÇ íÒíÏ ÇáÇÓã ÇáËÇäí Úä 20 ÍÑİğÇ.")]
+    [Required(ErrorMessage = "Ø§Ù„Ø§Ø³Ù… Ø§Ù„Ø«Ø§Ù†ÙŠ Ù…Ø·Ù„ÙˆØ¨.")]
+    [MaxLength(20, ErrorMessage = "ÙŠØ¬Ø¨ Ø£Ù„Ø§ ÙŠØ²ÙŠØ¯ Ø§Ù„Ø§Ø³Ù… Ø§Ù„Ø«Ø§Ù†ÙŠ Ø¹Ù† 20 Ø­Ø±ÙÙ‹Ø§.")]
     public string SecondName { get; set; }
 
-    [Required(ErrorMessage = "ÇáÇÓã ÇáËÇáË ãØáæÈ.")]
-    [MaxLength(20, ErrorMessage = "íÌÈ ÃáÇ íÒíÏ ÇáÇÓã ÇáËÇáË Úä 20 ÍÑİğÇ.")]
+    [Required(ErrorMessage = "Ø§Ù„Ø§Ø³Ù… Ø§Ù„Ø«Ø§Ù„Ø« Ù…Ø·Ù„ÙˆØ¨.")]
+    [MaxLength(20, ErrorMessage = "ÙŠØ¬Ø¨ Ø£Ù„Ø§ ÙŠØ²ÙŠØ¯ Ø§Ù„Ø§Ø³Ù… Ø§Ù„Ø«Ø§Ù„Ø« Ø¹Ù† 20 Ø­Ø±ÙÙ‹Ø§.")]
     public string ThirdName { get; set; }
 
-    [Required(ErrorMessage = "ÇÓã ÇáÚÇÆáÉ ãØáæÈ.")]
-    [MaxLength(20, ErrorMessage = "íÌÈ ÃáÇ íÒíÏ ÇÓã ÇáÚÇÆáÉ Úä 20 ÍÑİğÇ.")]
+    [Required(ErrorMessage = "Ø§Ø³Ù… Ø§Ù„Ø¹Ø§Ø¦Ù„Ø© Ù…Ø·Ù„ÙˆØ¨.")]
+    [MaxLength(20, ErrorMessage = "ÙŠØ¬Ø¨ Ø£Ù„Ø§ ÙŠØ²ÙŠØ¯ Ø§Ø³Ù… Ø§Ù„Ø¹Ø§Ø¦Ù„Ø© Ø¹Ù† 20 Ø­Ø±ÙÙ‹Ø§.")]
     public string LastName { get; set; }
 
-    [Required(ErrorMessage = "ÑŞã ÇáåÇÊİ ãØáæÈ.")]
-    [MaxLength(30, ErrorMessage = "íÌÈ ÃáÇ íÒíÏ ÑŞã ÇáåÇÊİ Úä 30 ÑŞãğÇ.")]
-    [Phone(ErrorMessage = "ÕíÛÉ ÑŞã ÇáåÇÊİ ÛíÑ ÕÍíÍÉ.")]
+    [MaxLength(30, ErrorMessage = "ÙŠØ¬Ø¨ Ø£Ù„Ø§ ÙŠØ²ÙŠØ¯ Ø±Ù‚Ù… Ø§Ù„Ù‡Ø§ØªÙ Ø¹Ù† 30 Ø±Ù‚Ù…Ù‹Ø§.")]
+    [Phone(ErrorMessage = "ØµÙŠØºØ© Ø±Ù‚Ù… Ø§Ù„Ù‡Ø§ØªÙ ØºÙŠØ± ØµØ­ÙŠØ­Ø©.")]
     public string PhoneNumber { get; set; }
 
-    [Required(ErrorMessage = "ÍŞá æÇÊÓÇÈ ãØáæÈ.")]
-    public bool IsWhatsapp { get; set; }
-
-    [Required(ErrorMessage = "ÍŞá ÑŞã ááÊæÇÕá ãØáæÈ.")]
-    public bool IsContactNumber { get; set; }
-
-    [Required(ErrorMessage = "ÊÇÑíÎ ÇáãíáÇÏ ãØáæÈ.")]
-    [DataType(DataType.Date, ErrorMessage = "ÕíÛÉ ÇáÊÇÑíÎ ÛíÑ ÕÍíÍÉ.")]
+    [DataType(DataType.Date, ErrorMessage = "ØµÙŠØºØ© Ø§Ù„ØªØ§Ø±ÙŠØ® ØºÙŠØ± ØµØ­ÙŠØ­Ø©.")]
     public DateTime DateOfBirth { get; set; }
 
-    [Required(ErrorMessage = "ÇáÌäÓ ãØáæÈ.")]
     public Gender Gender { get; set; }
 
     [AllowedExtensions(FileHelper.AllowedExtensions)]
     [MaxFileSize(FileHelper.MaxFileSizeInBytes)]
     public IFormFile? Image { get; set; }
 
-    [Required(ErrorMessage = "İÕíáÉ ÇáÏã ãØáæÈÉ.")]
+    [Required(ErrorMessage = "ÙØµÙŠÙ„Ø© Ø§Ù„Ø¯Ù… Ù…Ø·Ù„ÙˆØ¨Ø©.")]
     public BloodType BloodType { get; set; }
 
-    [Required(ErrorMessage = "ÇáÍÇáÉ ÇáÇÌÊãÇÚíÉ ãØáæÈÉ.")]
+    [Required(ErrorMessage = "Ø§Ù„Ø­Ø§Ù„Ø© Ø§Ù„Ø§Ø¬ØªÙ…Ø§Ø¹ÙŠØ© Ù…Ø·Ù„ÙˆØ¨Ø©.")]
     public MaritalStatus MaritalStatus { get; set; }
 
-    [Required(ErrorMessage = "ÍÇáÉ ÇáÚãá ãØáæÈÉ.")]
+    [Required(ErrorMessage = "Ø­Ø§Ù„Ø© Ø§Ù„Ø¹Ù…Ù„ Ù…Ø·Ù„ÙˆØ¨Ø©.")]
     public OccupationStatus OccupationStatus { get; set; }
 
-    [MaxLength(30, ErrorMessage = "íÌÈ ÃáÇ íÒíÏ ÇÓã ÇáæÙíİÉ Úä 30 ÍÑİğÇ.")]
+    [MaxLength(30, ErrorMessage = "ÙŠØ¬Ø¨ Ø£Ù„Ø§ ÙŠØ²ÙŠØ¯ Ø§Ø³Ù… Ø§Ù„ÙˆØ¸ÙŠÙØ© Ø¹Ù† 30 Ø­Ø±ÙÙ‹Ø§.")]
     public string? Job { get; set; }
-
 }

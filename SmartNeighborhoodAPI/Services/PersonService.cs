@@ -1,10 +1,5 @@
 ﻿using System.Net;
-using Microsoft.IdentityModel.Tokens;
-using OurProjectSmartNeiborhood.Entites;
-using SmartNeighborhoodAPI.Helpers;
 using SmartNeighborhoodAPI.Helpers.DTOs.Person;
-using SmartNeighborhoodAPI.Interfaces;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace OurProjectSmartNeiborhood.Services
 {
@@ -42,8 +37,6 @@ namespace OurProjectSmartNeiborhood.Services
                 ThirdName = dto.ThirdName,
                 LastName = dto.LastName,
                 PhoneNumber = dto.PhoneNumber,
-                IsWhatsapp = dto.IsWhatsapp,
-                IsContactNumber = dto.IsContactNumber,
                 DateOfBirth = dto.DateOfBirth,
                 Gender = dto.Gender,
                 Image = string.IsNullOrEmpty(personImage) ? null : personImage,
@@ -159,8 +152,6 @@ namespace OurProjectSmartNeiborhood.Services
                 ThirdName = person.ThirdName,
                 LastName = person.LastName,
                 PhoneNumber = person.PhoneNumber,
-                IsCall = person.IsContactNumber,
-                IsWhatsapp = person.IsWhatsapp,
                 DateOfBirth = person.DateOfBirth,
                 Image = string.IsNullOrEmpty(person.Image) ? null : person.Image,
                 Gender = GetDisplayName(person.Gender),
@@ -189,8 +180,6 @@ namespace OurProjectSmartNeiborhood.Services
             existingPerson.BloodType = dto.BloodType;
             existingPerson.MaritalStatus = dto.MaritalStatus;
             existingPerson.OccupationStatus = dto.OccupationStatus;
-            existingPerson.IsContactNumber = dto.IsContactNumber;
-            existingPerson.IsWhatsapp = dto.IsWhatsapp;
 
             if (dto.Image != null)
             {

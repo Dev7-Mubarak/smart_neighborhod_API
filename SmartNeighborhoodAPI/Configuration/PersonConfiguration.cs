@@ -19,31 +19,23 @@ namespace OurProjectSmartNeiborhood.Configuration
                 .IsRequired();
 
             builder.Property(p => p.ThirdName)
-                .HasMaxLength(20)
-                .IsRequired();
+                .HasMaxLength(20);
 
             builder.Property(p => p.DateOfBirth)
             .HasColumnType("date")
-            .IsRequired();
+            .IsRequired(false);
 
             builder.Property(p => p.LastName)
                 .HasMaxLength(20)
                 .IsRequired();
 
             builder.Property(p => p.PhoneNumber)
-                .HasMaxLength(30)
-                .IsRequired();
-
-         
+                .HasMaxLength(30);
 
             builder.Property(p => p.Gender)
-                .HasMaxLength(10)
-                .IsRequired();
+                .HasMaxLength(10);
 
             builder.Property(p => p.BloodType)
-                .IsRequired();
-
-            builder.Property(p => p.Gender)
                 .IsRequired();
 
 

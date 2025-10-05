@@ -15,12 +15,12 @@ namespace OurProjectSmartNeiborhood.Entites
         [MaxLength(20)]
         public string LastName { get; set; }
         [MaxLength(30)]
-        public string PhoneNumber { get; set; }
-        public bool IsWhatsapp { get; set; }
-        public bool IsContactNumber { get; set; }
+        public string? PhoneNumber { get; set; }
+        public bool? IsWhatsapp { get; set; }
+        public bool? IsContactNumber { get; set; }
         [MaxLength(100)]
-        public DateTime DateOfBirth { get; set; }
-        public Gender Gender { get; set; }
+        public DateTime? DateOfBirth { get; set; }
+        public Gender? Gender { get; set; }
         public string? Image { get; set; }
         public BloodType BloodType { get; set; }
         public MaritalStatus MaritalStatus { get; set; }
