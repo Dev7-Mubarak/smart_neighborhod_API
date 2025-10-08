@@ -11,19 +11,19 @@ namespace SmartNeighborhoodAPI.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public string? GetUserId()
+        public CurrentUserDto GetCurrentUser()
         {
-            return _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        }
+            var user = _httpContextAccessor.HttpContext?.User;
 
-        public string? GetUserEmail()
-        {
-            return _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.Email)?.Value;
-        }
+            if (user == null)
+                throw new InvalidOperationException("user not found");
 
-        public string? GetUserRoles()
-        {
-            return _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.Role);
+            return new CurrentUserDto
+            {
+                Id = user.FindFirst(ClaimTypes.NameIdentifier)?.Value,
+                Email = user.FindFirst(ClaimTypes.Email)?.Value,
+                Role = user.FindFirst(ClaimTypes.Role).Value
+            };
         }
     }
 }

@@ -69,15 +69,8 @@ namespace SmartNeighborhoodAPI.Services
             var existingUser = await _context.Users.FirstOrDefaultAsync(x => x.PersonId == dto.PersonId);
             if (existingUser != null)
             {
-                var roles = await _userManager.GetRolesAsync(existingUser);
-
-                if (roles.Contains("BlockManager"))
-                {
                     _logger.LogWarning("User {Email} is already assigned as a Block Manager.", dto.Email);
                     return ApiResponse<UserResponse>.Error(HttpStatusCode.BadRequest, "هذا المستخدم هو مدير بالفعل لإحدى المربعات.");
-                }
-
-                _logger.LogInformation("User {Email} exists but is not a Block Manager. Proceeding to assign role.", dto.Email);
             }
 
             // Step 2: Create new user if not exists
@@ -121,7 +114,7 @@ namespace SmartNeighborhoodAPI.Services
             }
 
             // Step 3: Assign BlockManager role
-            var roleResult = await _userManager.AddToRoleAsync(user, "BlockManager");
+            var roleResult = await _userManager.AddToRoleAsync(user, Role.BlockManager);
             if (!roleResult.Succeeded)
             {
                 _logger.LogError("Failed to assign role BlockManager to user {Email}. Errors: {@Errors}", dto.Email, roleResult.Errors);
@@ -147,12 +140,11 @@ namespace SmartNeighborhoodAPI.Services
             {
                 Id = user.Id,
                 Email = user.Email,
-                Role = "BlockManager"
+                Role = Role.BlockManager
             };
 
             return ApiResponse<UserResponse>.Success(userResponse, "تم تسجيل المستخدم بنجاح. تم إرسال رمز التأكيد إلى البريد الإلكتروني.");
         }
-
 
         public async Task<ApiResponse<UserResponse>> DeleteBlockManagerAccountByIdAsync(string managerId)
         {
@@ -200,31 +192,6 @@ namespace SmartNeighborhoodAPI.Services
             }
             return null;
         }
-        public async Task<ApiResponse<UserResponse>> ConfirmEmailOtp(ConfirmEmailOtpDto emailOtpDto)
-        {
-            var user = await _userManager.FindByEmailAsync(emailOtpDto.Email);
-            if (user == null)
-                return ApiResponse<UserResponse>.Error(HttpStatusCode.NotFound, "المستخدم غير موجود.");
-
-            if (user.EmailConfirmed)
-                return ApiResponse<UserResponse>.Error(HttpStatusCode.BadRequest, "تم تأكيد البريد الإلكتروني مسبقًا.");
-
-            if (user.EmailConfirmationCode == emailOtpDto.Code && user.EmailConfirmationCodeExpiresAt > DateTime.UtcNow)
-            {
-                user.EmailConfirmed = true;
-                user.EmailConfirmationCode = null;
-                user.EmailConfirmationCodeExpiresAt = null;
-
-                var updateResult = await _userManager.UpdateAsync(user);
-                if (!updateResult.Succeeded)
-                    return ApiResponse<UserResponse>.Error(HttpStatusCode.InternalServerError, "حدث خطأ أثناء تحديث بيانات المستخدم.");
-
-                return ApiResponse<UserResponse>.Success(null, "تم تأكيد البريد الإلكتروني بنجاح.");
-            }
-
-            return ApiResponse<UserResponse>.Error(HttpStatusCode.BadRequest, "رمز التأكيد غير صحيح أو منتهي الصلاحية.");
-        }
-
         private async Task<JwtSecurityToken> CreateJwtToken(AppUser user)
         {
             var userClaims = await _userManager.GetClaimsAsync(user);
@@ -232,14 +199,13 @@ namespace SmartNeighborhoodAPI.Services
             var roleClaims = new List<Claim>();
 
             foreach (var role in roles)
-                roleClaims.Add(new Claim("roles", role));
+                roleClaims.Add(new Claim(ClaimTypes.Role, role));
 
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim("uid", user.Id)
             }
             .Union(userClaims)
             .Union(roleClaims);
@@ -260,18 +226,25 @@ namespace SmartNeighborhoodAPI.Services
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
-            {
                 return ApiResponse<string>.Error(HttpStatusCode.NotFound, "المستخدم غير موجود.");
-            }
 
-            var storedCode = await _userManager.GetAuthenticationTokenAsync(user, "Default", "ResetPasswordCode");
+            if (user.EmailConfirmed)
+                return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "تم تأكيد البريد الإلكتروني مسبقًا.");
 
-            if (storedCode == null || storedCode != model.Code)
+            if (user.EmailConfirmationCode == model.Code)
             {
-                return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "رمز إعادة التعيين غير صحيح أو منتهي الصلاحية.");
+                user.EmailConfirmed = true;
+                user.EmailConfirmationCode = null;
+                user.EmailConfirmationCodeExpiresAt = null;
+
+                var updateResult = await _userManager.UpdateAsync(user);
+                if (!updateResult.Succeeded)
+                    return ApiResponse<string>.Error(HttpStatusCode.InternalServerError, "حدث خطأ أثناء تحديث بيانات المستخدم.");
+
+                return ApiResponse<string>.Success(null, "تم تأكيد البريد الإلكتروني بنجاح.");
             }
 
-            return ApiResponse<string>.Success("رمز التحقق صالح.");
+            return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "رمز التأكيد غير صحيح أو منتهي الصلاحية.");
         }
 
         public async Task<ApiResponse<string>> ResetPasswordAsync(ResetPasswordDto model)

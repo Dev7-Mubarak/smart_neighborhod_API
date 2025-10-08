@@ -7,6 +7,7 @@ using SmartNeighborhoodAPI.Interfaces;
 using System.Data;
 using System.Linq;
 using System.Net;
+using static SmartNeighborhoodAPI.Helpers.Router;
 
 namespace SmartNeighborhoodAPI.Services
 {
@@ -17,36 +18,51 @@ namespace SmartNeighborhoodAPI.Services
         private readonly IAuthService _authService;
         private readonly ILogger<Block> _logger;
         private readonly UserManager<AppUser> _userManager;
+        private readonly UserContextService _userContextService;
 
 
-        public BlockServices(ApplicationDbContext context, IMapper mapper, IAuthService authService, ILogger<Block> logger, UserManager<AppUser> userManager)
+        public BlockServices(ApplicationDbContext context, IMapper mapper, IAuthService authService, ILogger<Block> logger, UserManager<AppUser> userManager, UserContextService userContextService)
         {
             _context = context;
             _mapper = mapper;
             _authService = authService;
             _logger = logger;
             _userManager = userManager;
+            _userContextService = userContextService;
         }
 
         public async Task<ApiResponse<IEnumerable<RetrunBlockDto>>> GetAllAsync()
         {
-            _logger.LogInformation("Fetching all blocks");
+            var currentUser = _userContextService.GetCurrentUser();
+            _logger.LogInformation("Fetching blocks for user ID: {UserId} with role {Role}", currentUser.Id, currentUser.Role);
 
-            var blocks = await _context.Blocks
-                .Select(x => new RetrunBlockDto
+            IQueryable<Block> query = _context.Blocks.AsQueryable();
+
+            if (currentUser.Role == Role.BlockManager)
+            {
+                query = query.Where(b => b.ManagerId == currentUser.Id);
+            }
+            else if (currentUser.Role == Role.User)
+            {
+                _logger.LogWarning("User {UserId} attempted to access blocks without permission", currentUser.Id);
+                return ApiResponse<IEnumerable<RetrunBlockDto>>.Error(HttpStatusCode.Unauthorized, "ليس لديك صلاحية الوصول إلى هذه البيانات.");
+            }
+
+            var blocks = await query
+                .Select(b => new RetrunBlockDto
                 {
-                    Id = x.Id,
-                    ManagerId = x.ManagerId,
-                    Role =  _authService.GetUserRole(x.ManagerId).Result,
-                    Name = x.Name,
-                    Email = x.Manager.Email,
-                    PersonId = x.Manager.Person.Id,
-                    FullName = x.Manager.Person.FullName
+                    Id = b.Id,
+                    ManagerId = b.ManagerId,
+                    Role = currentUser.Role, 
+                    Name = b.Name,
+                    Email = currentUser.Email,
+                    PersonId = b.Manager.PersonId,
+                    FullName = b.Manager.Person.FullName
                 })
                 .AsNoTracking()
                 .ToListAsync();
 
-            _logger.LogInformation("Fetched {Count} blocks", blocks.Count);
+            _logger.LogInformation("Fetched {Count} blocks for user {UserId}", blocks.Count, currentUser.Id);
 
             string message = blocks.Any()
                 ? "تم جلب جميع البيانات بنجاح."
@@ -54,6 +70,7 @@ namespace SmartNeighborhoodAPI.Services
 
             return ApiResponse<IEnumerable<RetrunBlockDto>>.Success(blocks, message);
         }
+
         public async Task<ApiResponse<RetrunBlockDto>> ChangeManager(int id, ChangeManagerDto blockManagerDto)
         {
             _logger.LogInformation("Initiating change of block manager for BlockId: {BlockId}, PersonId: {PersonId}",
