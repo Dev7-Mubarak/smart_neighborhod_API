@@ -31,9 +31,9 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         [SwaggerOperation(Summary = "Get all conflict cases", Description = "Retrieves all conflict cases in the system.")]
         [ProducesResponseType(typeof(IEnumerable<GetConflictCaseDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetAllAsync()
+        public async Task<IActionResult> GetAllAsync([FromQuery] int? blockId)
         {
-            var result = await _conflictCaseService.GetAll();
+            var result = await _conflictCaseService.GetAll(blockId);
             return Response(result);
         }
 
