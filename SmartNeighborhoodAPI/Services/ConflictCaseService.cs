@@ -82,6 +82,12 @@ namespace SmartNeighborhoodAPI.Services
                 _logger.LogWarning("Second party not found");
                 return ApiResponse<ReturnConflictCaseDto>.Error(HttpStatusCode.NotFound, "Second party not found.");
             }
+            var blockExists = await _context.Blocks.AnyAsync(b => b.Id == conflictCaseDto.BlockId);
+            if (!blockExists)
+            {
+                _logger.LogWarning("Block not found");
+                return ApiResponse<ReturnConflictCaseDto>.Error(HttpStatusCode.NotFound, "Block not found.");
+            }
 
 
             var conflictCase = _mapper.Map<ConflictCase>(conflictCaseDto);
@@ -127,11 +133,11 @@ namespace SmartNeighborhoodAPI.Services
             _logger.LogWarning("Failed to delete ConflictCase");
             return ApiResponse<string>.Error(HttpStatusCode.NotModified, "Faild To Delete the ConfilctCases");
         }
-        public async Task<ApiResponse<IEnumerable<GetConflictCaseDto>>> GetAll()
+        public async Task<ApiResponse<IEnumerable<GetConflictCaseDto>>> GetAll(int? blockId = null)
         {
-            _logger.LogInformation("Retrieving all ConflictCases");
+            _logger.LogInformation("Retrieving all ConflictCases {BlockFilter}", blockId.HasValue ? $"for Block {blockId}" : "");
 
-            var conflictCases = await _context.ConfilctCases
+            var query = _context.ConfilctCases
                 .Include(c => c.Manager)
                     .ThenInclude(m => m.Person)
                 .Include(c => c.ConflictType)
@@ -139,19 +145,21 @@ namespace SmartNeighborhoodAPI.Services
                     .ThenInclude(fp => fp.Person)
                 .Include(c => c.SecondParty)
                     .ThenInclude(sp => sp.Person)
-                .AsNoTracking()
-                .ToListAsync();
+                .AsNoTracking();
 
-            if (conflictCases.Count > 0)
+            if (blockId.HasValue)
+                query = query.Where(c => c.BlockId == blockId.Value);
+
+            var conflictCases = await query.ToListAsync();
+
+            if (conflictCases.Count == 0)
             {
-                _logger.LogInformation("Found {Count} ConflictCases", conflictCases.Count);
-
-                var conflictCaseDtos = _mapper.Map<IEnumerable<GetConflictCaseDto>>(conflictCases);
-                return ApiResponse<IEnumerable<GetConflictCaseDto>>.Success(conflictCaseDtos);
+                _logger.LogWarning("No ConflictCases found");
+                return ApiResponse<IEnumerable<GetConflictCaseDto>>.Error(HttpStatusCode.NotFound, "No ConflictCase Found");
             }
 
-            _logger.LogWarning("No ConflictCases found");
-            return ApiResponse<IEnumerable<GetConflictCaseDto>>.Error(HttpStatusCode.NotFound, "No ConflictCase Found");
+            var conflictCaseDtos = _mapper.Map<IEnumerable<GetConflictCaseDto>>(conflictCases);
+            return ApiResponse<IEnumerable<GetConflictCaseDto>>.Success(conflictCaseDtos);
         }
         public async Task<ApiResponse<GetConflictCaseDto>> GetByIdAsync(int id)
         {
