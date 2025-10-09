@@ -26,6 +26,8 @@
         [Required(ErrorMessage = "عنوان القضية مطلوب")]
         public string Title { get; set; }
         public bool IsResolved { get; set; }
+        [Required(ErrorMessage = "رقم الحي مطلوب")]
+        public int BlockId { get; set; }
 
     }
 
