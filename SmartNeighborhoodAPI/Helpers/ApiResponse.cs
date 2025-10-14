@@ -1,10 +1,12 @@
 ﻿using System.Net;
+using System.Text.Json.Serialization;
 
 namespace SmartNeighborhoodAPI.Helpers
 {
     public class ApiResponse<T>
     {
         public bool IsSuccess { get; set; }
+        [JsonConverter(typeof(JsonNumberEnumConverter))]
         public HttpStatusCode StatusCode { get; set; }
         public string Message { get; set; }
         public T? Data { get; set; }
