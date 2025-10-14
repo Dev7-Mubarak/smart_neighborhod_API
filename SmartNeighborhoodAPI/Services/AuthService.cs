@@ -228,24 +228,25 @@ namespace SmartNeighborhoodAPI.Services
             if (user == null)
                 return ApiResponse<string>.Error(HttpStatusCode.NotFound, "المستخدم غير موجود.");
 
-            if (user.EmailConfirmed)
-                return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "تم تأكيد البريد الإلكتروني مسبقًا.");
+            if (string.IsNullOrEmpty(user.EmailConfirmationCode) || user.EmailConfirmationCodeExpiresAt == null)
+                return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "لم يتم إرسال رمز إعادة تعيين كلمة المرور.");
 
-            if (user.EmailConfirmationCode == model.Code)
-            {
-                user.EmailConfirmed = true;
-                user.EmailConfirmationCode = null;
-                user.EmailConfirmationCodeExpiresAt = null;
+            if (DateTime.UtcNow > user.EmailConfirmationCodeExpiresAt)
+                return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "انتهت صلاحية رمز إعادة تعيين كلمة المرور.");
 
-                var updateResult = await _userManager.UpdateAsync(user);
-                if (!updateResult.Succeeded)
-                    return ApiResponse<string>.Error(HttpStatusCode.InternalServerError, "حدث خطأ أثناء تحديث بيانات المستخدم.");
+            if (user.EmailConfirmationCode != model.Code)
+                return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "رمز إعادة التعيين غير صحيح.");
 
-                return ApiResponse<string>.Success(null, "تم تأكيد البريد الإلكتروني بنجاح.");
-            }
+            user.EmailConfirmationCode = null;
+            user.EmailConfirmationCodeExpiresAt = null;
 
-            return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "رمز التأكيد غير صحيح أو منتهي الصلاحية.");
+            var updateResult = await _userManager.UpdateAsync(user);
+            if (!updateResult.Succeeded)
+                return ApiResponse<string>.Error(HttpStatusCode.InternalServerError, "حدث خطأ أثناء تحديث بيانات المستخدم.");
+
+            return ApiResponse<string>.Success(null, "تم التحقق من رمز إعادة تعيين كلمة المرور بنجاح.");
         }
+
 
         public async Task<ApiResponse<string>> ResetPasswordAsync(ResetPasswordDto model)
         {
@@ -321,17 +322,24 @@ namespace SmartNeighborhoodAPI.Services
 
             var code = new Random().Next(100000, 999999).ToString();
 
-            await _userManager.RemoveAuthenticationTokenAsync(user, "Default", "ResetPasswordCode");
-            await _userManager.SetAuthenticationTokenAsync(user, "Default", "ResetPasswordCode", code);
+            user.EmailConfirmationCode = code;
+            user.EmailConfirmationCodeExpiresAt = DateTime.UtcNow.AddMinutes(10);
+
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                return ApiResponse<string>.Error(HttpStatusCode.InternalServerError, "حدث خطأ أثناء حفظ رمز التحقق.");
+            }
 
             await _emailSender.SendEmailAsync(
                 model.Email,
                 "رمز إعادة تعيين كلمة المرور",
-                $"رمز إعادة تعيين كلمة المرور الخاص بك هو: <b>{code}</b>.<br/>" +
+                $"رمز إعادة تعيين كلمة المرور الخاص بك هو: <b>{code}</b><br/>" +
                 "سينتهي صلاحيته خلال 10 دقائق.");
 
             return ApiResponse<string>.Success("تم إرسال رمز التحقق إلى بريدك الإلكتروني.");
         }
+
 
 
     }
