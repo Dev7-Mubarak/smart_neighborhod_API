@@ -256,13 +256,6 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<string>.Error(HttpStatusCode.NotFound, "المستخدم غير موجود.");
             }
 
-            var storedCode = await _userManager.GetAuthenticationTokenAsync(user, "Default", "ResetPasswordCode");
-
-            if (storedCode == null)
-            {
-                return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "رمز إعادة التعيين منتهي الصلاحية أو لم يتم التحقق منه.");
-            }
-
             if (model.NewPassword != model.ConfirmPassword)
             {
                 return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "كلمتا المرور غير متطابقتين.");
@@ -276,8 +269,6 @@ namespace SmartNeighborhoodAPI.Services
                 var errors = string.Join(", ", result.Errors.Select(e => e.Description));
                 return ApiResponse<string>.Error(HttpStatusCode.BadRequest, $"فشل في إعادة تعيين كلمة المرور: {errors}");
             }
-
-            await _userManager.RemoveAuthenticationTokenAsync(user, "Default", "ResetPasswordCode");
 
             return ApiResponse<string>.Success("تمت إعادة تعيين كلمة المرور بنجاح.");
         }
