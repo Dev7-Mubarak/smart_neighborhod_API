@@ -251,7 +251,9 @@ namespace SmartNeighborhoodAPI.Services
                 .Select(x => new HeadOfFamilyDto
                 {
                     FullName = x.Person.FullName,
-                    PhoneNumber = x.Person.PhoneNumber
+                    PhoneNumber = x.Person.PhoneNumber?? string.Empty,
+                    FirstName = x.Person.FirstName,
+                    LastName = x.Person.LastName,
                 })
                 .FirstOrDefaultAsync();
 
