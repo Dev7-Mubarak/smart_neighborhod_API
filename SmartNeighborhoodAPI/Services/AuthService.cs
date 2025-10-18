@@ -237,7 +237,7 @@ namespace SmartNeighborhoodAPI.Services
             if (user.EmailConfirmationCode != model.Code)
                 return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "رمز إعادة التعيين غير صحيح.");
 
-            user.EmailConfirmationCode = null;
+            user.EmailConfirmed = true;
             user.EmailConfirmationCodeExpiresAt = null;
 
             var updateResult = await _userManager.UpdateAsync(user);
