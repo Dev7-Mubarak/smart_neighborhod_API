@@ -118,6 +118,7 @@ namespace SmartNeighborhoodAPI.Helpers
             public const string GetById = Prefix + "/{id:int}";
             public const string Add = Prefix;
             public const string Update = Prefix + "/{id:int}";
+            public const string ChangeStatus = Prefix + "/{id:int}/status";
             public const string Delete = Prefix + "/{id:int}";
 
             // Teams

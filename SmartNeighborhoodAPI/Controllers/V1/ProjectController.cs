@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SmartNeighborhoodAPI.Entites.Enums;
 using SmartNeighborhoodAPI.Helpers.Attrbuites;
 using SmartNeighborhoodAPI.Helpers.DTOs.Project;
-using Swashbuckle.AspNetCore.Annotations;
 using SmartNeighborhoodAPI.Services;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace SmartNeighborhoodAPI.Controllers.V1
 {
@@ -63,6 +64,21 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             [FromBody, SwaggerParameter("Updated project data", Required = true)] ProjectDto dto)
         {
             return Response(await _projectService.UpdateAsync(id, dto));
+        }
+
+        [HttpPut(Router.Projects.ChangeStatus)]
+        [MapToApiVersion("1.0")]
+        [Consumes("application/json")]
+        [SwaggerOperation(Summary = "Change project Status", Description = "Change an existing project status.")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+        public async Task<IActionResult> ChangeStatusAsync(
+            [FromRoute, SwaggerParameter("Project ID", Required = true)] int id,
+            [FromBody, SwaggerParameter("Updated project status data", Required = true)] ProjectStatus projectStatus)
+        {
+            return Response(await _projectService.ChangeStatusAsync(id, projectStatus));
         }
 
         [HttpDelete(Router.Projects.Delete)]

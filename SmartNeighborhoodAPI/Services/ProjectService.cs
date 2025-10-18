@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using OurProjectSmartNeiborhood.Entites;
 using SmartNeighborhoodAPI.Entites;
+using SmartNeighborhoodAPI.Entites.Enums;
 using SmartNeighborhoodAPI.Helpers.DTOs.Families;
 using SmartNeighborhoodAPI.Helpers.DTOs.Project;
 using SmartNeighborhoodAPI.Helpers.DTOs.TeamMembers;
@@ -220,6 +221,32 @@ namespace SmartNeighborhoodAPI.Services
 
             _logger.LogError("Failed to update project with ID {ProjectId}.", id);
             return ApiResponse<string>.Error(HttpStatusCode.NotModified, "فشل في تحديث المشروع");
+        }
+        public async Task<ApiResponse<string>> ChangeStatusAsync(int id, ProjectStatus newStatus)
+        {
+            _logger.LogInformation("Starting status update for project with ID {ProjectId}.", id);
+
+            // Check if the project exists
+            var existingProject = await _context.Projects.FirstOrDefaultAsync(x => x.Id == id);
+            if (existingProject is null)
+            {
+                _logger.LogWarning("Project with ID {ProjectId} not found.", id);
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "المشروع غير موجود");
+            }
+
+            // Update only the status
+            existingProject.ProjectStatus = newStatus;
+
+            _context.Projects.Update(existingProject);
+
+            if (await _context.SaveChangesAsync() > 0)
+            {
+                _logger.LogInformation("Status for project with ID {ProjectId} updated to {Status}.", id, newStatus);
+                return ApiResponse<string>.Success("تم تحديث حالة المشروع بنجاح");
+            }
+
+            _logger.LogError("Failed to update project status for project with ID {ProjectId}.", id);
+            return ApiResponse<string>.Error(HttpStatusCode.NotModified, "فشل في تحديث حالة المشروع");
         }
 
         public async Task<ApiResponse<string>> AssignTeamToProjectAsync(int projectId, int teamId)
