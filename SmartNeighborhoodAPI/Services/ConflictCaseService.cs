@@ -30,20 +30,17 @@ namespace SmartNeighborhoodAPI.Services
             _personImagePath = $"{_webHostEnvironment.WebRootPath}{FileHelper.PersonImagesPath}";
             _userManager = userManager;
         }
-
         public async Task<ApiResponse<ReturnConflictCaseDto>> AddAsync(AddConflictCaseDto conflictCaseDto)
         {
             _logger.LogInformation("Start adding ConflictCase");
 
             string conflictCaseImage = string.Empty;
 
-
             if (conflictCaseDto.Image != null)
             {
                 _logger.LogInformation("Saving image for ConflictCase");
                 conflictCaseImage = await _imageService.SaveImageAsync(conflictCaseDto.Image, _personImagePath);
             }
-
 
             AppUser manager = null;
 
@@ -52,53 +49,47 @@ namespace SmartNeighborhoodAPI.Services
                 manager = await _userManager.FindByIdAsync(conflictCaseDto.ManagerId);
             }
 
-
             if (manager is null)
             {
                 _logger.LogWarning("Manager not found");
-                return ApiResponse<ReturnConflictCaseDto>.Error(HttpStatusCode.NotFound, "Manager not found.");
+                return ApiResponse<ReturnConflictCaseDto>.Error(HttpStatusCode.NotFound, "لم يتم العثور على المدير.");
             }
-
 
             var isConflictTypeExists = await _context.ConfilctTypes.AnyAsync(x => x.Id == conflictCaseDto.ConflictTypeId);
             if (!isConflictTypeExists)
             {
                 _logger.LogWarning("Conflict type not found");
-                return ApiResponse<ReturnConflictCaseDto>.Error(HttpStatusCode.NotFound, "Conflict type not found.");
+                return ApiResponse<ReturnConflictCaseDto>.Error(HttpStatusCode.NotFound, "نوع النزاع غير موجود.");
             }
-
 
             var firstParty = await _context.FamilyMembers.FindAsync(conflictCaseDto.FirstPartyId);
             if (firstParty is null)
             {
                 _logger.LogWarning("First party not found");
-                return ApiResponse<ReturnConflictCaseDto>.Error(HttpStatusCode.NotFound, "First party not found.");
+                return ApiResponse<ReturnConflictCaseDto>.Error(HttpStatusCode.NotFound, "الطرف الأول غير موجود.");
             }
-
 
             var secondParty = await _context.FamilyMembers.FindAsync(conflictCaseDto.SecondPartyId);
             if (secondParty is null)
             {
                 _logger.LogWarning("Second party not found");
-                return ApiResponse<ReturnConflictCaseDto>.Error(HttpStatusCode.NotFound, "Second party not found.");
+                return ApiResponse<ReturnConflictCaseDto>.Error(HttpStatusCode.NotFound, "الطرف الثاني غير موجود.");
             }
-
 
             var conflictCase = _mapper.Map<ConflictCase>(conflictCaseDto);
             conflictCase.ManagerId = manager.Id;
             conflictCase.ImagePath = conflictCaseImage;
 
-
             _context.ConfilctCases.Add(conflictCase);
             await _context.SaveChangesAsync();
-
 
             var returnDto = _mapper.Map<ReturnConflictCaseDto>(conflictCase);
             returnDto.ManagerName = manager.UserName;
 
             _logger.LogInformation("ConflictCase added successfully");
-            return ApiResponse<ReturnConflictCaseDto>.Success(returnDto, "تمت اضافة القضية بنجاح");
+            return ApiResponse<ReturnConflictCaseDto>.Success(returnDto, "تمت إضافة القضية بنجاح.");
         }
+
         public async Task<ApiResponse<string>> DeleteAsync(int id)
         {
             _logger.LogInformation("Attempting to delete ConflictCase with ID {Id}", id);
@@ -107,7 +98,7 @@ namespace SmartNeighborhoodAPI.Services
             if (entity == null)
             {
                 _logger.LogWarning("ConflictCase not found");
-                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "Confilct Case Not Found");
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "القضية غير موجودة.");
             }
 
             _context.ConfilctCases.Remove(entity);
@@ -121,12 +112,13 @@ namespace SmartNeighborhoodAPI.Services
             if (await _context.SaveChangesAsync() > 0)
             {
                 _logger.LogInformation("ConflictCase deleted successfully");
-                return ApiResponse<string>.Success("ConfilctCases Deleted Successfully");
+                return ApiResponse<string>.Success("تم حذف القضية بنجاح.");
             }
 
             _logger.LogWarning("Failed to delete ConflictCase");
-            return ApiResponse<string>.Error(HttpStatusCode.NotModified, "Faild To Delete the ConfilctCases");
+            return ApiResponse<string>.Error(HttpStatusCode.NotModified, "فشل في حذف القضية.");
         }
+
         public async Task<ApiResponse<IEnumerable<GetConflictCaseDto>>> GetAll()
         {
             _logger.LogInformation("Retrieving all ConflictCases");
@@ -145,14 +137,14 @@ namespace SmartNeighborhoodAPI.Services
             if (conflictCases.Count > 0)
             {
                 _logger.LogInformation("Found {Count} ConflictCases", conflictCases.Count);
-
                 var conflictCaseDtos = _mapper.Map<IEnumerable<GetConflictCaseDto>>(conflictCases);
-                return ApiResponse<IEnumerable<GetConflictCaseDto>>.Success(conflictCaseDtos);
+                return ApiResponse<IEnumerable<GetConflictCaseDto>>.Success(conflictCaseDtos, "تم جلب جميع القضايا بنجاح.");
             }
 
             _logger.LogWarning("No ConflictCases found");
-            return ApiResponse<IEnumerable<GetConflictCaseDto>>.Error(HttpStatusCode.NotFound, "No ConflictCase Found");
+            return ApiResponse<IEnumerable<GetConflictCaseDto>>.Error(HttpStatusCode.NotFound, "لا توجد قضايا نزاع.");
         }
+
         public async Task<ApiResponse<GetConflictCaseDto>> GetByIdAsync(int id)
         {
             _logger.LogInformation("Retrieving ConflictCase by ID {Id}", id);
@@ -168,62 +160,56 @@ namespace SmartNeighborhoodAPI.Services
             if (conflictCase == null)
             {
                 _logger.LogWarning("ConflictCase not found");
-                return ApiResponse<GetConflictCaseDto>.Error(HttpStatusCode.NotFound, "Conflict case not found.");
+                return ApiResponse<GetConflictCaseDto>.Error(HttpStatusCode.NotFound, "القضية غير موجودة.");
             }
 
             var conflictCaseDto = _mapper.Map<GetConflictCaseDto>(conflictCase);
             _logger.LogInformation("ConflictCase retrieved successfully");
-            return ApiResponse<GetConflictCaseDto>.Success(conflictCaseDto);
+            return ApiResponse<GetConflictCaseDto>.Success(conflictCaseDto, "تم جلب القضية بنجاح.");
         }
+
         public async Task<ApiResponse<string>> UpdateAsync(int id, UpdateConflictCaseDto conflictCaseDto)
         {
             _logger.LogInformation("Updating ConflictCase with ID {Id}", id);
 
-
-
             var existingConflictCase = await _context.ConfilctCases.FirstOrDefaultAsync(x => x.Id == id);
-
             if (existingConflictCase is null)
             {
                 _logger.LogWarning("ConflictCase not found");
-                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "Conflict case not found.");
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "القضية غير موجودة.");
             }
 
             if (!await _context.ConfilctTypes.AnyAsync(x => x.Id == conflictCaseDto.ConflictTypeId))
             {
                 _logger.LogWarning("Conflict type not found");
-                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "Conflict type not found.");
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "نوع النزاع غير موجود.");
             }
 
             if (!await _context.FamilyMembers.AnyAsync(x => x.Id == conflictCaseDto.FirstPartyId))
             {
                 _logger.LogWarning("First party not found");
-                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "First party not found.");
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "الطرف الأول غير موجود.");
             }
 
             if (!await _context.FamilyMembers.AnyAsync(x => x.Id == conflictCaseDto.SecondPartyId))
             {
                 _logger.LogWarning("Second party not found");
-                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "Second party not found.");
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "الطرف الثاني غير موجود.");
             }
 
             AppUser manager = null;
-
             if (!string.IsNullOrWhiteSpace(conflictCaseDto.ManagerId))
             {
                 manager = await _userManager.FindByIdAsync(conflictCaseDto.ManagerId);
             }
 
-
             if (manager == null)
             {
                 _logger.LogWarning("Manager not found during update");
-                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "Manager not found.");
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "لم يتم العثور على المدير.");
             }
 
-            _logger.LogInformation("Mapping updates to existing ConflictCase");
             _mapper.Map(conflictCaseDto, existingConflictCase);
-
             existingConflictCase.ManagerId = manager.Id;
 
             if (conflictCaseDto.Image != null)
@@ -238,18 +224,16 @@ namespace SmartNeighborhoodAPI.Services
                 existingConflictCase.ImagePath = await _imageService.SaveImageAsync(conflictCaseDto.Image, _personImagePath);
             }
 
-            _logger.LogDebug("Title after mapping: {Title}", existingConflictCase.Title);
-
             if (await _context.SaveChangesAsync() > 0)
             {
                 _logger.LogInformation("ConflictCase updated successfully");
-                return ApiResponse<string>.Success("Conflict case updated successfully.");
+                return ApiResponse<string>.Success("تم تحديث القضية بنجاح.");
             }
 
             _logger.LogWarning("Failed to update ConflictCase");
-            _logger.LogWarning("Entity state: {@Entity}", existingConflictCase);
-            return ApiResponse<string>.Error(HttpStatusCode.NotModified, "Failed to update conflict case.");
+            return ApiResponse<string>.Error(HttpStatusCode.NotModified, "فشل في تحديث القضية.");
         }
+
         public async Task<ApiResponse<IEnumerable<GetConflictCaseDto>>> GetByFamilyMemberIdAsync(int familyMemberId)
         {
             _logger.LogInformation("Checking existence of FamilyMemberId {FamilyMemberId}", familyMemberId);
@@ -286,6 +270,7 @@ namespace SmartNeighborhoodAPI.Services
             _logger.LogInformation("Found {Count} ConflictCases for FamilyMemberId {FamilyMemberId}", conflictCases.Count, familyMemberId);
             return ApiResponse<IEnumerable<GetConflictCaseDto>>.Success(conflictCaseDtos, "تم جلب النزاعات بنجاح.");
         }
+
 
     }
 }
