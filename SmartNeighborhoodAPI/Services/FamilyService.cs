@@ -367,21 +367,44 @@ namespace SmartNeighborhoodAPI.Services
         public async Task<ApiResponse<string>> DeleteAsync(int id)
         {
             _logger.LogInformation("Attempting to delete family with ID {FamilyId}", id);
-            var entity = await _context.Families.Include(x => x.FamilyMembers).FirstOrDefaultAsync(x => x.Id == id);
+
+            var entity = await _context.Families
+                .Include(f => f.FamilyMembers)
+                .FirstOrDefaultAsync(f => f.Id == id);
+
             if (entity == null)
             {
                 _logger.LogWarning("Family with ID {FamilyId} not found", id);
-                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "Family Not Found");
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "العائلة غير موجودة");
             }
 
+            // 🧹 Step 1: Get all family member IDs
+            var memberIds = entity.FamilyMembers.Select(m => m.Id).ToList();
+
+            // 🧹 Step 2: Find all related conflict cases (either as FirstParty or SecondParty)
+            var relatedConflicts = await _context.ConfilctCases
+                .Where(c => memberIds.Contains(c.FirstPartyId) || memberIds.Contains(c.SecondPartyId))
+                .ToListAsync();
+
+            // 🧹 Step 3: Delete all related conflict cases
+            if (relatedConflicts.Any())
+            {
+                _context.ConfilctCases.RemoveRange(relatedConflicts);
+            }
+
+            // 🧹 Step 4: Remove the family (EF will also delete members if cascade delete is enabled)
             _context.Families.Remove(entity);
+
+            // 🧹 Step 5: Save all changes
             if (await _context.SaveChangesAsync() <= 0)
             {
                 _logger.LogError("Failed to delete family with ID {FamilyId}", id);
-                return ApiResponse<string>.Error(HttpStatusCode.NotModified, "Failed To Delete the Family");
+                return ApiResponse<string>.Error(HttpStatusCode.NotModified, "فشل في حذف العائلة");
             }
 
-            return ApiResponse<string>.Success("Family Deleted Successfully");
+            return ApiResponse<string>.Success("تم حذف العائلة بنجاح");
         }
+
+
     }
 }
