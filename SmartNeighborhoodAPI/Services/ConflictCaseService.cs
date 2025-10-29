@@ -34,16 +34,8 @@ namespace SmartNeighborhoodAPI.Services
         {
             _logger.LogInformation("Start adding ConflictCase");
 
-            string conflictCaseImage = string.Empty;
-
-            if (conflictCaseDto.Image != null)
-            {
-                _logger.LogInformation("Saving image for ConflictCase");
-                conflictCaseImage = await _imageService.SaveImageAsync(conflictCaseDto.Image, _personImagePath);
-            }
-
+            // 1️ Check if Manager exists
             AppUser manager = null;
-
             if (!string.IsNullOrWhiteSpace(conflictCaseDto.ManagerId))
             {
                 manager = await _userManager.FindByIdAsync(conflictCaseDto.ManagerId);
@@ -55,13 +47,17 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<ReturnConflictCaseDto>.Error(HttpStatusCode.NotFound, "لم يتم العثور على المدير.");
             }
 
-            var isConflictTypeExists = await _context.ConfilctTypes.AnyAsync(x => x.Id == conflictCaseDto.ConflictTypeId);
+            // 2️ Check if ConflictType exists
+            var isConflictTypeExists = await _context.ConfilctTypes
+                .AnyAsync(x => x.Id == conflictCaseDto.ConflictTypeId);
+
             if (!isConflictTypeExists)
             {
                 _logger.LogWarning("Conflict type not found");
                 return ApiResponse<ReturnConflictCaseDto>.Error(HttpStatusCode.NotFound, "نوع النزاع غير موجود.");
             }
 
+            // 3️ Check if FirstParty exists
             var firstParty = await _context.FamilyMembers.FindAsync(conflictCaseDto.FirstPartyId);
             if (firstParty is null)
             {
@@ -69,6 +65,7 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<ReturnConflictCaseDto>.Error(HttpStatusCode.NotFound, "الطرف الأول غير موجود.");
             }
 
+            // 4️ Check if SecondParty exists
             var secondParty = await _context.FamilyMembers.FindAsync(conflictCaseDto.SecondPartyId);
             if (secondParty is null)
             {
@@ -76,19 +73,38 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<ReturnConflictCaseDto>.Error(HttpStatusCode.NotFound, "الطرف الثاني غير موجود.");
             }
 
+            // 5️ Prevent same party on both sides
+            if (conflictCaseDto.FirstPartyId == conflictCaseDto.SecondPartyId)
+            {
+                _logger.LogWarning("First and second party cannot be the same");
+                return ApiResponse<ReturnConflictCaseDto>.Error(HttpStatusCode.BadRequest, "لا يمكن أن يكون الطرف الأول والطرف الثاني نفس الشخص.");
+            }
+
+            // 6️ Save image (if exists)
+            string conflictCaseImage = string.Empty;
+            if (conflictCaseDto.Image != null)
+            {
+                _logger.LogInformation("Saving image for ConflictCase");
+                conflictCaseImage = await _imageService.SaveImageAsync(conflictCaseDto.Image, _personImagePath);
+            }
+
+            // 7️ Map DTO → Entity
             var conflictCase = _mapper.Map<ConflictCase>(conflictCaseDto);
             conflictCase.ManagerId = manager.Id;
             conflictCase.ImagePath = conflictCaseImage;
 
+            // 8️ Add and Save
             _context.ConfilctCases.Add(conflictCase);
             await _context.SaveChangesAsync();
 
+            // 9️ Map back to return DTO
             var returnDto = _mapper.Map<ReturnConflictCaseDto>(conflictCase);
             returnDto.ManagerName = manager.UserName;
 
             _logger.LogInformation("ConflictCase added successfully");
             return ApiResponse<ReturnConflictCaseDto>.Success(returnDto, "تمت إضافة القضية بنجاح.");
         }
+
 
         public async Task<ApiResponse<string>> DeleteAsync(int id)
         {

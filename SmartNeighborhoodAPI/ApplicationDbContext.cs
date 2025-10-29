@@ -46,6 +46,10 @@ namespace SmartNeighborhoodAPI
                 .HasForeignKey(c => c.SecondPartyId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            builder.Entity<ConflictCase>()
+                .Property(c => c.Notes)
+                .IsRequired(false);
+
             // Admin user seed
             var adminUserId = "aaaaaaaa-aaaa-aaaa-bbbb-aaaaaaaaaaaa";
 

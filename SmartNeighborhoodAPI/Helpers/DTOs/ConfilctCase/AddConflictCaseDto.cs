@@ -18,7 +18,7 @@
         public int SecondPartyId { get; set; }
 
         [StringLength(1000, ErrorMessage = "الملاحظات يجب ألا تتجاوز 1000 حرف")]
-        public string Notes { get; set; }
+        public string? Notes { get; set; }
         public IFormFile? Image { get; set; }
 
         [Required(ErrorMessage = "تاريخ الجلسة مطلوب")]
