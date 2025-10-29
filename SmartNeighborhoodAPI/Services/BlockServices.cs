@@ -261,13 +261,9 @@ namespace SmartNeighborhoodAPI.Services
                     _logger.LogError("Failed to delete block manager with ID: {ManagerId}", block.ManagerId);
                     return ApiResponse<string>.Error(deleteResult.StatusCode, deleteResult.Message, deleteResult.Errors);
                 }
-            }
-            else
-            {
                 _context.Blocks.Remove(block);
-                 return ApiResponse<string>.Success("تم حذف المربع بنجاح.");
+                return ApiResponse<string>.Success("تم حذف المربع بنجاح.");
             }
-
 
             return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "فشل في حذف المربع.");
         }
