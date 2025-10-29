@@ -97,6 +97,7 @@ namespace SmartNeighborhoodAPI.Services
                             "PasswordRequiresDigit" => "كلمة المرور يجب أن تحتوي على رقم.",
                             "PasswordRequiresLower" => "كلمة المرور يجب أن تحتوي على حرف صغير.",
                             "PasswordRequiresUpper" => "كلمة المرور يجب أن تحتوي على حرف كبير.",
+                            "PasswordIsRequired" => "كلمة المرور مطلوبة.",
                             _ => e.Description
                         };
 

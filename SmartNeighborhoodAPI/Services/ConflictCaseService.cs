@@ -124,26 +124,25 @@ namespace SmartNeighborhoodAPI.Services
             _logger.LogInformation("Retrieving all ConflictCases");
 
             var conflictCases = await _context.ConfilctCases
-                .Include(c => c.Manager)
-                    .ThenInclude(m => m.Person)
+                .Include(c => c.Manager).ThenInclude(m => m.Person)
                 .Include(c => c.ConflictType)
-                .Include(c => c.FirstParty)
-                    .ThenInclude(fp => fp.Person)
-                .Include(c => c.SecondParty)
-                    .ThenInclude(sp => sp.Person)
+                .Include(c => c.FirstParty).ThenInclude(fp => fp.Person)
+                .Include(c => c.SecondParty).ThenInclude(sp => sp.Person)
                 .AsNoTracking()
                 .ToListAsync();
 
-            if (conflictCases.Count > 0)
+            var conflictCaseDtos = _mapper.Map<IEnumerable<GetConflictCaseDto>>(conflictCases);
+
+            if (conflictCaseDtos.Any())
             {
-                _logger.LogInformation("Found {Count} ConflictCases", conflictCases.Count);
-                var conflictCaseDtos = _mapper.Map<IEnumerable<GetConflictCaseDto>>(conflictCases);
+                _logger.LogInformation("Found {Count} ConflictCases", conflictCaseDtos.Count());
                 return ApiResponse<IEnumerable<GetConflictCaseDto>>.Success(conflictCaseDtos, "تم جلب جميع القضايا بنجاح.");
             }
 
             _logger.LogWarning("No ConflictCases found");
-            return ApiResponse<IEnumerable<GetConflictCaseDto>>.Error(HttpStatusCode.NotFound, "لا توجد قضايا نزاع.");
+            return ApiResponse<IEnumerable<GetConflictCaseDto>>.Success(Enumerable.Empty<GetConflictCaseDto>(), "لا توجد قضايا نزاع.");
         }
+
 
         public async Task<ApiResponse<GetConflictCaseDto>> GetByIdAsync(int id)
         {
