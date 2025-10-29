@@ -14,11 +14,11 @@ namespace SmartNeighborhoodAPI.Configuration
                 Id = adminUserId,
                 UserName = "Admin",
                 NormalizedUserName = "ADMIN",
-                Email = "admin@example.com",
-                NormalizedEmail = "ADMIN@EXAMPLE.COM",
+                Email = "sys.smartneighborhood@gmail.com",
+                NormalizedEmail = "sys.smartneighborhood@gmail.com",
                 EmailConfirmed = true,
-                PersonId = 1,
-                PasswordHash = new PasswordHasher<AppUser>().HashPassword(null, "Admin@123")
+                PersonId = 9,
+                PasswordHash = new PasswordHasher<AppUser>().HashPassword(null, "Mub_12345")
             };
 
             builder.HasData(adminUser);

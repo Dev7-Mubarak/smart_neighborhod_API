@@ -60,7 +60,6 @@ namespace SmartNeighborhoodAPI.Services
 
             return ApiResponse<UserResponse>.Success(userResponse, "تم تسجيل الدخول بنجاح.");
         }
-
         public async Task<ApiResponse<UserResponse>> CreateBlockManagerAccountAsync(CreateBlockManagerDto dto)
         {
             _logger.LogInformation("Attempting to create a Block Manager for email: {Email}", dto.Email);
@@ -145,7 +144,6 @@ namespace SmartNeighborhoodAPI.Services
 
             return ApiResponse<UserResponse>.Success(userResponse, "تم تسجيل المستخدم بنجاح. تم إرسال رمز التأكيد إلى البريد الإلكتروني.");
         }
-
         public async Task<ApiResponse<UserResponse>> DeleteBlockManagerAccountByIdAsync(string managerId)
         {
             _logger.LogInformation("Deleting Block Manager with ID: {ManagerId}", managerId);
@@ -177,8 +175,6 @@ namespace SmartNeighborhoodAPI.Services
 
             return ApiResponse<UserResponse>.Success(userResponse, "تم حذف حساب مدير الحي بنجاح.");
         }
-
-
         public async Task<string?> GetUserRole(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
@@ -246,8 +242,6 @@ namespace SmartNeighborhoodAPI.Services
 
             return ApiResponse<string>.Success(null, "تم التحقق من رمز إعادة تعيين كلمة المرور بنجاح.");
         }
-
-
         public async Task<ApiResponse<string>> ResetPasswordAsync(ResetPasswordDto model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
@@ -272,7 +266,6 @@ namespace SmartNeighborhoodAPI.Services
 
             return ApiResponse<string>.Success("تمت إعادة تعيين كلمة المرور بنجاح.");
         }
-
         public async Task<ApiResponse<string>> RegisterAsync(RegisterDto model)
         {
             var existingUser = await _userManager.FindByEmailAsync(model.Email);
