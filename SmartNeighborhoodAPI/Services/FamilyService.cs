@@ -221,10 +221,10 @@ namespace SmartNeighborhoodAPI.Services
                             PhoneNumber = fm.Person.PhoneNumber,
                             DateOfBirth = fm.Person.DateOfBirth,
                             Image = string.IsNullOrEmpty(fm.Person.Image) ? null : fm.Person.Image,
-                            Gender = fm.Person.Gender.ToString(),
-                            BloodType = fm.Person.BloodType.ToString(),
-                            OccupationStatus = fm.Person.OccupationStatus.ToString(),
-                            MaritalStatus = fm.Person.MaritalStatus.ToString(),
+                            Gender = GetDisplayName(fm.Person.Gender),
+                            BloodType = GetDisplayName(fm.Person.BloodType),
+                            OccupationStatus = GetDisplayName(fm.Person.OccupationStatus),
+                            MaritalStatus = GetDisplayName(fm.Person.MaritalStatus),
                             Job = fm.Person.Job ?? "NAN"
                         }
                     }).ToList(),
@@ -406,5 +406,13 @@ namespace SmartNeighborhoodAPI.Services
         }
 
 
+        private static string GetDisplayName<T>(T enumValue)
+        {
+            var memberInfo = typeof(T).GetMember(enumValue.ToString()).FirstOrDefault();
+            var displayAttr = memberInfo?.GetCustomAttributes(typeof(DisplayAttribute), false)
+                                        .FirstOrDefault() as DisplayAttribute;
+
+            return displayAttr?.Name ?? enumValue.ToString();
+        }
     }
 }
