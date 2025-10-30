@@ -1,4 +1,5 @@
-﻿using SmartNeighborhoodAPI.Helpers.DTOs;
+﻿using OurProjectSmartNeiborhood.Entites;
+using SmartNeighborhoodAPI.Helpers.DTOs;
 using SmartNeighborhoodAPI.Helpers.DTOs.FamilyMember;
 using SmartNeighborhoodAPI.Helpers.DTOs.Person;
 using SmartNeighborhoodAPI.Interfaces;
@@ -119,18 +120,18 @@ namespace SmartNeighborhoodAPI.Services
                 Role = x.MemberFamilyRole,
                 Person = new PersonDto
                 {
-                    BloodType = x.Person.BloodType.ToString(),
+                    BloodType = GetDisplayName(x.Person.BloodType),
                     DateOfBirth = x.Person.DateOfBirth,
                     FullName = x.Person.FullName,
                     FirstName = x.Person.FirstName,
                     SecondName = x.Person.SecondName,
                     ThirdName = x.Person.ThirdName,
                     LastName = x.Person.LastName,
-                    Gender = x.Person.Gender.ToString(),
+                    Gender = GetDisplayName(x.Person.Gender),
                     Id = x.Person.Id,
                     Image = x.Person.Image,
-                    MaritalStatus = x.Person.MaritalStatus.ToString(),
-                    OccupationStatus = x.Person.OccupationStatus.ToString(),
+                    MaritalStatus = GetDisplayName(x.Person.MaritalStatus),
+                    OccupationStatus = GetDisplayName(x.Person.OccupationStatus),
                     PhoneNumber = x.Person.PhoneNumber,
                     Job = x.Person.Job ?? "NAN",
                 }
@@ -198,6 +199,15 @@ namespace SmartNeighborhoodAPI.Services
             return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "Faild To Update FamilyMember");
 
 
+        }
+
+        private static string GetDisplayName<T>(T enumValue)
+        {
+            var memberInfo = typeof(T).GetMember(enumValue.ToString()).FirstOrDefault();
+            var displayAttr = memberInfo?.GetCustomAttributes(typeof(DisplayAttribute), false)
+                                        .FirstOrDefault() as DisplayAttribute;
+
+            return displayAttr?.Name ?? enumValue.ToString();
         }
     }
 }
