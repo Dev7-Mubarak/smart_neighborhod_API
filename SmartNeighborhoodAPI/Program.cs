@@ -73,6 +73,7 @@ builder.Services.AddScoped<FamilyMemberService>();
 builder.Services.AddScoped<TeamRoleService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<UserContextService>();
+builder.Services.AddScoped<IContactService,ContactService>();
 
 
 
