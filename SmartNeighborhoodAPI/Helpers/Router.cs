@@ -215,6 +215,15 @@ namespace SmartNeighborhoodAPI.Helpers
 
             public const string ConfirmEmailOtp = Prefix + "/confirm-email-otp";
         }
+        public static class Contacts
+        {
+            public const string Prefix = Rule + "contacts";
+            public const string GetAllByAuthority = Rule + "authorities/{authorityId:int}/contacts";
+            public const string GetById = Prefix + "/{id:int}";
+            public const string AddToAuthority = Rule + "authorities/{authorityId:int}/contacts";
+            public const string Update = Prefix + "/{id:int}";
+            public const string Delete = Prefix + "/{id:int}";
+        }
     }
 
 }
