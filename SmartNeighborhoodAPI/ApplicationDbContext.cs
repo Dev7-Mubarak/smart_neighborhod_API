@@ -69,6 +69,9 @@ namespace SmartNeighborhoodAPI
             builder.Entity<AppUser>().HasData(adminUser);
 
         }
+        public DbSet<Contact> Contacts { get; set; }
+
+        public DbSet<Authority> Authorities { get; set; }
 
         public DbSet<Person> People { get; set; }
         public DbSet<Family> Families { get; set; }
