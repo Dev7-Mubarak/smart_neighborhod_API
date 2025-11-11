@@ -19,7 +19,15 @@ namespace SmartNeighborhoodAPI.Helpers
             public const string Update = Prefix + "/{id:int}";
             public const string Delete = Prefix + "/{id:int}";
         }
-
+        public static class Authorities
+        {
+            public const string Prefix = Rule + "authorities";
+            public const string GetAll = Prefix;
+            public const string GetById = Prefix + "/{id:int}";
+            public const string Add = Prefix;
+            public const string Update = Prefix + "/{id:int}";
+            public const string Delete = Prefix + "/{id:int}";
+        }
         public static class ConflictCaseTypes
         {
             public const string Prefix = Rule + "conflict-case-type";
