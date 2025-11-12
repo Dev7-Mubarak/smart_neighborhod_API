@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SmartNeighborhoodAPI.Controllers.V1;
 using SmartNeighborhoodAPI.Helpers.DTOs.Auth;
 using SmartNeighborhoodAPI.Interfaces;
 using static SmartNeighborhoodAPI.Helpers.Router;
 
-namespace SmartNeighborhoodAPI.Controllers
+namespace SmartNeighborhoodAPI.Controllers.V1
 {
     public class GovernmentInstitutionsController : AppControllerBase
     {
