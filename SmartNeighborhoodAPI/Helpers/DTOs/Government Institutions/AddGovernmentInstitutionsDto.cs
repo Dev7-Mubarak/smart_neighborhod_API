@@ -2,7 +2,7 @@
 
 namespace SmartNeighborhoodAPI.Helpers.DTOs
 {
-    public class AddAuthorityDto
+    public class AddGovernmentInstitutionsDto
     {
         [Required]
         [MaxLength(255)]

@@ -5,6 +5,7 @@ using OurProjectSmartNeiborhood.Configuration;
 using SmartNeighborhoodAPI.Configuration;
 using SmartNeighborhoodAPI.Entites;
 using System.Reflection.Emit;
+using static SmartNeighborhoodAPI.Helpers.Router;
 
 
 namespace SmartNeighborhoodAPI
@@ -71,7 +72,7 @@ namespace SmartNeighborhoodAPI
         }
         public DbSet<Contact> Contacts { get; set; }
 
-        public DbSet<Authority> Authorities { get; set; }
+        public DbSet<GovernmentInstitution> GovernmentInstitutions { get; set; }
 
         public DbSet<Person> People { get; set; }
         public DbSet<Family> Families { get; set; }

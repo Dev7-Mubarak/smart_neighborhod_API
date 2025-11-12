@@ -1,7 +1,9 @@
 ﻿
+using SmartNeighborhoodAPI.Helpers.DTOs.Contact;
+
 namespace SmartNeighborhoodAPI.Helpers.DTOs.Auth
 {
-    public class GetAuthorityDto
+    public class GetGovernmentInstitutionsDto
     {
         public int Id { get; set; }
         public string Name { get; set; } = null!;

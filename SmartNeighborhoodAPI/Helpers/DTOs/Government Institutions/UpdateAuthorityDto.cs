@@ -2,7 +2,7 @@
 
 namespace SmartNeighborhoodAPI.Helpers.DTOs.Auth
 {
-    public class UpdateAuthorityDto : AddAuthorityDto
+    public class UpdateAuthorityDto : AddGovernmentInstitutionsDto
     {
 
     }

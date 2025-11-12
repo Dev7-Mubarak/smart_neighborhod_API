@@ -1,6 +1,6 @@
 ﻿namespace SmartNeighborhoodAPI.Entites
 {
-    public class Authority
+    public class GovernmentInstitution
     {
         public int Id { get; set; }
         public string Name { get; set; } = null!;
