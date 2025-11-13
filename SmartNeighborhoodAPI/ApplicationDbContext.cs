@@ -70,7 +70,7 @@ namespace SmartNeighborhoodAPI
             builder.Entity<AppUser>().HasData(adminUser);
 
         }
-        public DbSet<Contact> Contacts { get; set; }
+        public DbSet<GovernmentInstitutionContact> GovernmentInstitutionContact { get; set; }
 
         public DbSet<GovernmentInstitution> GovernmentInstitutions { get; set; }
 
