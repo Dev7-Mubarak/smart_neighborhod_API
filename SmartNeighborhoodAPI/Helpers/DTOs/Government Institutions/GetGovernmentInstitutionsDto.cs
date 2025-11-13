@@ -1,5 +1,5 @@
 ﻿
-using SmartNeighborhoodAPI.Helpers.DTOs.Contact;
+using SmartNeighborhoodAPI.Helpers.DTOs.Government_InstitutionsContacts;
 
 namespace SmartNeighborhoodAPI.Helpers.DTOs.Auth
 {
@@ -7,6 +7,6 @@ namespace SmartNeighborhoodAPI.Helpers.DTOs.Auth
     {
         public int Id { get; set; }
         public string Name { get; set; } = null!;
-        public IEnumerable<GetContactDto> Contacts { get; set; } = Array.Empty<GetContactDto>();
+        public IEnumerable<GetGovernmentInstitutionContactDto> GovernmentInstitutionContacts { get; set; } = Array.Empty<GetGovernmentInstitutionContactDto>();
     }
 }

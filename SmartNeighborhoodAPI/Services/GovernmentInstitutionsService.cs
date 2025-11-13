@@ -1,6 +1,6 @@
 ﻿using SmartNeighborhoodAPI.Entites;
 using SmartNeighborhoodAPI.Helpers.DTOs.Auth;
-using SmartNeighborhoodAPI.Helpers.DTOs.Contact;
+using SmartNeighborhoodAPI.Helpers.DTOs.Government_InstitutionsContacts;
 using SmartNeighborhoodAPI.Interfaces;
 using System.Net;
 
@@ -27,10 +27,10 @@ namespace SmartNeighborhoodAPI.Services
                 {
                     Id = a.Id,
                     Name = a.Name,
-                    Contacts = a.Contacts.Select(p => new GetContactDto
+                    GovernmentInstitutionContacts = a.GovernmentInstitutionContacts.Select(p => new GetGovernmentInstitutionContactDto
                     {
                         Id = p.Id,
-                        AuthorityId = a.Id,
+                        GovernmentInstitutionId = a.Id,
                         Name = p.Name,
                         Job = p.Job,
                         Phone = p.Phone
@@ -56,10 +56,10 @@ namespace SmartNeighborhoodAPI.Services
                 {
                     Id = a.Id,
                     Name = a.Name,
-                    Contacts = a.Contacts.Select(p => new GetContactDto
+                    GovernmentInstitutionContacts = a.GovernmentInstitutionContacts.Select(p => new GetGovernmentInstitutionContactDto
                     {
                         Id = p.Id,
-                        AuthorityId = a.Id,
+                        GovernmentInstitutionId = a.Id,
                         Name = p.Name,
                         Job = p.Job,
                         Phone = p.Phone
@@ -89,7 +89,7 @@ namespace SmartNeighborhoodAPI.Services
             _context.GovernmentInstitutions.Add(authority);
             await _context.SaveChangesAsync(ct);
 
-            var result = new GetGovernmentInstitutionsDto { Id = authority.Id, Name = authority.Name, Contacts = Array.Empty<GetContactDto>() };
+            var result = new GetGovernmentInstitutionsDto { Id = authority.Id, Name = authority.Name, GovernmentInstitutionContacts = Array.Empty<GetGovernmentInstitutionContactDto>() };
             return ApiResponse<GetGovernmentInstitutionsDto>.Success(result, "تمت إضافة الجهة بنجاح");
         }
 
@@ -113,11 +113,11 @@ namespace SmartNeighborhoodAPI.Services
         public async Task<ApiResponse<string>> DeleteAuthorityAsync(int id, CancellationToken ct = default)
         {
             _logger.LogInformation("حذف جهة");
-            var authority = await _context.GovernmentInstitutions.Include(a => a.Contacts).FirstOrDefaultAsync(a => a.Id == id, ct);
+            var authority = await _context.GovernmentInstitutions.Include(a => a.GovernmentInstitutionContacts).FirstOrDefaultAsync(a => a.Id == id, ct);
             if (authority == null)
                 return ApiResponse<string>.Error(HttpStatusCode.NotFound, "لم يتم العثور على الجهة");
 
-            if (authority.Contacts.Any())
+            if (authority.GovernmentInstitutionContacts.Any())
                 return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "لا يمكن حذف الجهة لأنها تحتوي على أشخاص. قم بحذف الأشخاص أولاً.");
 
             _context.GovernmentInstitutions.Remove(authority);
