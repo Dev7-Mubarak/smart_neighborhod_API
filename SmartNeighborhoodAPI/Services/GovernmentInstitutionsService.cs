@@ -17,11 +17,11 @@ namespace SmartNeighborhoodAPI.Services
             _logger = logger;
         }
 
-        public async Task<ApiResponse<PaginatedResult<GetGovernmentInstitutionsDto>>> GetAllAuthoritiesAsync(int page = 1, int pageSize = 10, CancellationToken ct = default)
+        public async Task<ApiResponse<IEnumerable<GetGovernmentInstitutionsDto>>> GetAllAuthoritiesAsync(CancellationToken ct = default)
         {
             _logger.LogInformation("جلب جميع الجهات");
 
-            var query = _context.GovernmentInstitutions
+            var institutions = await _context.GovernmentInstitutions
                 .AsNoTracking()
                 .Select(a => new GetGovernmentInstitutionsDto
                 {
@@ -34,17 +34,16 @@ namespace SmartNeighborhoodAPI.Services
                         Name = p.Name,
                         Job = p.Job,
                         Phone = p.Phone
-                    })
-                });
+                    }).ToList()
+                })
+                .ToListAsync(ct);
 
-            var totalCount = await query.CountAsync(ct);
-            var items = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync(ct);
+            if (institutions == null || !institutions.Any())
+                return ApiResponse<IEnumerable<GetGovernmentInstitutionsDto>>
+                    .Error(HttpStatusCode.NotFound, "لم يتم العثور على جهات");
 
-            if (!items.Any())
-                return ApiResponse<PaginatedResult<GetGovernmentInstitutionsDto>>.Error(HttpStatusCode.NotFound, "لم يتم العثور على جهات");
-
-            var response = PaginatedResult<GetGovernmentInstitutionsDto>.Success(items, totalCount, page, pageSize);
-            return ApiResponse<PaginatedResult<GetGovernmentInstitutionsDto>>.Success(response, $"تم جلب الجهات بنجاح. الصفحة {page} من {response.TotalPages}.");
+            return ApiResponse<IEnumerable<GetGovernmentInstitutionsDto>>
+                .Success(institutions, "تم جلب الجهات بنجاح.");
         }
 
         public async Task<ApiResponse<GetGovernmentInstitutionsDto>> GetAuthorityByIdAsync(int id, CancellationToken ct = default)

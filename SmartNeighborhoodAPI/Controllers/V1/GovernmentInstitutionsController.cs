@@ -15,9 +15,9 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         }
 
         [HttpGet(GovernmentInstitutions.GetAll)]
-        public async Task<IActionResult> GetAllAsync([FromQuery] int page = 1, [FromQuery] int pageSize = 10, CancellationToken ct = default)
+        public async Task<IActionResult> GetAllAsync(CancellationToken ct = default)
         {
-            var result = await _authorityService.GetAllAuthoritiesAsync(page, pageSize, ct);
+            var result = await _authorityService.GetAllAuthoritiesAsync(ct);
             return Response(result);
         }
 
