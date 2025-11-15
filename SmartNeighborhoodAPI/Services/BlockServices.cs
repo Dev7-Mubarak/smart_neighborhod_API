@@ -19,9 +19,10 @@ namespace SmartNeighborhoodAPI.Services
         private readonly ILogger<Block> _logger;
         private readonly UserManager<AppUser> _userManager;
         private readonly UserContextService _userContextService;
+        private readonly IHierarchyService _hierarchyService;
 
 
-        public BlockServices(ApplicationDbContext context, IMapper mapper, IAuthService authService, ILogger<Block> logger, UserManager<AppUser> userManager, UserContextService userContextService)
+        public BlockServices(ApplicationDbContext context, IMapper mapper, IAuthService authService, ILogger<Block> logger, UserManager<AppUser> userManager, UserContextService userContextService,IHierarchyService hierarchyService)
         {
             _context = context;
             _mapper = mapper;
@@ -29,6 +30,7 @@ namespace SmartNeighborhoodAPI.Services
             _logger = logger;
             _userManager = userManager;
             _userContextService = userContextService;
+            _hierarchyService = hierarchyService;
         }
 
         public async Task<ApiResponse<IEnumerable<RetrunBlockDto>>> GetAllAsync()
@@ -36,63 +38,31 @@ namespace SmartNeighborhoodAPI.Services
             var currentUser = _userContextService.GetCurrentUser();
             _logger.LogInformation("Fetching blocks for user ID: {UserId} with role {Role}", currentUser.Id, currentUser.Role);
 
-            IQueryable<Block> query = _context.Blocks.AsQueryable();
-
-            if (currentUser.Role == Role.BlockManager)
-            {
-                var rootBlockIds = await _context.Blocks
-                    .Where(b => b.ManagerId == currentUser.Id)
-                    .Select(b => b.Id)
-                    .ToListAsync();
-
-                if (!rootBlockIds.Any())
-                {
-                    _logger.LogInformation("Block manager {UserId} has no managed blocks.", currentUser.Id);
-                    return ApiResponse<IEnumerable<RetrunBlockDto>>
-                        .Success(Enumerable.Empty<RetrunBlockDto>(), "لا توجد بيانات متاحة.");
-                }
-
-         
-                var flatBlocks = await _context.Blocks
-                    .Select(b => new { b.Id, b.ParentBlockId })
-                    .ToListAsync();
-
-                var allowedIds = new HashSet<int>(rootBlockIds);
-                var queue = new Queue<int>(rootBlockIds);
-
-                while (queue.Count > 0)
-                {
-                    var currentId = queue.Dequeue();
-
-                    var children = flatBlocks
-                        .Where(x => x.ParentBlockId == currentId)
-                        .Select(x => x.Id);
-
-                    foreach (var childId in children)
-                    {
-                        if (allowedIds.Add(childId))
-                            queue.Enqueue(childId);
-                    }
-                }
-
-                query = _context.Blocks.Where(b => allowedIds.Contains(b.Id));
-            }
-            else if (currentUser.Role == Role.User)
+            if (currentUser.Role == Role.User)
             {
                 _logger.LogWarning("User {UserId} attempted to access blocks without permission", currentUser.Id);
-                return ApiResponse<IEnumerable<RetrunBlockDto>>.Error(
-                    HttpStatusCode.Unauthorized,
-                    "ليس لديك صلاحية الوصول إلى هذه البيانات.");
+                return ApiResponse<IEnumerable<RetrunBlockDto>>
+                    .Error(HttpStatusCode.Unauthorized, "ليس لديك صلاحية الوصول إلى هذه البيانات.");
             }
 
-            var blocks = await query
+            var allowedBlockIds = await _hierarchyService.GetAllowedBlockIdsAsync();
+
+            if (!allowedBlockIds.Any())
+            {
+                _logger.LogInformation("User {UserId} has no blocks in hierarchy.", currentUser.Id);
+                return ApiResponse<IEnumerable<RetrunBlockDto>>
+                    .Success(Enumerable.Empty<RetrunBlockDto>(), "لا توجد بيانات متاحة.");
+            }
+
+            var blocks = await _context.Blocks
+                .Where(b => allowedBlockIds.Contains(b.Id))
                 .Select(b => new RetrunBlockDto
                 {
                     Id = b.Id,
                     ManagerId = b.ManagerId,
                     Role = currentUser.Role,
                     Name = b.Name,
-                    Email = currentUser.Email,
+                    Email = b.Manager.Email,
                     PersonId = b.Manager.PersonId,
                     FullName = b.Manager.Person.FullName
                 })
@@ -107,6 +77,7 @@ namespace SmartNeighborhoodAPI.Services
 
             return ApiResponse<IEnumerable<RetrunBlockDto>>.Success(blocks, message);
         }
+}
 
 
         public async Task<ApiResponse<RetrunBlockDto>> ChangeManager(int id, ChangeManagerDto blockManagerDto)
