@@ -40,12 +40,49 @@ namespace SmartNeighborhoodAPI.Services
 
             if (currentUser.Role == Role.BlockManager)
             {
-                query = query.Where(b => b.ManagerId == currentUser.Id);
+                var rootBlockIds = await _context.Blocks
+                    .Where(b => b.ManagerId == currentUser.Id)
+                    .Select(b => b.Id)
+                    .ToListAsync();
+
+                if (!rootBlockIds.Any())
+                {
+                    _logger.LogInformation("Block manager {UserId} has no managed blocks.", currentUser.Id);
+                    return ApiResponse<IEnumerable<RetrunBlockDto>>
+                        .Success(Enumerable.Empty<RetrunBlockDto>(), "لا توجد بيانات متاحة.");
+                }
+
+         
+                var flatBlocks = await _context.Blocks
+                    .Select(b => new { b.Id, b.ParentBlockId })
+                    .ToListAsync();
+
+                var allowedIds = new HashSet<int>(rootBlockIds);
+                var queue = new Queue<int>(rootBlockIds);
+
+                while (queue.Count > 0)
+                {
+                    var currentId = queue.Dequeue();
+
+                    var children = flatBlocks
+                        .Where(x => x.ParentBlockId == currentId)
+                        .Select(x => x.Id);
+
+                    foreach (var childId in children)
+                    {
+                        if (allowedIds.Add(childId))
+                            queue.Enqueue(childId);
+                    }
+                }
+
+                query = _context.Blocks.Where(b => allowedIds.Contains(b.Id));
             }
             else if (currentUser.Role == Role.User)
             {
                 _logger.LogWarning("User {UserId} attempted to access blocks without permission", currentUser.Id);
-                return ApiResponse<IEnumerable<RetrunBlockDto>>.Error(HttpStatusCode.Unauthorized, "ليس لديك صلاحية الوصول إلى هذه البيانات.");
+                return ApiResponse<IEnumerable<RetrunBlockDto>>.Error(
+                    HttpStatusCode.Unauthorized,
+                    "ليس لديك صلاحية الوصول إلى هذه البيانات.");
             }
 
             var blocks = await query
@@ -53,7 +90,7 @@ namespace SmartNeighborhoodAPI.Services
                 {
                     Id = b.Id,
                     ManagerId = b.ManagerId,
-                    Role = currentUser.Role, 
+                    Role = currentUser.Role,
                     Name = b.Name,
                     Email = currentUser.Email,
                     PersonId = b.Manager.PersonId,
@@ -70,6 +107,7 @@ namespace SmartNeighborhoodAPI.Services
 
             return ApiResponse<IEnumerable<RetrunBlockDto>>.Success(blocks, message);
         }
+
 
         public async Task<ApiResponse<RetrunBlockDto>> ChangeManager(int id, ChangeManagerDto blockManagerDto)
         {
