@@ -16,12 +16,16 @@ namespace SmartNeighborhoodAPI.Services
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
         private readonly ILogger<Project> _logger;
+        private readonly UserContextService _userContextService;
+        private readonly IHierarchyService _hierarchyService;
 
-        public ProjectService(ApplicationDbContext context, IMapper mapper, ILogger<Project> logger)
+        public ProjectService(ApplicationDbContext context, IMapper mapper, ILogger<Project> logger, UserContextService userContextService, IHierarchyService hierarchyService)
         {
             _context = context;
             _mapper = mapper;
             _logger = logger;
+            _userContextService = userContextService;
+            _hierarchyService = hierarchyService;
         }
         public async Task<ApiResponse<ReturnProjectDto>> AddAsync(ProjectDto projectDto)
         {
@@ -91,17 +95,39 @@ namespace SmartNeighborhoodAPI.Services
             _logger.LogError("Delete failed: SaveChanges returned 0 for Project ID {ProjectId}.", id);
             return ApiResponse<string>.Error(HttpStatusCode.NotModified, "فشل حذف المشروع");
         }
-
         public async Task<ApiResponse<IEnumerable<ReturnProjectDto>>> GetAll(int? ProjectCategoryId)
         {
-            _logger.LogInformation("Fetching all Projects{CategoryFilter}",
-                ProjectCategoryId.HasValue ? $" with CategoryId = {ProjectCategoryId}" : "");
+            var currentUser = _userContextService.GetCurrentUser();
 
+            _logger.LogInformation("Fetching Projects{CategoryFilter} for user {UserId} with role {Role}",
+                ProjectCategoryId.HasValue ? $" with CategoryId = {ProjectCategoryId}" : "",
+                currentUser.Id,
+                currentUser.Role);
+
+            // base query
             var query = _context.Projects
                 .Include(x => x.ProjectCatogory)
                 .Include(x => x.Manager)
                 .AsNoTracking()
                 .AsQueryable();
+
+            if (currentUser.Role == Role.User)
+            {
+                _logger.LogWarning("User {UserId} attempted to access Projects without permission", currentUser.Id);
+                return ApiResponse<IEnumerable<ReturnProjectDto>>
+                    .Error(HttpStatusCode.Unauthorized, "ليس لديك صلاحية الوصول إلى هذه البيانات.");
+            }
+
+            var allowedBlockIds = await _hierarchyService.GetAllowedBlockIdsAsync();
+
+            if (!allowedBlockIds.Any())
+            {
+                _logger.LogInformation("User {UserId} has no blocks in hierarchy.", currentUser.Id);
+                return ApiResponse<IEnumerable<ReturnProjectDto>>
+                    .Success(Enumerable.Empty<ReturnProjectDto>(), "لا توجد مشاريع");
+            }
+
+            query = query.Where(p => allowedBlockIds.Contains(p.BlockId));
 
             if (ProjectCategoryId.HasValue)
             {
@@ -110,32 +136,40 @@ namespace SmartNeighborhoodAPI.Services
 
             var projects = await query.ToListAsync();
 
-            if (projects.Count > 0)
+            if (projects.Count == 0)
             {
-                var projectDtos = projects.Select(project => new ReturnProjectDto
-                {
-                    Id = project.Id,
-                    Name = project.Name,
-                    Description = project.Description,
-                    StartDate = project.StartDate,
-                    EndDate = project.EndDate,
-                    ProjectStatus = GetDisplayName(project.ProjectStatus),
-                    ProjectPriority = GetDisplayName(project.ProjectPriority),
-                    Budget = project.Budget,
-                    Manager = new CustomPersonDto { Id = project.Manager.Id, FullName = project.Manager.FullName },
-                    ProjectCatgory = project.ProjectCatogory
-                }).ToList();
+                _logger.LogWarning("No projects found{Filter} for user {UserId}.",
+                    ProjectCategoryId.HasValue ? $" for CategoryId {ProjectCategoryId}" : "",
+                    currentUser.Id);
 
-                _logger.LogInformation("Retrieved {Count} projects successfully.", projectDtos.Count);
-
-                return ApiResponse<IEnumerable<ReturnProjectDto>>.Success(projectDtos);
+                return ApiResponse<IEnumerable<ReturnProjectDto>>
+                    .Error(HttpStatusCode.NotFound, "لا توجد مشاريع");
             }
 
-            _logger.LogWarning("No projects found{Filter}.",
-                ProjectCategoryId.HasValue ? $" for CategoryId {ProjectCategoryId}" : "");
+            var projectDtos = projects.Select(project => new ReturnProjectDto
+            {
+                Id = project.Id,
+                Name = project.Name,
+                Description = project.Description,
+                StartDate = project.StartDate,
+                EndDate = project.EndDate,
+                ProjectStatus = GetDisplayName(project.ProjectStatus),
+                ProjectPriority = GetDisplayName(project.ProjectPriority),
+                Budget = project.Budget,
+                Manager = new CustomPersonDto
+                {
+                    Id = project.Manager.Id,
+                    FullName = project.Manager.FullName
+                },
+                ProjectCatgory = project.ProjectCatogory
+            }).ToList();
 
-            return ApiResponse<IEnumerable<ReturnProjectDto>>.Error(HttpStatusCode.NotFound, "لا توجد مشاريع");
+            _logger.LogInformation("Retrieved {Count} projects successfully for user {UserId}.",
+                projectDtos.Count, currentUser.Id);
+
+            return ApiResponse<IEnumerable<ReturnProjectDto>>.Success(projectDtos);
         }
+
 
         public async Task<ApiResponse<ReturnProjectDto>> GetByIdAsync(int id)
         {
