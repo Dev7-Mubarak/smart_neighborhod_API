@@ -27,6 +27,13 @@ namespace SmartNeighborhoodAPI
             builder.ApplyConfiguration(new IdentityUserRoleSeedConfiguration());
             builder.ApplyConfiguration(new ProjectCatgoryEntityTypeConfiguration());
             builder.ApplyConfiguration(new ProjectConfiguration());
+            base.OnModelCreating(builder);
+
+            builder.Entity<Block>()
+                .HasOne(b => b.ParentBlock)           
+                .WithMany(b => b.ChildBlocks)          
+                .HasForeignKey(b => b.ParentBlockId)   
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<TeamRole>().HasData(
                    new TeamRole { Id = 1, Name = "مدير المشروع"},
