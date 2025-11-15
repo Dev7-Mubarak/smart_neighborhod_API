@@ -34,12 +34,14 @@ namespace SmartNeighborhoodAPI.Services
                 .ToListAsync();
 
             if (!rootBlockIds.Any())
-                return new HashSet<int>();
+                return new Hashset<int>();
 
+            // 2) Flat list of all blocks (Id + ParentBlockId)
             var flatBlocks = await _context.Blocks
                 .Select(b => new { b.Id, b.ParentBlockId })
                 .ToListAsync();
 
+            // 3) BFS to collect all descendants
             var allowedBlockIds = new HashSet<int>(rootBlockIds);
             var queue = new Queue<int>(rootBlockIds);
 

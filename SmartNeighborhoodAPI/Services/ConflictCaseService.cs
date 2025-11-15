@@ -10,26 +10,74 @@ using System.Net;
 
 namespace SmartNeighborhoodAPI.Services
 {
-    public class ConflictCaseService : IConflictCaseService
+    public class ConflictCaseService
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserContextService _userContextService;
+        private readonly IHierarchyService _hierarchyService;
         private readonly IMapper _mapper;
-        private readonly IWebHostEnvironment _webHostEnvironment;
-        private readonly ImageService _imageService;
         private readonly ILogger<ConflictCaseService> _logger;
-        private string _personImagePath;
-        private readonly UserManager<AppUser> _userManager;
 
-        public ConflictCaseService(UserManager<AppUser> userManager, ApplicationDbContext context, IMapper mapper, IWebHostEnvironment webHostEnvironment, ImageService imageService, ILogger<ConflictCaseService> logger)
+        public ConflictCaseService(
+            ApplicationDbContext context,
+            UserContextService userContextService,
+            IHierarchyService hierarchyService,
+            IMapper mapper,
+            ILogger<ConflictCaseService> logger)
         {
             _context = context;
+            _userContextService = userContextService;
+            _hierarchyService = hierarchyService;
             _mapper = mapper;
-            _webHostEnvironment = webHostEnvironment;
-            _imageService = imageService;
             _logger = logger;
-            _personImagePath = $"{_webHostEnvironment.WebRootPath}{FileHelper.PersonImagesPath}";
-            _userManager = userManager;
         }
+
+        public async Task<ApiResponse<IEnumerable<GetConflictCaseDto>>> GetAll()
+        {
+            var currentUser = _userContextService.GetCurrentUser();
+            _logger.LogInformation("Retrieving ConflictCases for user {UserId} with role {Role}", currentUser.Id, currentUser.Role);
+
+            if (currentUser.Role == Role.User)
+            {
+                _logger.LogWarning("User {UserId} attempted to access ConflictCases without permission", currentUser.Id);
+                return ApiResponse<IEnumerable<GetConflictCaseDto>>
+                    .Error(HttpStatusCode.Unauthorized, "ليس لديك صلاحية الوصول إلى هذه البيانات.");
+            }
+
+            IQueryable<ConflictCase> query = _context.ConfilctCases
+                .Include(c => c.Manager).ThenInclude(m => m.Person)
+                .Include(c => c.ConflictType)
+                .Include(c => c.FirstParty).ThenInclude(fp => fp.Person)
+                .Include(c => c.SecondParty).ThenInclude(sp => sp.Person)
+                .AsNoTracking();
+
+            var allowedBlockIds = await _hierarchyService.GetAllowedBlockIdsAsync();
+
+            if (!allowedBlockIds.Any())
+            {
+                _logger.LogInformation("User {UserId} has no blocks in hierarchy.", currentUser.Id);
+                return ApiResponse<IEnumerable<GetConflictCaseDto>>
+                    .Success(Enumerable.Empty<GetConflictCaseDto>(), "لا توجد قضايا نزاع.");
+            }
+
+            query = query.Where(c => allowedBlockIds.Contains(c.BlockId));
+
+            var conflictCases = await query.ToListAsync();
+            var conflictCaseDtos = _mapper.Map<IEnumerable<GetConflictCaseDto>>(conflictCases);
+
+            if (conflictCaseDtos.Any())
+            {
+                _logger.LogInformation("Found {Count} ConflictCases", conflictCaseDtos.Count());
+                return ApiResponse<IEnumerable<GetConflictCaseDto>>
+                    .Success(conflictCaseDtos, "تم جلب جميع القضايا بنجاح.");
+            }
+
+            _logger.LogWarning("No ConflictCases found");
+            return ApiResponse<IEnumerable<GetConflictCaseDto>>
+                .Success(Enumerable.Empty<GetConflictCaseDto>(), "لا توجد قضايا نزاع.");
+        }
+}
+
         public async Task<ApiResponse<ReturnConflictCaseDto>> AddAsync(AddConflictCaseDto conflictCaseDto)
         {
             _logger.LogInformation("Start adding ConflictCase");
@@ -135,29 +183,7 @@ namespace SmartNeighborhoodAPI.Services
             return ApiResponse<string>.Error(HttpStatusCode.NotModified, "فشل في حذف القضية.");
         }
 
-        public async Task<ApiResponse<IEnumerable<GetConflictCaseDto>>> GetAll()
-        {
-            _logger.LogInformation("Retrieving all ConflictCases");
-
-            var conflictCases = await _context.ConfilctCases
-                .Include(c => c.Manager).ThenInclude(m => m.Person)
-                .Include(c => c.ConflictType)
-                .Include(c => c.FirstParty).ThenInclude(fp => fp.Person)
-                .Include(c => c.SecondParty).ThenInclude(sp => sp.Person)
-                .AsNoTracking()
-                .ToListAsync();
-
-            var conflictCaseDtos = _mapper.Map<IEnumerable<GetConflictCaseDto>>(conflictCases);
-
-            if (conflictCaseDtos.Any())
-            {
-                _logger.LogInformation("Found {Count} ConflictCases", conflictCaseDtos.Count());
-                return ApiResponse<IEnumerable<GetConflictCaseDto>>.Success(conflictCaseDtos, "تم جلب جميع القضايا بنجاح.");
-            }
-
-            _logger.LogWarning("No ConflictCases found");
-            return ApiResponse<IEnumerable<GetConflictCaseDto>>.Success(Enumerable.Empty<GetConflictCaseDto>(), "لا توجد قضايا نزاع.");
-        }
+      
 
 
         public async Task<ApiResponse<GetConflictCaseDto>> GetByIdAsync(int id)
