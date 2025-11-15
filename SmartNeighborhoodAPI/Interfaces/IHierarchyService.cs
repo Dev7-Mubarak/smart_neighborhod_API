@@ -4,6 +4,6 @@ namespace SmartNeighborhoodAPI.Interfaces
 {
     public interface IHierarchyService
     {
-        Task<HashSet<int>> GetAllowedBlockIdsAsync(AppUser currentUser);
+        Task<HashSet<int>> GetAllowedBlockIdsAsync();
     }
 }
