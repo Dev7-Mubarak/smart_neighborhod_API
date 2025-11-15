@@ -16,6 +16,8 @@ namespace OurProjectSmartNeiborhood.Entites
         public bool IsResolved { get; set; }
         [Required]
         public string Title { get; set; }
+        public int BlockId { get; set; }
+        public Block Block { get; set; }
 
         public FamilyMember FirstParty { get; set; }
         public FamilyMember SecondParty { get; set; }
