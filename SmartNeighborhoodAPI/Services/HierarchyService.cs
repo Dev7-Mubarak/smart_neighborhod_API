@@ -29,16 +29,15 @@ namespace SmartNeighborhoodAPI.Services
             }
 
             var rootBlockIds = await _context.Blocks
-                .Where(b => b.ManagerId == currentUser.Id)
+                .Where(b => b.UnitManagerId == currentUser.Id)
                 .Select(b => b.Id)
                 .ToListAsync();
 
             if (!rootBlockIds.Any())
-                return new Hashset<int>();
+                return new HashSet<int>();
 
-            // 2) Flat list of all blocks (Id + ParentBlockId)
             var flatBlocks = await _context.Blocks
-                .Select(b => new { b.Id, b.ParentBlockId })
+                .Select(b => new { b.Id, b.BlockManagerId })
                 .ToListAsync();
 
             // 3) BFS to collect all descendants
@@ -50,7 +49,7 @@ namespace SmartNeighborhoodAPI.Services
                 var currentId = queue.Dequeue();
 
                 var children = flatBlocks
-                    .Where(x => x.ParentBlockId == currentId)
+                    .Where(x => x.BlockManagerId == currentId)
                     .Select(x => x.Id);
 
                 foreach (var childId in children)

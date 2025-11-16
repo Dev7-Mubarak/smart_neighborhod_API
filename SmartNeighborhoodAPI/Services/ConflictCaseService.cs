@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using OurProjectSmartNeiborhood.Entites;
 using SmartNeighborhoodAPI.Entites;
@@ -17,19 +18,32 @@ namespace SmartNeighborhoodAPI.Services
         private readonly IHierarchyService _hierarchyService;
         private readonly IMapper _mapper;
         private readonly ILogger<ConflictCaseService> _logger;
+        private readonly UserManager<AppUser> _userManager;
+        private readonly ImageService _imageService;
+        private string _personImagePath;
+
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
         public ConflictCaseService(
             ApplicationDbContext context,
             UserContextService userContextService,
             IHierarchyService hierarchyService,
             IMapper mapper,
-            ILogger<ConflictCaseService> logger)
+            ILogger<ConflictCaseService> logger,
+            UserManager<AppUser> userManager,
+            ImageService imageService,
+            IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
             _userContextService = userContextService;
             _hierarchyService = hierarchyService;
             _mapper = mapper;
             _logger = logger;
+            _webHostEnvironment = webHostEnvironment;
+            _userManager = userManager;
+            _imageService = imageService;
+            _personImagePath = $"{_webHostEnvironment.WebRootPath}{FileHelper.PersonImagesPath}";
+      
         }
 
         public async Task<ApiResponse<IEnumerable<GetConflictCaseDto>>> GetAll()
@@ -76,7 +90,7 @@ namespace SmartNeighborhoodAPI.Services
             return ApiResponse<IEnumerable<GetConflictCaseDto>>
                 .Success(Enumerable.Empty<GetConflictCaseDto>(), "لا توجد قضايا نزاع.");
         }
-}
+
 
         public async Task<ApiResponse<ReturnConflictCaseDto>> AddAsync(AddConflictCaseDto conflictCaseDto)
         {

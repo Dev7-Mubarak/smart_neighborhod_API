@@ -30,9 +30,9 @@ namespace SmartNeighborhoodAPI
             base.OnModelCreating(builder);
 
             builder.Entity<Block>()
-                .HasOne(b => b.ParentBlock)           
+                .HasOne(b => b.BlockManager)           
                 .WithMany(b => b.ChildBlocks)          
-                .HasForeignKey(b => b.ParentBlockId)   
+                .HasForeignKey(b => b.BlockManagerId)   
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<TeamRole>().HasData(
