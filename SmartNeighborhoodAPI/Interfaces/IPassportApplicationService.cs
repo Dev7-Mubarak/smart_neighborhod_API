@@ -17,7 +17,7 @@ namespace SmartNeighborhoodAPI.Interfaces
 
         Task<ApiResponse<GetPassportApplicationDto>> GetByIdAsync(int id, CancellationToken ct = default);
 
-        Task<ApiResponse<DetailsPassportApplicationDto>> DetailsAsync(int id, CancellationToken ct = default);
+
 
         Task<ApiResponse<string>> UpdateAsync(int id, UpdatePassportApplicationDto dto, CancellationToken ct = default);
 
