@@ -128,6 +128,19 @@ namespace SmartNeighborhoodAPI.Helpers
             public const string Update = Prefix + "/{id:int}";
             public const string Delete = Prefix + "/{id:int}";
         }
+        public static class PassportApplications
+        {
+            public const string Prefix = Rule + "passport-applications";
+
+            public const string GetAll = Prefix;
+            public const string GetById = Prefix + "/{id:int}";
+            public const string Details = Prefix + "/details/{id:int}";
+
+            public const string Add = Prefix;
+            public const string Update = Prefix + "/{id:int}";
+            public const string Delete = Prefix + "/{id:int}";
+        }
+
 
         public static class Projects
         {
