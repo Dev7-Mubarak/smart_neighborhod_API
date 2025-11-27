@@ -28,6 +28,11 @@ namespace SmartNeighborhoodAPI
             builder.ApplyConfiguration(new IdentityUserRoleSeedConfiguration());
             builder.ApplyConfiguration(new ProjectCatgoryEntityTypeConfiguration());
             builder.ApplyConfiguration(new ProjectConfiguration());
+            builder.ApplyConfiguration(new IDCardApplicationConfiguration());
+            builder.ApplyConfiguration(new PassportApplicationConfiguration());
+            builder.ApplyConfiguration(new MedicineConfiguration());
+            builder.ApplyConfiguration(new MedicineBatchConfiguration());
+            
 
             builder.Entity<TeamRole>().HasData(
                    new TeamRole { Id = 1, Name = "مدير المشروع"},

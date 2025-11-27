@@ -32,7 +32,7 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("RemoteConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 //builder.Services.AddLocalization(options =>
 //{
@@ -58,6 +58,8 @@ builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.Configure<JWT>(builder.Configuration.GetSection("Jwt"));
 
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IIdCardApplicationService, IdCardApplicationService>();
+
 builder.Services.AddScoped<PersonService>();
 builder.Services.AddScoped<FamilyCatgoryService>();
 builder.Services.AddScoped<FamilyService>();

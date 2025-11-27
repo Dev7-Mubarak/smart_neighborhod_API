@@ -26,8 +26,15 @@ public class IdCardApplicationService : IIdCardApplicationService
             Status = ApplicationStatus.Received,
             LastUpdate = DateTime.UtcNow
         };
+        var personExists = await _context.People.AnyAsync(p => p.Id == dto.ResidentId);
+        if (!personExists)
+        {
+            return ApiResponse<GetIdCardApplicationDto>.Error(HttpStatusCode.NotFound, "ID card application not found");
+
+        }
 
         _context.Set<IDCardApplication>().Add(entity);
+
         await _context.SaveChangesAsync(ct);
 
         return ApiResponse<GetIdCardApplicationDto>.Success(GetIdCardApplicationDto.Create(entity));

@@ -12,8 +12,8 @@ using SmartNeighborhoodAPI;
 namespace SmartNeighborhoodAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251115151912_add-government-institution-contact")]
-    partial class addgovernmentinstitutioncontact
+    [Migration("20251127165330_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -552,8 +552,11 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = 1,
                             BloodType = 5,
+                            DateOfBirth = new DateTime(1990, 5, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             FirstName = "أحمد",
                             Gender = 0,
+                            IsContactNumber = true,
+                            IsWhatsapp = true,
                             Job = "مهندس",
                             LastName = "الزهيري",
                             MaritalStatus = 2,
@@ -565,9 +568,12 @@ namespace SmartNeighborhoodAPI.Migrations
                         new
                         {
                             Id = 2,
-                            BloodType = 5,
+                            BloodType = 0,
+                            DateOfBirth = new DateTime(1998, 3, 21, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             FirstName = "فاطمة",
                             Gender = 1,
+                            IsContactNumber = false,
+                            IsWhatsapp = true,
                             Job = "طالبة",
                             LastName = "الحسني",
                             MaritalStatus = 1,
@@ -575,6 +581,311 @@ namespace SmartNeighborhoodAPI.Migrations
                             PhoneNumber = "0789876543",
                             SecondName = "خالد",
                             ThirdName = "عبد الله"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            BloodType = 7,
+                            DateOfBirth = new DateTime(1985, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "محمد",
+                            Gender = 0,
+                            IsContactNumber = true,
+                            IsWhatsapp = true,
+                            Job = "محاسب",
+                            LastName = "القيسي",
+                            MaritalStatus = 2,
+                            OccupationStatus = 2,
+                            PhoneNumber = "0795551122",
+                            SecondName = "علي",
+                            ThirdName = "سليم"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            BloodType = 2,
+                            DateOfBirth = new DateTime(1995, 7, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "مريم",
+                            Gender = 1,
+                            IsContactNumber = true,
+                            IsWhatsapp = false,
+                            LastName = "العنزي",
+                            MaritalStatus = 1,
+                            OccupationStatus = 3,
+                            PhoneNumber = "0784443322",
+                            SecondName = "إبراهيم",
+                            ThirdName = "حسن"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            BloodType = 0,
+                            DateOfBirth = new DateTime(2000, 11, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "يوسف",
+                            Gender = 0,
+                            IsContactNumber = true,
+                            IsWhatsapp = true,
+                            Job = "طالب",
+                            LastName = "العجارمة",
+                            MaritalStatus = 1,
+                            OccupationStatus = 1,
+                            PhoneNumber = "0797778899",
+                            SecondName = "صالح",
+                            ThirdName = "عبد الرحمن"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            BloodType = 5,
+                            DateOfBirth = new DateTime(1992, 9, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "ليلى",
+                            Gender = 1,
+                            IsContactNumber = false,
+                            IsWhatsapp = true,
+                            Job = "ربة منزل",
+                            LastName = "الطراونة",
+                            MaritalStatus = 2,
+                            OccupationStatus = 3,
+                            PhoneNumber = "0781122334",
+                            SecondName = "موسى",
+                            ThirdName = "جميل"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            BloodType = 3,
+                            DateOfBirth = new DateTime(1988, 6, 28, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "سلمان",
+                            Gender = 0,
+                            IsContactNumber = true,
+                            IsWhatsapp = true,
+                            Job = "فني كهرباء",
+                            LastName = "العوفي",
+                            MaritalStatus = 2,
+                            OccupationStatus = 2,
+                            PhoneNumber = "0793322110",
+                            SecondName = "زيد",
+                            ThirdName = "أحمد"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            BloodType = 5,
+                            DateOfBirth = new DateTime(1999, 12, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "نهى",
+                            Gender = 1,
+                            IsContactNumber = true,
+                            IsWhatsapp = false,
+                            Job = "طالبة",
+                            LastName = "الخطيب",
+                            MaritalStatus = 1,
+                            OccupationStatus = 1,
+                            PhoneNumber = "0786677889",
+                            SecondName = "راشد",
+                            ThirdName = "سامي"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            BloodType = 6,
+                            DateOfBirth = new DateTime(1983, 2, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "حسن",
+                            Gender = 0,
+                            IsContactNumber = true,
+                            IsWhatsapp = true,
+                            Job = "سائق",
+                            LastName = "البقاعي",
+                            MaritalStatus = 2,
+                            OccupationStatus = 2,
+                            PhoneNumber = "0799988776",
+                            SecondName = "محمود",
+                            ThirdName = "فوزي"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            BloodType = 0,
+                            DateOfBirth = new DateTime(2001, 4, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "نور",
+                            Gender = 1,
+                            IsContactNumber = false,
+                            IsWhatsapp = true,
+                            Job = "طالبة",
+                            LastName = "الغزاوي",
+                            MaritalStatus = 1,
+                            OccupationStatus = 1,
+                            PhoneNumber = "0789988223",
+                            SecondName = "جميل",
+                            ThirdName = "عمر"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            BloodType = 2,
+                            DateOfBirth = new DateTime(1990, 10, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "خالد",
+                            Gender = 0,
+                            IsContactNumber = true,
+                            IsWhatsapp = true,
+                            Job = "معلم",
+                            LastName = "المعايطه",
+                            MaritalStatus = 2,
+                            OccupationStatus = 2,
+                            PhoneNumber = "0792211334",
+                            SecondName = "فهد",
+                            ThirdName = "سالم"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            BloodType = 5,
+                            DateOfBirth = new DateTime(1997, 8, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "سارة",
+                            Gender = 1,
+                            IsContactNumber = true,
+                            IsWhatsapp = false,
+                            Job = "مصممة",
+                            LastName = "الشروف",
+                            MaritalStatus = 1,
+                            OccupationStatus = 2,
+                            PhoneNumber = "0785544332",
+                            SecondName = "منصور",
+                            ThirdName = "أمين"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            BloodType = 4,
+                            DateOfBirth = new DateTime(1986, 3, 19, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "رائد",
+                            Gender = 0,
+                            IsContactNumber = true,
+                            IsWhatsapp = true,
+                            Job = "ممرض",
+                            LastName = "عواد",
+                            MaritalStatus = 2,
+                            OccupationStatus = 2,
+                            PhoneNumber = "0798877665",
+                            SecondName = "خليل",
+                            ThirdName = "يوسف"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            BloodType = 3,
+                            DateOfBirth = new DateTime(1993, 1, 27, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "هناء",
+                            Gender = 1,
+                            IsContactNumber = false,
+                            IsWhatsapp = true,
+                            Job = "ربة منزل",
+                            LastName = "السالم",
+                            MaritalStatus = 2,
+                            OccupationStatus = 3,
+                            PhoneNumber = "0784433221",
+                            SecondName = "زيد",
+                            ThirdName = "عبدالله"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            BloodType = 6,
+                            DateOfBirth = new DateTime(1982, 11, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "عبدالله",
+                            Gender = 0,
+                            IsContactNumber = true,
+                            IsWhatsapp = true,
+                            Job = "تاجر",
+                            LastName = "العلاونة",
+                            MaritalStatus = 2,
+                            OccupationStatus = 2,
+                            PhoneNumber = "0791122556",
+                            SecondName = "محمد",
+                            ThirdName = "نادر"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            BloodType = 0,
+                            DateOfBirth = new DateTime(1996, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "دلال",
+                            Gender = 1,
+                            IsContactNumber = true,
+                            IsWhatsapp = false,
+                            Job = "طالبة",
+                            LastName = "الزيود",
+                            MaritalStatus = 1,
+                            OccupationStatus = 1,
+                            PhoneNumber = "0782211445",
+                            SecondName = "سالم",
+                            ThirdName = "هاشم"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            BloodType = 2,
+                            DateOfBirth = new DateTime(1989, 9, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "إيهاب",
+                            Gender = 0,
+                            IsContactNumber = true,
+                            IsWhatsapp = true,
+                            Job = "مبرمج",
+                            LastName = "العتوم",
+                            MaritalStatus = 2,
+                            OccupationStatus = 2,
+                            PhoneNumber = "0796655443",
+                            SecondName = "سامي",
+                            ThirdName = "سعيد"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            BloodType = 6,
+                            DateOfBirth = new DateTime(2002, 2, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "جنان",
+                            Gender = 1,
+                            IsContactNumber = false,
+                            IsWhatsapp = true,
+                            Job = "طالبة",
+                            LastName = "الطويل",
+                            MaritalStatus = 1,
+                            OccupationStatus = 1,
+                            PhoneNumber = "0787766554",
+                            SecondName = "طه",
+                            ThirdName = "رياض"
+                        },
+                        new
+                        {
+                            Id = 19,
+                            BloodType = 5,
+                            DateOfBirth = new DateTime(1984, 12, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "سليمان",
+                            Gender = 0,
+                            IsContactNumber = true,
+                            IsWhatsapp = true,
+                            Job = "مقاول",
+                            LastName = "الحوري",
+                            MaritalStatus = 2,
+                            OccupationStatus = 2,
+                            PhoneNumber = "0794433556",
+                            SecondName = "أكرم",
+                            ThirdName = "منير"
+                        },
+                        new
+                        {
+                            Id = 20,
+                            BloodType = 2,
+                            DateOfBirth = new DateTime(1999, 5, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "تقى",
+                            Gender = 1,
+                            IsContactNumber = true,
+                            IsWhatsapp = false,
+                            Job = "سكرتيرة",
+                            LastName = "الصمادي",
+                            MaritalStatus = 1,
+                            OccupationStatus = 2,
+                            PhoneNumber = "0789988771",
+                            SecondName = "نائل",
+                            ThirdName = "فارس"
                         });
                 });
 
@@ -850,17 +1161,17 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "e8e4bd9d-6dc4-4758-be89-f784dc0faaf1",
+                            ConcurrencyStamp = "41812ea1-bd92-4260-ac24-d2ac5e112aa8",
                             Email = "sys.smartneighborhood@gmail.com",
                             EmailConfirmed = true,
                             IsActive = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "sys.smartneighborhood@gmail.com",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAENlQUdsy7Ddx44YO1NIqkN0ftSwdhtFTm2aJ4Apx6smVNyF5smMpm/dfihM33d8qcQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEPfXKQe9Og0u2tIxllcdSAU6okauujYdu23/dzH+wyKWrN6cma6v/Q4rmMJUIFwIUQ==",
                             PersonId = 9,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "ea6efa2d-6b4e-4eb7-a4fc-8f30a9097bb9",
+                            SecurityStamp = "ff6ca4d9-c9b7-4425-90a9-95fba2078b39",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         },
@@ -868,17 +1179,17 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = "aaaaaaaa-aaaa-aaaa-bbbb-aaaaaaaaaaaa",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "c87c6b57-2155-4b60-b334-a435e0bd0218",
+                            ConcurrencyStamp = "e10459f4-3df0-46a7-a404-31b4d9b652a2",
                             Email = "sys.smartneighborhood@gmail.com",
                             EmailConfirmed = true,
                             IsActive = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "SYS.SMARTNEIGHBORHOOD@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEA9rv6m9OcQcmEogNw2URe9Zp4tyIkERKToz3qfX8SR+vrBwXHzJpUW6WDECNyE2Pw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEAfdpDF/Bi0JWZQfHJacD0eEyOcAX6JqhZFljJdsOPvG/jq3Uq3RPZ418yhXwS21Ng==",
                             PersonId = 1,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "0d7e9c09-304a-4d3b-9aa4-c240cd0ef31c",
+                            SecurityStamp = "f42fc8e1-5aee-4dcb-b1db-1bf6f8affbec",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         });
@@ -928,6 +1239,630 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasIndex("GovernmentInstitutionId");
 
                     b.ToTable("GovernmentInstitutionContacts");
+                });
+
+            modelBuilder.Entity("SmartNeighborhoodAPI.Entites.IDCardApplication", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ApplicationNumber")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("LastUpdate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ResidentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ResidentId");
+
+                    b.ToTable("IDCardApplications");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ApplicationNumber = "IDC-5001",
+                            Notes = "Initial application submitted",
+                            ResidentId = 1,
+                            Status = 0
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ApplicationNumber = "IDC-5002",
+                            Notes = "Biometric verification pending",
+                            ResidentId = 3,
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = 21,
+                            ApplicationNumber = "IDC2001",
+                            ResidentId = 1,
+                            Status = 2
+                        },
+                        new
+                        {
+                            Id = 22,
+                            ApplicationNumber = "IDC2002",
+                            ResidentId = 2,
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            ApplicationNumber = "IDC2003",
+                            ResidentId = 3,
+                            Status = 0
+                        },
+                        new
+                        {
+                            Id = 4,
+                            ApplicationNumber = "IDC2004",
+                            Notes = "Missing ID copy",
+                            ResidentId = 4,
+                            Status = 3
+                        },
+                        new
+                        {
+                            Id = 5,
+                            ApplicationNumber = "IDC2005",
+                            ResidentId = 5,
+                            Status = 2
+                        },
+                        new
+                        {
+                            Id = 6,
+                            ApplicationNumber = "IDC2006",
+                            ResidentId = 6,
+                            Status = 0
+                        },
+                        new
+                        {
+                            Id = 7,
+                            ApplicationNumber = "IDC2007",
+                            ResidentId = 7,
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = 8,
+                            ApplicationNumber = "IDC2008",
+                            ResidentId = 8,
+                            Status = 2
+                        },
+                        new
+                        {
+                            Id = 9,
+                            ApplicationNumber = "IDC2009",
+                            ResidentId = 9,
+                            Status = 0
+                        },
+                        new
+                        {
+                            Id = 10,
+                            ApplicationNumber = "IDC2010",
+                            ResidentId = 10,
+                            Status = 2
+                        },
+                        new
+                        {
+                            Id = 11,
+                            ApplicationNumber = "IDC2011",
+                            ResidentId = 11,
+                            Status = 3
+                        },
+                        new
+                        {
+                            Id = 12,
+                            ApplicationNumber = "IDC2012",
+                            ResidentId = 12,
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = 13,
+                            ApplicationNumber = "IDC2013",
+                            ResidentId = 13,
+                            Status = 2
+                        },
+                        new
+                        {
+                            Id = 14,
+                            ApplicationNumber = "IDC2014",
+                            ResidentId = 14,
+                            Status = 0
+                        },
+                        new
+                        {
+                            Id = 15,
+                            ApplicationNumber = "IDC2015",
+                            ResidentId = 15,
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = 16,
+                            ApplicationNumber = "IDC2016",
+                            ResidentId = 16,
+                            Status = 2
+                        },
+                        new
+                        {
+                            Id = 17,
+                            ApplicationNumber = "IDC2017",
+                            ResidentId = 17,
+                            Status = 0
+                        },
+                        new
+                        {
+                            Id = 18,
+                            ApplicationNumber = "IDC2018",
+                            ResidentId = 18,
+                            Status = 2
+                        },
+                        new
+                        {
+                            Id = 19,
+                            ApplicationNumber = "IDC2019",
+                            ResidentId = 19,
+                            Status = 3
+                        },
+                        new
+                        {
+                            Id = 20,
+                            ApplicationNumber = "IDC2020",
+                            ResidentId = 20,
+                            Status = 1
+                        });
+                });
+
+            modelBuilder.Entity("SmartNeighborhoodAPI.Entites.Medicine", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Medicines");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Description = "For diabetic patients",
+                            Name = "Insulin",
+                            Type = 2
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Description = "Blood pressure treatment",
+                            Name = "Amlodipine",
+                            Type = 3
+                        },
+                        new
+                        {
+                            Id = 21,
+                            Name = "Insulin",
+                            Type = 2
+                        },
+                        new
+                        {
+                            Id = 22,
+                            Name = "Metformin",
+                            Type = 2
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Amlodipine",
+                            Type = 3
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Losartan",
+                            Type = 3
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "Antibiotic A",
+                            Type = 4
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "Painkiller A",
+                            Type = 5
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Name = "Dolo 500",
+                            Type = 5
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Name = "Cold Relief",
+                            Type = 1
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Name = "Vitamin C",
+                            Type = 1
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Name = "Iron Supplement",
+                            Type = 1
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Name = "Lisinopril",
+                            Type = 3
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Name = "Glibenclamide",
+                            Type = 2
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Name = "Amoxicillin",
+                            Type = 4
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Name = "Ibuprofen",
+                            Type = 5
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Name = "Acetaminophen",
+                            Type = 5
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Name = "Multivitamins",
+                            Type = 1
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Name = "Magnesium Tablets",
+                            Type = 1
+                        },
+                        new
+                        {
+                            Id = 18,
+                            Name = "Zinc Supplements",
+                            Type = 1
+                        },
+                        new
+                        {
+                            Id = 19,
+                            Name = "Cough Syrup",
+                            Type = 1
+                        },
+                        new
+                        {
+                            Id = 20,
+                            Name = "Stomach Relief",
+                            Type = 1
+                        });
+                });
+
+            modelBuilder.Entity("SmartNeighborhoodAPI.Entites.MedicineBatch", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("ArrivalDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ExpireDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("MedicineId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Provider")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MedicineId");
+
+                    b.ToTable("MedicineBatches");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ArrivalDate = new DateTime(2024, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ExpireDate = new DateTime(2025, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MedicineId = 1,
+                            Provider = "Health Association A",
+                            Quantity = 120
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ArrivalDate = new DateTime(2024, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ExpireDate = new DateTime(2025, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            MedicineId = 2,
+                            Provider = "Medical Charity B",
+                            Quantity = 200
+                        });
+                });
+
+            modelBuilder.Entity("SmartNeighborhoodAPI.Entites.PassportApplication", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ApplicationNumber")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("LastUpdate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ResidentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ResidentId");
+
+                    b.ToTable("PassportApplications");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ApplicationNumber = "PAS-1001",
+                            LastUpdate = new DateTime(2025, 11, 27, 16, 53, 28, 946, DateTimeKind.Utc).AddTicks(8078),
+                            Notes = "Under review",
+                            ResidentId = 1,
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ApplicationNumber = "PAS-1002",
+                            LastUpdate = new DateTime(2025, 11, 27, 16, 53, 28, 946, DateTimeKind.Utc).AddTicks(8085),
+                            Notes = "Ready for pickup",
+                            ResidentId = 2,
+                            Status = 2
+                        },
+                        new
+                        {
+                            Id = 21,
+                            ApplicationNumber = "PAS1001",
+                            LastUpdate = new DateTime(2025, 11, 27, 16, 53, 28, 946, DateTimeKind.Utc).AddTicks(8087),
+                            Notes = "Waiting",
+                            ResidentId = 1,
+                            Status = 0
+                        },
+                        new
+                        {
+                            Id = 22,
+                            ApplicationNumber = "PAS1002",
+                            LastUpdate = new DateTime(2025, 11, 27, 16, 53, 28, 946, DateTimeKind.Utc).AddTicks(8088),
+                            Notes = "Processing",
+                            ResidentId = 2,
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            ApplicationNumber = "PAS1003",
+                            LastUpdate = new DateTime(2025, 11, 27, 16, 53, 28, 946, DateTimeKind.Utc).AddTicks(8109),
+                            Notes = "Ready",
+                            ResidentId = 3,
+                            Status = 2
+                        },
+                        new
+                        {
+                            Id = 4,
+                            ApplicationNumber = "PAS1004",
+                            LastUpdate = new DateTime(2025, 11, 27, 16, 53, 28, 946, DateTimeKind.Utc).AddTicks(8111),
+                            Notes = "Missing documents",
+                            ResidentId = 4,
+                            Status = 3
+                        },
+                        new
+                        {
+                            Id = 5,
+                            ApplicationNumber = "PAS1005",
+                            LastUpdate = new DateTime(2025, 11, 27, 16, 53, 28, 946, DateTimeKind.Utc).AddTicks(8113),
+                            ResidentId = 5,
+                            Status = 2
+                        },
+                        new
+                        {
+                            Id = 6,
+                            ApplicationNumber = "PAS1006",
+                            LastUpdate = new DateTime(2025, 11, 27, 16, 53, 28, 946, DateTimeKind.Utc).AddTicks(8114),
+                            ResidentId = 6,
+                            Status = 0
+                        },
+                        new
+                        {
+                            Id = 7,
+                            ApplicationNumber = "PAS1007",
+                            LastUpdate = new DateTime(2025, 11, 27, 16, 53, 28, 946, DateTimeKind.Utc).AddTicks(8116),
+                            ResidentId = 7,
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = 8,
+                            ApplicationNumber = "PAS1008",
+                            LastUpdate = new DateTime(2025, 11, 27, 16, 53, 28, 946, DateTimeKind.Utc).AddTicks(8118),
+                            ResidentId = 8,
+                            Status = 0
+                        },
+                        new
+                        {
+                            Id = 9,
+                            ApplicationNumber = "PAS1009",
+                            LastUpdate = new DateTime(2025, 11, 27, 16, 53, 28, 946, DateTimeKind.Utc).AddTicks(8120),
+                            ResidentId = 9,
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = 10,
+                            ApplicationNumber = "PAS1010",
+                            LastUpdate = new DateTime(2025, 11, 27, 16, 53, 28, 946, DateTimeKind.Utc).AddTicks(8121),
+                            ResidentId = 10,
+                            Status = 2
+                        },
+                        new
+                        {
+                            Id = 11,
+                            ApplicationNumber = "PAS1011",
+                            LastUpdate = new DateTime(2025, 11, 27, 16, 53, 28, 946, DateTimeKind.Utc).AddTicks(8123),
+                            ResidentId = 11,
+                            Status = 0
+                        },
+                        new
+                        {
+                            Id = 12,
+                            ApplicationNumber = "PAS1012",
+                            LastUpdate = new DateTime(2025, 11, 27, 16, 53, 28, 946, DateTimeKind.Utc).AddTicks(8125),
+                            ResidentId = 12,
+                            Status = 2
+                        },
+                        new
+                        {
+                            Id = 13,
+                            ApplicationNumber = "PAS1013",
+                            LastUpdate = new DateTime(2025, 11, 27, 16, 53, 28, 946, DateTimeKind.Utc).AddTicks(8126),
+                            ResidentId = 13,
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = 14,
+                            ApplicationNumber = "PAS1014",
+                            LastUpdate = new DateTime(2025, 11, 27, 16, 53, 28, 946, DateTimeKind.Utc).AddTicks(8128),
+                            ResidentId = 14,
+                            Status = 0
+                        },
+                        new
+                        {
+                            Id = 15,
+                            ApplicationNumber = "PAS1015",
+                            LastUpdate = new DateTime(2025, 11, 27, 16, 53, 28, 946, DateTimeKind.Utc).AddTicks(8129),
+                            ResidentId = 15,
+                            Status = 2
+                        },
+                        new
+                        {
+                            Id = 16,
+                            ApplicationNumber = "PAS1016",
+                            LastUpdate = new DateTime(2025, 11, 27, 16, 53, 28, 946, DateTimeKind.Utc).AddTicks(8131),
+                            Notes = "Invalid photo",
+                            ResidentId = 16,
+                            Status = 3
+                        },
+                        new
+                        {
+                            Id = 17,
+                            ApplicationNumber = "PAS1017",
+                            LastUpdate = new DateTime(2025, 11, 27, 16, 53, 28, 946, DateTimeKind.Utc).AddTicks(8133),
+                            ResidentId = 17,
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = 18,
+                            ApplicationNumber = "PAS1018",
+                            LastUpdate = new DateTime(2025, 11, 27, 16, 53, 28, 946, DateTimeKind.Utc).AddTicks(8134),
+                            ResidentId = 18,
+                            Status = 0
+                        },
+                        new
+                        {
+                            Id = 19,
+                            ApplicationNumber = "PAS1019",
+                            LastUpdate = new DateTime(2025, 11, 27, 16, 53, 28, 946, DateTimeKind.Utc).AddTicks(8136),
+                            ResidentId = 19,
+                            Status = 2
+                        },
+                        new
+                        {
+                            Id = 20,
+                            ApplicationNumber = "PAS1020",
+                            LastUpdate = new DateTime(2025, 11, 27, 16, 53, 28, 946, DateTimeKind.Utc).AddTicks(8138),
+                            ResidentId = 20,
+                            Status = 1
+                        });
                 });
 
             modelBuilder.Entity("SmartNeighborhoodAPI.Entites.ProjectTeam", b =>
@@ -985,6 +1920,41 @@ namespace SmartNeighborhoodAPI.Migrations
                             Id = 3,
                             Name = "عضو"
                         });
+                });
+
+            modelBuilder.Entity("SmartNeighborhoodAPI.Entites.Vehicle", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("LicenseExpiryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Model")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("OwnerId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OwnerResidentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PlateNumber")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnerId");
+
+                    b.ToTable("Vehicles");
                 });
 
             modelBuilder.Entity("AdGroup", b =>
@@ -1232,6 +2202,39 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.Navigation("GovernmentInstitution");
                 });
 
+            modelBuilder.Entity("SmartNeighborhoodAPI.Entites.IDCardApplication", b =>
+                {
+                    b.HasOne("OurProjectSmartNeiborhood.Entites.Person", "Resident")
+                        .WithMany()
+                        .HasForeignKey("ResidentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Resident");
+                });
+
+            modelBuilder.Entity("SmartNeighborhoodAPI.Entites.MedicineBatch", b =>
+                {
+                    b.HasOne("SmartNeighborhoodAPI.Entites.Medicine", "Medicine")
+                        .WithMany("Batches")
+                        .HasForeignKey("MedicineId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Medicine");
+                });
+
+            modelBuilder.Entity("SmartNeighborhoodAPI.Entites.PassportApplication", b =>
+                {
+                    b.HasOne("OurProjectSmartNeiborhood.Entites.Person", "Resident")
+                        .WithMany()
+                        .HasForeignKey("ResidentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Resident");
+                });
+
             modelBuilder.Entity("SmartNeighborhoodAPI.Entites.ProjectTeam", b =>
                 {
                     b.HasOne("OurProjectSmartNeiborhood.Entites.Project", "Project")
@@ -1249,6 +2252,17 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.Navigation("Project");
 
                     b.Navigation("Team");
+                });
+
+            modelBuilder.Entity("SmartNeighborhoodAPI.Entites.Vehicle", b =>
+                {
+                    b.HasOne("OurProjectSmartNeiborhood.Entites.Person", "Owner")
+                        .WithMany("Vehicles")
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Owner");
                 });
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.Block", b =>
@@ -1290,6 +2304,8 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.Navigation("FamilyMembers");
 
                     b.Navigation("TeamMemberships");
+
+                    b.Navigation("Vehicles");
                 });
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.Project", b =>
@@ -1314,6 +2330,11 @@ namespace SmartNeighborhoodAPI.Migrations
             modelBuilder.Entity("SmartNeighborhoodAPI.Entites.GovernmentInstitution", b =>
                 {
                     b.Navigation("GovernmentInstitutionContacts");
+                });
+
+            modelBuilder.Entity("SmartNeighborhoodAPI.Entites.Medicine", b =>
+                {
+                    b.Navigation("Batches");
                 });
 
             modelBuilder.Entity("SmartNeighborhoodAPI.Entites.TeamRole", b =>
