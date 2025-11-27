@@ -8,6 +8,7 @@ namespace SmartNeighborhoodAPI.Entites
         public int Id { get; set; }
 
         public int ResidentId { get; set; }
+        public Person Resident { get; set; } = null!;
 
         [Required]
         [MaxLength(100)]

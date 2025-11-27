@@ -1,4 +1,5 @@
 ﻿using SmartNeighborhoodAPI.Entites.Enums;
+using System.Security.Cryptography.X509Certificates;
 
 namespace SmartNeighborhoodAPI.Entites
 {
@@ -8,7 +9,7 @@ namespace SmartNeighborhoodAPI.Entites
         public int Id { get; set; }
 
         public int ResidentId { get; set; }
-
+        public Person Resident { get; set; } = null!;
         [Required]
         [MaxLength(100)]
         public string ApplicationNumber { get; set; } = string.Empty;
