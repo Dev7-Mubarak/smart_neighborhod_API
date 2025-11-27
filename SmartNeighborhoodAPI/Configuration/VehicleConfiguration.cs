@@ -44,8 +44,8 @@ namespace OurProjectSmartNeiborhood.Configuration
                     Type = VehicleType.Motorcycle,
                     LicenseExpiryDate = new DateTime(2024, 08, 20)
                 },
-                new Vehicle { Id = 1, PlateNumber = "A1234", OwnerResidentId = 1, Model = "Toyota Camry", Type = VehicleType.Car, LicenseExpiryDate = new DateTime(2025, 1, 1) },
-                new Vehicle { Id = 2, PlateNumber = "B5678", OwnerResidentId = 2, Model = "Hyundai Tucson", Type = VehicleType.Car, LicenseExpiryDate = new DateTime(2024, 12, 20) },
+                new Vehicle { Id = 21, PlateNumber = "A1234", OwnerResidentId = 1, Model = "Toyota Camry", Type = VehicleType.Car, LicenseExpiryDate = new DateTime(2025, 1, 1) },
+                new Vehicle { Id = 22, PlateNumber = "B5678", OwnerResidentId = 2, Model = "Hyundai Tucson", Type = VehicleType.Car, LicenseExpiryDate = new DateTime(2024, 12, 20) },
                 new Vehicle { Id = 3, PlateNumber = "C9981", OwnerResidentId = 3, Model = "Nissan Patrol", Type = VehicleType.Car, LicenseExpiryDate = new DateTime(2025, 4, 14) },
                 new Vehicle { Id = 4, PlateNumber = "D1122", OwnerResidentId = 4, Model = "Kia Sportage", Type = VehicleType.Car, LicenseExpiryDate = new DateTime(2025, 10, 9) },
                 new Vehicle { Id = 5, PlateNumber = "M7788", OwnerResidentId = 5, Model = "Honda Civic", Type = VehicleType.Car, LicenseExpiryDate = new DateTime(2025, 8, 16) },

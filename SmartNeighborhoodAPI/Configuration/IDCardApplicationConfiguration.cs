@@ -40,8 +40,6 @@ namespace OurProjectSmartNeiborhood.Configuration
                     Notes = "Biometric verification pending"
                 },
          
-                new IDCardApplication { Id = 1, ResidentId = 1, ApplicationNumber = "IDC2001", Status = ApplicationStatus.Ready, Notes = null },
-                new IDCardApplication { Id = 2, ResidentId = 2, ApplicationNumber = "IDC2002", Status = ApplicationStatus.InProgress },
                 new IDCardApplication { Id = 3, ResidentId = 3, ApplicationNumber = "IDC2003", Status = ApplicationStatus.Received },
                 new IDCardApplication { Id = 4, ResidentId = 4, ApplicationNumber = "IDC2004", Status = ApplicationStatus.Rejected, Notes = "Missing ID copy" },
                 new IDCardApplication { Id = 5, ResidentId = 5, ApplicationNumber = "IDC2005", Status = ApplicationStatus.Ready },

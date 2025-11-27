@@ -30,8 +30,8 @@ namespace OurProjectSmartNeiborhood.Configuration
                 new Medicine { Id = 1, Name = "Insulin", Type = MedicineType.Diabetes, Description = "For diabetic patients" },
                 new Medicine { Id = 2, Name = "Amlodipine", Type = MedicineType.Hypertension, Description = "Blood pressure treatment" },
 
-                new Medicine { Id = 1, Name = "Insulin", Type = MedicineType.Diabetes },
-                new Medicine { Id = 2, Name = "Metformin", Type = MedicineType.Diabetes },
+                new Medicine { Id = 21, Name = "Insulin", Type = MedicineType.Diabetes },
+                new Medicine { Id =22, Name = "Metformin", Type = MedicineType.Diabetes },
                 new Medicine { Id = 3, Name = "Amlodipine", Type = MedicineType.Hypertension },
                 new Medicine { Id = 4, Name = "Losartan", Type = MedicineType.Hypertension },
                 new Medicine { Id = 5, Name = "Antibiotic A", Type = MedicineType.Antibiotic },
@@ -50,7 +50,6 @@ namespace OurProjectSmartNeiborhood.Configuration
                 new Medicine { Id = 18, Name = "Zinc Supplements", Type = MedicineType.Unknown },
                 new Medicine { Id = 19, Name = "Cough Syrup", Type = MedicineType.Unknown },
                 new Medicine { Id = 20, Name = "Stomach Relief", Type = MedicineType.Unknown }
-);
 
             );
         }

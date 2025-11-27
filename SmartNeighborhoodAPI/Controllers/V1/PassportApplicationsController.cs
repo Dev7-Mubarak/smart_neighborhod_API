@@ -35,10 +35,6 @@ public class PassportApplicationsController : AppControllerBase
     public async Task<IActionResult> GetByIdAsync([FromRoute] int id) =>
         Response(await _service.GetByIdAsync(id));
 
-    [HttpGet(PassportApplications.Details)]
-    [SwaggerOperation(Summary = "Get passport application details")]
-    public async Task<IActionResult> DetailsAsync([FromRoute] int id) =>
-        Response(await _service.DetailsAsync(id));
 
     [HttpPost(PassportApplications.Add)]
     [SwaggerOperation(Summary = "Add a passport application")]

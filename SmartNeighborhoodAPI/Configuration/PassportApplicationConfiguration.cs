@@ -40,8 +40,8 @@ namespace OurProjectSmartNeiborhood.Configuration
                     LastUpdate = DateTime.UtcNow,
                     Notes = "Ready for pickup"
                 },
-                new PassportApplication { Id = 1, ResidentId = 1, ApplicationNumber = "PAS1001", Status = ApplicationStatus.Received, Notes = "Waiting", LastUpdate = DateTime.UtcNow },
-                new PassportApplication { Id = 2, ResidentId = 2, ApplicationNumber = "PAS1002", Status = ApplicationStatus.InProgress, Notes = "Processing", LastUpdate = DateTime.UtcNow },
+                new PassportApplication { Id = 21, ResidentId = 1, ApplicationNumber = "PAS1001", Status = ApplicationStatus.Received, Notes = "Waiting", LastUpdate = DateTime.UtcNow },
+                new PassportApplication { Id = 22, ResidentId = 2, ApplicationNumber = "PAS1002", Status = ApplicationStatus.InProgress, Notes = "Processing", LastUpdate = DateTime.UtcNow },
                 new PassportApplication { Id = 3, ResidentId = 3, ApplicationNumber = "PAS1003", Status = ApplicationStatus.Ready, Notes = "Ready", LastUpdate = DateTime.UtcNow },
                 new PassportApplication { Id = 4, ResidentId = 4, ApplicationNumber = "PAS1004", Status = ApplicationStatus.Rejected, Notes = "Missing documents", LastUpdate = DateTime.UtcNow },
                 new PassportApplication { Id = 5, ResidentId = 5, ApplicationNumber = "PAS1005", Status = ApplicationStatus.Ready, Notes = null, LastUpdate = DateTime.UtcNow },
@@ -60,7 +60,6 @@ namespace OurProjectSmartNeiborhood.Configuration
                 new PassportApplication { Id = 18, ResidentId = 18, ApplicationNumber = "PAS1018", Status = ApplicationStatus.Received, LastUpdate = DateTime.UtcNow },
                 new PassportApplication { Id = 19, ResidentId = 19, ApplicationNumber = "PAS1019", Status = ApplicationStatus.Ready, LastUpdate = DateTime.UtcNow },
                 new PassportApplication { Id = 20, ResidentId = 20, ApplicationNumber = "PAS1020", Status = ApplicationStatus.InProgress, LastUpdate = DateTime.UtcNow }
-);
 
             );
         }

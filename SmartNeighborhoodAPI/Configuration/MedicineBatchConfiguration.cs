@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using OurProjectSmartNeiborhood.Models;
 using SmartNeighborhoodAPI.Entites;
 
 namespace OurProjectSmartNeiborhood.Configuration

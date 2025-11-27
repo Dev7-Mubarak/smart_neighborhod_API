@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SmartNeighborhoodAPI;
 
@@ -11,9 +12,11 @@ using SmartNeighborhoodAPI;
 namespace SmartNeighborhoodAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251127154641_addTablesForNewFeaturesWithDataSeeding")]
+    partial class addTablesForNewFeaturesWithDataSeeding
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -847,17 +850,17 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "0126101f-fb85-438d-b109-01df27e2d0d3",
+                            ConcurrencyStamp = "22c37920-1b67-4dd4-9c0a-2f589e1fd926",
                             Email = "sys.smartneighborhood@gmail.com",
                             EmailConfirmed = true,
                             IsActive = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "sys.smartneighborhood@gmail.com",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEJ/+Xft517onKGRROAsEq0X4rUhqDPNcWbKTu3Nk4X+JZ/vwm4vyT3XYz6x9bhbMJw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEKXFvu9ubD0HOcf5pUo1YvxgrVIqPTpnaf6SUVeCkR4JaTrRlmCWl3RV9V6bL6i4xA==",
                             PersonId = 9,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "7cff8cad-f229-4eff-8fa4-cdd91e4786e7",
+                            SecurityStamp = "5d0504b9-492d-48b6-9a30-7c17fde0b9e2",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         },
@@ -865,17 +868,17 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = "aaaaaaaa-aaaa-aaaa-bbbb-aaaaaaaaaaaa",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "7e338bac-0bd3-4599-b590-aad0fd8fa65a",
+                            ConcurrencyStamp = "1d28f1ba-ea4c-4581-99a6-3a4c5c3c1fcb",
                             Email = "sys.smartneighborhood@gmail.com",
                             EmailConfirmed = true,
                             IsActive = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "SYS.SMARTNEIGHBORHOOD@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEPSZULw+of1VaUU9TbHPIRUgAU6s19OOY25hKPGlmqhvGOV3096VHhMFfbBQ2uY9/w==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEJ92QVTVNEJyNuJuaynphUieEo8g4VOwja7fkw+KyukE5AV87RQQNWdGLa3FwPYPkQ==",
                             PersonId = 1,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "37456c4a-6da6-4dec-bce3-d31dc53ddcac",
+                            SecurityStamp = "5071b641-b51e-48f9-a99c-a0e5dee9d869",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         });
@@ -941,9 +944,7 @@ namespace SmartNeighborhoodAPI.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime?>("LastUpdate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
@@ -959,151 +960,6 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasIndex("ResidentId");
 
                     b.ToTable("IDCardApplications");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            ApplicationNumber = "IDC-5001",
-                            Notes = "Initial application submitted",
-                            ResidentId = 1,
-                            Status = 0
-                        },
-                        new
-                        {
-                            Id = 2,
-                            ApplicationNumber = "IDC-5002",
-                            Notes = "Biometric verification pending",
-                            ResidentId = 3,
-                            Status = 1
-                        },
-                        new
-                        {
-                            Id = 3,
-                            ApplicationNumber = "IDC2003",
-                            ResidentId = 3,
-                            Status = 0
-                        },
-                        new
-                        {
-                            Id = 4,
-                            ApplicationNumber = "IDC2004",
-                            Notes = "Missing ID copy",
-                            ResidentId = 4,
-                            Status = 3
-                        },
-                        new
-                        {
-                            Id = 5,
-                            ApplicationNumber = "IDC2005",
-                            ResidentId = 5,
-                            Status = 2
-                        },
-                        new
-                        {
-                            Id = 6,
-                            ApplicationNumber = "IDC2006",
-                            ResidentId = 6,
-                            Status = 0
-                        },
-                        new
-                        {
-                            Id = 7,
-                            ApplicationNumber = "IDC2007",
-                            ResidentId = 7,
-                            Status = 1
-                        },
-                        new
-                        {
-                            Id = 8,
-                            ApplicationNumber = "IDC2008",
-                            ResidentId = 8,
-                            Status = 2
-                        },
-                        new
-                        {
-                            Id = 9,
-                            ApplicationNumber = "IDC2009",
-                            ResidentId = 9,
-                            Status = 0
-                        },
-                        new
-                        {
-                            Id = 10,
-                            ApplicationNumber = "IDC2010",
-                            ResidentId = 10,
-                            Status = 2
-                        },
-                        new
-                        {
-                            Id = 11,
-                            ApplicationNumber = "IDC2011",
-                            ResidentId = 11,
-                            Status = 3
-                        },
-                        new
-                        {
-                            Id = 12,
-                            ApplicationNumber = "IDC2012",
-                            ResidentId = 12,
-                            Status = 1
-                        },
-                        new
-                        {
-                            Id = 13,
-                            ApplicationNumber = "IDC2013",
-                            ResidentId = 13,
-                            Status = 2
-                        },
-                        new
-                        {
-                            Id = 14,
-                            ApplicationNumber = "IDC2014",
-                            ResidentId = 14,
-                            Status = 0
-                        },
-                        new
-                        {
-                            Id = 15,
-                            ApplicationNumber = "IDC2015",
-                            ResidentId = 15,
-                            Status = 1
-                        },
-                        new
-                        {
-                            Id = 16,
-                            ApplicationNumber = "IDC2016",
-                            ResidentId = 16,
-                            Status = 2
-                        },
-                        new
-                        {
-                            Id = 17,
-                            ApplicationNumber = "IDC2017",
-                            ResidentId = 17,
-                            Status = 0
-                        },
-                        new
-                        {
-                            Id = 18,
-                            ApplicationNumber = "IDC2018",
-                            ResidentId = 18,
-                            Status = 2
-                        },
-                        new
-                        {
-                            Id = 19,
-                            ApplicationNumber = "IDC2019",
-                            ResidentId = 19,
-                            Status = 3
-                        },
-                        new
-                        {
-                            Id = 20,
-                            ApplicationNumber = "IDC2020",
-                            ResidentId = 20,
-                            Status = 1
-                        });
                 });
 
             modelBuilder.Entity("SmartNeighborhoodAPI.Entites.Medicine", b =>
@@ -1115,8 +971,7 @@ namespace SmartNeighborhoodAPI.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -1129,142 +984,6 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Medicines");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "For diabetic patients",
-                            Name = "Insulin",
-                            Type = 2
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Description = "Blood pressure treatment",
-                            Name = "Amlodipine",
-                            Type = 3
-                        },
-                        new
-                        {
-                            Id = 21,
-                            Name = "Insulin",
-                            Type = 2
-                        },
-                        new
-                        {
-                            Id = 22,
-                            Name = "Metformin",
-                            Type = 2
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Amlodipine",
-                            Type = 3
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "Losartan",
-                            Type = 3
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "Antibiotic A",
-                            Type = 4
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Name = "Painkiller A",
-                            Type = 5
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Name = "Dolo 500",
-                            Type = 5
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Name = "Cold Relief",
-                            Type = 1
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Name = "Vitamin C",
-                            Type = 1
-                        },
-                        new
-                        {
-                            Id = 10,
-                            Name = "Iron Supplement",
-                            Type = 1
-                        },
-                        new
-                        {
-                            Id = 11,
-                            Name = "Lisinopril",
-                            Type = 3
-                        },
-                        new
-                        {
-                            Id = 12,
-                            Name = "Glibenclamide",
-                            Type = 2
-                        },
-                        new
-                        {
-                            Id = 13,
-                            Name = "Amoxicillin",
-                            Type = 4
-                        },
-                        new
-                        {
-                            Id = 14,
-                            Name = "Ibuprofen",
-                            Type = 5
-                        },
-                        new
-                        {
-                            Id = 15,
-                            Name = "Acetaminophen",
-                            Type = 5
-                        },
-                        new
-                        {
-                            Id = 16,
-                            Name = "Multivitamins",
-                            Type = 1
-                        },
-                        new
-                        {
-                            Id = 17,
-                            Name = "Magnesium Tablets",
-                            Type = 1
-                        },
-                        new
-                        {
-                            Id = 18,
-                            Name = "Zinc Supplements",
-                            Type = 1
-                        },
-                        new
-                        {
-                            Id = 19,
-                            Name = "Cough Syrup",
-                            Type = 1
-                        },
-                        new
-                        {
-                            Id = 20,
-                            Name = "Stomach Relief",
-                            Type = 1
-                        });
                 });
 
             modelBuilder.Entity("SmartNeighborhoodAPI.Entites.MedicineBatch", b =>
@@ -1296,26 +1015,6 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasIndex("MedicineId");
 
                     b.ToTable("MedicineBatches");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            ArrivalDate = new DateTime(2024, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ExpireDate = new DateTime(2025, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MedicineId = 1,
-                            Provider = "Health Association A",
-                            Quantity = 120
-                        },
-                        new
-                        {
-                            Id = 2,
-                            ArrivalDate = new DateTime(2024, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ExpireDate = new DateTime(2025, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            MedicineId = 2,
-                            Provider = "Medical Charity B",
-                            Quantity = 200
-                        });
                 });
 
             modelBuilder.Entity("SmartNeighborhoodAPI.Entites.PassportApplication", b =>
@@ -1332,9 +1031,7 @@ namespace SmartNeighborhoodAPI.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime?>("LastUpdate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
@@ -1350,191 +1047,6 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasIndex("ResidentId");
 
                     b.ToTable("PassportApplications");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            ApplicationNumber = "PAS-1001",
-                            LastUpdate = new DateTime(2025, 11, 27, 15, 56, 26, 937, DateTimeKind.Utc).AddTicks(6629),
-                            Notes = "Under review",
-                            ResidentId = 1,
-                            Status = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            ApplicationNumber = "PAS-1002",
-                            LastUpdate = new DateTime(2025, 11, 27, 15, 56, 26, 937, DateTimeKind.Utc).AddTicks(6634),
-                            Notes = "Ready for pickup",
-                            ResidentId = 2,
-                            Status = 2
-                        },
-                        new
-                        {
-                            Id = 21,
-                            ApplicationNumber = "PAS1001",
-                            LastUpdate = new DateTime(2025, 11, 27, 15, 56, 26, 937, DateTimeKind.Utc).AddTicks(6721),
-                            Notes = "Waiting",
-                            ResidentId = 1,
-                            Status = 0
-                        },
-                        new
-                        {
-                            Id = 22,
-                            ApplicationNumber = "PAS1002",
-                            LastUpdate = new DateTime(2025, 11, 27, 15, 56, 26, 937, DateTimeKind.Utc).AddTicks(6724),
-                            Notes = "Processing",
-                            ResidentId = 2,
-                            Status = 1
-                        },
-                        new
-                        {
-                            Id = 3,
-                            ApplicationNumber = "PAS1003",
-                            LastUpdate = new DateTime(2025, 11, 27, 15, 56, 26, 937, DateTimeKind.Utc).AddTicks(6733),
-                            Notes = "Ready",
-                            ResidentId = 3,
-                            Status = 2
-                        },
-                        new
-                        {
-                            Id = 4,
-                            ApplicationNumber = "PAS1004",
-                            LastUpdate = new DateTime(2025, 11, 27, 15, 56, 26, 937, DateTimeKind.Utc).AddTicks(6735),
-                            Notes = "Missing documents",
-                            ResidentId = 4,
-                            Status = 3
-                        },
-                        new
-                        {
-                            Id = 5,
-                            ApplicationNumber = "PAS1005",
-                            LastUpdate = new DateTime(2025, 11, 27, 15, 56, 26, 937, DateTimeKind.Utc).AddTicks(6737),
-                            ResidentId = 5,
-                            Status = 2
-                        },
-                        new
-                        {
-                            Id = 6,
-                            ApplicationNumber = "PAS1006",
-                            LastUpdate = new DateTime(2025, 11, 27, 15, 56, 26, 937, DateTimeKind.Utc).AddTicks(6739),
-                            ResidentId = 6,
-                            Status = 0
-                        },
-                        new
-                        {
-                            Id = 7,
-                            ApplicationNumber = "PAS1007",
-                            LastUpdate = new DateTime(2025, 11, 27, 15, 56, 26, 937, DateTimeKind.Utc).AddTicks(6741),
-                            ResidentId = 7,
-                            Status = 1
-                        },
-                        new
-                        {
-                            Id = 8,
-                            ApplicationNumber = "PAS1008",
-                            LastUpdate = new DateTime(2025, 11, 27, 15, 56, 26, 937, DateTimeKind.Utc).AddTicks(6744),
-                            ResidentId = 8,
-                            Status = 0
-                        },
-                        new
-                        {
-                            Id = 9,
-                            ApplicationNumber = "PAS1009",
-                            LastUpdate = new DateTime(2025, 11, 27, 15, 56, 26, 937, DateTimeKind.Utc).AddTicks(6746),
-                            ResidentId = 9,
-                            Status = 1
-                        },
-                        new
-                        {
-                            Id = 10,
-                            ApplicationNumber = "PAS1010",
-                            LastUpdate = new DateTime(2025, 11, 27, 15, 56, 26, 937, DateTimeKind.Utc).AddTicks(6749),
-                            ResidentId = 10,
-                            Status = 2
-                        },
-                        new
-                        {
-                            Id = 11,
-                            ApplicationNumber = "PAS1011",
-                            LastUpdate = new DateTime(2025, 11, 27, 15, 56, 26, 937, DateTimeKind.Utc).AddTicks(6751),
-                            ResidentId = 11,
-                            Status = 0
-                        },
-                        new
-                        {
-                            Id = 12,
-                            ApplicationNumber = "PAS1012",
-                            LastUpdate = new DateTime(2025, 11, 27, 15, 56, 26, 937, DateTimeKind.Utc).AddTicks(6753),
-                            ResidentId = 12,
-                            Status = 2
-                        },
-                        new
-                        {
-                            Id = 13,
-                            ApplicationNumber = "PAS1013",
-                            LastUpdate = new DateTime(2025, 11, 27, 15, 56, 26, 937, DateTimeKind.Utc).AddTicks(6754),
-                            ResidentId = 13,
-                            Status = 1
-                        },
-                        new
-                        {
-                            Id = 14,
-                            ApplicationNumber = "PAS1014",
-                            LastUpdate = new DateTime(2025, 11, 27, 15, 56, 26, 937, DateTimeKind.Utc).AddTicks(6756),
-                            ResidentId = 14,
-                            Status = 0
-                        },
-                        new
-                        {
-                            Id = 15,
-                            ApplicationNumber = "PAS1015",
-                            LastUpdate = new DateTime(2025, 11, 27, 15, 56, 26, 937, DateTimeKind.Utc).AddTicks(6758),
-                            ResidentId = 15,
-                            Status = 2
-                        },
-                        new
-                        {
-                            Id = 16,
-                            ApplicationNumber = "PAS1016",
-                            LastUpdate = new DateTime(2025, 11, 27, 15, 56, 26, 937, DateTimeKind.Utc).AddTicks(6761),
-                            Notes = "Invalid photo",
-                            ResidentId = 16,
-                            Status = 3
-                        },
-                        new
-                        {
-                            Id = 17,
-                            ApplicationNumber = "PAS1017",
-                            LastUpdate = new DateTime(2025, 11, 27, 15, 56, 26, 937, DateTimeKind.Utc).AddTicks(6762),
-                            ResidentId = 17,
-                            Status = 1
-                        },
-                        new
-                        {
-                            Id = 18,
-                            ApplicationNumber = "PAS1018",
-                            LastUpdate = new DateTime(2025, 11, 27, 15, 56, 26, 937, DateTimeKind.Utc).AddTicks(6764),
-                            ResidentId = 18,
-                            Status = 0
-                        },
-                        new
-                        {
-                            Id = 19,
-                            ApplicationNumber = "PAS1019",
-                            LastUpdate = new DateTime(2025, 11, 27, 15, 56, 26, 937, DateTimeKind.Utc).AddTicks(6766),
-                            ResidentId = 19,
-                            Status = 2
-                        },
-                        new
-                        {
-                            Id = 20,
-                            ApplicationNumber = "PAS1020",
-                            LastUpdate = new DateTime(2025, 11, 27, 15, 56, 26, 937, DateTimeKind.Utc).AddTicks(6768),
-                            ResidentId = 20,
-                            Status = 1
-                        });
                 });
 
             modelBuilder.Entity("SmartNeighborhoodAPI.Entites.ProjectTeam", b =>
@@ -1609,6 +1121,9 @@ namespace SmartNeighborhoodAPI.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<int>("OwnerId")
+                        .HasColumnType("int");
+
                     b.Property<int>("OwnerResidentId")
                         .HasColumnType("int");
 
@@ -1621,207 +1136,9 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OwnerResidentId");
+                    b.HasIndex("OwnerId");
 
                     b.ToTable("Vehicles");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            LicenseExpiryDate = new DateTime(2025, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Model = "Toyota Camry",
-                            OwnerResidentId = 1,
-                            PlateNumber = "1234A",
-                            Type = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            LicenseExpiryDate = new DateTime(2024, 8, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Model = "Honda Motorcycle",
-                            OwnerResidentId = 2,
-                            PlateNumber = "8891M",
-                            Type = 2
-                        },
-                        new
-                        {
-                            Id = 21,
-                            LicenseExpiryDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Model = "Toyota Camry",
-                            OwnerResidentId = 1,
-                            PlateNumber = "A1234",
-                            Type = 1
-                        },
-                        new
-                        {
-                            Id = 22,
-                            LicenseExpiryDate = new DateTime(2024, 12, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Model = "Hyundai Tucson",
-                            OwnerResidentId = 2,
-                            PlateNumber = "B5678",
-                            Type = 1
-                        },
-                        new
-                        {
-                            Id = 3,
-                            LicenseExpiryDate = new DateTime(2025, 4, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Model = "Nissan Patrol",
-                            OwnerResidentId = 3,
-                            PlateNumber = "C9981",
-                            Type = 1
-                        },
-                        new
-                        {
-                            Id = 4,
-                            LicenseExpiryDate = new DateTime(2025, 10, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Model = "Kia Sportage",
-                            OwnerResidentId = 4,
-                            PlateNumber = "D1122",
-                            Type = 1
-                        },
-                        new
-                        {
-                            Id = 5,
-                            LicenseExpiryDate = new DateTime(2025, 8, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Model = "Honda Civic",
-                            OwnerResidentId = 5,
-                            PlateNumber = "M7788",
-                            Type = 1
-                        },
-                        new
-                        {
-                            Id = 6,
-                            LicenseExpiryDate = new DateTime(2024, 6, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Model = "Honda Motorcycle",
-                            OwnerResidentId = 6,
-                            PlateNumber = "X1010",
-                            Type = 2
-                        },
-                        new
-                        {
-                            Id = 7,
-                            LicenseExpiryDate = new DateTime(2024, 11, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Model = "Suzuki Motorcycle",
-                            OwnerResidentId = 7,
-                            PlateNumber = "P2211",
-                            Type = 2
-                        },
-                        new
-                        {
-                            Id = 8,
-                            LicenseExpiryDate = new DateTime(2025, 2, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Model = "Ford Ranger",
-                            OwnerResidentId = 8,
-                            PlateNumber = "T5544",
-                            Type = 3
-                        },
-                        new
-                        {
-                            Id = 9,
-                            LicenseExpiryDate = new DateTime(2025, 3, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Model = "Isuzu D-Max",
-                            OwnerResidentId = 9,
-                            PlateNumber = "V9090",
-                            Type = 3
-                        },
-                        new
-                        {
-                            Id = 10,
-                            Model = "Unknown Motorcycle",
-                            OwnerResidentId = 10,
-                            Type = 2
-                        },
-                        new
-                        {
-                            Id = 11,
-                            LicenseExpiryDate = new DateTime(2025, 7, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Model = "Toyota Corolla",
-                            OwnerResidentId = 11,
-                            PlateNumber = "U3401",
-                            Type = 1
-                        },
-                        new
-                        {
-                            Id = 12,
-                            LicenseExpiryDate = new DateTime(2026, 1, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Model = "Hyundai Elantra",
-                            OwnerResidentId = 12,
-                            PlateNumber = "K4412",
-                            Type = 1
-                        },
-                        new
-                        {
-                            Id = 13,
-                            LicenseExpiryDate = new DateTime(2024, 9, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Model = "Mazda 6",
-                            OwnerResidentId = 13,
-                            PlateNumber = "Q9971",
-                            Type = 1
-                        },
-                        new
-                        {
-                            Id = 14,
-                            LicenseExpiryDate = new DateTime(2025, 2, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Model = "Chevrolet Spark",
-                            OwnerResidentId = 14,
-                            PlateNumber = "L5582",
-                            Type = 1
-                        },
-                        new
-                        {
-                            Id = 15,
-                            LicenseExpiryDate = new DateTime(2024, 10, 19, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Model = "Toyota Yaris",
-                            OwnerResidentId = 15,
-                            PlateNumber = "H8812",
-                            Type = 1
-                        },
-                        new
-                        {
-                            Id = 16,
-                            LicenseExpiryDate = new DateTime(2025, 9, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Model = "Honda CRV",
-                            OwnerResidentId = 16,
-                            PlateNumber = "S9420",
-                            Type = 1
-                        },
-                        new
-                        {
-                            Id = 17,
-                            LicenseExpiryDate = new DateTime(2024, 12, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Model = "Toyota Hilux",
-                            OwnerResidentId = 17,
-                            PlateNumber = "J3391",
-                            Type = 3
-                        },
-                        new
-                        {
-                            Id = 18,
-                            LicenseExpiryDate = new DateTime(2025, 8, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Model = "Suzuki Alto",
-                            OwnerResidentId = 18,
-                            PlateNumber = "R7310",
-                            Type = 1
-                        },
-                        new
-                        {
-                            Id = 19,
-                            LicenseExpiryDate = new DateTime(2026, 2, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Model = "BMW 320i",
-                            OwnerResidentId = 19,
-                            PlateNumber = "W4410",
-                            Type = 1
-                        },
-                        new
-                        {
-                            Id = 20,
-                            LicenseExpiryDate = new DateTime(2026, 5, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Model = "Mercedes C200",
-                            OwnerResidentId = 20,
-                            PlateNumber = "Z5501",
-                            Type = 1
-                        });
                 });
 
             modelBuilder.Entity("AdGroup", b =>
@@ -2125,7 +1442,7 @@ namespace SmartNeighborhoodAPI.Migrations
                 {
                     b.HasOne("OurProjectSmartNeiborhood.Entites.Person", "Owner")
                         .WithMany("Vehicles")
-                        .HasForeignKey("OwnerResidentId")
+                        .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
