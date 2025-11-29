@@ -140,6 +140,31 @@ namespace SmartNeighborhoodAPI.Helpers
             public const string Update = Prefix + "/{id:int}";
             public const string Delete = Prefix + "/{id:int}";
         }
+        public static class Medicines
+        {
+            public const string Prefix = Rule + "medicines";
+
+            public const string GetAll = Prefix;
+            public const string GetById = Prefix + "/{id:int}";
+            public const string Add = Prefix;
+            public const string Update = Prefix + "/{id:int}";
+            public const string Delete = Prefix + "/{id:int}";
+
+            public const string GetBatches = Prefix + "/{medicineId:int}/batches";
+            public const string AddBatch = Prefix + "/{medicineId:int}/batches";
+            public const string UpdateBatch = Prefix + "/{medicineId:int}/batches/{batchId:int}";
+            public const string DeleteBatch = Prefix + "/{medicineId:int}/batches/{batchId:int}";
+        }
+        public static class MedicineBatches
+        {
+            public const string Prefix = Rule + "medicine-batches";
+            public const string GetById = Prefix + "/{id:int}";
+
+            public const string GetAll = Prefix;
+            public const string Add = Prefix;
+            public const string Update = Prefix + "/{id:int}";
+            public const string Delete = Prefix + "/{id:int}";
+        }
 
         public static class Projects
         {
