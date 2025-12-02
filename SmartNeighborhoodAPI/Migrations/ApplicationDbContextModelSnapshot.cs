@@ -228,11 +228,8 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("BlockManagerId")
+                    b.Property<int>("BlockManagerId")
                         .HasColumnType("int");
-
-                    b.Property<string>("ManagerId")
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -240,13 +237,13 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     b.Property<string>("UnitManagerId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("BlockManagerId");
 
-                    b.HasIndex("ManagerId");
+                    b.HasIndex("UnitManagerId");
 
                     b.ToTable("Blocks");
                 });
@@ -609,9 +606,6 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("ManagerId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(40)
@@ -633,8 +627,6 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     b.HasIndex("BlockId");
 
-                    b.HasIndex("ManagerId");
-
                     b.HasIndex("ProjectCatogoryId");
 
                     b.ToTable("Projects", (string)null);
@@ -647,7 +639,6 @@ namespace SmartNeighborhoodAPI.Migrations
                             Budget = 100000m,
                             Description = "هذا مشروع تمهيدي",
                             EndDate = new DateTime(2025, 12, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ManagerId = 1,
                             Name = "مشروع تجريبي",
                             ProjectCatogoryId = 1,
                             ProjectPriority = 1,
@@ -860,44 +851,6 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasIndex("PersonId");
 
                     b.ToTable("AspNetUsers", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "5e37e176-9e6f-418f-8319-49f62303daa7",
-                            Email = "sys.smartneighborhood@gmail.com",
-                            EmailConfirmed = true,
-                            IsActive = false,
-                            LockoutEnabled = false,
-                            NormalizedEmail = "sys.smartneighborhood@gmail.com",
-                            NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEAmbVGpubDkryyF8i7rPaZHEeJvFObtkjFTC6EZIFM9xWcHaoLugo1OaULvK+ErkIA==",
-                            PersonId = 9,
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "94ac9aec-73b8-4ea3-8533-4ad0ac3282c7",
-                            TwoFactorEnabled = false,
-                            UserName = "Admin"
-                        },
-                        new
-                        {
-                            Id = "aaaaaaaa-aaaa-aaaa-bbbb-aaaaaaaaaaaa",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "023cc77a-a704-4337-be52-2cd3fd263d28",
-                            Email = "sys.smartneighborhood@gmail.com",
-                            EmailConfirmed = true,
-                            IsActive = false,
-                            LockoutEnabled = false,
-                            NormalizedEmail = "SYS.SMARTNEIGHBORHOOD@GMAIL.COM",
-                            NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEPMjuVYj4pTZxvvXpLT3vjPAxpeYpRaQ7NaNFdO7g3oWIDAHt9Mfrwfl0mGOLyFdZg==",
-                            PersonId = 1,
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "17c52069-5b00-4c55-94cb-8e557a61a374",
-                            TwoFactorEnabled = false,
-                            UserName = "Admin"
-                        });
                 });
 
             modelBuilder.Entity("SmartNeighborhoodAPI.Entites.ProjectTeam", b =>
@@ -1028,15 +981,18 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasOne("OurProjectSmartNeiborhood.Entites.Block", "BlockManager")
                         .WithMany("ChildBlocks")
                         .HasForeignKey("BlockManagerId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.HasOne("SmartNeighborhoodAPI.Entites.AppUser", "Manager")
+                    b.HasOne("SmartNeighborhoodAPI.Entites.AppUser", "UnitManager")
                         .WithMany()
-                        .HasForeignKey("ManagerId");
+                        .HasForeignKey("UnitManagerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("BlockManager");
 
-                    b.Navigation("Manager");
+                    b.Navigation("UnitManager");
                 });
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.ConflictCase", b =>
@@ -1136,12 +1092,6 @@ namespace SmartNeighborhoodAPI.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("OurProjectSmartNeiborhood.Entites.Person", "Manager")
-                        .WithMany()
-                        .HasForeignKey("ManagerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("OurProjectSmartNeiborhood.Entites.ProjectCatogory", "ProjectCatogory")
                         .WithMany("Projects")
                         .HasForeignKey("ProjectCatogoryId")
@@ -1149,8 +1099,6 @@ namespace SmartNeighborhoodAPI.Migrations
                         .IsRequired();
 
                     b.Navigation("Block");
-
-                    b.Navigation("Manager");
 
                     b.Navigation("ProjectCatogory");
                 });

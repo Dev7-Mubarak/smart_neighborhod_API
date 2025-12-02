@@ -17,9 +17,6 @@ namespace SmartNeighborhoodAPI.Configuration
             builder.Property(p => p.Description)
                 .HasMaxLength(200);
 
-            builder.Property(p => p.ManagerId)
-                .IsRequired();
-
             builder.Property(p => p.ProjectCatogoryId)
                 .IsRequired();
 
@@ -53,7 +50,6 @@ namespace SmartNeighborhoodAPI.Configuration
                 Id = 1,
                 Name = "مشروع تجريبي",
                 Description = "هذا مشروع تمهيدي",
-                ManagerId = 1,
                 ProjectCatogoryId = 1,
                 StartDate = new DateTime(2025, 1, 1),
                 EndDate = new DateTime(2025, 12, 31),

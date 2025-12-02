@@ -93,8 +93,8 @@ namespace SmartNeighborhoodAPI.Services
                     Role = currentUser.Role,
                     Name = b.Name,
                     Email = currentUser.Email,
-                    PersonId = b.Manager.PersonId,
-                    FullName = b.Manager.Person.FullName
+                    PersonId = b.UnitManager.PersonId,
+                    FullName = b.UnitManager.Person.FullName
                 })
                 .AsNoTracking()
                 .ToListAsync();
@@ -316,7 +316,7 @@ namespace SmartNeighborhoodAPI.Services
                     {
                         Id = x.Id,
                         Name = x.Name,
-                        ManagerName = x.Manager.Person.FullName,
+                        ManagerName = x.UnitManager.Person.FullName,
                         TotalFamilies = x.Families.Count,
                         totalOrphans = x.Families.Count(f => f.FamilyCatgory.Id == 2),
                         TotalWidows = x.Families.Count(f => f.FamilyCatgory.Id == 1),

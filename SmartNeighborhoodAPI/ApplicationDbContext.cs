@@ -23,7 +23,7 @@ namespace SmartNeighborhoodAPI
             builder.ApplyConfiguration(new MemberFamilyRoleConfiguration());
             builder.ApplyConfiguration(new FamilyCatgoryConfiguration());
             builder.ApplyConfiguration(new IdentityRoleSeedConfiguration());
-            builder.ApplyConfiguration(new AppUserSeedConfiguration());
+            //builder.ApplyConfiguration(new AppUserSeedConfiguration());
             builder.ApplyConfiguration(new IdentityUserRoleSeedConfiguration());
             builder.ApplyConfiguration(new ProjectCatgoryEntityTypeConfiguration());
             builder.ApplyConfiguration(new ProjectConfiguration());
@@ -57,23 +57,23 @@ namespace SmartNeighborhoodAPI
                 .Property(c => c.Notes)
                 .IsRequired(false);
 
-            // Admin user seed
-            var adminUserId = "aaaaaaaa-aaaa-aaaa-bbbb-aaaaaaaaaaaa";
+            //// Admin user seed
+            //var adminUserId = "aaaaaaaa-aaaa-aaaa-bbbb-aaaaaaaaaaaa";
 
-            var hasher = new PasswordHasher<AppUser>();
-            var adminUser = new AppUser
-            {
-                Id = adminUserId,
-                UserName = "Admin",
-                NormalizedUserName = "ADMIN",
-                Email = "sys.smartneighborhood@gmail.com",
-                NormalizedEmail = "SYS.SMARTNEIGHBORHOOD@GMAIL.COM",
-                EmailConfirmed = true,
-                PersonId = 1,
-                PasswordHash = hasher.HashPassword(null, "Mub_12345")
-            };
+            //var hasher = new PasswordHasher<AppUser>();
+            //var adminUser = new AppUser
+            //{
+            //    Id = adminUserId,
+            //    UserName = "Admin",
+            //    NormalizedUserName = "ADMIN",
+            //    Email = "sys.smartneighborhood@gmail.com",
+            //    NormalizedEmail = "SYS.SMARTNEIGHBORHOOD@GMAIL.COM",
+            //    EmailConfirmed = true,
+            //    PersonId = 1,
+            //    PasswordHash = hasher.HashPassword(null, "Mub_12345")
+            //};
 
-            builder.Entity<AppUser>().HasData(adminUser);
+            //builder.Entity<AppUser>().HasData(adminUser);
 
         }
 

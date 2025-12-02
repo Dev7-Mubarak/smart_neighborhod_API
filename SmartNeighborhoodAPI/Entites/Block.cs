@@ -8,7 +8,7 @@ namespace OurProjectSmartNeiborhood.Entites
         public int Id { get; set; }
         public string Name { get; set; }
 
-        public int? BlockManagerId { get; set; }
+        public int BlockManagerId { get; set; }
 
         public Block BlockManager { get; set; }
 
@@ -16,7 +16,7 @@ namespace OurProjectSmartNeiborhood.Entites
 
         public string UnitManagerId { get; set; }
         [JsonIgnore]
-        public AppUser Manager { get; set; }
+        public AppUser UnitManager { get; set; }
 
         [JsonIgnore]
         public ICollection<Family> Families { get; set; } = new List<Family>();

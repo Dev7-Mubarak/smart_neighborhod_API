@@ -12,8 +12,8 @@ using SmartNeighborhoodAPI;
 namespace SmartNeighborhoodAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251024070952_add-user")]
-    partial class adduser
+    [Migration("20251202164736_self-join-in-blocks")]
+    partial class selfjoininblocks
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -231,17 +231,22 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ManagerId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("BlockManagerId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UnitManagerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("ManagerId");
+                    b.HasIndex("BlockManagerId");
+
+                    b.HasIndex("UnitManagerId");
 
                     b.ToTable("Blocks");
                 });
@@ -271,6 +276,9 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("BlockId")
+                        .HasColumnType("int");
+
                     b.Property<int>("ConflictTypeId")
                         .HasColumnType("int");
 
@@ -289,7 +297,6 @@ namespace SmartNeighborhoodAPI.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Notes")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("SecondPartyId")
@@ -303,6 +310,8 @@ namespace SmartNeighborhoodAPI.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BlockId");
 
                     b.HasIndex("ConflictTypeId");
 
@@ -597,9 +606,6 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("ManagerId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(40)
@@ -619,8 +625,6 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ManagerId");
-
                     b.HasIndex("ProjectCatogoryId");
 
                     b.ToTable("Projects", (string)null);
@@ -632,7 +636,6 @@ namespace SmartNeighborhoodAPI.Migrations
                             Budget = 100000m,
                             Description = "هذا مشروع تمهيدي",
                             EndDate = new DateTime(2025, 12, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ManagerId = 1,
                             Name = "مشروع تجريبي",
                             ProjectCatogoryId = 1,
                             ProjectPriority = 1,
@@ -845,44 +848,6 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasIndex("PersonId");
 
                     b.ToTable("AspNetUsers", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "7fcc2f62-9210-4e8e-a54a-d06e9dcb8840",
-                            Email = "sys.smartneighborhood@gmail.com",
-                            EmailConfirmed = true,
-                            IsActive = false,
-                            LockoutEnabled = false,
-                            NormalizedEmail = "sys.smartneighborhood@gmail.com",
-                            NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEKSPi6+2p1MpK/K59UYh26wFnHWX6hFp2cvvHhQwTgdtZcYHKctQBKZUOsOawfr6Sg==",
-                            PersonId = 9,
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "8fb739fc-cc9d-41bb-967a-e8a3a4c97820",
-                            TwoFactorEnabled = false,
-                            UserName = "Admin"
-                        },
-                        new
-                        {
-                            Id = "aaaaaaaa-aaaa-aaaa-bbbb-aaaaaaaaaaaa",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "827e78f4-64fb-4988-93d7-2e827fec53a8",
-                            Email = "sys.smartneighborhood@gmail.com",
-                            EmailConfirmed = true,
-                            IsActive = false,
-                            LockoutEnabled = false,
-                            NormalizedEmail = "SYS.SMARTNEIGHBORHOOD@GMAIL.COM",
-                            NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEMNFnV481FAfASxgMjPtK9vjqvVIVkHk5AHcifE81x7n86lZ11xwEX/VYYTzuF4ZoQ==",
-                            PersonId = 1,
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "cfe93dd9-0b84-4611-bfc3-364ec2f1e97a",
-                            TwoFactorEnabled = false,
-                            UserName = "Admin"
-                        });
                 });
 
             modelBuilder.Entity("SmartNeighborhoodAPI.Entites.ProjectTeam", b =>
@@ -1010,17 +975,31 @@ namespace SmartNeighborhoodAPI.Migrations
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.Block", b =>
                 {
-                    b.HasOne("SmartNeighborhoodAPI.Entites.AppUser", "Manager")
+                    b.HasOne("OurProjectSmartNeiborhood.Entites.Block", "BlockManager")
+                        .WithMany("ChildBlocks")
+                        .HasForeignKey("BlockManagerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SmartNeighborhoodAPI.Entites.AppUser", "UnitManager")
                         .WithMany()
-                        .HasForeignKey("ManagerId")
+                        .HasForeignKey("UnitManagerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Manager");
+                    b.Navigation("BlockManager");
+
+                    b.Navigation("UnitManager");
                 });
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.ConflictCase", b =>
                 {
+                    b.HasOne("OurProjectSmartNeiborhood.Entites.Block", "Block")
+                        .WithMany()
+                        .HasForeignKey("BlockId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("OurProjectSmartNeiborhood.Entites.ConfilctType", "ConflictType")
                         .WithMany("Conflicts")
                         .HasForeignKey("ConflictTypeId")
@@ -1044,6 +1023,8 @@ namespace SmartNeighborhoodAPI.Migrations
                         .HasForeignKey("SecondPartyId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Block");
 
                     b.Navigation("ConflictType");
 
@@ -1102,19 +1083,11 @@ namespace SmartNeighborhoodAPI.Migrations
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.Project", b =>
                 {
-                    b.HasOne("OurProjectSmartNeiborhood.Entites.Person", "Manager")
-                        .WithMany()
-                        .HasForeignKey("ManagerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("OurProjectSmartNeiborhood.Entites.ProjectCatogory", "ProjectCatogory")
                         .WithMany("Projects")
                         .HasForeignKey("ProjectCatogoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Manager");
 
                     b.Navigation("ProjectCatogory");
                 });
@@ -1197,6 +1170,8 @@ namespace SmartNeighborhoodAPI.Migrations
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.Block", b =>
                 {
+                    b.Navigation("ChildBlocks");
+
                     b.Navigation("Families");
                 });
 

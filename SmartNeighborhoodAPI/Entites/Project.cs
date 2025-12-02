@@ -8,8 +8,6 @@ namespace OurProjectSmartNeiborhood.Entites
         public int Id { get; set; }
         public string Name { get; set; }
         public string? Description { get; set; }
-        public int ManagerId { get; set; }
-        public Person Manager { get; set; }
         public int BlockId { get; set; }
         public Block Block { get; set; }
         public int ProjectCatogoryId { get; set; }

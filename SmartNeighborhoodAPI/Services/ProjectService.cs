@@ -46,7 +46,7 @@ namespace SmartNeighborhoodAPI.Services
             {
                 Name = projectDto.Name,
                 Description = projectDto.Description,
-                ManagerId = projectDto.ManagerId,
+                //ManagerId = projectDto.ManagerId,
                 ProjectCatogoryId = projectDto.ProjectCatgoryId,
                 StartDate = projectDto.StartDate,
                 EndDate = projectDto.EndDate,
@@ -107,7 +107,7 @@ namespace SmartNeighborhoodAPI.Services
             // base query
             var query = _context.Projects
                 .Include(x => x.ProjectCatogory)
-                .Include(x => x.Manager)
+                //.Include(x => x.Manager)
                 .AsNoTracking()
                 .AsQueryable();
 
@@ -156,11 +156,11 @@ namespace SmartNeighborhoodAPI.Services
                 ProjectStatus = GetDisplayName(project.ProjectStatus),
                 ProjectPriority = GetDisplayName(project.ProjectPriority),
                 Budget = project.Budget,
-                Manager = new CustomPersonDto
-                {
-                    Id = project.Manager.Id,
-                    FullName = project.Manager.FullName
-                },
+                //Manager = new CustomPersonDto
+                //{
+                //    Id = project.Manager.Id,
+                //    FullName = project.Manager.FullName
+                //},
                 ProjectCatgory = project.ProjectCatogory
             }).ToList();
 
@@ -174,7 +174,7 @@ namespace SmartNeighborhoodAPI.Services
         public async Task<ApiResponse<ReturnProjectDto>> GetByIdAsync(int id)
         {
             var project = await _context.Projects
-                .Include(x => x.Manager)
+                //.Include(x => x.Manager)
                 .Include(x => x.ProjectCatogory)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
@@ -195,11 +195,11 @@ namespace SmartNeighborhoodAPI.Services
                 EndDate = project.EndDate,
                 ProjectStatus = GetDisplayName(project.ProjectStatus),
                 ProjectPriority = GetDisplayName(project.ProjectPriority),
-                Manager = new CustomPersonDto
-                {
-                    Id = project.Manager.Id,
-                    FullName = project.Manager.FullName
-                },
+                //Manager = new CustomPersonDto
+                //{
+                //    Id = project.Manager.Id,
+                //    FullName = project.Manager.FullName
+                //},
                 ProjectCatgory = project.ProjectCatogory
             };
 
@@ -237,7 +237,7 @@ namespace SmartNeighborhoodAPI.Services
             // Manual property update
             existingProject.Name = projectDto.Name;
             existingProject.Description = projectDto.Description;
-            existingProject.ManagerId = projectDto.ManagerId;
+            //existingProject.ManagerId = projectDto.ManagerId;
             existingProject.ProjectCatogoryId = projectDto.ProjectCatgoryId;
             existingProject.StartDate = projectDto.StartDate;
             existingProject.EndDate = projectDto.EndDate;
