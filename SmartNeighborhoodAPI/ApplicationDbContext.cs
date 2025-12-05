@@ -24,7 +24,7 @@ namespace SmartNeighborhoodAPI
             builder.ApplyConfiguration(new MemberFamilyRoleConfiguration());
             builder.ApplyConfiguration(new FamilyCatgoryConfiguration());
             builder.ApplyConfiguration(new IdentityRoleSeedConfiguration());
-            //builder.ApplyConfiguration(new AppUserSeedConfiguration());
+            builder.ApplyConfiguration(new AppUserSeedConfiguration());
             builder.ApplyConfiguration(new IdentityUserRoleSeedConfiguration());
             builder.ApplyConfiguration(new ProjectCatgoryEntityTypeConfiguration());
             //builder.ApplyConfiguration(new ProjectConfiguration());
@@ -48,12 +48,6 @@ namespace SmartNeighborhoodAPI
                 .HasForeignKey<Block>(b => b.BlockManagerId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Entity<Project>()
-                .HasOne(p => p.Block)
-                .WithMany(b => b.Projects)
-                .HasForeignKey(p => p.BlockId)
-                .OnDelete(DeleteBehavior.Cascade);
-
             builder.Entity<ConflictCase>()
             .HasOne(c => c.Block)
             .WithMany(b => b.ConflictCases)
@@ -61,6 +55,18 @@ namespace SmartNeighborhoodAPI
             .OnDelete(DeleteBehavior.Cascade);
 
 
+            builder.Entity<ProjectBlock>()
+                .HasKey(pb => new { pb.ProjectId, pb.BlockId }); 
+
+            builder.Entity<ProjectBlock>()
+                .HasOne(pb => pb.Project)
+                .WithMany(p => p.ProjectBlocks)
+                .HasForeignKey(pb => pb.ProjectId);
+
+            builder.Entity<ProjectBlock>()
+                .HasOne(pb => pb.Block)
+                .WithMany(b => b.ProjectBlocks)
+                .HasForeignKey(pb => pb.BlockId);
 
             builder.Entity<TeamRole>().HasData(
                    new TeamRole { Id = 1, Name = "مدير المشروع"},

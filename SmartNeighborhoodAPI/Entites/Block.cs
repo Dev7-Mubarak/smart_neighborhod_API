@@ -15,7 +15,7 @@ namespace OurProjectSmartNeiborhood.Entites
         public AppUser BlockManager { get; set; }
 
         public ICollection<Family> Families { get; set; } = new List<Family>();
-        public ICollection<Project> Projects { get; set; } = new List<Project>();
+        public ICollection<ProjectBlock> ProjectBlocks { get; set; } = new List<ProjectBlock>();
         public ICollection<ConflictCase> ConflictCases { get; set; } = new List<ConflictCase>();
     }
 }

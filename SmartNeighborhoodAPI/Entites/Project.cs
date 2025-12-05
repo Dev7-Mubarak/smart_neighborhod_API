@@ -8,8 +8,6 @@ namespace OurProjectSmartNeiborhood.Entites
         public int Id { get; set; }
         public string Name { get; set; }
         public string? Description { get; set; }
-        public int BlockId { get; set; }
-        public Block Block { get; set; }
         public int ProjectCatogoryId { get; set; }
         public ProjectCatogory ProjectCatogory { get; set; }
         public DateTime StartDate { get; set; }
@@ -20,5 +18,7 @@ namespace OurProjectSmartNeiborhood.Entites
 
         public ICollection<ProjectTeam> ProjectTeams { get; set; }
         public ICollection<ProjectFamily> ProjectFamilies { get; set; }
+        public ICollection<ProjectBlock> ProjectBlocks { get; set; } = new List<ProjectBlock>();
+
     }
 }

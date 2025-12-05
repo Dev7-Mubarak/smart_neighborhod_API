@@ -1,15 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using SmartNeighborhoodAPI.Entites;
-using SmartNeighborhoodAPI.Helpers;
 using SmartNeighborhoodAPI.Helpers.DTOs.Auth;
 using SmartNeighborhoodAPI.Helpers.DTOs.block;
 using SmartNeighborhoodAPI.Helpers.DTOs.Families;
 using SmartNeighborhoodAPI.Helpers.DTOs.ResidentialUnits;
 using SmartNeighborhoodAPI.Interfaces;
 using System.Data;
-using System.Linq;
 using System.Net;
-using static SmartNeighborhoodAPI.Helpers.Router;
 
 namespace SmartNeighborhoodAPI.Services
 {

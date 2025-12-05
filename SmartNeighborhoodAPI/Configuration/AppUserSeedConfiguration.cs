@@ -17,7 +17,7 @@ namespace SmartNeighborhoodAPI.Configuration
                 Email = "sys.smartneighborhood@gmail.com",
                 NormalizedEmail = "sys.smartneighborhood@gmail.com",
                 EmailConfirmed = true,
-                PersonId = 9,
+                PersonId = 1,
                 PasswordHash = new PasswordHasher<AppUser>().HashPassword(null, "Mub_12345")
             };
 

@@ -593,9 +593,6 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("BlockId")
-                        .HasColumnType("int");
-
                     b.Property<double?>("Budget")
                         .HasColumnType("float");
 
@@ -622,8 +619,6 @@ namespace SmartNeighborhoodAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BlockId");
 
                     b.HasIndex("ProjectCatogoryId");
 
@@ -834,6 +829,26 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasIndex("PersonId");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "c5bed72f-ebe0-4156-8af5-5f9b9d863239",
+                            Email = "sys.smartneighborhood@gmail.com",
+                            EmailConfirmed = true,
+                            IsActive = false,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "sys.smartneighborhood@gmail.com",
+                            NormalizedUserName = "ADMIN",
+                            PasswordHash = "AQAAAAIAAYagAAAAEHxmSInlpDfnb+s5UUkggWAw9JKMBbBvKVoRCdVYRL3a4/l6OioQQVkHg9w9JJW/mw==",
+                            PersonId = 1,
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "f49b23a8-cb5e-43bd-85cc-cc99e9c62356",
+                            TwoFactorEnabled = false,
+                            UserName = "Admin"
+                        });
                 });
 
             modelBuilder.Entity("SmartNeighborhoodAPI.Entites.GovernmentInstitution", b =>
@@ -882,6 +897,21 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.ToTable("GovernmentInstitutionContacts");
                 });
 
+            modelBuilder.Entity("SmartNeighborhoodAPI.Entites.ProjectBlock", b =>
+                {
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BlockId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ProjectId", "BlockId");
+
+                    b.HasIndex("BlockId");
+
+                    b.ToTable("ProjectBlock");
+                });
+
             modelBuilder.Entity("SmartNeighborhoodAPI.Entites.ProjectTeam", b =>
                 {
                     b.Property<int>("Id")
@@ -926,7 +956,7 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasIndex("UnitManagerId")
                         .IsUnique();
 
-                    b.ToTable("ResidentialUnit");
+                    b.ToTable("ResidentialUnits");
                 });
 
             modelBuilder.Entity("SmartNeighborhoodAPI.Entites.TeamRole", b =>
@@ -1131,19 +1161,11 @@ namespace SmartNeighborhoodAPI.Migrations
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.Project", b =>
                 {
-                    b.HasOne("OurProjectSmartNeiborhood.Entites.Block", "Block")
-                        .WithMany("Projects")
-                        .HasForeignKey("BlockId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("OurProjectSmartNeiborhood.Entites.ProjectCatogory", "ProjectCatogory")
                         .WithMany("Projects")
                         .HasForeignKey("ProjectCatogoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Block");
 
                     b.Navigation("ProjectCatogory");
                 });
@@ -1216,6 +1238,25 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.Navigation("GovernmentInstitution");
                 });
 
+            modelBuilder.Entity("SmartNeighborhoodAPI.Entites.ProjectBlock", b =>
+                {
+                    b.HasOne("OurProjectSmartNeiborhood.Entites.Block", "Block")
+                        .WithMany("ProjectBlocks")
+                        .HasForeignKey("BlockId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("OurProjectSmartNeiborhood.Entites.Project", "Project")
+                        .WithMany("ProjectBlocks")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Block");
+
+                    b.Navigation("Project");
+                });
+
             modelBuilder.Entity("SmartNeighborhoodAPI.Entites.ProjectTeam", b =>
                 {
                     b.HasOne("OurProjectSmartNeiborhood.Entites.Project", "Project")
@@ -1252,7 +1293,7 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     b.Navigation("Families");
 
-                    b.Navigation("Projects");
+                    b.Navigation("ProjectBlocks");
                 });
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.ConfilctType", b =>
@@ -1293,6 +1334,8 @@ namespace SmartNeighborhoodAPI.Migrations
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.Project", b =>
                 {
+                    b.Navigation("ProjectBlocks");
+
                     b.Navigation("ProjectFamilies");
 
                     b.Navigation("ProjectTeams");
