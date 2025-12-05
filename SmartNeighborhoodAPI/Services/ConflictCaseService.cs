@@ -48,7 +48,7 @@ namespace SmartNeighborhoodAPI.Services
             var currentUser = _userContextService.GetCurrentUser();
             _logger.LogInformation("Retrieving ConflictCases for user {UserId} with role {Role}", currentUser.Id, currentUser.Role);
 
-            if (currentUser.Role == Role.User)
+            if (currentUser.Role == Role.BlockManager)
             {
                 _logger.LogWarning("User {UserId} attempted to access ConflictCases without permission", currentUser.Id);
                 return ApiResponse<IEnumerable<GetConflictCaseDto>>

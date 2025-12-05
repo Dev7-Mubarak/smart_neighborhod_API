@@ -7,6 +7,19 @@ namespace SmartNeighborhoodAPI.Helpers
         public const string Root = "api";
         public const string Rule = Root + "/";
 
+        public static class ResidentialUnits
+        {
+            public const string Prefix = Rule + "ResidentialUnits";
+
+            public const string Add = Prefix;
+            public const string GetAll = Prefix;
+            public const string GetById = Prefix + "/{id:int}";
+            public const string Update = Prefix + "/{id:int}";
+            public const string Delete = Prefix + "/{id:int}";
+
+            public const string Blocks = Prefix + "/{unitId:int}/blocks";             
+            public const string BlockById = Blocks + "/{blockId:int}";
+        }
         public static class Blocks
         {
             public const string Prefix = Rule + "blocks";

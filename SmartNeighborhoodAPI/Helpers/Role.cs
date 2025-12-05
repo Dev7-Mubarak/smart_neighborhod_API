@@ -4,6 +4,6 @@
     {
          public const string Admin = "Admin";
          public const string BlockManager = "BlockManager";
-        public const string User = "User";
+         public const string UnitManager = "UnitManager";
     }
 }
