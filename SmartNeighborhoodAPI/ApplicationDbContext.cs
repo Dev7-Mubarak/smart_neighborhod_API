@@ -24,10 +24,43 @@ namespace SmartNeighborhoodAPI
             builder.ApplyConfiguration(new MemberFamilyRoleConfiguration());
             builder.ApplyConfiguration(new FamilyCatgoryConfiguration());
             builder.ApplyConfiguration(new IdentityRoleSeedConfiguration());
-            builder.ApplyConfiguration(new AppUserSeedConfiguration());
+            //builder.ApplyConfiguration(new AppUserSeedConfiguration());
             builder.ApplyConfiguration(new IdentityUserRoleSeedConfiguration());
             builder.ApplyConfiguration(new ProjectCatgoryEntityTypeConfiguration());
-            builder.ApplyConfiguration(new ProjectConfiguration());
+            //builder.ApplyConfiguration(new ProjectConfiguration());
+            base.OnModelCreating(builder);
+
+            builder.Entity<ResidentialUnit>()
+                .HasOne(u => u.UnitManager)
+                .WithOne(a => a.ManagesUnit)
+                .HasForeignKey<ResidentialUnit>(u => u.UnitManagerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Block>()
+                .HasOne(b => b.ResidentialUnit)
+                .WithMany(u => u.Blocks)
+                .HasForeignKey(b => b.ResidentialUnitId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Block>()
+                .HasOne(b => b.BlockManager)
+                .WithOne(a => a.ManagesBlock)
+                .HasForeignKey<Block>(b => b.BlockManagerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Project>()
+                .HasOne(p => p.Block)
+                .WithMany(b => b.Projects)
+                .HasForeignKey(p => p.BlockId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<ConflictCase>()
+            .HasOne(c => c.Block)
+            .WithMany(b => b.ConflictCases)
+            .HasForeignKey(c => c.BlockId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+
 
             builder.Entity<TeamRole>().HasData(
                    new TeamRole { Id = 1, Name = "مدير المشروع"},
@@ -51,23 +84,23 @@ namespace SmartNeighborhoodAPI
                 .Property(c => c.Notes)
                 .IsRequired(false);
 
-            // Admin user seed
-            var adminUserId = "aaaaaaaa-aaaa-aaaa-bbbb-aaaaaaaaaaaa";
+            //// Admin user seed
+            //var adminUserId = "aaaaaaaa-aaaa-aaaa-bbbb-aaaaaaaaaaaa";
 
-            var hasher = new PasswordHasher<AppUser>();
-            var adminUser = new AppUser
-            {
-                Id = adminUserId,
-                UserName = "Admin",
-                NormalizedUserName = "ADMIN",
-                Email = "sys.smartneighborhood@gmail.com",
-                NormalizedEmail = "SYS.SMARTNEIGHBORHOOD@GMAIL.COM",
-                EmailConfirmed = true,
-                PersonId = 1,
-                PasswordHash = hasher.HashPassword(null, "Mub_12345")
-            };
+            //var hasher = new PasswordHasher<AppUser>();
+            //var adminUser = new AppUser
+            //{
+            //    Id = adminUserId,
+            //    UserName = "Admin",
+            //    NormalizedUserName = "ADMIN",
+            //    Email = "sys.smartneighborhood@gmail.com",
+            //    NormalizedEmail = "SYS.SMARTNEIGHBORHOOD@GMAIL.COM",
+            //    EmailConfirmed = true,
+            //    PersonId = 1,
+            //    PasswordHash = hasher.HashPassword(null, "Mub_12345")
+            //};
 
-            builder.Entity<AppUser>().HasData(adminUser);
+            //builder.Entity<AppUser>().HasData(adminUser);
 
         }
         public DbSet<GovernmentInstitutionContact> GovernmentInstitutionContacts { get; set; }

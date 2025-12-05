@@ -40,24 +40,61 @@ namespace SmartNeighborhoodAPI.Services
 
             if (currentUser.Role == Role.BlockManager)
             {
-                query = query.Where(b => b.ManagerId == currentUser.Id);
+                var rootBlockIds = await _context.Blocks
+                    //.Where(b => b.UnitManagerId == currentUser.Id)
+                    .Select(b => b.Id)
+                    .ToListAsync();
+
+                if (!rootBlockIds.Any())
+                {
+                    _logger.LogInformation("Block manager {UserId} has no managed blocks.", currentUser.Id);
+                    return ApiResponse<IEnumerable<RetrunBlockDto>>
+                        .Success(Enumerable.Empty<RetrunBlockDto>(), "لا توجد بيانات متاحة.");
+                }
+
+         
+                var flatBlocks = await _context.Blocks
+                    .Select(b => new { b.Id, b.BlockManagerId })
+                    .ToListAsync();
+
+                var allowedIds = new HashSet<int>(rootBlockIds);
+                var queue = new Queue<int>(rootBlockIds);
+
+                while (queue.Count > 0)
+                {
+                    var currentId = queue.Dequeue();
+
+                    var children = flatBlocks
+                        //.Where(x => x.BlockManagerId == currentId)
+                        .Select(x => x.Id);
+
+                    foreach (var childId in children)
+                    {
+                        if (allowedIds.Add(childId))
+                            queue.Enqueue(childId);
+                    }
+                }
+
+                query = _context.Blocks.Where(b => allowedIds.Contains(b.Id));
             }
             else if (currentUser.Role == Role.User)
             {
                 _logger.LogWarning("User {UserId} attempted to access blocks without permission", currentUser.Id);
-                return ApiResponse<IEnumerable<RetrunBlockDto>>.Error(HttpStatusCode.Unauthorized, "ليس لديك صلاحية الوصول إلى هذه البيانات.");
+                return ApiResponse<IEnumerable<RetrunBlockDto>>.Error(
+                    HttpStatusCode.Unauthorized,
+                    "ليس لديك صلاحية الوصول إلى هذه البيانات.");
             }
 
             var blocks = await query
                 .Select(b => new RetrunBlockDto
                 {
                     Id = b.Id,
-                    ManagerId = b.ManagerId,
-                    Role = currentUser.Role, 
+                    //ManagerId = b.UnitManagerId,
+                    Role = currentUser.Role,
                     Name = b.Name,
                     Email = currentUser.Email,
-                    PersonId = b.Manager.PersonId,
-                    FullName = b.Manager.Person.FullName
+                    //PersonId = b.UnitManager.PersonId,
+                    //FullName = b.UnitManager.Person.FullName
                 })
                 .AsNoTracking()
                 .ToListAsync();
@@ -70,6 +107,7 @@ namespace SmartNeighborhoodAPI.Services
 
             return ApiResponse<IEnumerable<RetrunBlockDto>>.Success(blocks, message);
         }
+
 
         public async Task<ApiResponse<RetrunBlockDto>> ChangeManager(int id, ChangeManagerDto blockManagerDto)
         {
@@ -115,11 +153,11 @@ namespace SmartNeighborhoodAPI.Services
             }
 
 
-            var oldManagerId = block.ManagerId;
+            var oldManagerId = block.BlockManagerId;
 
 
             // Step 5: Update block manager
-            block.ManagerId = createResult.Data.Id;
+            //block.UnitManagerId = createResult.Data.Id;
             _context.Blocks.Update(block);
             await _context.SaveChangesAsync();
 
@@ -139,7 +177,7 @@ namespace SmartNeighborhoodAPI.Services
             {
                 Id = block.Id,
                 Name = block.Name,
-                ManagerId = block.ManagerId,
+                //ManagerId = block.UnitManagerId,    
                 PersonId = person.Id,
                 Email = createResult.Data.Email,
                 Role = createResult.Data.Role,
@@ -187,7 +225,7 @@ namespace SmartNeighborhoodAPI.Services
             var block = new Block
             {
                 Name = blockDto.Name,
-                ManagerId = response.Data.Id
+                //UnitManagerId = response.Data.Id
             };
 
             await _context.Blocks.AddAsync(block);
@@ -252,18 +290,18 @@ namespace SmartNeighborhoodAPI.Services
             if (block == null)
                 return ApiResponse<string>.Error(HttpStatusCode.NotFound, "المربع غير موجود.");
 
-            var userRole = await _authService.GetUserRole(block.ManagerId);
-            if (userRole != null && userRole == "BlockManager")
-            {
-                var deleteResult = await _authService.DeleteBlockManagerAccountByIdAsync(block.ManagerId);
-                if (!deleteResult.IsSuccess)
-                {
-                    _logger.LogError("Failed to delete block manager with ID: {ManagerId}", block.ManagerId);
-                    return ApiResponse<string>.Error(deleteResult.StatusCode, deleteResult.Message, deleteResult.Errors);
-                }
-                _context.Blocks.Remove(block);
-                return ApiResponse<string>.Success("تم حذف المربع بنجاح.");
-            }
+            //var userRole = await _authService.GetUserRole(block.UnitManagerId);
+            //if (userRole != null && userRole == "BlockManager")
+            //{
+            //    var deleteResult = await _authService.DeleteBlockManagerAccountByIdAsync(block.UnitManagerId);
+            //    if (!deleteResult.IsSuccess)
+            //    {
+            //        _logger.LogError("Failed to delete block manager with ID: {ManagerId}", block.UnitManagerId);
+            //        return ApiResponse<string>.Error(deleteResult.StatusCode, deleteResult.Message, deleteResult.Errors);
+            //    }
+            //    _context.Blocks.Remove(block);
+            //    return ApiResponse<string>.Success("تم حذف المربع بنجاح.");
+            //}
 
             return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "فشل في حذف المربع.");
         }
@@ -278,7 +316,7 @@ namespace SmartNeighborhoodAPI.Services
                     {
                         Id = x.Id,
                         Name = x.Name,
-                        ManagerName = x.Manager.Person.FullName,
+                        //ManagerName = x.UnitManager.Person.FullName,
                         TotalFamilies = x.Families.Count,
                         totalOrphans = x.Families.Count(f => f.FamilyCatgory.Id == 2),
                         TotalWidows = x.Families.Count(f => f.FamilyCatgory.Id == 1),

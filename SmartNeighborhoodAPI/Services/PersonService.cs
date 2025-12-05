@@ -1,5 +1,7 @@
-﻿using System.Net;
-using SmartNeighborhoodAPI.Helpers.DTOs.Person;
+﻿using SmartNeighborhoodAPI.Helpers.DTOs.Person;
+using SmartNeighborhoodAPI.Services;
+using System.Net;
+using SmartNeighborhoodAPI.Interfaces;
 
 namespace OurProjectSmartNeiborhood.Services
 {
@@ -11,15 +13,19 @@ namespace OurProjectSmartNeiborhood.Services
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly ImageService _imageService;
         private string _personImagePath;
+        private readonly UserContextService _userContextService;
+        private readonly ILogger<PersonService> _logger;
 
 
-        public PersonService(ApplicationDbContext context, IMapper mapper, IWebHostEnvironment webHostEnvironment, ImageService imageService)
+        public PersonService(ApplicationDbContext context, IMapper mapper, IWebHostEnvironment webHostEnvironment, ImageService imageService, ILogger<PersonService> logger, UserContextService userContextService)
         {
             _context = context;
             _mapper = mapper;
             _webHostEnvironment = webHostEnvironment;
             _personImagePath = $"{_webHostEnvironment.WebRootPath}{FileHelper.PersonImagesPath}";
             _imageService = imageService;
+            _logger = logger;
+            _userContextService = userContextService;
         }
 
         public async Task<ApiResponse<Person>> AddAsync(CreatePersonDto dto)
@@ -74,9 +80,9 @@ namespace OurProjectSmartNeiborhood.Services
             return ApiResponse<string>.Error(HttpStatusCode.NotModified, "فشل في حذف الشخص.");
         }
         public async Task<ApiResponse<PaginatedResult<PersonDto>>> GetAllAsync(
-            int pageNumber = 1,
-            int pageSize = 10,
-            string? search = null)
+              int pageNumber = 1,
+              int pageSize = 10,
+              string? search = null)
         {
             var query = _context.People.AsNoTracking();
 
@@ -133,6 +139,8 @@ namespace OurProjectSmartNeiborhood.Services
 
             return ApiResponse<PaginatedResult<PersonDto>>.Success(people, "تم جلب الأشخاص بنجاح.");
         }
+
+
 
         public async Task<ApiResponse<PersonDto>> GetByIdAsync(int id)
         {

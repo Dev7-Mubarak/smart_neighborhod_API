@@ -32,7 +32,7 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("RemoteConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 //builder.Services.AddLocalization(options =>
 //{
@@ -56,16 +56,15 @@ builder.Services.AddIdentity<AppUser, IdentityRole>()
 
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.Configure<JWT>(builder.Configuration.GetSection("Jwt"));
-
+builder.Services.AddScoped<ConflictCaseService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<PersonService>();
+builder.Services.AddScoped<IPersonService,PersonService>();
 builder.Services.AddScoped<FamilyCatgoryService>();
 builder.Services.AddScoped<FamilyService>();
 builder.Services.AddScoped<MemberFamilyRoleService>();
 builder.Services.AddScoped<BlockServices>();
 builder.Services.AddScoped<ImageService>();
-builder.Services.AddScoped<ConflictCaseService>();
-builder.Services.AddScoped<ConflictTypeService>();
+builder.Services.AddScoped<IConflictTypeService, ConflictTypeService>();
 builder.Services.AddScoped<ProjectCatgoryService>();
 builder.Services.AddScoped<ProjectService>();
 builder.Services.AddScoped<ProjectFamilieservice>();
@@ -77,7 +76,6 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<UserContextService>();
 builder.Services.AddScoped<IGovernmentInstitutionsService, GovernmentInstitutionsService>();
 builder.Services.AddScoped<IGovernmentInstitutionContactService, GovernmentInstitutionContactService>();
-
 
 
 builder.Host.UseSerilog((context, loggerConfig) =>

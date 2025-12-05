@@ -10,5 +10,8 @@ namespace SmartNeighborhoodAPI.Entites
         [MaxLength(10)]
         public string? EmailConfirmationCode { get; set; }
         public DateTime? EmailConfirmationCodeExpiresAt { get; set; }
+        public ResidentialUnit? ManagesUnit { get; set; }
+
+        public Block? ManagesBlock { get; set; }
     }
 }

@@ -25,6 +25,7 @@ namespace OurProjectSmartNeiborhood.Entites
         public BloodType BloodType { get; set; }
         public MaritalStatus MaritalStatus { get; set; }
         public OccupationStatus OccupationStatus { get; set; }
+        public PersonType personType { get; set; }
         [MaxLength(30)]
         public string? Job { get; set; }
         public List<FamilyMember> FamilyMembers { get; set; }

@@ -7,10 +7,15 @@ namespace OurProjectSmartNeiborhood.Entites
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public string ManagerId { get; set; }
-        [JsonIgnore]
-        public AppUser Manager { get; set; }
-        [JsonIgnore]
+
+        public int ResidentialUnitId { get; set; }
+        public ResidentialUnit ResidentialUnit { get; set; }
+
+        public string BlockManagerId { get; set; }
+        public AppUser BlockManager { get; set; }
+
         public ICollection<Family> Families { get; set; } = new List<Family>();
+        public ICollection<Project> Projects { get; set; } = new List<Project>();
+        public ICollection<ConflictCase> ConflictCases { get; set; } = new List<ConflictCase>();
     }
 }
