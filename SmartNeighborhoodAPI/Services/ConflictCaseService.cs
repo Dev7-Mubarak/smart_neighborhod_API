@@ -15,7 +15,6 @@ namespace SmartNeighborhoodAPI.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly UserContextService _userContextService;
-        private readonly IHierarchyService _hierarchyService;
         private readonly IMapper _mapper;
         private readonly ILogger<ConflictCaseService> _logger;
         private readonly UserManager<AppUser> _userManager;
@@ -27,7 +26,6 @@ namespace SmartNeighborhoodAPI.Services
         public ConflictCaseService(
             ApplicationDbContext context,
             UserContextService userContextService,
-            IHierarchyService hierarchyService,
             IMapper mapper,
             ILogger<ConflictCaseService> logger,
             UserManager<AppUser> userManager,
@@ -36,7 +34,6 @@ namespace SmartNeighborhoodAPI.Services
         {
             _context = context;
             _userContextService = userContextService;
-            _hierarchyService = hierarchyService;
             _mapper = mapper;
             _logger = logger;
             _webHostEnvironment = webHostEnvironment;
@@ -59,32 +56,32 @@ namespace SmartNeighborhoodAPI.Services
             }
 
             IQueryable<ConflictCase> query = _context.ConfilctCases
-                .Include(c => c.Manager).ThenInclude(m => m.Person)
+                .Include(c => c.Block).ThenInclude(m => m.BlockManager)
                 .Include(c => c.ConflictType)
                 .Include(c => c.FirstParty).ThenInclude(fp => fp.Person)
                 .Include(c => c.SecondParty).ThenInclude(sp => sp.Person)
                 .AsNoTracking();
 
-            var allowedBlockIds = await _hierarchyService.GetAllowedBlockIdsAsync();
+            //var allowedBlockIds = await _hierarchyService.GetAllowedBlockIdsAsync();
 
-            if (!allowedBlockIds.Any())
-            {
-                _logger.LogInformation("User {UserId} has no blocks in hierarchy.", currentUser.Id);
-                return ApiResponse<IEnumerable<GetConflictCaseDto>>
-                    .Success(Enumerable.Empty<GetConflictCaseDto>(), "لا توجد قضايا نزاع.");
-            }
+            //if (!allowedBlockIds.Any())
+            //{
+            //    _logger.LogInformation("User {UserId} has no blocks in hierarchy.", currentUser.Id);
+            //    return ApiResponse<IEnumerable<GetConflictCaseDto>>
+            //        .Success(Enumerable.Empty<GetConflictCaseDto>(), "لا توجد قضايا نزاع.");
+            //}
 
-            query = query.Where(c => allowedBlockIds.Contains(c.BlockId));
+            //query = query.Where(c => allowedBlockIds.Contains(c.BlockId));
 
-            var conflictCases = await query.ToListAsync();
-            var conflictCaseDtos = _mapper.Map<IEnumerable<GetConflictCaseDto>>(conflictCases);
+            //var conflictCases = await query.ToListAsync();
+            //var conflictCaseDtos = _mapper.Map<IEnumerable<GetConflictCaseDto>>(conflictCases);
 
-            if (conflictCaseDtos.Any())
-            {
-                _logger.LogInformation("Found {Count} ConflictCases", conflictCaseDtos.Count());
-                return ApiResponse<IEnumerable<GetConflictCaseDto>>
-                    .Success(conflictCaseDtos, "تم جلب جميع القضايا بنجاح.");
-            }
+            //if (conflictCaseDtos.Any())
+            //{
+            //    _logger.LogInformation("Found {Count} ConflictCases", conflictCaseDtos.Count());
+            //    return ApiResponse<IEnumerable<GetConflictCaseDto>>
+            //        .Success(conflictCaseDtos, "تم جلب جميع القضايا بنجاح.");
+            //}
 
             _logger.LogWarning("No ConflictCases found");
             return ApiResponse<IEnumerable<GetConflictCaseDto>>
@@ -152,7 +149,7 @@ namespace SmartNeighborhoodAPI.Services
 
             // 7️ Map DTO → Entity
             var conflictCase = _mapper.Map<ConflictCase>(conflictCaseDto);
-            conflictCase.ManagerId = manager.Id;
+            //conflictCase.ManagerId = manager.Id;
             conflictCase.ImagePath = conflictCaseImage;
 
             // 8️ Add and Save
@@ -205,7 +202,7 @@ namespace SmartNeighborhoodAPI.Services
             _logger.LogInformation("Retrieving ConflictCase by ID {Id}", id);
 
             var conflictCase = await _context.ConfilctCases
-                .Include(x => x.Manager)
+                .Include(x => x.Block)
                 .Include(x => x.FirstParty)
                 .Include(x => x.SecondParty)
                 .Include(x => x.ConflictType)
@@ -265,7 +262,7 @@ namespace SmartNeighborhoodAPI.Services
             }
 
             _mapper.Map(conflictCaseDto, existingConflictCase);
-            existingConflictCase.ManagerId = manager.Id;
+            //existingConflictCase.BlockId = manager.Id;
 
             if (conflictCaseDto.Image != null)
             {
@@ -306,7 +303,7 @@ namespace SmartNeighborhoodAPI.Services
             _logger.LogInformation("Retrieving ConflictCases for FamilyMemberId {FamilyMemberId}", familyMemberId);
 
             var conflictCases = await _context.ConfilctCases
-                .Include(c => c.Manager)
+                .Include(c => c.Block)
                 .Include(c => c.ConflictType)
                 .Include(c => c.FirstParty)
                 .Include(c => c.SecondParty)

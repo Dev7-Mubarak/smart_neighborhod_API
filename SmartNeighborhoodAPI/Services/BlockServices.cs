@@ -41,7 +41,7 @@ namespace SmartNeighborhoodAPI.Services
             if (currentUser.Role == Role.BlockManager)
             {
                 var rootBlockIds = await _context.Blocks
-                    .Where(b => b.UnitManagerId == currentUser.Id)
+                    //.Where(b => b.UnitManagerId == currentUser.Id)
                     .Select(b => b.Id)
                     .ToListAsync();
 
@@ -65,7 +65,7 @@ namespace SmartNeighborhoodAPI.Services
                     var currentId = queue.Dequeue();
 
                     var children = flatBlocks
-                        .Where(x => x.BlockManagerId == currentId)
+                        //.Where(x => x.BlockManagerId == currentId)
                         .Select(x => x.Id);
 
                     foreach (var childId in children)
@@ -89,12 +89,12 @@ namespace SmartNeighborhoodAPI.Services
                 .Select(b => new RetrunBlockDto
                 {
                     Id = b.Id,
-                    ManagerId = b.UnitManagerId,
+                    //ManagerId = b.UnitManagerId,
                     Role = currentUser.Role,
                     Name = b.Name,
                     Email = currentUser.Email,
-                    PersonId = b.UnitManager.PersonId,
-                    FullName = b.UnitManager.Person.FullName
+                    //PersonId = b.UnitManager.PersonId,
+                    //FullName = b.UnitManager.Person.FullName
                 })
                 .AsNoTracking()
                 .ToListAsync();
@@ -153,11 +153,11 @@ namespace SmartNeighborhoodAPI.Services
             }
 
 
-            var oldManagerId = block.UnitManagerId;
+            var oldManagerId = block.BlockManagerId;
 
 
             // Step 5: Update block manager
-            block.UnitManagerId = createResult.Data.Id;
+            //block.UnitManagerId = createResult.Data.Id;
             _context.Blocks.Update(block);
             await _context.SaveChangesAsync();
 
@@ -177,7 +177,7 @@ namespace SmartNeighborhoodAPI.Services
             {
                 Id = block.Id,
                 Name = block.Name,
-                ManagerId = block.UnitManagerId,    
+                //ManagerId = block.UnitManagerId,    
                 PersonId = person.Id,
                 Email = createResult.Data.Email,
                 Role = createResult.Data.Role,
@@ -225,7 +225,7 @@ namespace SmartNeighborhoodAPI.Services
             var block = new Block
             {
                 Name = blockDto.Name,
-                UnitManagerId = response.Data.Id
+                //UnitManagerId = response.Data.Id
             };
 
             await _context.Blocks.AddAsync(block);
@@ -290,18 +290,18 @@ namespace SmartNeighborhoodAPI.Services
             if (block == null)
                 return ApiResponse<string>.Error(HttpStatusCode.NotFound, "المربع غير موجود.");
 
-            var userRole = await _authService.GetUserRole(block.UnitManagerId);
-            if (userRole != null && userRole == "BlockManager")
-            {
-                var deleteResult = await _authService.DeleteBlockManagerAccountByIdAsync(block.UnitManagerId);
-                if (!deleteResult.IsSuccess)
-                {
-                    _logger.LogError("Failed to delete block manager with ID: {ManagerId}", block.UnitManagerId);
-                    return ApiResponse<string>.Error(deleteResult.StatusCode, deleteResult.Message, deleteResult.Errors);
-                }
-                _context.Blocks.Remove(block);
-                return ApiResponse<string>.Success("تم حذف المربع بنجاح.");
-            }
+            //var userRole = await _authService.GetUserRole(block.UnitManagerId);
+            //if (userRole != null && userRole == "BlockManager")
+            //{
+            //    var deleteResult = await _authService.DeleteBlockManagerAccountByIdAsync(block.UnitManagerId);
+            //    if (!deleteResult.IsSuccess)
+            //    {
+            //        _logger.LogError("Failed to delete block manager with ID: {ManagerId}", block.UnitManagerId);
+            //        return ApiResponse<string>.Error(deleteResult.StatusCode, deleteResult.Message, deleteResult.Errors);
+            //    }
+            //    _context.Blocks.Remove(block);
+            //    return ApiResponse<string>.Success("تم حذف المربع بنجاح.");
+            //}
 
             return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "فشل في حذف المربع.");
         }
@@ -316,7 +316,7 @@ namespace SmartNeighborhoodAPI.Services
                     {
                         Id = x.Id,
                         Name = x.Name,
-                        ManagerName = x.UnitManager.Person.FullName,
+                        //ManagerName = x.UnitManager.Person.FullName,
                         TotalFamilies = x.Families.Count,
                         totalOrphans = x.Families.Count(f => f.FamilyCatgory.Id == 2),
                         TotalWidows = x.Families.Count(f => f.FamilyCatgory.Id == 1),

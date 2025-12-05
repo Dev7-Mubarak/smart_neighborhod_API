@@ -72,7 +72,6 @@ builder.Services.AddScoped<FamilyMemberService>();
 builder.Services.AddScoped<TeamRoleService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<UserContextService>();
-builder.Services.AddScoped<IHierarchyService, HierarchyService>();
 
 
 builder.Host.UseSerilog((context, loggerConfig) =>

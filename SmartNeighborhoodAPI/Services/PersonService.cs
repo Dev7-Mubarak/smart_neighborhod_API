@@ -14,11 +14,10 @@ namespace OurProjectSmartNeiborhood.Services
         private readonly ImageService _imageService;
         private string _personImagePath;
         private readonly UserContextService _userContextService;
-        private readonly IHierarchyService _hierarchyService;
         private readonly ILogger<PersonService> _logger;
 
 
-        public PersonService(ApplicationDbContext context, IMapper mapper, IWebHostEnvironment webHostEnvironment, ImageService imageService, ILogger<PersonService> logger, UserContextService userContextService, IHierarchyService hierarchyService)
+        public PersonService(ApplicationDbContext context, IMapper mapper, IWebHostEnvironment webHostEnvironment, ImageService imageService, ILogger<PersonService> logger, UserContextService userContextService)
         {
             _context = context;
             _mapper = mapper;
@@ -27,7 +26,6 @@ namespace OurProjectSmartNeiborhood.Services
             _imageService = imageService;
             _logger = logger;
             _userContextService = userContextService;
-            _hierarchyService = hierarchyService;
         }
 
         public async Task<ApiResponse<Person>> AddAsync(CreatePersonDto dto)
@@ -82,62 +80,66 @@ namespace OurProjectSmartNeiborhood.Services
             return ApiResponse<string>.Error(HttpStatusCode.NotModified, "فشل في حذف الشخص.");
         }
         public async Task<ApiResponse<PaginatedResult<PersonDto>>> GetAllAsync(
-            int pageNumber = 1,
-            int pageSize = 10,
-            string? search = null)
+              int pageNumber = 1,
+              int pageSize = 10,
+              string? search = null)
         {
-            var currentUser = _userContextService.GetCurrentUser();
-            _logger.LogInformation("Fetching people for user {UserId} with role {Role}", currentUser.Id, currentUser.Role);
-
-            var allowedBlockIds = await _hierarchyService.GetAllowedBlockIdsAsync();
-
-            if (!allowedBlockIds.Any())
-            {
-                _logger.LogInformation("User {UserId} has no blocks in hierarchy.", currentUser.Id);
-                return ApiResponse<PaginatedResult<PersonDto>>
-                    .Error(HttpStatusCode.NotFound, "لا يوجد أشخاص.");
-            }
-
-            var query = _context.People
-                .AsNoTracking()
-                .Where(p => p.FamilyMembers.Any(fm => allowedBlockIds.Contains(fm.Family.BlockId)));
+            var query = _context.People.AsNoTracking();
 
             if (!string.IsNullOrEmpty(search))
             {
-                query = query.Where(x =>
-                    x.FirstName.Contains(search) ||
-                    x.SecondName.Contains(search) ||
-                    x.ThirdName.Contains(search) ||
-                    x.LastName.Contains(search));
+                var result = await query.Where(x => x.FirstName.Contains(search) ||
+                                                    x.SecondName.Contains(search) ||
+                                                    x.ThirdName.Contains(search) ||
+                                                    x.LastName.Contains(search))
+                                        .Select(p => new PersonDto
+                                        {
+                                            Id = p.Id,
+                                            FullName = p.FirstName,
+                                            FirstName = p.FirstName,
+                                            SecondName = p.SecondName,
+                                            ThirdName = p.ThirdName,
+                                            LastName = p.LastName,
+                                            PhoneNumber = p.PhoneNumber,
+                                            DateOfBirth = p.DateOfBirth,
+                                            Image = string.IsNullOrEmpty(p.Image) ? null : p.Image,
+                                            Gender = GetDisplayName(p.Gender),
+                                            BloodType = GetDisplayName(p.BloodType),
+                                            OccupationStatus = GetDisplayName(p.OccupationStatus),
+                                            MaritalStatus = GetDisplayName(p.MaritalStatus),
+                                            Job = p.Job
+                                        })
+                                        .ToPaginatedListAsync(pageNumber, pageSize);
+
+                if (result == null)
+                    return ApiResponse<PaginatedResult<PersonDto>>.Error(HttpStatusCode.NotFound, "لا يوجد أشخاص مطابقين للبحث.");
+
+                return ApiResponse<PaginatedResult<PersonDto>>.Success(result, "تم جلب الأشخاص بنجاح.");
             }
 
-            var result = await query
-                .Select(p => new PersonDto
-                {
-                    Id = p.Id,
-                    FullName = p.FirstName, 
-                    FirstName = p.FirstName,
-                    SecondName = p.SecondName,
-                    ThirdName = p.ThirdName,
-                    LastName = p.LastName,
-                    PhoneNumber = p.PhoneNumber,
-                    DateOfBirth = p.DateOfBirth,
-                    Image = string.IsNullOrEmpty(p.Image) ? null : p.Image,
-                    Gender = GetDisplayName(p.Gender),
-                    BloodType = GetDisplayName(p.BloodType),
-                    OccupationStatus = GetDisplayName(p.OccupationStatus),
-                    MaritalStatus = GetDisplayName(p.MaritalStatus),
-                    Job = p.Job
-                })
-                .ToPaginatedListAsync(pageNumber, pageSize);
+            var people = await query.Select(p => new PersonDto
+            {
+                Id = p.Id,
+                FirstName = p.FirstName,
+                SecondName = p.SecondName,
+                ThirdName = p.ThirdName,
+                LastName = p.LastName,
+                PhoneNumber = p.PhoneNumber,
+                DateOfBirth = p.DateOfBirth,
+                Image = string.IsNullOrEmpty(p.Image) ? null : p.Image,
+                Gender = GetDisplayName(p.Gender),
+                BloodType = GetDisplayName(p.BloodType),
+                OccupationStatus = GetDisplayName(p.OccupationStatus),
+                MaritalStatus = GetDisplayName(p.MaritalStatus),
+                Job = p.Job
+            }).ToPaginatedListAsync(pageNumber, pageSize);
 
-            if (result == null || !result.items.Any())
-                return ApiResponse<PaginatedResult<PersonDto>>
-                    .Error(HttpStatusCode.NotFound, "لا يوجد أشخاص.");
+            if (people == null)
+                return ApiResponse<PaginatedResult<PersonDto>>.Error(HttpStatusCode.NotFound, "لا يوجد أشخاص.");
 
-            return ApiResponse<PaginatedResult<PersonDto>>
-                .Success(result, "تم جلب الأشخاص بنجاح.");
+            return ApiResponse<PaginatedResult<PersonDto>>.Success(people, "تم جلب الأشخاص بنجاح.");
         }
+
 
 
         public async Task<ApiResponse<PersonDto>> GetByIdAsync(int id)

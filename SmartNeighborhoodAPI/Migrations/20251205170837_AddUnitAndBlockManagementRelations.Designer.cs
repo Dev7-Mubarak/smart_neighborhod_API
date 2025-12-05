@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SmartNeighborhoodAPI;
 
@@ -11,9 +12,11 @@ using SmartNeighborhoodAPI;
 namespace SmartNeighborhoodAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251205170837_AddUnitAndBlockManagementRelations")]
+    partial class AddUnitAndBlockManagementRelations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -290,6 +293,10 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.Property<bool>("IsResolved")
                         .HasColumnType("bit");
 
+                    b.Property<string>("ManagerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
 
@@ -310,6 +317,8 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasIndex("ConflictTypeId");
 
                     b.HasIndex("FirstPartyId");
+
+                    b.HasIndex("ManagerId");
 
                     b.HasIndex("SecondPartyId");
 
@@ -545,9 +554,6 @@ namespace SmartNeighborhoodAPI.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<int>("personType")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.ToTable("People");
@@ -565,8 +571,7 @@ namespace SmartNeighborhoodAPI.Migrations
                             OccupationStatus = 2,
                             PhoneNumber = "0791234567",
                             SecondName = "سعيد",
-                            ThirdName = "محمود",
-                            personType = 0
+                            ThirdName = "محمود"
                         },
                         new
                         {
@@ -580,8 +585,7 @@ namespace SmartNeighborhoodAPI.Migrations
                             OccupationStatus = 1,
                             PhoneNumber = "0789876543",
                             SecondName = "خالد",
-                            ThirdName = "عبد الله",
-                            personType = 0
+                            ThirdName = "عبد الله"
                         });
                 });
 
@@ -596,18 +600,20 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.Property<int>("BlockId")
                         .HasColumnType("int");
 
-                    b.Property<double?>("Budget")
-                        .HasColumnType("float");
+                    b.Property<decimal?>("Budget")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
 
                     b.Property<int>("ProjectCatogoryId")
                         .HasColumnType("int");
@@ -627,7 +633,22 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     b.HasIndex("ProjectCatogoryId");
 
-                    b.ToTable("Projects");
+                    b.ToTable("Projects", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            BlockId = 0,
+                            Budget = 100000m,
+                            Description = "هذا مشروع تمهيدي",
+                            EndDate = new DateTime(2025, 12, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Name = "مشروع تجريبي",
+                            ProjectCatogoryId = 1,
+                            ProjectPriority = 1,
+                            ProjectStatus = 0,
+                            StartDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
+                        });
                 });
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.ProjectCatogory", b =>
@@ -1005,7 +1026,7 @@ namespace SmartNeighborhoodAPI.Migrations
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.ConflictCase", b =>
                 {
                     b.HasOne("OurProjectSmartNeiborhood.Entites.Block", "Block")
-                        .WithMany("ConflictCases")
+                        .WithMany()
                         .HasForeignKey("BlockId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1022,6 +1043,12 @@ namespace SmartNeighborhoodAPI.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("SmartNeighborhoodAPI.Entites.AppUser", "Manager")
+                        .WithMany()
+                        .HasForeignKey("ManagerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("OurProjectSmartNeiborhood.Entites.FamilyMember", "SecondParty")
                         .WithMany("SecondPartyConflictCases")
                         .HasForeignKey("SecondPartyId")
@@ -1033,6 +1060,8 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.Navigation("ConflictType");
 
                     b.Navigation("FirstParty");
+
+                    b.Navigation("Manager");
 
                     b.Navigation("SecondParty");
                 });
@@ -1086,7 +1115,7 @@ namespace SmartNeighborhoodAPI.Migrations
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.Project", b =>
                 {
                     b.HasOne("OurProjectSmartNeiborhood.Entites.Block", "Block")
-                        .WithMany("Projects")
+                        .WithMany()
                         .HasForeignKey("BlockId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1191,11 +1220,7 @@ namespace SmartNeighborhoodAPI.Migrations
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.Block", b =>
                 {
-                    b.Navigation("ConflictCases");
-
                     b.Navigation("Families");
-
-                    b.Navigation("Projects");
                 });
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.ConfilctType", b =>
