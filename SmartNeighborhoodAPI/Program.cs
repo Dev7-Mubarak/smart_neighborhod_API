@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using MramProject.Interface;
+using MramProject.Services;
 using OurProjectSmartNeiborhood.Services;
 using Serilog;
 using SmartNeighborhoodAPI.Entites;
@@ -72,6 +74,8 @@ builder.Services.AddScoped<FamilyMemberService>();
 builder.Services.AddScoped<TeamRoleService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<UserContextService>();
+builder.Services.AddScoped<IGovernmentInstitutionsService, GovernmentInstitutionsService>();
+builder.Services.AddScoped<IGovernmentInstitutionContactService, GovernmentInstitutionContactService>();
 
 
 builder.Host.UseSerilog((context, loggerConfig) =>
