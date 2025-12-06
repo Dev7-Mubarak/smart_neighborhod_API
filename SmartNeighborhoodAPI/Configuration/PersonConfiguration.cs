@@ -45,6 +45,9 @@ namespace OurProjectSmartNeiborhood.Configuration
             builder.Property(p => p.MaritalStatus)
                 .IsRequired();
 
+            builder.Property(p => p.personType)
+                 .IsRequired();
+
             builder.Property(p => p.Job)
                 .HasMaxLength(30);
 
@@ -61,6 +64,7 @@ namespace OurProjectSmartNeiborhood.Configuration
                     BloodType = BloodType.ABNegative,
                     OccupationStatus = OccupationStatus.Employee,
                     MaritalStatus = MaritalStatus.Married,
+                    personType = PersonType.Admin,
                     Job = "مهندس"
                 },
                 new Person
@@ -75,6 +79,7 @@ namespace OurProjectSmartNeiborhood.Configuration
                     BloodType = BloodType.ABNegative,
                     OccupationStatus = OccupationStatus.Student,
                     MaritalStatus = MaritalStatus.Single,
+                    personType = PersonType.Citizen,
                     Job = "طالبة"
                 }
             );

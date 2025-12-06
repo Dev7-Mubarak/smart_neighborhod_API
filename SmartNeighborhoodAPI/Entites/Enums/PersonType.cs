@@ -5,5 +5,6 @@
         Citizen,
         BlockManager,
         UnitManager,
+        Admin
     }
 }

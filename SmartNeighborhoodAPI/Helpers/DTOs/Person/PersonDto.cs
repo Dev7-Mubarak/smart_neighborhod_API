@@ -17,6 +17,7 @@ namespace SmartNeighborhoodAPI.Helpers.DTOs.Person
         public string BloodType { get; set; }       
         public string OccupationStatus { get; set; } 
         public string MaritalStatus { get; set; }    
+        public string PersonType { get; set; }    
         public string Job { get; set; }
     }
 }

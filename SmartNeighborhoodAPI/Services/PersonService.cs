@@ -107,6 +107,7 @@ namespace OurProjectSmartNeiborhood.Services
                                             BloodType = GetDisplayName(p.BloodType),
                                             OccupationStatus = GetDisplayName(p.OccupationStatus),
                                             MaritalStatus = GetDisplayName(p.MaritalStatus),
+                                            PersonType = GetDisplayName(p.personType),
                                             Job = p.Job
                                         })
                                         .ToPaginatedListAsync(pageNumber, pageSize);
