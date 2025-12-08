@@ -9,11 +9,13 @@ namespace SmartNeighborhoodAPI.Helpers
 
         public static class ResidentialUnits
         {
-            public const string Prefix = Rule + "ResidentialUnits";
+            public const string Prefix = Rule + "residential-units";
 
-            public const string Add = Prefix;
             public const string GetAll = Prefix;
             public const string GetById = Prefix + "/{id:int}";
+            public const string Details = Prefix + "/details/{id:int}";
+
+            public const string Add = Prefix;
             public const string Update = Prefix + "/{id:int}";
             public const string Delete = Prefix + "/{id:int}";
 

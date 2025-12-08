@@ -18,6 +18,6 @@ namespace SmartNeighborhoodAPI.Helpers.DTOs.ResidentialUnits
         public string UnitManagerName { get; set; }
 
         [SwaggerSchema("Blocks under this unit")]
-        public IEnumerable<Block>? Blocks { get; set; }
+        public List<BlockSummaryDto> Blocks { get; set; } = new();
     }
 }
