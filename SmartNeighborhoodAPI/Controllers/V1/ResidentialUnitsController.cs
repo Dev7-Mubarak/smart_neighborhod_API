@@ -11,9 +11,9 @@ namespace SmartNeighborhoodAPI.Controllers.V1
     [Authorize(Roles = Role.Admin + "," + Role.UnitManager)]
     public class ResidentialUnitsController : AppControllerBase
     {
-        private readonly ResidentialUnitService _unitServices;
+        private readonly IResidentialUnitService _unitServices;
 
-        public ResidentialUnitsController(ResidentialUnitService unitServices)
+        public ResidentialUnitsController(IResidentialUnitService unitServices)
         {
             _unitServices = unitServices;
         }
@@ -23,10 +23,15 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         [SwaggerOperation(Summary = "Get all residential units", Description = "Returns all units accessible by the user.")]
         [ProducesResponseType(typeof(IEnumerable<ReturnResidentialUnitDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetAllAsync()
+        public async Task<IActionResult> GetAllAsync(
+        [FromQuery] string? name,
+        [FromQuery] string? managerId,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 10,
+        CancellationToken ct = default)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            return Response(await _unitServices.GetAllAsync(userId));
+            var result = await _unitServices.GetAllAsync(name, managerId, page, pageSize, ct);
+            return Response(result);
         }
 
         [HttpGet(Router.ResidentialUnits.GetById)]
