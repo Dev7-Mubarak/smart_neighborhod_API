@@ -12,6 +12,5 @@ namespace SmartNeighborhoodAPI.Helpers.DTOs.ResidentialUnits
         [SwaggerSchema("ID of the user assigned as Unit Manager", Nullable = false)]
         public string UnitManagerId { get; set; }
         public List<AddBlockDto>? Blocks { get; set; }
-
     }
 }

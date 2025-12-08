@@ -20,7 +20,7 @@ namespace SmartNeighborhoodAPI.Entites
                 Name = this.Name,
                 UnitManagerId = this.UnitManagerId,
                 UnitManagerName = this.UnitManager?.UserName ?? string.Empty,
-                Blocks = this.Blocks?.Select(b => new Block
+                Blocks = this.Blocks?.Select(b => new BlockSummaryDto
                 {
                     Id = b.Id,
                     Name = b.Name,

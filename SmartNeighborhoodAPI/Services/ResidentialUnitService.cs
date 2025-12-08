@@ -10,7 +10,7 @@ using System.Net;
 
 namespace SmartNeighborhoodAPI.Services
 {
-    public class ResidentialUnitService
+    public class ResidentialUnitService:IResidentialUnitService
     {
         private readonly ApplicationDbContext _context;
         private readonly IAuthService _authService;
