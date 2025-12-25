@@ -42,4 +42,8 @@
     <Folder Include="wwwroot\People\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include=".github\workflows\dotnet-ci.yml" />
+  </ItemGroup>
+
 </Project>
