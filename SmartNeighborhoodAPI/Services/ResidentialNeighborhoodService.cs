@@ -29,42 +29,19 @@ namespace SmartNeighborhoodAPI.Services
 
             return ApiResponse<ReturnResidentialNeighborhoodDto>.Success(entity.ToDto());
         }
-
-        public async Task<ApiResponse<PaginatedResult<ReturnResidentialNeighborhoodDto>>> GetAllAsync(
-            string? name,
-            string? managerId,
-            int page,
-            int pageSize,
+        public async Task<ApiResponse<List<ReturnResidentialNeighborhoodDto>>> GetAllAsync(
             CancellationToken ct = default)
         {
-            var query = _context.ResidentialNeighborhoods
+            var data = await _context.ResidentialNeighborhoods
                 .AsNoTracking()
                 .Include(n => n.NeighborhoodManager)
                 .Include(n => n.ResidentialUnits)
-                    .ThenInclude(u => u.UnitManager)
-                .Include(n => n.ResidentialUnits)
                     .ThenInclude(u => u.Blocks)
-                .AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(name))
-                query = query.Where(n => n.Name.Contains(name));
-
-            if (!string.IsNullOrWhiteSpace(managerId))
-                query = query.Where(n => n.NeighborhoodManagerId == managerId);
-
-            var total = await query.CountAsync(ct);
-
-            var items = await query
-                .OrderBy(n => n.Name)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
+                .OrderBy(n => n.Name) 
                 .ToListAsync(ct);
 
-            var dtoList = items.Select(n => n.ToDto()).ToList();
-
-            return ApiResponse<PaginatedResult<ReturnResidentialNeighborhoodDto>>.Success(
-                PaginatedResult<ReturnResidentialNeighborhoodDto>.Success(dtoList, total, page, pageSize)
-            );
+            return ApiResponse<List<ReturnResidentialNeighborhoodDto>>
+                .Success(data.Select(n => n.ToDto()).ToList());
         }
 
         public async Task<ApiResponse<ReturnResidentialNeighborhoodDto>> GetByIdAsync(int id)
@@ -113,48 +90,7 @@ namespace SmartNeighborhoodAPI.Services
 
             return ApiResponse<string>.Success("Neighborhood deleted");
         }
-        public async Task<ApiResponse<PaginatedResult<ResidentialSearchResultDto>>> SearchAsync(
-            string keyword,
-            int page,
-            int pageSize,
-            CancellationToken ct = default)
-        {
-            if (string.IsNullOrWhiteSpace(keyword))
-                return ApiResponse<PaginatedResult<ResidentialSearchResultDto>>
-                    .Error(HttpStatusCode.BadRequest, "Search keyword is required");
-
-            keyword = keyword.Trim();
-
-            var query =
-                from n in _context.ResidentialNeighborhoods.AsNoTracking()
-                from u in n.ResidentialUnits.DefaultIfEmpty()
-                from b in u.Blocks.DefaultIfEmpty()
-                where
-                    n.Name.Contains(keyword) ||
-                    (u != null && u.Name.Contains(keyword)) ||
-                    (b != null && b.Name.Contains(keyword))
-                select new ResidentialSearchResultDto
-                {
-                    NeighborhoodId = n.Id,
-                    NeighborhoodName = n.Name,
-                    UnitId = u != null ? u.Id : null,
-                    UnitName = u != null ? u.Name : null,
-                    BlockId = b != null ? b.Id : null,
-                    BlockName = b != null ? b.Name : null
-                };
-
-            var total = await query.CountAsync(ct);
-
-            var items = await query
-                .Distinct()
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync(ct);
-
-            return ApiResponse<PaginatedResult<ResidentialSearchResultDto>>.Success(
-                PaginatedResult<ResidentialSearchResultDto>.Success(items, total, page, pageSize));
-        }
-
+       
         public async Task<ApiResponse<ResidentialDashboardDto>> GetDashboardAsync(
         CancellationToken ct = default)
         {

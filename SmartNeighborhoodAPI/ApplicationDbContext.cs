@@ -93,6 +93,7 @@ namespace SmartNeighborhoodAPI
             builder.Entity<ResidentialNeighborhood>()
             .HasIndex(n => n.Name);
 
+
             builder.Entity<ResidentialUnit>()
                 .HasIndex(u => u.Name);
 
