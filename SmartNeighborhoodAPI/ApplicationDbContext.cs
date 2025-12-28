@@ -90,6 +90,14 @@ namespace SmartNeighborhoodAPI
             builder.Entity<ConflictCase>()
                 .Property(c => c.Notes)
                 .IsRequired(false);
+            builder.Entity<ResidentialNeighborhood>()
+            .HasIndex(n => n.Name);
+
+            builder.Entity<ResidentialUnit>()
+                .HasIndex(u => u.Name);
+
+            builder.Entity<Block>()
+                .HasIndex(b => b.Name);
 
             //// Admin user seed
             //var adminUserId = "aaaaaaaa-aaaa-aaaa-bbbb-aaaaaaaaaaaa";

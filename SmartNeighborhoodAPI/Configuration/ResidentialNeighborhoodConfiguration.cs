@@ -17,6 +17,7 @@ namespace OurProjectSmartNeiborhood.Configuration
                 .WithOne(u => u.ResidentialNeighborhood)
                 .HasForeignKey(u => u.ResidentialNeighborhoodId)
                 .OnDelete(DeleteBehavior.Restrict);
+
         }
     }
 

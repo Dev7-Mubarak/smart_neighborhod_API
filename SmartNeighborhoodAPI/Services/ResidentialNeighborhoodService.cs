@@ -113,6 +113,80 @@ namespace SmartNeighborhoodAPI.Services
 
             return ApiResponse<string>.Success("Neighborhood deleted");
         }
+        public async Task<ApiResponse<PaginatedResult<ResidentialSearchResultDto>>> SearchAsync(
+            string keyword,
+            int page,
+            int pageSize,
+            CancellationToken ct = default)
+        {
+            if (string.IsNullOrWhiteSpace(keyword))
+                return ApiResponse<PaginatedResult<ResidentialSearchResultDto>>
+                    .Error(HttpStatusCode.BadRequest, "Search keyword is required");
+
+            keyword = keyword.Trim();
+
+            var query =
+                from n in _context.ResidentialNeighborhoods.AsNoTracking()
+                from u in n.ResidentialUnits.DefaultIfEmpty()
+                from b in u.Blocks.DefaultIfEmpty()
+                where
+                    n.Name.Contains(keyword) ||
+                    (u != null && u.Name.Contains(keyword)) ||
+                    (b != null && b.Name.Contains(keyword))
+                select new ResidentialSearchResultDto
+                {
+                    NeighborhoodId = n.Id,
+                    NeighborhoodName = n.Name,
+                    UnitId = u != null ? u.Id : null,
+                    UnitName = u != null ? u.Name : null,
+                    BlockId = b != null ? b.Id : null,
+                    BlockName = b != null ? b.Name : null
+                };
+
+            var total = await query.CountAsync(ct);
+
+            var items = await query
+                .Distinct()
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(ct);
+
+            return ApiResponse<PaginatedResult<ResidentialSearchResultDto>>.Success(
+                PaginatedResult<ResidentialSearchResultDto>.Success(items, total, page, pageSize));
+        }
+
+        public async Task<ApiResponse<ResidentialDashboardDto>> GetDashboardAsync(
+        CancellationToken ct = default)
+        {
+            var neighborhoods = await _context.ResidentialNeighborhoods
+                .AsNoTracking()
+                .Select(n => new
+                {
+                    n.Id,
+                    n.Name,
+                    UnitsCount = n.ResidentialUnits.Count,
+                    BlocksCount = n.ResidentialUnits.Sum(u => u.Blocks.Count)
+                })
+                .ToListAsync(ct);
+
+            var dashboard = new ResidentialDashboardDto
+            {
+                TotalNeighborhoods = neighborhoods.Count,
+                TotalUnits = neighborhoods.Sum(n => n.UnitsCount),
+                TotalBlocks = neighborhoods.Sum(n => n.BlocksCount),
+                Neighborhoods = neighborhoods.Select(n => new NeighborhoodStatsDto
+                {
+                    NeighborhoodId = n.Id,
+                    NeighborhoodName = n.Name,
+                    UnitsCount = n.UnitsCount,
+                    BlocksCount = n.BlocksCount
+                }).ToList()
+            };
+
+            return ApiResponse<ResidentialDashboardDto>.Success(dashboard);
+        }
+
+
     }
 
 }

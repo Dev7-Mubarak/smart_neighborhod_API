@@ -10,7 +10,15 @@ namespace SmartNeighborhoodAPI.Interfaces
             string? managerId,
             int page,
             int pageSize,
-            CancellationToken ct = default); Task<ApiResponse<ReturnResidentialNeighborhoodDto>> GetByIdAsync(int id);
+            CancellationToken ct = default);
+        Task<ApiResponse<ReturnResidentialNeighborhoodDto>> GetByIdAsync(int id);
+        Task<ApiResponse<PaginatedResult<ResidentialSearchResultDto>>> SearchAsync(
+            string keyword,
+            int page,
+            int pageSize,
+            CancellationToken ct = default);
+        Task<ApiResponse<ResidentialDashboardDto>> GetDashboardAsync(
+        CancellationToken ct = default);
         Task<ApiResponse<string>> UpdateAsync(int id, UpdateResidentialNeighborhoodDto dto);
         Task<ApiResponse<string>> DeleteAsync(int id);
     }
