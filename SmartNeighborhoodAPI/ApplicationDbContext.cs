@@ -27,6 +27,7 @@ namespace SmartNeighborhoodAPI
             builder.ApplyConfiguration(new AppUserSeedConfiguration());
             builder.ApplyConfiguration(new IdentityUserRoleSeedConfiguration());
             builder.ApplyConfiguration(new ProjectCatgoryEntityTypeConfiguration());
+            builder.ApplyConfiguration(new ResidentialNeighborhoodConfiguration());
             //builder.ApplyConfiguration(new ProjectConfiguration());
             base.OnModelCreating(builder);
 
@@ -131,5 +132,6 @@ namespace SmartNeighborhoodAPI
         public DbSet<ProjectTeam> ProjectTeams { get; set; }
         public DbSet<TeamRole> TeamRoles { get; set; }
         public DbSet<ResidentialUnit> ResidentialUnits { get; set; }
+        public DbSet<ResidentialNeighborhood> ResidentialNeighborhoods { get; set; }
     }
 }
