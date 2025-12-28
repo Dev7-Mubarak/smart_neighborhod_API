@@ -7,7 +7,7 @@ namespace SmartNeighborhoodAPI.Helpers.DTOs.ResidentialNeighborhood
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
 
-        public string NeighborhoodManagerId { get; set; } = string.Empty;
+        public int NeighborhoodManagerId { get; set; }
         public string NeighborhoodManagerName { get; set; } = string.Empty;
 
         public List<ReturnResidentialUnitDto> Units { get; set; } = new();

@@ -13,7 +13,7 @@ namespace SmartNeighborhoodAPI.Helpers.DTOs.ResidentialUnits
         public string Name { get; set; }
 
         [SwaggerSchema("ID of the user assigned as Unit Manager")]
-        public string UnitManagerId { get; set; }
+        public int UnitManagerId { get; set; }
 
         [SwaggerSchema("Name of the Unit Manager")]
         public string UnitManagerName { get; set; }

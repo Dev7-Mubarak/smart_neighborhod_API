@@ -10,7 +10,7 @@ namespace SmartNeighborhoodAPI.Entites
         public int ResidentialNeighborhoodId { get; set; }
         public ResidentialNeighborhood ResidentialNeighborhood { get; set; } = null!;
 
-        public string UnitManagerId { get; set; } = string.Empty;
+        public int UnitManagerId { get; set; }
         public AppUser UnitManager { get; set; } = null!;
 
         public ICollection<Block> Blocks { get; set; } = new List<Block>();

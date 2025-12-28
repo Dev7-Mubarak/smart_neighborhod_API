@@ -10,7 +10,7 @@ using static SmartNeighborhoodAPI.Helpers.Router;
 
 namespace SmartNeighborhoodAPI
 {
-    public class ApplicationDbContext : IdentityDbContext<AppUser>
+    public class ApplicationDbContext : IdentityDbContext<AppUser, ApplicationRole, int>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)

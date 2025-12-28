@@ -11,7 +11,7 @@ namespace OurProjectSmartNeiborhood.Entites
         public int ResidentialUnitId { get; set; }
         public ResidentialUnit ResidentialUnit { get; set; }
 
-        public string BlockManagerId { get; set; }
+        public int BlockManagerId { get; set; }
         public AppUser BlockManager { get; set; }
 
         public ICollection<Family> Families { get; set; } = new List<Family>();

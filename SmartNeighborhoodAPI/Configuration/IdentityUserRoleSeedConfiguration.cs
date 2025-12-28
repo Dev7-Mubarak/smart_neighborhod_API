@@ -2,18 +2,22 @@
 
 namespace SmartNeighborhoodAPI.Configuration
 {
-    public class IdentityUserRoleSeedConfiguration : IEntityTypeConfiguration<IdentityUserRole<string>>
+
+
+    public class IdentityUserRoleSeedConfiguration
+        : IEntityTypeConfiguration<IdentityUserRole<int>>
     {
-        public void Configure(EntityTypeBuilder<IdentityUserRole<string>> builder)
+        public void Configure(EntityTypeBuilder<IdentityUserRole<int>> builder)
         {
             builder.HasData(
-                new IdentityUserRole<string>
+                new IdentityUserRole<int>
                 {
-                    UserId = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-                    RoleId = "11111111-1111-1111-1111-111111111111"
+                    UserId = 1, 
+                    RoleId = 1 
                 }
             );
         }
     }
+
 
 }

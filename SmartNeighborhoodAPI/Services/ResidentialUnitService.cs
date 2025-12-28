@@ -133,7 +133,7 @@ namespace SmartNeighborhoodAPI.Services
             _context.Blocks.Update(block);
             await _context.SaveChangesAsync();
 
-            if (createResult.Data.Role == "BlockManager")
+            if (createResult.Data.Role == 2)
             {
                 // Step 6: Delete old manager account (if any)
                 var deleteResult = await _authService.DeleteBlockManagerAccountByIdAsync(oldManagerId);

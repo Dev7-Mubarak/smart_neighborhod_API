@@ -49,12 +49,14 @@ namespace SmartNeighborhoodAPI.Services
             }
 
             var jwtSecurityToken = await CreateJwtToken(user);
+            var roles = await _userManager.GetRolesAsync(user);
+
 
             UserResponse userResponse = new UserResponse
             {
                 Id = user.Id,
                 Email = loginDto.Email,
-                Role = (await _userManager.GetRolesAsync(user)).FirstOrDefault(),
+                Role = roles.FirstOrDefault(),
                 Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
             };
 
@@ -140,16 +142,17 @@ namespace SmartNeighborhoodAPI.Services
             {
                 Id = user.Id,
                 Email = user.Email,
-                Role = Role.BlockManager
+                Role = 2
             };
 
             return ApiResponse<UserResponse>.Success(userResponse, "تم تسجيل المستخدم بنجاح. تم إرسال رمز التأكيد إلى البريد الإلكتروني.");
         }
-        public async Task<ApiResponse<UserResponse>> DeleteBlockManagerAccountByIdAsync(string managerId)
+        public async Task<ApiResponse<UserResponse>> DeleteBlockManagerAccountByIdAsync(int managerId)
         {
             _logger.LogInformation("Deleting Block Manager with ID: {ManagerId}", managerId);
 
-            var user = await _userManager.FindByIdAsync(managerId);
+            var user = await _userManager.FindByIdAsync(managerId.ToString());
+
             if (user == null)
             {
                 _logger.LogWarning("Block Manager with ID '{ManagerId}' not found.", managerId);
@@ -169,16 +172,17 @@ namespace SmartNeighborhoodAPI.Services
             {
                 Id = user.Id,
                 Email = user.Email,
-                Role = "BlockManager"
+                Role = 2
             };
 
             _logger.LogInformation("Successfully deleted Block Manager with ID: {ManagerId}", managerId);
 
             return ApiResponse<UserResponse>.Success(userResponse, "تم حذف حساب مدير الحي بنجاح.");
         }
-        public async Task<string?> GetUserRole(string userId)
+        public async Task<int?> GetUserRole(int userId)
         {
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+
             if (user != null)
             {
                 var roles = await _userManager.GetRolesAsync(user);

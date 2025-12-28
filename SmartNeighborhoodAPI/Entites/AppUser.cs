@@ -2,7 +2,7 @@
 
 namespace SmartNeighborhoodAPI.Entites
 {
-    public class AppUser : IdentityUser
+    public class AppUser : IdentityUser<int>
     {
         public bool IsActive { get; set; }
         public int PersonId { get; set; }

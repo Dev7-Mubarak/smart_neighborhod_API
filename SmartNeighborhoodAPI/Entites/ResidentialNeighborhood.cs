@@ -8,7 +8,7 @@ namespace SmartNeighborhoodAPI.Entites
 
         public string Name { get; set; } = string.Empty;
 
-        public string NeighborhoodManagerId { get; set; } = string.Empty;
+        public int NeighborhoodManagerId { get; set; }
         public AppUser NeighborhoodManager { get; set; } = null!;
 
         public ICollection<ResidentialUnit> ResidentialUnits { get; set; }

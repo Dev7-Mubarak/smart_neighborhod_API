@@ -2,20 +2,56 @@
 using SmartNeighborhoodAPI.Helpers.DTOs.ResidentialNeighborhood;
 using SmartNeighborhoodAPI.Interfaces;
 using System.Net;
+using Microsoft.AspNetCore.Identity;
+using SmartNeighborhoodAPI.Helpers;
 
 namespace SmartNeighborhoodAPI.Services
 {
     public class ResidentialNeighborhoodService : IResidentialNeighborhoodService
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<AppUser> _userManager;
 
-        public ResidentialNeighborhoodService(ApplicationDbContext context)
+        public ResidentialNeighborhoodService(ApplicationDbContext context, UserManager<AppUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         public async Task<ApiResponse<ReturnResidentialNeighborhoodDto>> CreateAsync(CreateResidentialNeighborhoodDto dto)
         {
+            if (await _context.ResidentialNeighborhoods.AnyAsync(n => n.Name == dto.Name))
+                return ApiResponse<ReturnResidentialNeighborhoodDto>.Error(HttpStatusCode.BadRequest, "Neighborhood name already exists");
+
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.PersonId == dto.NeighborhoodManagerId);
+
+            if (user == null)
+            {
+                var person = await _context.People.FindAsync(dto.NeighborhoodManagerId);
+                if (person == null)
+                    return ApiResponse<ReturnResidentialNeighborhoodDto>.Error(HttpStatusCode.NotFound, "Person not found");
+
+                user = new AppUser
+                {
+                    UserName = $"manager{dto.NeighborhoodManagerId}",
+                    Email = $"manager{dto.NeighborhoodManagerId}@smartneighborhood.local",
+                    PersonId = dto.NeighborhoodManagerId,
+                    IsActive = true,
+                    EmailConfirmed = true
+                };
+
+                var result = await _userManager.CreateAsync(user, "Password@123");
+                if (!result.Succeeded)
+                {
+                    return ApiResponse<ReturnResidentialNeighborhoodDto>.Error(HttpStatusCode.BadRequest, "Failed to create user: " + string.Join(", ", result.Errors.Select(e => e.Description)));
+                }
+            }
+
+            if (!await _userManager.IsInRoleAsync(user, Role.ResidentialNeighborhoodManager))
+            {
+                await _userManager.AddToRoleAsync(user, Role.ResidentialNeighborhoodManager);
+            }
+
             var entity = new ResidentialNeighborhood
             {
                 Name = dto.Name,
@@ -65,11 +101,66 @@ namespace SmartNeighborhoodAPI.Services
             if (entity == null)
                 return ApiResponse<string>.Error(HttpStatusCode.NotFound, "Neighborhood not found");
 
+            if (await _context.ResidentialNeighborhoods.AnyAsync(n => n.Name == dto.Name && n.Id != id))
+                return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "Neighborhood name already exists");
+
             entity.Name = dto.Name;
-            entity.NeighborhoodManagerId = dto.NeighborhoodManagerId;
 
             await _context.SaveChangesAsync();
             return ApiResponse<string>.Success("Neighborhood updated");
+        }
+
+        public async Task<ApiResponse<string>> ChangeManagerAsync(int neighborhoodId, int newManagerPersonId)
+        {
+            var neighborhood = await _context.ResidentialNeighborhoods.FindAsync(neighborhoodId);
+            if (neighborhood == null)
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "Neighborhood not found");
+
+            // 1. Handle Old Manager
+            var oldManagerUser = await _userManager.Users.FirstOrDefaultAsync(u => u.PersonId == neighborhood.NeighborhoodManagerId);
+            if (oldManagerUser != null)
+            {
+                // Remove role from old manager
+                if (await _userManager.IsInRoleAsync(oldManagerUser, Role.ResidentialNeighborhoodManager))
+                {
+                    await _userManager.RemoveFromRoleAsync(oldManagerUser, Role.ResidentialNeighborhoodManager);
+                }
+            }
+
+            // 2. Handle New Manager
+            var newManagerUser = await _userManager.Users.FirstOrDefaultAsync(u => u.PersonId == newManagerPersonId);
+            if (newManagerUser == null)
+            {
+                var person = await _context.People.FindAsync(newManagerPersonId);
+                if (person == null)
+                    return ApiResponse<string>.Error(HttpStatusCode.NotFound, "New manager person not found");
+
+                newManagerUser = new AppUser
+                {
+                    UserName = $"manager{newManagerPersonId}",
+                    Email = $"manager{newManagerPersonId}@smartneighborhood.local",
+                    PersonId = newManagerPersonId,
+                    IsActive = true,
+                    EmailConfirmed = true
+                };
+
+                var result = await _userManager.CreateAsync(newManagerUser, "Password@123");
+                if (!result.Succeeded)
+                {
+                    return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "Failed to create user for new manager: " + string.Join(", ", result.Errors.Select(e => e.Description)));
+                }
+            }
+
+            if (!await _userManager.IsInRoleAsync(newManagerUser, Role.ResidentialNeighborhoodManager))
+            {
+                await _userManager.AddToRoleAsync(newManagerUser, Role.ResidentialNeighborhoodManager);
+            }
+
+            // 3. Update Neighborhood
+            neighborhood.NeighborhoodManagerId = newManagerPersonId;
+            await _context.SaveChangesAsync();
+
+            return ApiResponse<string>.Success("Neighborhood manager changed successfully");
         }
 
         public async Task<ApiResponse<string>> DeleteAsync(int id)
