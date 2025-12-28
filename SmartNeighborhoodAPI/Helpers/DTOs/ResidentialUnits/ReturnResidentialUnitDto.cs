@@ -1,4 +1,5 @@
 ﻿using SmartNeighborhoodAPI.Helpers.DTOs.block;
+using SmartNeighborhoodAPI.Helpers.DTOs.ResidentialNeighborhood;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace SmartNeighborhoodAPI.Helpers.DTOs.ResidentialUnits
@@ -19,5 +20,6 @@ namespace SmartNeighborhoodAPI.Helpers.DTOs.ResidentialUnits
 
         [SwaggerSchema("Blocks under this unit")]
         public IEnumerable<Block>? Blocks { get; set; }
+
     }
 }
