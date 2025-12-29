@@ -48,7 +48,7 @@ namespace SmartNeighborhoodAPI.Services
                     .ToListAsync();
 
                 // Map to DTO
-                var residentialUnitDtos = residentialUnits.Select(u => u.ToDto()).ToList();
+                var residentialUnitDtos = residentialUnits.Select(u => MapToDto(u)).ToList();
 
                 return ApiResponse<IEnumerable<ReturnResidentialUnitDto>>.Success(
                     residentialUnitDtos, "تم جلب الوحدات السكنية بنجاح"
@@ -69,7 +69,7 @@ namespace SmartNeighborhoodAPI.Services
                     );
 
                 return ApiResponse<IEnumerable<ReturnResidentialUnitDto>>.Success(
-                    new List<ReturnResidentialUnitDto> { residentialUnit.ToDto() },
+                    new List<ReturnResidentialUnitDto> { MapToDto(residentialUnit) },
                     "تم جلب الوحدة السكنية الخاصة بك بنجاح"
                 );
             }
@@ -331,6 +331,23 @@ namespace SmartNeighborhoodAPI.Services
             }
 
             return ApiResponse<BlockDetailesDto>.Success(block, "تم جلب تفاصيل المربع بنجاح.");
+        }
+
+        private ReturnResidentialUnitDto MapToDto(ResidentialUnit unit)
+        {
+            return new ReturnResidentialUnitDto
+            {
+                Id = unit.Id,
+                Name = unit.Name,
+                UnitManagerId = unit.UnitManagerId,
+                UnitManagerName = unit.UnitManager?.UserName ?? string.Empty,
+                Blocks = unit.Blocks.Select(b => new Block
+                {
+                    Id = b.Id,
+                    Name = b.Name,
+                    BlockManagerId = b.BlockManagerId
+                }).ToList()
+            };
         }
 
     }

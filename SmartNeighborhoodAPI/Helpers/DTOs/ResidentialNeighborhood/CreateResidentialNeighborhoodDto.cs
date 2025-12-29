@@ -8,7 +8,7 @@ namespace SmartNeighborhoodAPI.Helpers.DTOs.ResidentialNeighborhood
         public string Name { get; set; } = string.Empty;
 
         [Required]
-        public string NeighborhoodManagerId { get; set; } = string.Empty;
+        public int NeighborhoodManagerId { get; set; }
 
         [Required, EmailAddress]
         public string Email { get; set; } = string.Empty;

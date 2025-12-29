@@ -23,14 +23,14 @@ namespace SmartNeighborhoodAPI.Helpers
 
         public static class ResidentialNeighborhoods
         {
-            public const string Prefix = Rule + "ResidentialNeighborhoods";
+            public const string Prefix = Rule + "residential-neighborhoods";
 
             public const string Add = Prefix;
             public const string GetAll = Prefix;
             public const string GetById = Prefix + "/{id:int}";
             public const string Update = Prefix + "/{id:int}";
             public const string Delete = Prefix + "/{id:int}";
-            public const string ChangeManager = Prefix + "/{id:int}/manager";
+            public const string ChangeManager = Prefix + "/manager";
             public const string Dashboard = Prefix + "/dashboard";
         }
 

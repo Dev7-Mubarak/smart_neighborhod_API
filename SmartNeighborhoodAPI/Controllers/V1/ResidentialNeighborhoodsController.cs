@@ -50,17 +50,14 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             [FromBody] UpdateResidentialNeighborhoodDto dto)
             => Response(await _service.UpdateAsync(id, dto));
 
-        [HttpDelete(ResidentialNeighborhoods.Delete)]
-        [SwaggerOperation(Summary = "Delete residential neighborhood (Admin only)")]
-        public async Task<IActionResult> Delete(int id)
-            => Response(await _service.DeleteAsync(id));
 
-        [HttpPut(ResidentialNeighborhoods.ChangeManager)]
+
+        [HttpPost(ResidentialNeighborhoods.ChangeManager)]
         [SwaggerOperation(Summary = "Change residential neighborhood manager (Admin only)")]
         public async Task<IActionResult> ChangeManager(
             int id,
             [FromBody] ChangeResidentialManagerDto dto)
-            => Response(await _service.ChangeManagerAsync(id, dto));
+            => Response(await _service.ChangeManagerAsync(dto));
 
         [HttpGet(ResidentialNeighborhoods.Dashboard)]
         [SwaggerOperation(Summary = "Get residential neighborhood dashboard statistics (Admin only)")]
