@@ -75,6 +75,7 @@ builder.Services.AddScoped<TeamRoleService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<UserContextService>();
 builder.Services.AddScoped<ResidentialUnitService>();
+builder.Services.AddScoped<IResidentialNeighborhoodService, ResidentialNeighborhoodService>();
 builder.Services.AddScoped<IGovernmentInstitutionsService, GovernmentInstitutionsService>();
 builder.Services.AddScoped<IGovernmentInstitutionContactService, GovernmentInstitutionContactService>();
 

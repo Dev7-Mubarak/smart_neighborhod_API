@@ -39,7 +39,7 @@ namespace SmartNeighborhoodAPI.Helpers
 
                 mailMessage.To.Add(email);
 
-                await client.SendMailAsync(mailMessage);
+                 client.SendMailAsync(mailMessage);
 
                 _logger.LogInformation("Email successfully sent to {Email} with subject '{Subject}'", email, subject);
             }

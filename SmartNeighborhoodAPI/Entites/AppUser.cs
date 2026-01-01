@@ -12,6 +12,8 @@ namespace SmartNeighborhoodAPI.Entites
         public DateTime? EmailConfirmationCodeExpiresAt { get; set; }
         public ResidentialUnit? ManagesUnit { get; set; }
 
+        public ResidentialNeighborhood? ManagesNeighborhood { get; set; }
+
         public Block? ManagesBlock { get; set; }
     }
 }
