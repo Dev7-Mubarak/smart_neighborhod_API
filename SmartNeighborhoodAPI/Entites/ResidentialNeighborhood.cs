@@ -1,5 +1,4 @@
 using SmartNeighborhoodAPI.Helpers.DTOs.ResidentialNeighborhood;
-using System.ComponentModel.DataAnnotations;
 
 namespace SmartNeighborhoodAPI.Entites
 {

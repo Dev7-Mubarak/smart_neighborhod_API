@@ -1,4 +1,4 @@
-using SmartNeighborhoodAPI.Entites;
+ï»¿using SmartNeighborhoodAPI.Entites;
 using SmartNeighborhoodAPI.Helpers.DTOs.ResidentialNeighborhood;
 using SmartNeighborhoodAPI.Interfaces;
 using System.Net;
@@ -32,14 +32,14 @@ namespace SmartNeighborhoodAPI.Services
             if (await _context.ResidentialNeighborhoods.AnyAsync(n => n.Name == dto.Name))
             {
                 _logger.LogWarning("Neighborhood with name '{Name}' already exists", dto.Name);
-                return ApiResponse<ReturnResidentialNeighborhoodDto>.Error(HttpStatusCode.BadRequest, "Neighborhood name already exists");
+                return ApiResponse<ReturnResidentialNeighborhoodDto>.Error(HttpStatusCode.BadRequest, "Ø§Ø³Ù… Ø§Ù„Ø­ÙŠ Ø§Ù„Ø³ÙƒÙ†ÙŠ Ù…ÙˆØ¬ÙˆØ¯ Ø¨Ø§Ù„ÙØ¹Ù„");
             }
 
             var person = await _context.People.FindAsync(dto.NeighborhoodManagerId);
             if (person == null)
             {
                 _logger.LogWarning("Person with ID {PersonId} not found", dto.NeighborhoodManagerId);
-                return ApiResponse<ReturnResidentialNeighborhoodDto>.Error(HttpStatusCode.NotFound, "Person not found");
+                return ApiResponse<ReturnResidentialNeighborhoodDto>.Error(HttpStatusCode.NotFound, "Ø§Ù„Ø´Ø®Øµ ØºÙŠØ± Ù…ÙˆØ¬ÙˆØ¯");
             }
 
             // Create Manager Account Logic
@@ -47,7 +47,7 @@ namespace SmartNeighborhoodAPI.Services
             if (existingUser != null)
             {
                 _logger.LogWarning("User with PersonId {PersonId} already exists", dto.NeighborhoodManagerId);
-                return ApiResponse<ReturnResidentialNeighborhoodDto>.Error(HttpStatusCode.BadRequest, "User already exists for this person");
+                return ApiResponse<ReturnResidentialNeighborhoodDto>.Error(HttpStatusCode.BadRequest, "ÙŠÙˆØ¬Ø¯ Ø­Ø³Ø§Ø¨ Ù…Ø³ØªØ®Ø¯Ù… Ù…Ø±ØªØ¨Ø· Ø¨Ù‡Ø°Ø§ Ø§Ù„Ø´Ø®Øµ Ù…Ø³Ø¨Ù‚Ø§Ù‹");
             }
 
             var strategy = _context.Database.CreateExecutionStrategy();
@@ -63,14 +63,14 @@ namespace SmartNeighborhoodAPI.Services
                         Email = dto.Email,
                         PersonId = dto.NeighborhoodManagerId,
                         IsActive = true,
-                        EmailConfirmed = true
+                        EmailConfirmed = false
                     };
 
                     var result = await _userManager.CreateAsync(user, dto.Password);
                     if (!result.Succeeded)
                     {
                         var errors = result.Errors.Select(e => new ErrorDetails { Field = e.Code, ErrorMessage = e.Description }).ToList();
-                        return ApiResponse<ReturnResidentialNeighborhoodDto>.Error(HttpStatusCode.BadRequest, "Failed to create user", errors);
+                        return ApiResponse<ReturnResidentialNeighborhoodDto>.Error(HttpStatusCode.BadRequest, "ÙØ´Ù„ Ø¥Ù†Ø´Ø§Ø¡ Ø­Ø³Ø§Ø¨ Ø§Ù„Ù…Ø³ØªØ®Ø¯Ù…", errors);
                     }
 
                     if (!await _userManager.IsInRoleAsync(user, Role.ResidentialNeighborhoodManager))
@@ -83,11 +83,10 @@ namespace SmartNeighborhoodAPI.Services
                     user.EmailConfirmationCode = otp;
                     user.EmailConfirmationCodeExpiresAt = DateTime.UtcNow.AddHours(1);
                     await _userManager.UpdateAsync(user);
-                     _emailSender.SendEmailAsync(user.Email, "Account Created", $"Your account has been created. OTP: {otp}");
                     var entity = new ResidentialNeighborhood
                     {
                         Name = dto.Name,
-                        NeighborhoodManagerId = user.Id // Use the newly created user's ID
+                        NeighborhoodManagerId = user.Id 
                     };
 
                     _context.ResidentialNeighborhoods.Add(entity);
@@ -97,6 +96,13 @@ namespace SmartNeighborhoodAPI.Services
 
                     await transaction.CommitAsync();
 
+                     await _emailSender.SendEmailAsync(
+                                        user.Email,
+                                        "ØªÙ… Ø¥Ù†Ø´Ø§Ø¡ Ø§Ù„Ø­Ø³Ø§Ø¨",
+                                        $"ØªÙ… Ø¥Ù†Ø´Ø§Ø¡ Ø­Ø³Ø§Ø¨Ùƒ Ø¨Ù†Ø¬Ø§Ø­. Ø±Ù…Ø² Ø§Ù„ØªØ­Ù‚Ù‚ Ù‡Ùˆ: {otp}"
+                                    );
+
+
                     _logger.LogInformation("Successfully created residential neighborhood '{Name}' with ID {Id}", entity.Name, entity.Id);
 
                     return ApiResponse<ReturnResidentialNeighborhoodDto>.Success(entity.ToDto());
@@ -105,7 +111,7 @@ namespace SmartNeighborhoodAPI.Services
                 {
                     await transaction.RollbackAsync();
                     _logger.LogError(ex, "Transaction failed in CreateAsync");
-                    return ApiResponse<ReturnResidentialNeighborhoodDto>.Error(HttpStatusCode.InternalServerError, "An error occurred while creating the neighborhood.");
+                    return ApiResponse<ReturnResidentialNeighborhoodDto>.Error(HttpStatusCode.InternalServerError, "Ø­Ø¯Ø« Ø®Ø·Ø£ Ø£Ø«Ù†Ø§Ø¡ Ø¥Ù†Ø´Ø§Ø¡ Ø§Ù„Ø­ÙŠ Ø§Ù„Ø³ÙƒÙ†ÙŠ");
                 }
             });
         }
@@ -180,14 +186,14 @@ namespace SmartNeighborhoodAPI.Services
             if (existingUserByPerson != null)
             {
                 _logger.LogWarning("User with PersonId {PersonId} already exists", dto.PersonId);
-                return ApiResponse<ReturnResidentialNeighborhoodDto>.Error(HttpStatusCode.BadRequest, "åĞÇ ÇáãÓÊÎÏã åæ ãÏíÑ ÈÇáİÚá.");
+                return ApiResponse<ReturnResidentialNeighborhoodDto>.Error(HttpStatusCode.BadRequest, "Ã¥ÃÃ‡ Ã‡Ã¡Ã£Ã“ÃŠÃÃÃ£ Ã¥Ã¦ Ã£ÃÃ­Ã‘ ÃˆÃ‡Ã¡ÃÃšÃ¡.");
             }
 
             var existingUser = await _userManager.FindByEmailAsync(dto.Email);
             if (existingUser != null)
             {
                 _logger.LogWarning("Email '{Email}' is already used.", dto.Email);
-                return ApiResponse<ReturnResidentialNeighborhoodDto>.Error(HttpStatusCode.Conflict, "ÇáÈÑíÏ ÇáÅáßÊÑæäí ãÓÊÎÏã ãÓÈŞÇğ.");
+                return ApiResponse<ReturnResidentialNeighborhoodDto>.Error(HttpStatusCode.Conflict, "Ã‡Ã¡ÃˆÃ‘Ã­Ã Ã‡Ã¡Ã…Ã¡ÃŸÃŠÃ‘Ã¦Ã¤Ã­ Ã£Ã“ÃŠÃÃÃ£ Ã£Ã“ÃˆÃÃ‡Ã°.");
             }
 
             var strategy = _context.Database.CreateExecutionStrategy();
@@ -215,14 +221,14 @@ namespace SmartNeighborhoodAPI.Services
                         {
                             string arabicMessage = e.Code switch
                             {
-                                "DuplicateUserName" => "ÇáÈÑíÏ ÇáÅáßÊÑæäí ãÓÊÎÏã ãÓÈŞÇğ.",
-                                "InvalidUserName" => "ÇÓã ÇáãÓÊÎÏã ÛíÑ ÕÇáÍ.",
-                                "PasswordTooShort" => "ßáãÉ ÇáãÑæÑ ŞÕíÑÉ ÌÏÇğ.",
-                                "PasswordRequiresNonAlphanumeric" => "ßáãÉ ÇáãÑæÑ íÌÈ Ãä ÊÍÊæí Úáì ÑãÒ ÎÇÕ.",
-                                "PasswordRequiresDigit" => "ßáãÉ ÇáãÑæÑ íÌÈ Ãä ÊÍÊæí Úáì ÑŞã.",
-                                "PasswordRequiresLower" => "ßáãÉ ÇáãÑæÑ íÌÈ Ãä ÊÍÊæí Úáì ÍÑİ ÕÛíÑ.",
-                                "PasswordRequiresUpper" => "ßáãÉ ÇáãÑæÑ íÌÈ Ãä ÊÍÊæí Úáì ÍÑİ ßÈíÑ.",
-                                "PasswordIsRequired" => "ßáãÉ ÇáãÑæÑ ãØáæÈÉ.",
+                                "DuplicateUserName" => "Ã‡Ã¡ÃˆÃ‘Ã­Ã Ã‡Ã¡Ã…Ã¡ÃŸÃŠÃ‘Ã¦Ã¤Ã­ Ã£Ã“ÃŠÃÃÃ£ Ã£Ã“ÃˆÃÃ‡Ã°.",
+                                "InvalidUserName" => "Ã‡Ã“Ã£ Ã‡Ã¡Ã£Ã“ÃŠÃÃÃ£ Ã›Ã­Ã‘ Ã•Ã‡Ã¡Ã.",
+                                "PasswordTooShort" => "ÃŸÃ¡Ã£Ã‰ Ã‡Ã¡Ã£Ã‘Ã¦Ã‘ ÃÃ•Ã­Ã‘Ã‰ ÃŒÃÃ‡Ã°.",
+                                "PasswordRequiresNonAlphanumeric" => "ÃŸÃ¡Ã£Ã‰ Ã‡Ã¡Ã£Ã‘Ã¦Ã‘ Ã­ÃŒÃˆ ÃƒÃ¤ ÃŠÃÃŠÃ¦Ã­ ÃšÃ¡Ã¬ Ã‘Ã£Ã’ ÃÃ‡Ã•.",
+                                "PasswordRequiresDigit" => "ÃŸÃ¡Ã£Ã‰ Ã‡Ã¡Ã£Ã‘Ã¦Ã‘ Ã­ÃŒÃˆ ÃƒÃ¤ ÃŠÃÃŠÃ¦Ã­ ÃšÃ¡Ã¬ Ã‘ÃÃ£.",
+                                "PasswordRequiresLower" => "ÃŸÃ¡Ã£Ã‰ Ã‡Ã¡Ã£Ã‘Ã¦Ã‘ Ã­ÃŒÃˆ ÃƒÃ¤ ÃŠÃÃŠÃ¦Ã­ ÃšÃ¡Ã¬ ÃÃ‘Ã Ã•Ã›Ã­Ã‘.",
+                                "PasswordRequiresUpper" => "ÃŸÃ¡Ã£Ã‰ Ã‡Ã¡Ã£Ã‘Ã¦Ã‘ Ã­ÃŒÃˆ ÃƒÃ¤ ÃŠÃÃŠÃ¦Ã­ ÃšÃ¡Ã¬ ÃÃ‘Ã ÃŸÃˆÃ­Ã‘.",
+                                "PasswordIsRequired" => "ÃŸÃ¡Ã£Ã‰ Ã‡Ã¡Ã£Ã‘Ã¦Ã‘ Ã£Ã˜Ã¡Ã¦ÃˆÃ‰.",
                                 _ => e.Description
                             };
 
@@ -233,7 +239,7 @@ namespace SmartNeighborhoodAPI.Services
                             };
                         }).ToList();
                         _logger.LogError("Failed to create new residential neighborhood manager. Reason: {Reason}", string.Join(", ", errors.Select(e => e.ErrorMessage)));
-                        return ApiResponse<ReturnResidentialNeighborhoodDto>.Error(HttpStatusCode.BadRequest, "ÍÏË ÎØÃ ÃËäÇÁ ÅäÔÇÁ ÇáãÓÊÎÏã.", errors);
+                        return ApiResponse<ReturnResidentialNeighborhoodDto>.Error(HttpStatusCode.BadRequest, "ÃÃÃ‹ ÃÃ˜Ãƒ ÃƒÃ‹Ã¤Ã‡Ã Ã…Ã¤Ã”Ã‡Ã Ã‡Ã¡Ã£Ã“ÃŠÃÃÃ£.", errors);
                     }
 
                     if (!await _userManager.IsInRoleAsync(user, Role.ResidentialNeighborhoodManager))
