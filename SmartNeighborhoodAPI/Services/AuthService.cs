@@ -33,35 +33,27 @@ namespace SmartNeighborhoodAPI.Services
         }
         public async Task<ApiResponse<UserResponse>> LoginAsync(LoginDto loginDto)
         {
+
+            bool isEmail = loginDto.Identifier.Contains('@');
             AppUser? user = null;
-            var userByEmail = await _userManager.FindByEmailAsync(loginDto.Email);
-            if (userByEmail != null)
-            {
-                if (await _userManager.IsInRoleAsync(userByEmail, Role.ResidentialNeighborhoodManager))
-                {
-                    if (!userByEmail.EmailConfirmed)
-                    {
-                        return ApiResponse<UserResponse>.Error(HttpStatusCode.Forbidden, "لم يتم تأكيد البريد الإلكتروني. الرجاء إدخال رمز التحقق المرسل إلى بريدك الإلكتروني.");
-                    }
-                    user = userByEmail;
-                }
+
+
+            if (isEmail) {
+                user = await _userManager.FindByEmailAsync(loginDto.Identifier);
             }
             else
             {
-                var userByName = await _userManager.FindByNameAsync(loginDto.Email);
-                if (userByName != null)
-                {
-                    user = userByName;
-
-                }
+                user = await _userManager.FindByNameAsync(loginDto.Identifier);
             }
-
-
-
 
 
             if (user == null)
                 return ApiResponse<UserResponse>.Error(HttpStatusCode.NotFound, "بيانات تسجيل الدخول غير صحيحة.");
+
+            if (isEmail && !user.EmailConfirmed)
+            {
+                return ApiResponse<UserResponse>.Error(HttpStatusCode.Forbidden, "لم يتم تأكيد البريد الإلكتروني. الرجاء إدخال رمز التحقق المرسل إلى بريدك الإلكتروني.");
+            }
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
 
@@ -73,7 +65,7 @@ namespace SmartNeighborhoodAPI.Services
             UserResponse userResponse = new UserResponse
             {
                 Id = user.Id,
-                Email = loginDto.Email,
+                Identifier = loginDto.Identifier,
                 Role = (await _userManager.GetRolesAsync(user)).FirstOrDefault(),
                 Token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken),
             };
@@ -159,7 +151,7 @@ namespace SmartNeighborhoodAPI.Services
             UserResponse userResponse = new UserResponse
             {
                 Id = user.Id,
-                Email = user.Email,
+                Identifier = user.Email,
                 Role = Role.BlockManager
             };
 
@@ -188,7 +180,7 @@ namespace SmartNeighborhoodAPI.Services
             var userResponse = new UserResponse
             {
                 Id = user.Id,
-                Email = user.Email,
+                Identifier = user.Email,
                 Role = "BlockManager"
             };
 

@@ -153,7 +153,7 @@ namespace SmartNeighborhoodAPI.Services
                 Name = block.Name,
                 //ManagerId = block.UnitManagerId,    
                 PersonId = person.Id,
-                Email = createResult.Data.Email,
+                Email = createResult.Data.Identifier,
                 Role = createResult.Data.Role,
                 FullName = person.FullName
             };
@@ -213,7 +213,7 @@ namespace SmartNeighborhoodAPI.Services
                     //PersonId = blockDto.PersonId,
                     ManagerId = response.Data.Id,
                     Role = response.Data.Role,
-                    Email = response.Data.Email,
+                    Email = response.Data.Identifier,
                     FullName = person.FullName
                 };
 

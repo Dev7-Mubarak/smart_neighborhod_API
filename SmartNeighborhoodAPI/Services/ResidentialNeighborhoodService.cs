@@ -35,90 +35,65 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<ReturnResidentialNeighborhoodDto>.Error(HttpStatusCode.BadRequest, "اسم الحي السكني موجود بالفعل");
             }
 
-            var person = await _context.People.FindAsync(dto.NeighborhoodManagerId);
+            var person = await _context.People.FindAsync(dto.PersonId);
             if (person == null)
             {
-                _logger.LogWarning("Person with ID {PersonId} not found", dto.NeighborhoodManagerId);
+                _logger.LogWarning("Person with ID {PersonId} not found", dto.PersonId);
                 return ApiResponse<ReturnResidentialNeighborhoodDto>.Error(HttpStatusCode.NotFound, "الشخص غير موجود");
             }
 
             // Create Manager Account Logic
-            var existingUser = await _userManager.Users.FirstOrDefaultAsync(u => u.PersonId == dto.NeighborhoodManagerId);
+            var existingUser = await _userManager.Users.FirstOrDefaultAsync(u => u.PersonId == dto.PersonId);
             if (existingUser != null)
             {
-                _logger.LogWarning("User with PersonId {PersonId} already exists", dto.NeighborhoodManagerId);
+                _logger.LogWarning("User with PersonId {PersonId} already exists", dto.PersonId);
                 return ApiResponse<ReturnResidentialNeighborhoodDto>.Error(HttpStatusCode.BadRequest, "يوجد حساب مستخدم مرتبط بهذا الشخص مسبقاً");
             }
 
-            var strategy = _context.Database.CreateExecutionStrategy();
 
-            return await strategy.ExecuteAsync(async () =>
-            {
-                using var transaction = await _context.Database.BeginTransactionAsync();
-                try
-                {
-                    var user = new AppUser
-                    {
-                        UserName = dto.Email,
-                        Email = dto.Email,
-                        PersonId = dto.NeighborhoodManagerId,
-                        IsActive = true,
-                        EmailConfirmed = false
-                    };
+             bool isEamil = dto.Identifier.Contains('@');
+             var user = new AppUser
+             {
+                 UserName = isEamil? null : dto.Identifier,
+                 Email = isEamil? dto.Identifier : null,
+                 PersonId = dto.PersonId,
+                 IsActive = true,
+                 EmailConfirmed = false
+             };
 
-                    var result = await _userManager.CreateAsync(user, dto.Password);
-                    if (!result.Succeeded)
-                    {
-                        var errors = result.Errors.Select(e => new ErrorDetails { Field = e.Code, ErrorMessage = e.Description }).ToList();
-                        return ApiResponse<ReturnResidentialNeighborhoodDto>.Error(HttpStatusCode.BadRequest, "فشل إنشاء حساب المستخدم", errors);
+             var result = await _userManager.CreateAsync(user, dto.Password);
+             if (!result.Succeeded)
+             {
+                 var errors = result.Errors.Select(e => new ErrorDetails { Field = e.Code, ErrorMessage = e.Description }).ToList();
+                 return ApiResponse<ReturnResidentialNeighborhoodDto>.Error(HttpStatusCode.BadRequest, "فشل إنشاء حساب المستخدم", errors);
+             }
+
+             if (!await _userManager.IsInRoleAsync(user, Role.ResidentialNeighborhoodManager))
+             {
+                 await _userManager.AddToRoleAsync(user, Role.ResidentialNeighborhoodManager);
+             }
+
+             var entity = new ResidentialNeighborhood
+             {
+                 Name = dto.Name,
+                 NeighborhoodManagerId = user.Id
+             };
+
+             _context.ResidentialNeighborhoods.Add(entity);
+             await _context.SaveChangesAsync();
+
+             await _context.Entry(entity).Reference(e => e.NeighborhoodManager).LoadAsync();
+             if (entity.NeighborhoodManager != null)
+             {
+                 await _context.Entry(entity.NeighborhoodManager).Reference(nm => nm.Person).LoadAsync();
+             }
+
+
+             _logger.LogInformation("Successfully created residential neighborhood '{Name}' with ID {Id}", entity.Name, entity.Id);
+
+             return ApiResponse<ReturnResidentialNeighborhoodDto>.Success(entity.ToDto(), "تم إنشاء الحي السكني بنجاح");
+               
                     }
-
-                    if (!await _userManager.IsInRoleAsync(user, Role.ResidentialNeighborhoodManager))
-                    {
-                        await _userManager.AddToRoleAsync(user, Role.ResidentialNeighborhoodManager);
-                    }
-
-                    // Send Email Logic (Simplified)
-                    var otp = new Random().Next(100000, 999999).ToString();
-                    user.EmailConfirmationCode = otp;
-                    user.EmailConfirmationCodeExpiresAt = DateTime.UtcNow.AddHours(1);
-                    await _userManager.UpdateAsync(user);
-                    var entity = new ResidentialNeighborhood
-                    {
-                        Name = dto.Name,
-                        NeighborhoodManagerId = user.Id 
-                    };
-
-                    _context.ResidentialNeighborhoods.Add(entity);
-                    await _context.SaveChangesAsync();
-
-                    await _context.Entry(entity).Reference(e => e.NeighborhoodManager).LoadAsync();
-                    if (entity.NeighborhoodManager != null)
-                    {
-                        await _context.Entry(entity.NeighborhoodManager).Reference(nm => nm.Person).LoadAsync();
-                    }
-
-                    await transaction.CommitAsync();
-
-                     await _emailSender.SendEmailAsync(
-                                        user.Email,
-                                        "تم إنشاء الحساب",
-                                        $"تم إنشاء حسابك بنجاح. رمز التحقق هو: {otp}"
-                                    );
-
-
-                    _logger.LogInformation("Successfully created residential neighborhood '{Name}' with ID {Id}", entity.Name, entity.Id);
-
-                    return ApiResponse<ReturnResidentialNeighborhoodDto>.Success(entity.ToDto(), "تم إنشاء الحي السكني بنجاح");
-                }
-                catch (Exception ex)
-                {
-                    await transaction.RollbackAsync();
-                    _logger.LogError(ex, "Transaction failed in CreateAsync");
-                    return ApiResponse<ReturnResidentialNeighborhoodDto>.Error(HttpStatusCode.InternalServerError, "حدث خطأ أثناء إنشاء الحي السكني");
-                }
-            });
-        }
         public async Task<ApiResponse<List<ReturnResidentialNeighborhoodDto>>> GetAllAsync(
             CancellationToken ct = default)
         {
