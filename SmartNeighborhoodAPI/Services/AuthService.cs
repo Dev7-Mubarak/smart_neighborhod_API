@@ -33,7 +33,32 @@ namespace SmartNeighborhoodAPI.Services
         }
         public async Task<ApiResponse<UserResponse>> LoginAsync(LoginDto loginDto)
         {
-            var user = await _userManager.FindByEmailAsync(loginDto.Email);
+            AppUser? user = null;
+            var userByEmail = await _userManager.FindByEmailAsync(loginDto.Email);
+            if (userByEmail != null)
+            {
+                if (await _userManager.IsInRoleAsync(userByEmail, Role.ResidentialNeighborhoodManager))
+                {
+                    if (!userByEmail.EmailConfirmed)
+                    {
+                        return ApiResponse<UserResponse>.Error(HttpStatusCode.Forbidden, "لم يتم تأكيد البريد الإلكتروني. الرجاء إدخال رمز التحقق المرسل إلى بريدك الإلكتروني.");
+                    }
+                    user = userByEmail;
+                }
+            }
+            else
+            {
+                var userByName = await _userManager.FindByNameAsync(loginDto.Email);
+                if (userByName != null)
+                {
+                    user = userByName;
+
+                }
+            }
+
+
+
+
 
             if (user == null)
                 return ApiResponse<UserResponse>.Error(HttpStatusCode.NotFound, "بيانات تسجيل الدخول غير صحيحة.");
@@ -42,11 +67,6 @@ namespace SmartNeighborhoodAPI.Services
 
             if (!result.Succeeded)
                 return ApiResponse<UserResponse>.Error(HttpStatusCode.BadRequest, "بيانات تسجيل الدخول غير صحيحة.");
-
-            if (!user.EmailConfirmed)
-            {
-                return ApiResponse<UserResponse>.Error(HttpStatusCode.Forbidden, "لم يتم تأكيد البريد الإلكتروني. الرجاء إدخال رمز التحقق المرسل إلى بريدك الإلكتروني.");
-            }
 
             var jwtSecurityToken = await CreateJwtToken(user);
 

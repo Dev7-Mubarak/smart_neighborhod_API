@@ -61,15 +61,16 @@ namespace SmartNeighborhoodAPI.Services
                     .Include(u => u.Blocks)
                         .ThenInclude(b => b.BlockManager)
                     .Include(u => u.UnitManager)
-                    .FirstOrDefaultAsync(u => u.UnitManagerId == user.Id);
+                    .Where(u => u.UnitManagerId == user.Id)
+                    .ToListAsync();
 
-                if (residentialUnit == null)
+                if (!residentialUnit.Any())
                     return ApiResponse<IEnumerable<ReturnResidentialUnitDto>>.Error(
                         HttpStatusCode.NotFound, "لم يتم العثور على وحدة سكنية لهذا المستخدم"
                     );
 
                 return ApiResponse<IEnumerable<ReturnResidentialUnitDto>>.Success(
-                    new List<ReturnResidentialUnitDto> { MapToDto(residentialUnit) },
+                    residentialUnit.Select(u => MapToDto(u)).ToList(),
                     "تم جلب الوحدة السكنية الخاصة بك بنجاح"
                 );
             }
@@ -113,7 +114,7 @@ namespace SmartNeighborhoodAPI.Services
             // Step 4: Create new manager account
             var createResult = await _authService.CreateBlockManagerAccountAsync(new CreateBlockManagerDto
             {
-                Email = blockManagerDto.Email,
+                Email = blockManagerDto.Email, // This is actually used as UserName now
                 Password = blockManagerDto.Password,
                 PersonId = blockManagerDto.PersonId
             });
@@ -226,13 +227,22 @@ namespace SmartNeighborhoodAPI.Services
             _logger.LogError("Failed to create block manager: {Error}", response.Message);
             return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.BadRequest, "فشل في إضافة البلوك.");
         }
-        public async Task<ApiResponse<Block>> GetByIdAsync(int id)
+        public async Task<ApiResponse<ReturnResidentialUnitDto>> GetByIdAsync(int id)
         {
-            var block = await _context.Blocks.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
-            if (block == null)
-                return ApiResponse<Block>.Error(HttpStatusCode.NotFound, "المربع غير موجود.");
+            var residentialUnit = await _context.ResidentialUnits
+                .Include(u => u.Blocks)
+                    .ThenInclude(b => b.BlockManager)
+                .Include(u => u.UnitManager)
+                .FirstOrDefaultAsync(u => u.Id == id);
 
-            return ApiResponse<Block>.Success(block, "تم جلب بيانات المربع بنجاح.");
+            if (residentialUnit == null)
+                return ApiResponse<ReturnResidentialUnitDto>.Error(
+                    HttpStatusCode.NotFound, "لم يتم العثور على الوحدة السكنية"
+                );
+
+            return ApiResponse<ReturnResidentialUnitDto>.Success(
+                MapToDto(residentialUnit), "تم جلب الوحدة السكنية بنجاح"
+            );
         }
         public async Task<ApiResponse<string>> UpdateAsync(int id, UpdateResidentialUnitDto blockDto)
         {
@@ -349,6 +359,8 @@ namespace SmartNeighborhoodAPI.Services
                 }).ToList()
             };
         }
+
+
 
     }
 }
