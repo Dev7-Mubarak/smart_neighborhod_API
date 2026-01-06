@@ -1,4 +1,4 @@
-﻿using SmartNeighborhoodAPI.Helpers.DTOs.ResidentialNeighborhood;
+﻿using SmartNeighborhoodAPI.Helpers.DTOs.ResidentialUnits;
 using OurProjectSmartNeiborhood.Entites;
 
 namespace SmartNeighborhoodAPI.Entites

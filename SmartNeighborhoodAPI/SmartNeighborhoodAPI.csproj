@@ -39,6 +39,7 @@
 
   <ItemGroup>
     <Folder Include="OpenApi\" />
+    <Folder Include="Properties\" />
     <Folder Include="wwwroot\People\" />
   </ItemGroup>
 

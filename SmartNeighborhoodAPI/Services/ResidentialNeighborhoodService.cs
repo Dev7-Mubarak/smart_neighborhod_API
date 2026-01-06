@@ -14,14 +14,14 @@ namespace SmartNeighborhoodAPI.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<AppUser> _userManager;
-        private readonly IEmailSender _emailSender;
+        private readonly IManagerAccountService _managerAccountService;
         private readonly ILogger<ResidentialNeighborhoodService> _logger;
 
-        public ResidentialNeighborhoodService(ApplicationDbContext context, UserManager<AppUser> userManager, IEmailSender emailSender, ILogger<ResidentialNeighborhoodService> logger)
+        public ResidentialNeighborhoodService(ApplicationDbContext context, UserManager<AppUser> userManager, IManagerAccountService managerAccountService, ILogger<ResidentialNeighborhoodService> logger)
         {
             _context = context;
             _userManager = userManager;
-            _emailSender = emailSender;
+            _managerAccountService = managerAccountService;
             _logger = logger;
         }
 
@@ -42,14 +42,6 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<ReturnResidentialNeighborhoodDto>.Error(HttpStatusCode.NotFound, "الشخص غير موجود");
             }
 
-            // Create Manager Account Logic
-            var existingUser = await _userManager.Users.FirstOrDefaultAsync(u => u.PersonId == dto.NeighborhoodManagerId);
-            if (existingUser != null)
-            {
-                _logger.LogWarning("User with PersonId {PersonId} already exists", dto.NeighborhoodManagerId);
-                return ApiResponse<ReturnResidentialNeighborhoodDto>.Error(HttpStatusCode.BadRequest, "يوجد حساب مستخدم مرتبط بهذا الشخص مسبقاً");
-            }
-
             var strategy = _context.Database.CreateExecutionStrategy();
 
             return await strategy.ExecuteAsync(async () =>
@@ -57,32 +49,20 @@ namespace SmartNeighborhoodAPI.Services
                 using var transaction = await _context.Database.BeginTransactionAsync();
                 try
                 {
-                    var user = new AppUser
-                    {
-                        UserName = dto.Email,
-                        Email = dto.Email,
-                        PersonId = dto.NeighborhoodManagerId,
-                        IsActive = true,
-                        EmailConfirmed = false
-                    };
+                    // Use ManagerAccountService to create manager
+                    var managerResult = await _managerAccountService.CreateManagerAccountAsync(
+                        dto.NeighborhoodManagerId, 
+                        dto.Email, 
+                        dto.Password, 
+                        Role.ResidentialNeighborhoodManager
+                    );
 
-                    var result = await _userManager.CreateAsync(user, dto.Password);
-                    if (!result.Succeeded)
+                    if (!managerResult.IsSuccess)
                     {
-                        var errors = result.Errors.Select(e => new ErrorDetails { Field = e.Code, ErrorMessage = e.Description }).ToList();
-                        return ApiResponse<ReturnResidentialNeighborhoodDto>.Error(HttpStatusCode.BadRequest, "فشل إنشاء حساب المستخدم", errors);
+                        return ApiResponse<ReturnResidentialNeighborhoodDto>.Error(managerResult.StatusCode, managerResult.Message, managerResult.Errors);
                     }
 
-                    if (!await _userManager.IsInRoleAsync(user, Role.ResidentialNeighborhoodManager))
-                    {
-                        await _userManager.AddToRoleAsync(user, Role.ResidentialNeighborhoodManager);
-                    }
-
-                    // Send Email Logic (Simplified)
-                    var otp = new Random().Next(100000, 999999).ToString();
-                    user.EmailConfirmationCode = otp;
-                    user.EmailConfirmationCodeExpiresAt = DateTime.UtcNow.AddHours(1);
-                    await _userManager.UpdateAsync(user);
+                    var user = managerResult.Data;
                     var entity = new ResidentialNeighborhood
                     {
                         Name = dto.Name,
@@ -99,13 +79,6 @@ namespace SmartNeighborhoodAPI.Services
                     }
 
                     await transaction.CommitAsync();
-
-                     await _emailSender.SendEmailAsync(
-                                        user.Email,
-                                        "تم إنشاء الحساب",
-                                        $"تم إنشاء حسابك بنجاح. رمز التحقق هو: {otp}"
-                                    );
-
 
                     _logger.LogInformation("Successfully created residential neighborhood '{Name}' with ID {Id}", entity.Name, entity.Id);
 
@@ -190,17 +163,10 @@ namespace SmartNeighborhoodAPI.Services
                     // Step 6: Delete old manager account (if any)
                     if (managerId != null)
                     {
-                        var oldManagerUser = await _userManager.FindByIdAsync(managerId);
-                        if (oldManagerUser != null)
+                        var deleteResult = await _managerAccountService.DeleteManagerAccountAsync(managerId);
+                        if (!deleteResult.IsSuccess)
                         {
-                            var deleteResult = await _userManager.DeleteAsync(oldManagerUser);
-                            if (!deleteResult.Succeeded)
-                            {
-                                var errors = deleteResult.Errors.Select(e => new ErrorDetails { Field = e.Code, ErrorMessage = e.Description }).ToList();
-                                _logger.LogError("Failed to delete old residential neighborhood manager with ID: {OldManagerId}", oldManagerUser.Id);
-                                // Rollback is handled by the catch block
-                                throw new Exception("فشل حذف المدير القديم");
-                            }
+                            throw new Exception("فشل حذف المدير القديم");
                         }
                     }
 
@@ -239,21 +205,6 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<ReturnResidentialNeighborhoodDto>.Error(HttpStatusCode.NotFound, "الشخص غير موجود");
             }
 
-            // Check if user already exists for this person
-            var existingUserByPerson = await _userManager.Users.FirstOrDefaultAsync(u => u.PersonId == dto.PersonId);
-            if (existingUserByPerson != null)
-            {
-                _logger.LogWarning("User with PersonId {PersonId} already exists", dto.PersonId);
-                return ApiResponse<ReturnResidentialNeighborhoodDto>.Error(HttpStatusCode.BadRequest, "هذا المستخدم هو مدير بالفعل.");
-            }
-
-            var existingUser = await _userManager.FindByEmailAsync(dto.Email);
-            if (existingUser != null)
-            {
-                _logger.LogWarning("Email '{Email}' is already used.", dto.Email);
-                return ApiResponse<ReturnResidentialNeighborhoodDto>.Error(HttpStatusCode.Conflict, "البريد الإلكتروني مستخدم مسبقاً.");
-            }
-
             var strategy = _context.Database.CreateExecutionStrategy();
 
             return await strategy.ExecuteAsync(async () =>
@@ -262,75 +213,35 @@ namespace SmartNeighborhoodAPI.Services
                 try
                 {
                     // Step 4: Create new manager account
-                    var user = new AppUser
+                    var managerResult = await _managerAccountService.CreateManagerAccountAsync(
+                         dto.PersonId,
+                         dto.Email,
+                         dto.Password,
+                         Role.ResidentialNeighborhoodManager
+                     );
+
+                    if (!managerResult.IsSuccess)
                     {
-                        UserName = dto.Email,
-                        Email = dto.Email,
-                        PersonId = dto.PersonId,
-                        IsActive = true,
-                        EmailConfirmed = true
-                    };
-
-                    var createResult = await _userManager.CreateAsync(user, dto.Password);
-
-                    if (!createResult.Succeeded)
-                    {
-                        List<ErrorDetails> errors = createResult.Errors.Select(e =>
-                        {
-                            string arabicMessage = e.Code switch
-                            {
-                                "DuplicateUserName" => "البريد الإلكتروني مستخدم مسبقاً.",
-                                "InvalidUserName" => "اسم المستخدم غير صالح.",
-                                "PasswordTooShort" => "كلمة المرور قصيرة جداً.",
-                                "PasswordRequiresNonAlphanumeric" => "كلمة المرور يجب أن تحتوي على رمز خاص.",
-                                "PasswordRequiresDigit" => "كلمة المرور يجب أن تحتوي على رقم.",
-                                "PasswordRequiresLower" => "كلمة المرور يجب أن تحتوي على حرف صغير.",
-                                "PasswordRequiresUpper" => "كلمة المرور يجب أن تحتوي على حرف كبير.",
-                                "PasswordIsRequired" => "كلمة المرور مطلوبة.",
-                                _ => e.Description
-                            };
-
-                            return new ErrorDetails
-                            {
-                                Field = e.Code,
-                                ErrorMessage = arabicMessage
-                            };
-                        }).ToList();
-                        _logger.LogError("Failed to create new residential neighborhood manager. Reason: {Reason}", string.Join(", ", errors.Select(e => e.ErrorMessage)));
-                        return ApiResponse<ReturnResidentialNeighborhoodDto>.Error(HttpStatusCode.BadRequest, "حدث خطأ أثناء إنشاء المستخدم.", errors);
+                        return ApiResponse<ReturnResidentialNeighborhoodDto>.Error(managerResult.StatusCode, managerResult.Message, managerResult.Errors);
                     }
-
-                    if (!await _userManager.IsInRoleAsync(user, Role.ResidentialNeighborhoodManager))
-                    {
-                        await _userManager.AddToRoleAsync(user, Role.ResidentialNeighborhoodManager);
-                    }
-
-                    // Send Email Logic (Simplified)
-                    var otp = new Random().Next(100000, 999999).ToString();
-                    user.EmailConfirmationCode = otp;
-                    user.EmailConfirmationCodeExpiresAt = DateTime.UtcNow.AddHours(1);
-                    await _userManager.UpdateAsync(user);
-                    await _emailSender.SendEmailAsync(user.Email, "تم إنشاء الحساب", $"تم إنشاء حسابك بنجاح. رمز التحقق هو: {otp}");
-
-
+                    
+                    var user = managerResult.Data;
                     var oldManagerId = neighborhood.NeighborhoodManagerId;
-                    var oldManagerUser = await _userManager.FindByIdAsync(oldManagerId);
 
                     // Step 5: Update neighborhood manager
                     neighborhood.NeighborhoodManagerId = user.Id;
                     await _context.SaveChangesAsync();
 
                     // Step 6: Delete old manager account (if any)
-                    if (oldManagerUser != null)
+                    if (oldManagerId != null)
                     {
-                        var deleteResult = await _userManager.DeleteAsync(oldManagerUser);
-                        if (!deleteResult.Succeeded)
-                        {
-                            var errors = deleteResult.Errors.Select(e => new ErrorDetails { Field = e.Code, ErrorMessage = e.Description }).ToList();
-                            _logger.LogError("Failed to delete old residential neighborhood manager with ID: {OldManagerId}", oldManagerUser.Id);
-                            // Rollback is handled by the catch block
-                            throw new Exception("فشل حذف المدير القديم");
-                        }
+                         var deleteResult = await _managerAccountService.DeleteManagerAccountAsync(oldManagerId);
+                         if (!deleteResult.IsSuccess)
+                         {
+                             // Consider manual cleanup or specialized exception handling if this fails but new manager is set?
+                             // Currently relying on transaction rollback.
+                             throw new Exception("فشل حذف المدير القديم");
+                         }
                     }
 
                     await _context.Entry(neighborhood).Reference(e => e.NeighborhoodManager).LoadAsync();

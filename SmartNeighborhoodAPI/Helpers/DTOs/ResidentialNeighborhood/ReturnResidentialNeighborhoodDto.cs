@@ -1,3 +1,5 @@
+using SmartNeighborhoodAPI.Helpers.DTOs.ResidentialUnits;
+
 namespace SmartNeighborhoodAPI.Helpers.DTOs.ResidentialNeighborhood
 {
     public class ReturnResidentialNeighborhoodDto

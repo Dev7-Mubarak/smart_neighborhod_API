@@ -28,6 +28,8 @@ namespace SmartNeighborhoodAPI
             builder.ApplyConfiguration(new IdentityUserRoleSeedConfiguration());
             builder.ApplyConfiguration(new ProjectCatgoryEntityTypeConfiguration());
             builder.ApplyConfiguration(new ResidentialNeighborhoodConfiguration());
+
+
             //builder.ApplyConfiguration(new ProjectConfiguration());
             base.OnModelCreating(builder);
 

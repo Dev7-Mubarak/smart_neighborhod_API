@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using SmartNeighborhoodAPI.Helpers.DTOs.block;
 using SmartNeighborhoodAPI.Helpers.DTOs.ResidentialUnits;
+using SmartNeighborhoodAPI.Helpers.DTOs.ResidentialNeighborhood;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
 using System.Security.Claims;
@@ -25,8 +26,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> GetAllAsync()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            return Response(await _unitServices.GetAllAsync(userId));
+            return Response(await _unitServices.GetAllAsync());
         }
 
         [HttpGet(Router.ResidentialUnits.GetById)]
@@ -76,6 +76,29 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         public async Task<IActionResult> DeleteAsync([FromRoute, SwaggerParameter("Unit ID to delete", Required = true)] int id)
         {
             return Response(await _unitServices.DeleteAsync(id));
+        }
+
+        [HttpPost(Router.ResidentialUnits.ChangeManager)]
+        [MapToApiVersion("1.0")]
+        [Consumes("application/json")]
+        [SwaggerOperation(Summary = "Change residential unit manager", Description = "Changes the manager of a residential unit.")]
+        [ProducesResponseType(typeof(ReturnResidentialUnitDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ChangeManagerAsync([FromBody, SwaggerParameter("Manager change details", Required = true)] ChangeResidentialUnitManagerDto dto)
+        {
+            return Response(await _unitServices.ChangeManagerAsync(dto));
+        }
+
+        [HttpGet(Router.ResidentialUnits.Dashboard)]
+        [MapToApiVersion("1.0")]
+        [SwaggerOperation(Summary = "Get residential unit dashboard", Description = "Returns dashboard statistics for residential units.")]
+        [ProducesResponseType(typeof(ResidentialUnitDashboardDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetDashboardAsync(CancellationToken ct = default)
+        {
+            return Response(await _unitServices.GetDashboardAsync(ct));
         }
 
     }

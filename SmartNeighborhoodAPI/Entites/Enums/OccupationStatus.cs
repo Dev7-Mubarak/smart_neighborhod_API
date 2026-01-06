@@ -1,4 +1,6 @@
-﻿namespace SmartNeighborhoodAPI.Entites.Enums
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace SmartNeighborhoodAPI.Entites.Enums
 {
     public enum OccupationStatus
     {
@@ -7,6 +9,10 @@
         [Display(Name = "يعمل")]
         Employee,
         [Display(Name = "عاطل عن العمل")]
-        Unemployed
+        Unemployed,
+        [Display(Name = "ربة منزل")]
+        HouseWife,
+        [Display(Name = "عمل حر")]
+        SelfEmployed
     }
 }
