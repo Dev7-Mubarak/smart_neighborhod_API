@@ -209,10 +209,7 @@ app.UseRequestLocalization();
 
 // Configure the HTTP request pipeline.
 app.UseSwagger();
-app.UseSwaggerUI(options =>
-{
-    options.RoutePrefix = "swagger";
-});
+app.UseSwaggerUI();
 
 app.UseRateLimiter();
 app.UseMiddleware<RequestTimingMiddleware>();
@@ -221,10 +218,13 @@ app.UseStaticFiles();
 
 if (app.Environment.IsDevelopment())
 {
+    // Use the middleware from Swashbuckle to serve swagger JSON and UI.
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.RoutePrefix = string.Empty; // serve UI at application root: https://localhost:xxxx/
+    });
 }
-;
 app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
