@@ -2,9 +2,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SmartNeighborhoodAPI.Helpers.DTOs.ResidentialNeighborhood
 {
-    public class UpdateResidentialNeighborhoodDto : CreateResidentialNeighborhoodDto
+    public class UpdateResidentialNeighborhoodDto 
     {
         [Required]
         public int Id { get; set; }
+        [Required, MaxLength(200)]
+        public string Name { get; set; } = string.Empty;
     }
 }
