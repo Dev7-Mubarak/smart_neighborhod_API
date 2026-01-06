@@ -54,6 +54,22 @@ namespace SmartNeighborhoodAPI.Services
             {
                 _logger.LogWarning("Residential Unit with name '{UnitName}' already exists", unitDto.Name);
                 return ApiResponse<ReturnResidentialUnitDto>.Error(HttpStatusCode.Conflict, "اسم الوحدة السكنية موجود مسبقًا.");
+                var residentialUnit = await _context.ResidentialUnits
+                    .Include(u => u.Blocks)
+                        .ThenInclude(b => b.BlockManager)
+                    .Include(u => u.UnitManager)
+                    .Where(u => u.UnitManagerId == user.Id)
+                    .ToListAsync();
+
+                if (!residentialUnit.Any())
+                    return ApiResponse<IEnumerable<ReturnResidentialUnitDto>>.Error(
+                        HttpStatusCode.NotFound, "لم يتم العثور على وحدة سكنية لهذا المستخدم"
+                    );
+
+                return ApiResponse<IEnumerable<ReturnResidentialUnitDto>>.Success(
+                    residentialUnit.Select(u => MapToDto(u)).ToList(),
+                    "تم جلب الوحدة السكنية الخاصة بك بنجاح"
+                );
             }
 
             var neighborHood = await _context.ResidentialNeighborhoods.FindAsync(unitDto.ResidentialNeighborhoodId);
@@ -153,6 +169,17 @@ namespace SmartNeighborhoodAPI.Services
             var unit = await _context.ResidentialUnits.FindAsync(id);
              if (unit == null)
                 return ApiResponse<string>.Error(HttpStatusCode.NotFound, "الوحدة السكنية غير موجودة.");
+            // Step 7: Return success response
+            var returnBlockDto = new RetrunBlockDto
+            {
+                Id = block.Id,
+                Name = block.Name,
+                //ManagerId = block.UnitManagerId,    
+                PersonId = person.Id,
+                Email = createResult.Data.Identifier,
+                Role = createResult.Data.Role,
+                FullName = person.FullName
+            };
 
              if (await _context.ResidentialUnits.AnyAsync(u => u.Name == dto.Name && u.Id != id))
                  return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "اسم الوحدة موجود مسبقاً.");
@@ -216,6 +243,51 @@ namespace SmartNeighborhoodAPI.Services
 
             var existingUser = await _userManager.FindByEmailAsync(dto.Email);
             if (existingUser != null)
+                // Refactor and improve performance
+                var retrunBlock = new RetrunBlockDto
+                {
+                    Id = block.Id,
+                    Name = blockDto.Name,
+                    //PersonId = blockDto.PersonId,
+                    ManagerId = response.Data.Id,
+                    Role = response.Data.Role,
+                    Email = response.Data.Identifier,
+                    FullName = person.FullName
+                };
+
+                _logger.LogInformation("Successfully added block '{BlockName}' with ID {BlockId}", block.Name, block.Id);
+                return ApiResponse<RetrunBlockDto>.Success(
+                    retrunBlock,
+                    "تمت إضافة البلوك بنجاح. تم إرسال رمز التأكيد إلى البريد الإلكتروني."
+                );
+            }
+
+            _logger.LogError("Failed to create block manager: {Error}", response.Message);
+            return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.BadRequest, "فشل في إضافة البلوك.");
+        }
+        public async Task<ApiResponse<ReturnResidentialUnitDto>> GetByIdAsync(int id)
+        {
+            var residentialUnit = await _context.ResidentialUnits
+                .Include(u => u.Blocks)
+                    .ThenInclude(b => b.BlockManager)
+                .Include(u => u.UnitManager)
+                .FirstOrDefaultAsync(u => u.Id == id);
+
+            if (residentialUnit == null)
+                return ApiResponse<ReturnResidentialUnitDto>.Error(
+                    HttpStatusCode.NotFound, "لم يتم العثور على الوحدة السكنية"
+                );
+
+            return ApiResponse<ReturnResidentialUnitDto>.Success(
+                MapToDto(residentialUnit), "تم جلب الوحدة السكنية بنجاح"
+            );
+        }
+        public async Task<ApiResponse<string>> UpdateAsync(int id, UpdateResidentialUnitDto blockDto)
+        {
+            _logger.LogInformation("Attempting to update block with ID: {BlockId}", id);
+
+            var existingBlock = await _context.Blocks.FirstOrDefaultAsync(x => x.Id == id);
+            if (existingBlock == null)
             {
                 _logger.LogWarning("Email '{Email}' is already used.", dto.Email);
                 return ApiResponse<ReturnResidentialUnitDto>.Error(HttpStatusCode.Conflict, "البريد الإلكتروني مستخدم مسبقاً.");

@@ -35,10 +35,10 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<ReturnResidentialNeighborhoodDto>.Error(HttpStatusCode.BadRequest, "اسم الحي السكني موجود بالفعل");
             }
 
-            var person = await _context.People.FindAsync(dto.NeighborhoodManagerId);
+            var person = await _context.People.FindAsync(dto.PersonId);
             if (person == null)
             {
-                _logger.LogWarning("Person with ID {PersonId} not found", dto.NeighborhoodManagerId);
+                _logger.LogWarning("Person with ID {PersonId} not found", dto.PersonId);
                 return ApiResponse<ReturnResidentialNeighborhoodDto>.Error(HttpStatusCode.NotFound, "الشخص غير موجود");
             }
 
