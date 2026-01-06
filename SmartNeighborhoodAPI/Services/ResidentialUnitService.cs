@@ -135,7 +135,6 @@ namespace SmartNeighborhoodAPI.Services
             var residentialUnit = await _context.ResidentialUnits
                 .Include(u => u.Blocks)
                     .ThenInclude(b => b.BlockManager)
-                .Include(u => u.UnitManager)
                 .FirstOrDefaultAsync(u => u.Id == id);
 
             if (residentialUnit == null)
