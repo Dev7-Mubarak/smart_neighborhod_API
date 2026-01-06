@@ -51,8 +51,8 @@ namespace SmartNeighborhoodAPI.Services
                 {
                     // Use ManagerAccountService to create manager
                     var managerResult = await _managerAccountService.CreateManagerAccountAsync(
-                        dto.NeighborhoodManagerId, 
-                        dto.Email, 
+                        dto.PersonId, 
+                        dto.Identifier, 
                         dto.Password, 
                         Role.ResidentialNeighborhoodManager
                     );

@@ -10,5 +10,6 @@ namespace SmartNeighborhoodAPI.Helpers.DTOs
         [Required]
         [PasswordPropertyText(true)]
         public string Password { get; set; }
+        public string? Email { get; set; }
     }
 }

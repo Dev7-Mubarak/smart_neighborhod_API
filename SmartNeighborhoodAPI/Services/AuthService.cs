@@ -61,8 +61,6 @@ namespace SmartNeighborhoodAPI.Services
 
 
             bool isEmail = loginDto.Identifier.Contains('@');
-            AppUser? user = null;
-
 
             if (isEmail) {
                 user = await _userManager.FindByEmailAsync(loginDto.Identifier);
