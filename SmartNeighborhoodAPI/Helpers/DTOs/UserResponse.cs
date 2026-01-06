@@ -5,7 +5,7 @@ namespace SmartNeighborhoodAPI.Helpers.DTOs
     public class UserResponse
     {
         public string Id { get; set; }
-        public string Email { get; set; }
+        public string Identifier { get; set; }
         public string Role { get; set; }
         public string Token { get; set; }
         [JsonIgnore]
