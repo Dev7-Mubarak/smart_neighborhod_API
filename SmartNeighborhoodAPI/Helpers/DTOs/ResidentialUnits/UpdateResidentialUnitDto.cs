@@ -7,6 +7,5 @@ namespace SmartNeighborhoodAPI.Helpers.DTOs.ResidentialUnits
         [Required]
         public string Name { get; set; }
 
-        public string? UnitManagerId { get; set; }
     }
 }
