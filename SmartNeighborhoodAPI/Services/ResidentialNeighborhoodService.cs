@@ -100,7 +100,6 @@ namespace SmartNeighborhoodAPI.Services
                 .Include(n => n.NeighborhoodManager)
                     .ThenInclude(nm => nm.Person)
                 .Include(n => n.ResidentialUnits)
-                    .ThenInclude(u => u.Blocks)
                 .OrderBy(n => n.Name) 
                 .ToListAsync(ct);
 
