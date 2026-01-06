@@ -12,6 +12,5 @@ namespace SmartNeighborhoodAPI.Helpers.DTOs.ResidentialUnits
 
         public string UnitManagerName { get; set; }
 
-        public IEnumerable<Block>? Blocks { get; set; }
     }
 }

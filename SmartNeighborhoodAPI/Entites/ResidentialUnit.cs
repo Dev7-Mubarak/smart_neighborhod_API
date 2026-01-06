@@ -24,12 +24,7 @@ namespace SmartNeighborhoodAPI.Entites
                 Name = Name,
                 UnitManagerId = UnitManagerId,
                 UnitManagerName = UnitManager?.UserName ?? string.Empty,
-                Blocks = Blocks.Select(b => new Block
-                {
-                    Id = b.Id,
-                    Name = b.Name,
-                    BlockManagerId = b.BlockManagerId
-                }).ToList()
+
             };
         }
     }
