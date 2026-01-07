@@ -341,7 +341,9 @@ namespace SmartNeighborhoodAPI.Services
                     n.Id,
                     n.Name,
                     UnitsCount = n.ResidentialUnits.Count,
-                    BlocksCount = n.ResidentialUnits.SelectMany(u => u.Blocks).Count()
+                    BlocksCount = n.ResidentialUnits.SelectMany(u => u.Blocks).Count(),
+                    ManagerId = n.NeighborhoodManagerId,
+                    ManagerName = n.NeighborhoodManager.Person.FullName
                 })
                 .ToListAsync(ct);
 
@@ -355,7 +357,9 @@ namespace SmartNeighborhoodAPI.Services
                     NeighborhoodId = n.Id,
                     NeighborhoodName = n.Name,
                     UnitsCount = n.UnitsCount,
-                    BlocksCount = n.BlocksCount
+                    BlocksCount = n.BlocksCount,
+                    ManagerId = n.ManagerId,
+                    ManagerName = n.ManagerName
                 }).ToList()
             };
 
