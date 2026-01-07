@@ -365,6 +365,8 @@ namespace SmartNeighborhoodAPI.Services
         public async Task<ApiResponse<ReturnResidentialUnitDto>> GetUnitsAsync(int id)
         {
             var entity = await _context.ResidentialNeighborhoods
+                .Include(n => n.NeighborhoodManager)
+                    .ThenInclude(nm => nm.Person)
                 .Include(n => n.ResidentialUnits)
                 .FirstOrDefaultAsync(n => n.Id == id);
 
