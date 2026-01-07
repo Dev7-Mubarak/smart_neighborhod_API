@@ -171,7 +171,7 @@ namespace SmartNeighborhoodAPI.Services
             var existblock = await _context.Blocks.FirstOrDefaultAsync(x => x.Name == blockDto.Name);
             if (existblock != null)
             {
-                _logger.LogWarning("Block with name '{BlockName}' already exists", blockDto.Name);
+                _logger.LogWarning("Block with name '{}' already exists", blockDto.Name);
                 return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.Conflict, "اسم المربع موجود مسبقًا.");
             }
 

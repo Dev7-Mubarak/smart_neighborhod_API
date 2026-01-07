@@ -15,7 +15,6 @@ namespace SmartNeighborhoodAPI.Services
 {
     public class AuthService : IAuthService
     {
-        private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly JWT _jwt;
