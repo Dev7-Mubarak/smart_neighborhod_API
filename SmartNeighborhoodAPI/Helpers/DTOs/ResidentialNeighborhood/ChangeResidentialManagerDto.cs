@@ -11,7 +11,5 @@ namespace SmartNeighborhoodAPI.Helpers.DTOs.ResidentialNeighborhood
 
         [Required]
         public string Password { get; set; } = string.Empty;
-        [Required]
-        public int neighborhoodId { get; set; }
     }
 }

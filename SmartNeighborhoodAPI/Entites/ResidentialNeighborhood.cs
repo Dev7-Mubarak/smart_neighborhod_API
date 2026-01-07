@@ -23,7 +23,6 @@ namespace SmartNeighborhoodAPI.Entites
                 Name = Name,
                 NeighborhoodManagerId = NeighborhoodManagerId,
                 NeighborhoodManagerName = NeighborhoodManager?.Person?.FullName ?? string.Empty,
-                Units = ResidentialUnits.Select(u => u.ToDto()).ToList()
             };
         }
     }

@@ -57,7 +57,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         public async Task<IActionResult> ChangeManager(
             int id,
             [FromBody] ChangeResidentialManagerDto dto)
-            => Response(await _service.ChangeManagerAsync(dto));
+            => Response(await _service.ChangeManagerAsync(id, dto));
 
         [HttpGet(ResidentialNeighborhoods.Dashboard)]
         [SwaggerOperation(Summary = "Get residential neighborhood dashboard statistics (Admin only)")]

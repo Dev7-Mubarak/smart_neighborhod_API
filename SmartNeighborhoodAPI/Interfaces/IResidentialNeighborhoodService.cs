@@ -13,7 +13,7 @@ namespace SmartNeighborhoodAPI.Interfaces
         Task<ApiResponse<ResidentialDashboardDto>> GetDashboardAsync(
         CancellationToken ct = default);
         Task<ApiResponse<string>> UpdateAsync(int id, UpdateResidentialNeighborhoodDto dto);
-        Task<ApiResponse<ReturnResidentialNeighborhoodDto>> ChangeManagerAsync( ChangeResidentialManagerDto dto);
+        Task<ApiResponse<ReturnResidentialNeighborhoodDto>> ChangeManagerAsync(int id, ChangeResidentialManagerDto dto);
 
     }
 }

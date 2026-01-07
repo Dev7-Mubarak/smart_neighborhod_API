@@ -193,16 +193,16 @@ namespace SmartNeighborhoodAPI.Services
             });
         }
 
-        public async Task<ApiResponse<ReturnResidentialNeighborhoodDto>> ChangeManagerAsync(ChangeResidentialManagerDto dto)
+        public async Task<ApiResponse<ReturnResidentialNeighborhoodDto>> ChangeManagerAsync(int id, ChangeResidentialManagerDto dto)
         {
             _logger.LogInformation("Initiating change of residential neighborhood manager for NeighborhoodId: {NeighborhoodId}, PersonId: {PersonId}",
-                dto.neighborhoodId, dto.PersonId);
+                id, dto.PersonId);
 
             // Step 1: Validate neighborhood
-            var neighborhood = await _context.ResidentialNeighborhoods.FindAsync(dto.neighborhoodId);
+            var neighborhood = await _context.ResidentialNeighborhoods.FindAsync(id);
             if (neighborhood == null)
             {
-                _logger.LogWarning("Neighborhood with ID '{NeighborhoodId}' not found.", dto.neighborhoodId);
+                _logger.LogWarning("Neighborhood with ID '{NeighborhoodId}' not found.", id);
                 return ApiResponse<ReturnResidentialNeighborhoodDto>.Error(HttpStatusCode.NotFound, "الحي السكني غير موجود");
             }
 
@@ -343,7 +343,7 @@ namespace SmartNeighborhoodAPI.Services
                     n.Id,
                     n.Name,
                     UnitsCount = n.ResidentialUnits.Count,
-                    BlocksCount = n.ResidentialUnits.Sum(u => u.Blocks.Count)
+                    BlocksCount = n.ResidentialUnits.SelectMany(u => u.Blocks).Count()
                 })
                 .ToListAsync(ct);
 
