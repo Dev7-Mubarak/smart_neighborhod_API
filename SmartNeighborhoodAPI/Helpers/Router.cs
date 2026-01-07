@@ -32,6 +32,7 @@ namespace SmartNeighborhoodAPI.Helpers
             public const string Delete = Prefix + "/{id:int}";
             public const string ChangeManager = Prefix + "/manager";
             public const string Dashboard = Prefix + "/dashboard";
+            public const string Units = Prefix + "/{id:int}/units";
         }
 
         public static class Blocks

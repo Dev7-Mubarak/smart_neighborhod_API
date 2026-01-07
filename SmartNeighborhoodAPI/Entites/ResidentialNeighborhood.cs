@@ -25,5 +25,16 @@ namespace SmartNeighborhoodAPI.Entites
                 NeighborhoodManagerName = NeighborhoodManager?.Person?.FullName ?? string.Empty,
             };
         }
+
+        public ReturnResidentialUnitDto ToResidentialUnitDto()
+        {
+            return new ReturnResidentialUnitDto
+            {
+                Id = Id,
+                Name = Name,
+                NeighborhoodManagerId = NeighborhoodManagerId,
+                //ResidentialUnits = ResidentialUnits,
+            };
+        }
     }
 }

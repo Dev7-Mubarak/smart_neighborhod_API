@@ -63,5 +63,10 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         [SwaggerOperation(Summary = "Get residential neighborhood dashboard statistics (Admin only)")]
         public async Task<IActionResult> GetDashboard(CancellationToken ct)
             => Response(await _service.GetDashboardAsync(ct));
+
+        [HttpGet(ResidentialNeighborhoods.Units)]
+        [SwaggerOperation(Summary = "Get units (Admin only)")]
+        public async Task<IActionResult> GetUnitsAsync(int id)
+            => Response(await _service.GetUnitsAsync(id));
     }
 }

@@ -16,21 +16,5 @@ namespace SmartNeighborhoodAPI.Entites
 
         public ICollection<Block> Blocks { get; set; } = new List<Block>();
 
-        public ReturnResidentialUnitDto ToDto()
-        {
-            return new ReturnResidentialUnitDto
-            {
-                Id = Id,
-                Name = Name,
-                UnitManagerId = UnitManagerId,
-                UnitManagerName = UnitManager?.UserName ?? string.Empty,
-                Blocks = Blocks.Select(b => new Block
-                {
-                    Id = b.Id,
-                    Name = b.Name,
-                    BlockManagerId = b.BlockManagerId
-                }).ToList()
-            };
-        }
     }
 }

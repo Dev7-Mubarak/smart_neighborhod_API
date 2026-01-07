@@ -331,8 +331,6 @@ namespace SmartNeighborhoodAPI.Services
             });
         }
 
-        
-       
         public async Task<ApiResponse<ResidentialDashboardDto>> GetDashboardAsync(
         CancellationToken ct = default)
         {
@@ -364,7 +362,19 @@ namespace SmartNeighborhoodAPI.Services
             return ApiResponse<ResidentialDashboardDto>.Success(dashboard);
         }
 
+        public async Task<ApiResponse<ReturnResidentialUnitDto>> GetUnitsAsync(int id)
+        {
+            var entity = await _context.ResidentialNeighborhoods
+                .Include(n => n.ResidentialUnits)
+                .FirstOrDefaultAsync(n => n.Id == id);
 
+            if (entity == null)
+                return ApiResponse<ReturnResidentialUnitDto>
+                        .Error(HttpStatusCode.NotFound, "الحي السكني غير موجود");
+            
+
+            return ApiResponse<ReturnResidentialUnitDto>.Success(entity.ToResidentialUnitDto(), "تم جلب الوحدات السكنية بنجاح");
+        }
     }
 
 }
