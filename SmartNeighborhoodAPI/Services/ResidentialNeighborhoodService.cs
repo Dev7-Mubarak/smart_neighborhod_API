@@ -341,7 +341,9 @@ namespace SmartNeighborhoodAPI.Services
                     n.Id,
                     n.Name,
                     UnitsCount = n.ResidentialUnits.Count,
-                    BlocksCount = n.ResidentialUnits.SelectMany(u => u.Blocks).Count()
+                    BlocksCount = n.ResidentialUnits.SelectMany(u => u.Blocks).Count(),
+                    ManagerId = n.NeighborhoodManagerId,
+                    ManagerName = n.NeighborhoodManager.Person.FullName
                 })
                 .ToListAsync(ct);
 
@@ -355,7 +357,9 @@ namespace SmartNeighborhoodAPI.Services
                     NeighborhoodId = n.Id,
                     NeighborhoodName = n.Name,
                     UnitsCount = n.UnitsCount,
-                    BlocksCount = n.BlocksCount
+                    BlocksCount = n.BlocksCount,
+                    ManagerId = n.ManagerId,
+                    ManagerName = n.ManagerName
                 }).ToList()
             };
 
@@ -365,6 +369,8 @@ namespace SmartNeighborhoodAPI.Services
         public async Task<ApiResponse<ReturnResidentialUnitDto>> GetUnitsAsync(int id)
         {
             var entity = await _context.ResidentialNeighborhoods
+                .Include(n => n.NeighborhoodManager)
+                    .ThenInclude(nm => nm.Person)
                 .Include(n => n.ResidentialUnits)
                 .FirstOrDefaultAsync(n => n.Id == id);
 

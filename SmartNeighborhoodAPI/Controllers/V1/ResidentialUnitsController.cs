@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using SmartNeighborhoodAPI.Helpers.DTOs.Auth;
 using SmartNeighborhoodAPI.Helpers.DTOs.block;
 using SmartNeighborhoodAPI.Helpers.DTOs.ResidentialUnits;
 using Swashbuckle.AspNetCore.Annotations;
@@ -48,7 +49,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> AddAsync([FromBody, SwaggerParameter("Unit data to create", Required = true)] AddResidentialUnitDto unitDto)
         {
-            return Response(await _unitServices.AddAsync(unitDto));
+            return Response(await _unitServices.CreateAsync(unitDto));
         }
 
         [HttpPut(Router.ResidentialUnits.Update)]
@@ -76,6 +77,31 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         public async Task<IActionResult> DeleteAsync([FromRoute, SwaggerParameter("Unit ID to delete", Required = true)] int id)
         {
             return Response(await _unitServices.DeleteAsync(id));
+        }
+
+        [HttpPut(Router.ResidentialUnits.ChangeManager)]
+        [MapToApiVersion("1.0")]
+        [Consumes("application/json")]
+        [SwaggerOperation(Summary = "Change unit manager", Description = "Changes the manager of a residential unit.")]
+        [ProducesResponseType(typeof(ReturnResidentialUnitDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ChangeManagerAsync(
+            [FromRoute, SwaggerParameter("Unit ID to change manager", Required = true)] int id,
+            [FromBody, SwaggerParameter("Manager change data", Required = true)] ChangeManagerDto dto)
+        {
+            return Response(await _unitServices.ChangeManagerAsync(id, dto));
+        }
+
+        [HttpGet(Router.ResidentialUnits.Dashboard)]
+        [MapToApiVersion("1.0")]
+        [SwaggerOperation(Summary = "Get residential units dashboard", Description = "Returns dashboard statistics for residential units.")]
+        [ProducesResponseType(typeof(ResidentialUnitDashboardDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetDashboardAsync()
+        {
+            return Response(await _unitServices.GetDashboardAsync());
         }
 
     }

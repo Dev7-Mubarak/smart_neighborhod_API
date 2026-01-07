@@ -33,7 +33,14 @@ namespace SmartNeighborhoodAPI.Entites
                 Id = Id,
                 Name = Name,
                 NeighborhoodManagerId = NeighborhoodManagerId,
-                //ResidentialUnits = ResidentialUnits,
+                NeighborhoodManagerName = NeighborhoodManager?.Person?.FullName ?? string.Empty,
+                ResidentialUnits = ResidentialUnits.Select(u => new ResidentialUnitSummaryDto
+                {
+                    Id = u.Id,
+                    Name = u.Name,
+                    UnitManagerId = u.UnitManagerId,
+                    UnitManagerName = u.UnitManager?.Person?.FullName ?? string.Empty
+                }).ToList(),
             };
         }
     }

@@ -7,5 +7,7 @@ namespace SmartNeighborhoodAPI.Helpers.DTOs.ResidentialNeighborhood
 
         public int UnitsCount { get; set; }
         public int BlocksCount { get; set; }
+        public string ManagerId { get; set; } = string.Empty;
+        public string ManagerName { get; set; } = string.Empty;
     }
 }
