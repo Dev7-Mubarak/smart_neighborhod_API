@@ -9,7 +9,7 @@ namespace SmartNeighborhoodAPI.Helpers
 
         public static class ResidentialUnits
         {
-            public const string Prefix = Rule + "ResidentialUnits";
+            public const string Prefix = Rule + "residential-units";
 
             public const string Add = Prefix;
             public const string GetAll = Prefix;
