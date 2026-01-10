@@ -45,6 +45,7 @@ namespace SmartNeighborhoodAPI.Services
                     .Include(u => u.Blocks)
                         .ThenInclude(b => b.BlockManager)
                     .Include(u => u.UnitManager)
+                        .ThenInclude(um => um.Person)
                     .ToListAsync();
 
                 // Map to DTO
@@ -61,6 +62,7 @@ namespace SmartNeighborhoodAPI.Services
                     .Include(u => u.Blocks)
                         .ThenInclude(b => b.BlockManager)
                     .Include(u => u.UnitManager)
+                        .ThenInclude(um => um.Person)
                     .Where(u => u.UnitManagerId == user.Id)
                     .ToListAsync();
 
@@ -81,82 +83,97 @@ namespace SmartNeighborhoodAPI.Services
 
         }
 
-
-        public async Task<ApiResponse<RetrunBlockDto>> ChangeManager(int id, ChangeManagerDto blockManagerDto)
+        public async Task<ApiResponse<ReturnResidentialUnitDto>> CreateAsync(AddResidentialUnitDto dto)
         {
-            _logger.LogInformation("Initiating change of block manager for BlockId: {BlockId}, PersonId: {PersonId}",
-                id, blockManagerDto.PersonId);
+            _logger.LogInformation("Attempting to create a new residential unit with name: {Name}", dto.Name);
 
-            // Step 1: Validate block
-            var block = await _context.Blocks.FindAsync(id);
-            if (block == null)
+            // Step 1: Validate residential neighborhood
+            var neighborhood = await _context.ResidentialNeighborhoods.FindAsync(dto.ResidentialNeighborhoodId);
+            if (neighborhood == null)
             {
-                _logger.LogWarning("Block with ID '{BlockId}' not found.", id);
-                return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.NotFound, "لم يتم العثور على مربع.");
+                _logger.LogWarning("Residential neighborhood with ID {NeighborhoodId} not found", dto.ResidentialNeighborhoodId);
+                return ApiResponse<ReturnResidentialUnitDto>.Error(HttpStatusCode.NotFound, "الحي السكني غير موجود.");
             }
 
-            // Step 2: Validate person
-            var person = await _context.People.FindAsync(blockManagerDto.PersonId);
+            // Step 2: Check if unit name already exists in this neighborhood
+            var existingUnit = await _context.ResidentialUnits
+                .FirstOrDefaultAsync(x => x.Name == dto.Name && x.ResidentialNeighborhoodId == dto.ResidentialNeighborhoodId);
+            if (existingUnit != null)
+            {
+                _logger.LogWarning("Residential unit with name '{Name}' already exists in neighborhood {NeighborhoodId}", dto.Name, dto.ResidentialNeighborhoodId);
+                return ApiResponse<ReturnResidentialUnitDto>.Error(HttpStatusCode.Conflict, "اسم الوحدة السكنية موجود مسبقًا في هذا الحي.");
+            }
+
+            // Step 3: Validate person
+            var person = await _context.People.FindAsync(dto.PersonId);
             if (person == null)
             {
-                _logger.LogWarning("Person with ID '{PersonId}' not found.", blockManagerDto.PersonId);
-                return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.NotFound, "هذا الشخص غير موجود");
+                _logger.LogWarning("Person with ID {PersonId} not found", dto.PersonId);
+                return ApiResponse<ReturnResidentialUnitDto>.Error(HttpStatusCode.NotFound, "الشخص غير موجود.");
             }
 
-            var existingUser = await _userManager.FindByEmailAsync(blockManagerDto.Email);
+            // Step 4: Check if user already exists for this person
+            var existingUserByPerson = await _userManager.Users.FirstOrDefaultAsync(u => u.PersonId == dto.PersonId);
+            if (existingUserByPerson != null)
+            {
+                _logger.LogWarning("User with PersonId {PersonId} already exists", dto.PersonId);
+                return ApiResponse<ReturnResidentialUnitDto>.Error(HttpStatusCode.BadRequest, "يوجد حساب مستخدم مرتبط بهذا الشخص مسبقاً");
+            }
+
+            // Step 5: Check if identifier already exists
+            bool isEmail = dto.Identifier.Contains('@');
+            AppUser existingUser = null;
+            
+            if (isEmail)
+            {
+                existingUser = await _userManager.FindByEmailAsync(dto.Identifier);
+            }
+            else
+            {
+                existingUser = await _userManager.FindByNameAsync(dto.Identifier);
+            }
 
             if (existingUser != null)
             {
-                _logger.LogWarning("Person with ID '{PersonId}' not found.", blockManagerDto.Email);
-                return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.Conflict, "هذا الايميل مستخدم بالفعل ");
+                _logger.LogWarning("Identifier '{Identifier}' is already used.", dto.Identifier);
+                return ApiResponse<ReturnResidentialUnitDto>.Error(HttpStatusCode.Conflict, "المعرف (البريد الإلكتروني أو اسم المستخدم) مستخدم مسبقاً.");
             }
 
-            // Step 4: Create new manager account
-            var createResult = await _authService.CreateBlockManagerAccountAsync(new CreateBlockManagerDto
+            var strategy = _context.Database.CreateExecutionStrategy();
+
+            return await strategy.ExecuteAsync(async () =>
             {
-                Email = blockManagerDto.Email, // This is actually used as UserName now
-                Password = blockManagerDto.Password,
-                PersonId = blockManagerDto.PersonId
-            });
-
-            if (!createResult.IsSuccess)
-            {
-                _logger.LogError("Failed to create new block manager. Reason: {Reason}", createResult.Message);
-                return ApiResponse<RetrunBlockDto>.Error(createResult.StatusCode, createResult.Message, createResult.Errors);
-            }
-
-
-            var oldManagerId = block.BlockManagerId;
-
-
-            // Step 5: Update block manager
-            //block.UnitManagerId = createResult.Data.Id;
-            _context.Blocks.Update(block);
-            await _context.SaveChangesAsync();
-
-            if (createResult.Data.Role == "BlockManager")
-            {
-                // Step 6: Delete old manager account (if any)
-                var deleteResult = await _authService.DeleteBlockManagerAccountByIdAsync(oldManagerId);
-                if (!deleteResult.IsSuccess)
+                using var transaction = await _context.Database.BeginTransactionAsync();
+                try
                 {
-                    _logger.LogError("Failed to delete old block manager with ID: {OldManagerId}", oldManagerId);
-                    return ApiResponse<RetrunBlockDto>.Error(deleteResult.StatusCode, deleteResult.Message, deleteResult.Errors);
-                }
-            }
+                    // Step 6: Create new manager account
+                    var user = new AppUser
+                    {
+                        UserName = isEmail ? null : dto.Identifier,
+                        Email = isEmail ? dto.Identifier : null,
+                        PersonId = dto.PersonId,
+                        IsActive = true,
+                        EmailConfirmed = false
+                    };
 
+                    var createResult = await _userManager.CreateAsync(user, dto.Password);
 
-            // Step 7: Return success response
-            var returnBlockDto = new RetrunBlockDto
-            {
-                Id = block.Id,
-                Name = block.Name,
-                //ManagerId = block.UnitManagerId,    
-                PersonId = person.Id,
-                Email = createResult.Data.Identifier,
-                Role = createResult.Data.Role,
-                FullName = person.FullName
-            };
+                    if (!createResult.Succeeded)
+                    {
+                        List<ErrorDetails> errors = createResult.Errors.Select(e =>
+                        {
+                            string arabicMessage = e.Code switch
+                            {
+                                "DuplicateUserName" => "البريد الإلكتروني أو اسم المستخدم مستخدم مسبقاً.",
+                                "InvalidUserName" => "اسم المستخدم غير صالح.",
+                                "PasswordTooShort" => "كلمة المرور قصيرة جداً.",
+                                "PasswordRequiresNonAlphanumeric" => "كلمة المرور يجب أن تحتوي على رمز خاص.",
+                                "PasswordRequiresDigit" => "كلمة المرور يجب أن تحتوي على رقم.",
+                                "PasswordRequiresLower" => "كلمة المرور يجب أن تحتوي على حرف صغير.",
+                                "PasswordRequiresUpper" => "كلمة المرور يجب أن تحتوي على حرف كبير.",
+                                "PasswordIsRequired" => "كلمة المرور مطلوبة.",
+                                _ => e.Description
+                            };
 
             _logger.LogInformation("Block manager updated successfully for block '{BlockName}' (ID: {BlockId})",
                 block.Name, block.Id);
@@ -168,64 +185,55 @@ namespace SmartNeighborhoodAPI.Services
         {
             _logger.LogInformation("Attempting to add a new block with name: {BlockName}", blockDto.Name);
 
-            var existblock = await _context.Blocks.FirstOrDefaultAsync(x => x.Name == blockDto.Name);
-            if (existblock != null)
-            {
-                _logger.LogWarning("Block with name '{BlockName}' already exists", blockDto.Name);
-                return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.Conflict, "اسم المربع موجود مسبقًا.");
-            }
+                    if (!await _userManager.IsInRoleAsync(user, Role.UnitManager))
+                    {
+                        await _userManager.AddToRoleAsync(user, Role.UnitManager);
+                    }
 
-            var person = await _context.People.FindAsync(blockDto.UnitManagerId);
-            if (person == null)
-            {
-                _logger.LogWarning("Person with ID {PersonId} not found", blockDto.UnitManagerId);
-                return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.NotFound, "الشخص غير موجود.");
-            }
+                    // Send Email Logic if identifier is email
+                    if (isEmail)
+                    {
+                        var otp = new Random().Next(100000, 999999).ToString();
+                        user.EmailConfirmationCode = otp;
+                        user.EmailConfirmationCodeExpiresAt = DateTime.UtcNow.AddHours(1);
+                        await _userManager.UpdateAsync(user);
+                        await _emailSender.SendEmailAsync(user.Email, "تم إنشاء الحساب", $"تم إنشاء حسابك بنجاح. رمز التحقق هو: {otp}");
+                    }
 
-            CreateBlockManagerDto blockManagerDto = new CreateBlockManagerDto
-            {
-                //Email = blockDto.Email,
-                //PersonId = blockDto.PersonId,
-                //Password = blockDto.Password
-            };
+                    // Step 7: Create residential unit
+                    var unit = new ResidentialUnit
+                    {
+                        Name = dto.Name,
+                        ResidentialNeighborhoodId = dto.ResidentialNeighborhoodId,
+                        UnitManagerId = user.Id
+                    };
 
-            var response = await _authService.CreateBlockManagerAccountAsync(blockManagerDto);
+                    await _context.ResidentialUnits.AddAsync(unit);
+                    await _context.SaveChangesAsync();
 
-            if (!response.IsSuccess)
-            {
-                return ApiResponse<RetrunBlockDto>.Error(response.StatusCode, response.Message, response.Errors);
-            }
+                    // Load navigation properties
+                    await _context.Entry(unit).Reference(u => u.UnitManager).LoadAsync();
+                    if (unit.UnitManager != null)
+                    {
+                        await _context.Entry(unit.UnitManager).Reference(um => um.Person).LoadAsync();
+                    }
 
-            var block = new Block
-            {
-                Name = blockDto.Name,
-                //UnitManagerId = response.Data.Id
-            };
+                    await transaction.CommitAsync();
 
-            await _context.Blocks.AddAsync(block);
-            if (await _context.SaveChangesAsync() > 0)
-            {
-                // Refactor and improve performance
-                var retrunBlock = new RetrunBlockDto
+                    _logger.LogInformation("Successfully created residential unit '{Name}' with ID {Id}", unit.Name, unit.Id);
+
+                    return ApiResponse<ReturnResidentialUnitDto>.Success(
+                        MapToDto(unit),
+                        "تمت إضافة الوحدة السكنية بنجاح. تم إرسال بيانات الدخول عبر البريد الإلكتروني (إن وجد)."
+                    );
+                }
+                catch (Exception ex)
                 {
-                    Id = block.Id,
-                    Name = blockDto.Name,
-                    //PersonId = blockDto.PersonId,
-                    ManagerId = response.Data.Id,
-                    Role = response.Data.Role,
-                    Email = response.Data.Identifier,
-                    FullName = person.FullName
-                };
-
-                _logger.LogInformation("Successfully added block '{BlockName}' with ID {BlockId}", block.Name, block.Id);
-                return ApiResponse<RetrunBlockDto>.Success(
-                    retrunBlock,
-                    "تمت إضافة البلوك بنجاح. تم إرسال رمز التأكيد إلى البريد الإلكتروني."
-                );
-            }
-
-            _logger.LogError("Failed to create block manager: {Error}", response.Message);
-            return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.BadRequest, "فشل في إضافة البلوك.");
+                    await transaction.RollbackAsync();
+                    _logger.LogError(ex, "Transaction failed in CreateAsync");
+                    return ApiResponse<ReturnResidentialUnitDto>.Error(HttpStatusCode.InternalServerError, "حدث خطأ أثناء إضافة الوحدة السكنية.");
+                }
+            });
         }
         public async Task<ApiResponse<ReturnResidentialUnitDto>> GetByIdAsync(int id)
         {
@@ -244,28 +252,28 @@ namespace SmartNeighborhoodAPI.Services
                 MapToDto(residentialUnit), "تم جلب الوحدة السكنية بنجاح"
             );
         }
-        public async Task<ApiResponse<string>> UpdateAsync(int id, UpdateResidentialUnitDto blockDto)
+        public async Task<ApiResponse<string>> UpdateAsync(int id, UpdateResidentialUnitDto unitDto)
         {
-            _logger.LogInformation("Attempting to update block with ID: {BlockId}", id);
+            _logger.LogInformation("Attempting to update residential unit with ID: {UnitId}", id);
 
-            var existingBlock = await _context.Blocks.FirstOrDefaultAsync(x => x.Id == id);
-            if (existingBlock == null)
+            var existingUnit = await _context.ResidentialUnits.FirstOrDefaultAsync(x => x.Id == id);
+            if (existingUnit == null)
             {
-                _logger.LogWarning("Block with ID {BlockId} not found", id);
-                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "المربع غير موجود.");
+                _logger.LogWarning("Residential unit with ID {UnitId} not found", id);
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "الوحدة السكنية غير موجودة.");
             }
 
-            existingBlock.Name = blockDto.Name;
-            _context.Blocks.Update(existingBlock);
+            existingUnit.Name = unitDto.Name;
+            _context.ResidentialUnits.Update(existingUnit);
 
             if (await _context.SaveChangesAsync() > 0)
             {
-                _logger.LogInformation("Block ID {BlockId} name updated to '{NewName}'", id, blockDto.Name);
-                return ApiResponse<string>.Success(message: "تم تحديث اسم المربع بنجاح.");
+                _logger.LogInformation("Residential unit ID {UnitId} name updated to '{NewName}'", id, unitDto.Name);
+                return ApiResponse<string>.Success(message: "تم تحديث اسم الوحدة السكنية بنجاح.");
             }
 
-            _logger.LogError("Failed to update block with ID {BlockId}", id);
-            return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "فشل في تحديث المربع.");
+            _logger.LogError("Failed to update residential unit with ID {UnitId}", id);
+            return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "فشل في تحديث الوحدة السكنية.");
         }
         public async Task<ApiResponse<string>> DeleteAsync(int id)
         {

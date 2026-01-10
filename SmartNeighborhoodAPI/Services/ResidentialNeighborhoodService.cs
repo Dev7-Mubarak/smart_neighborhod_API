@@ -222,11 +222,23 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<ReturnResidentialNeighborhoodDto>.Error(HttpStatusCode.BadRequest, "هذا المستخدم هو مدير بالفعل.");
             }
 
-            var existingUser = await _userManager.FindByEmailAsync(dto.Email);
+            // Check if identifier already exists
+            bool isEmail = dto.Identifier.Contains('@');
+            AppUser existingUser = null;
+            
+            if (isEmail)
+            {
+                existingUser = await _userManager.FindByEmailAsync(dto.Identifier);
+            }
+            else
+            {
+                existingUser = await _userManager.FindByNameAsync(dto.Identifier);
+            }
+
             if (existingUser != null)
             {
-                _logger.LogWarning("Email '{Email}' is already used.", dto.Email);
-                return ApiResponse<ReturnResidentialNeighborhoodDto>.Error(HttpStatusCode.Conflict, "البريد الإلكتروني مستخدم مسبقاً.");
+                _logger.LogWarning("Identifier '{Identifier}' is already used.", dto.Identifier);
+                return ApiResponse<ReturnResidentialNeighborhoodDto>.Error(HttpStatusCode.Conflict, "المعرف (البريد الإلكتروني أو اسم المستخدم) مستخدم مسبقاً.");
             }
 
             var strategy = _context.Database.CreateExecutionStrategy();
@@ -239,8 +251,8 @@ namespace SmartNeighborhoodAPI.Services
                     // Step 4: Create new manager account
                     var user = new AppUser
                     {
-                        UserName = dto.Email,
-                        Email = dto.Email,
+                        UserName = isEmail ? null : dto.Identifier,
+                        Email = isEmail ? dto.Identifier : null,
                         PersonId = dto.PersonId,
                         IsActive = true,
                         EmailConfirmed = true
@@ -254,7 +266,7 @@ namespace SmartNeighborhoodAPI.Services
                         {
                             string arabicMessage = e.Code switch
                             {
-                                "DuplicateUserName" => "البريد الإلكتروني مستخدم مسبقاً.",
+                                "DuplicateUserName" => "البريد الإلكتروني أو اسم المستخدم مستخدم مسبقاً.",
                                 "InvalidUserName" => "اسم المستخدم غير صالح.",
                                 "PasswordTooShort" => "كلمة المرور قصيرة جداً.",
                                 "PasswordRequiresNonAlphanumeric" => "كلمة المرور يجب أن تحتوي على رمز خاص.",
@@ -281,11 +293,14 @@ namespace SmartNeighborhoodAPI.Services
                     }
 
                     // Send Email Logic (Simplified)
-                    var otp = new Random().Next(100000, 999999).ToString();
-                    user.EmailConfirmationCode = otp;
-                    user.EmailConfirmationCodeExpiresAt = DateTime.UtcNow.AddHours(1);
-                    await _userManager.UpdateAsync(user);
-                    await _emailSender.SendEmailAsync(user.Email, "تم إنشاء الحساب", $"تم إنشاء حسابك بنجاح. رمز التحقق هو: {otp}");
+                    if (isEmail)
+                    {
+                        var otp = new Random().Next(100000, 999999).ToString();
+                        user.EmailConfirmationCode = otp;
+                        user.EmailConfirmationCodeExpiresAt = DateTime.UtcNow.AddHours(1);
+                        await _userManager.UpdateAsync(user);
+                        await _emailSender.SendEmailAsync(user.Email, "تم إنشاء الحساب", $"تم إنشاء حسابك بنجاح. رمز التحقق هو: {otp}");
+                    }
 
 
                     var oldManagerId = neighborhood.NeighborhoodManagerId;

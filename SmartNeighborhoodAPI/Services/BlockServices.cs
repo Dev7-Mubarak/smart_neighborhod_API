@@ -130,18 +130,29 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.NotFound, "هذا الشخص غير موجود");
             }
 
-            var existingUser = await _userManager.FindByEmailAsync(blockManagerDto.Email);
+            // Check if identifier already exists
+            bool isEmail = blockManagerDto.Identifier.Contains('@');
+            AppUser existingUser = null;
+            
+            if (isEmail)
+            {
+                existingUser = await _userManager.FindByEmailAsync(blockManagerDto.Identifier);
+            }
+            else
+            {
+                existingUser = await _userManager.FindByNameAsync(blockManagerDto.Identifier);
+            }
 
             if (existingUser != null)
             {
-                _logger.LogWarning("Person with ID '{PersonId}' not found.", blockManagerDto.Email);
-                return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.Conflict, "هذا الايميل مستخدم بالفعل ");
+                _logger.LogWarning("Identifier '{Identifier}' is already used.", blockManagerDto.Identifier);
+                return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.Conflict, "المعرف (البريد الإلكتروني أو اسم المستخدم) مستخدم مسبقاً");
             }
 
             // Step 4: Create new manager account
             var createResult = await _authService.CreateBlockManagerAccountAsync(new CreateBlockManagerDto
             {
-                Email = blockManagerDto.Email,
+                Email = blockManagerDto.Identifier,
                 Password = blockManagerDto.Password,
                 PersonId = blockManagerDto.PersonId
             });
