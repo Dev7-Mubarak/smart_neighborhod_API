@@ -10,7 +10,7 @@ namespace SmartNeighborhoodAPI.Helpers.DTOs.ResidentialUnits
     public class UnitStatsDto
     {
         public int UnitId { get; set; }
-        public string UnitName { get; set; }
+        public string UnitName { get; set; } = string.Empty;
         public int BlocksCount { get; set; }
     }
 }
