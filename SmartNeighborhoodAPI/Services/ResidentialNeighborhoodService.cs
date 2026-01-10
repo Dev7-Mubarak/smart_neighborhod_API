@@ -381,6 +381,82 @@ namespace SmartNeighborhoodAPI.Services
 
             return ApiResponse<ReturnResidentialUnitDto>.Success(entity.ToResidentialUnitDto(), "تم جلب الوحدات السكنية بنجاح");
         }
+
+        public async Task<ApiResponse<ResidentialNeighborhoodManagerDashboardDto>> GetMyDashboardAsync(string userId, CancellationToken ct = default)
+        {
+            _logger.LogInformation("Fetching dashboard statistics for manager with userId: {UserId}", userId);
+
+            // Query neighborhoods managed by this user with aggregated statistics
+            var statistics = await _context.ResidentialNeighborhoods
+                .AsNoTracking()
+                .Where(n => n.NeighborhoodManagerId == userId)
+                .Select(n => new
+                {
+                    NeighborhoodId = n.Id,
+                    UnitsCount = n.ResidentialUnits.Count,
+                    BlocksCount = n.ResidentialUnits.SelectMany(u => u.Blocks).Count()
+                })
+                .ToListAsync(ct);
+
+            if (!statistics.Any())
+            {
+                _logger.LogWarning("No neighborhoods found for manager with userId: {UserId}", userId);
+                return ApiResponse<ResidentialNeighborhoodManagerDashboardDto>.Success(
+                    new ResidentialNeighborhoodManagerDashboardDto
+                    {
+                        TotalNeighborhoods = 0,
+                        TotalUnits = 0,
+                        TotalBlocks = 0
+                    },
+                    "لا توجد أحياء سكنية مرتبطة بهذا المدير"
+                );
+            }
+
+            var dashboard = new ResidentialNeighborhoodManagerDashboardDto
+            {
+                TotalNeighborhoods = statistics.Count,
+                TotalUnits = statistics.Sum(s => s.UnitsCount),
+                TotalBlocks = statistics.Sum(s => s.BlocksCount)
+            };
+
+            _logger.LogInformation("Dashboard statistics retrieved successfully for manager {UserId}: {Neighborhoods} neighborhoods, {Units} units, {Blocks} blocks",
+                userId, dashboard.TotalNeighborhoods, dashboard.TotalUnits, dashboard.TotalBlocks);
+
+            return ApiResponse<ResidentialNeighborhoodManagerDashboardDto>.Success(dashboard, "تم جلب إحصائيات لوحة التحكم بنجاح");
+        }
+
+        public async Task<ApiResponse<List<ReturnResidentialNeighborhoodDto>>> GetMyNeighborhoodsAsync(string userId, CancellationToken ct = default)
+        {
+            _logger.LogInformation("Fetching neighborhoods for manager with userId: {UserId}", userId);
+
+            var neighborhoods = await _context.ResidentialNeighborhoods
+                .AsNoTracking()
+                .Where(n => n.NeighborhoodManagerId == userId)
+                .Include(n => n.NeighborhoodManager)
+                    .ThenInclude(nm => nm.Person)
+                .Include(n => n.ResidentialUnits)
+                    .ThenInclude(u => u.UnitManager)
+                        .ThenInclude(um => um.Person)
+                .Include(n => n.ResidentialUnits)
+                    .ThenInclude(u => u.Blocks)
+                .OrderBy(n => n.Name)
+                .ToListAsync(ct);
+
+            if (!neighborhoods.Any())
+            {
+                _logger.LogWarning("No neighborhoods found for manager with userId: {UserId}", userId);
+                return ApiResponse<List<ReturnResidentialNeighborhoodDto>>.Success(
+                    new List<ReturnResidentialNeighborhoodDto>(),
+                    "لا توجد أحياء سكنية مرتبطة بهذا المدير"
+                );
+            }
+
+            var result = neighborhoods.Select(n => n.ToDto()).ToList();
+
+            _logger.LogInformation("Retrieved {Count} neighborhoods for manager with userId: {UserId}", result.Count, userId);
+
+            return ApiResponse<List<ReturnResidentialNeighborhoodDto>>.Success(result, "تم جلب الأحياء السكنية بنجاح");
+        }
     }
 
 }
