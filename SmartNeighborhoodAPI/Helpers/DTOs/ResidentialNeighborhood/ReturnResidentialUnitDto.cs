@@ -4,6 +4,6 @@ namespace SmartNeighborhoodAPI.Helpers.DTOs.ResidentialNeighborhood
 {
     public class ReturnResidentialUnitDto : ReturnResidentialNeighborhoodDto
     {
-        public ICollection<ResidentialUnit> ResidentialUnits { get; set; }
+        public IEnumerable<ResidentialUnitSummaryDto> ResidentialUnits { get; set; }
     }
 }
