@@ -48,7 +48,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> AddAsync([FromBody, SwaggerParameter("Unit data to create", Required = true)] AddResidentialUnitDto unitDto)
         {
-            return Response(await _unitServices.AddAsync(unitDto));
+            return Response(await _unitServices.CreateAsync(unitDto));
         }
 
         [HttpPut(Router.ResidentialUnits.Update)]
