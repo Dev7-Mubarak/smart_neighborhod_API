@@ -36,6 +36,10 @@ namespace SmartNeighborhoodAPI.Helpers
             public const string ChangeManager = Prefix + "/{id:int}/manager";
             public const string Dashboard = Prefix + "/dashboard";
             public const string Units = Prefix + "/{id:int}/units";
+            
+            // Manager-specific endpoints
+            public const string GetMyNeighborhoods = Prefix + "/me";
+            public const string GetMyDashboard = Prefix + "/me/dashboard";
         }
 
         public static class Blocks
