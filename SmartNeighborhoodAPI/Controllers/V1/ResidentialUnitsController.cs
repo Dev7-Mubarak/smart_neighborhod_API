@@ -120,6 +120,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
 
         [HttpGet(Router.ResidentialUnits.GetMyUnits)]
         [MapToApiVersion("1.0")]
+        [Authorize(Roles = Role.UnitManager)]
         [SwaggerOperation(
             Summary = "Get my managed residential units (Unit Manager only)",
             Description = "Returns all residential units managed by the authenticated user, including blocks summary.")]
@@ -130,6 +131,19 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             return Response(await _unitServices.GetMyUnitsAsync(userId, ct));
+        }
+
+        [HttpGet(Router.ResidentialUnits.GetBlocks)]
+        [MapToApiVersion("1.0")]
+        [SwaggerOperation(
+            Summary = "Get blocks for a residential unit",
+            Description = "Returns all blocks within a specific residential unit, including block manager details.")]
+        [ProducesResponseType(typeof(ApiResponse<ReturnUnitBlocksDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetBlocksAsync([FromRoute, SwaggerParameter("Unit ID to retrieve blocks for", Required = true)] int id)
+        {
+            return Response(await _unitServices.GetBlocksAsync(id));
         }
 
     }

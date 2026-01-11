@@ -25,6 +25,8 @@ namespace SmartNeighborhoodAPI.Helpers
             
             public const string GetMyUnits = Prefix + "/me";
             public const string GetMyDashboard = Prefix + "/me/dashboard";
+            
+            public const string GetBlocks = Prefix + "/{id:int}/blocks";
         }
 
         public static class ResidentialNeighborhoods

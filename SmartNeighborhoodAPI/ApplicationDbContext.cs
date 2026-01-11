@@ -28,7 +28,14 @@ namespace SmartNeighborhoodAPI
             builder.ApplyConfiguration(new IdentityUserRoleSeedConfiguration());
             builder.ApplyConfiguration(new ProjectCatgoryEntityTypeConfiguration());
             builder.ApplyConfiguration(new ResidentialNeighborhoodConfiguration());
-            //builder.ApplyConfiguration(new ProjectConfiguration());
+            
+            // Seed data configurations for testing
+            builder.ApplyConfiguration(new PersonSeedConfiguration());
+            builder.ApplyConfiguration(new BlockManagersSeedConfiguration());
+            builder.ApplyConfiguration(new ResidentialNeighborhoodSeedConfiguration());
+            builder.ApplyConfiguration(new ResidentialUnitSeedConfiguration());
+            builder.ApplyConfiguration(new BlockSeedConfiguration());
+            
             base.OnModelCreating(builder);
 
             builder.Entity<ResidentialUnit>()
