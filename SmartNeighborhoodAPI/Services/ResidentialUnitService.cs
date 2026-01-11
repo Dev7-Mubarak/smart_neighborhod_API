@@ -513,8 +513,77 @@ namespace SmartNeighborhoodAPI.Services
             });
         }
 
+        public async Task<ApiResponse<ResidentialUnitManagerDashboardDto>> GetMyDashboardAsync(string userId, CancellationToken ct = default)
+        {
+            _logger.LogInformation("Fetching dashboard statistics for unit manager with userId: {UserId}", userId);
 
+            var statistics = await _context.ResidentialUnits
+                .AsNoTracking()
+                .Where(u => u.UnitManagerId == userId)
+                .Select(u => new
+                {
+                    UnitId = u.Id,
+                    BlocksCount = u.Blocks.Count,
+                    FamiliesCount = u.Blocks.SelectMany(b => b.Families).Count()
+                })
+                .ToListAsync(ct);
 
+            if (!statistics.Any())
+            {
+                _logger.LogWarning("No residential units found for manager with userId: {UserId}", userId);
+                return ApiResponse<ResidentialUnitManagerDashboardDto>.Success(
+                    new ResidentialUnitManagerDashboardDto
+                    {
+                        TotalFamilies = 0,
+                        TotalBlocks = 0
+                    },
+                    "لا توجد وحدات سكنية مرتبطة بهذا المدير"
+                );
+            }
+
+            var dashboard = new ResidentialUnitManagerDashboardDto
+            {
+                TotalFamilies = statistics.Sum(s => s.FamiliesCount),
+                TotalBlocks = statistics.Sum(s => s.BlocksCount)
+            };
+
+            _logger.LogInformation("Dashboard statistics retrieved successfully for unit manager {UserId}: {Families} families, {Blocks} blocks",
+                userId, dashboard.TotalFamilies, dashboard.TotalBlocks);
+
+            return ApiResponse<ResidentialUnitManagerDashboardDto>.Success(dashboard, "تم جلب إحصائيات لوحة التحكم بنجاح");
+        }
+
+        public async Task<ApiResponse<List<ReturnResidentialUnitDto>>> GetMyUnitsAsync(string userId, CancellationToken ct = default)
+        {
+            _logger.LogInformation("Fetching residential units for manager with userId: {UserId}", userId);
+
+            var units = await _context.ResidentialUnits
+                .AsNoTracking()
+                .Where(u => u.UnitManagerId == userId)
+                .Include(u => u.UnitManager)
+                    .ThenInclude(um => um.Person)
+                .Include(u => u.Blocks)
+                    .ThenInclude(b => b.BlockManager)
+                        .ThenInclude(bm => bm.Person)
+                .Include(u => u.ResidentialNeighborhood)
+                .OrderBy(u => u.Name)
+                .ToListAsync(ct);
+
+            if (!units.Any())
+            {
+                _logger.LogWarning("No residential units found for manager with userId: {UserId}", userId);
+                return ApiResponse<List<ReturnResidentialUnitDto>>.Success(
+                    new List<ReturnResidentialUnitDto>(),
+                    "لا توجد وحدات سكنية مرتبطة بهذا المدير"
+                );
+            }
+
+            var result = units.Select(u => MapToDto(u)).ToList();
+
+            _logger.LogInformation("Retrieved {Count} residential units for manager with userId: {UserId}", result.Count, userId);
+
+            return ApiResponse<List<ReturnResidentialUnitDto>>.Success(result, "تم جلب الوحدات السكنية بنجاح");
+        }
 
         private ReturnResidentialUnitDto MapToDto(ResidentialUnit unit)
         {
