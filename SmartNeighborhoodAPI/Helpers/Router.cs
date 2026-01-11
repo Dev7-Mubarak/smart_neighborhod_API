@@ -22,6 +22,9 @@ namespace SmartNeighborhoodAPI.Helpers
 
             public const string Blocks = Prefix + "/{unitId:int}/blocks";             
             public const string BlockById = Blocks + "/{blockId:int}";
+            
+            public const string GetMyUnits = Prefix + "/me";
+            public const string GetMyDashboard = Prefix + "/me/dashboard";
         }
 
         public static class ResidentialNeighborhoods
@@ -37,7 +40,6 @@ namespace SmartNeighborhoodAPI.Helpers
             public const string Dashboard = Prefix + "/dashboard";
             public const string Units = Prefix + "/{id:int}/units";
             
-            // Manager-specific endpoints
             public const string GetMyNeighborhoods = Prefix + "/me";
             public const string GetMyDashboard = Prefix + "/me/dashboard";
         }

@@ -401,7 +401,6 @@ namespace SmartNeighborhoodAPI.Services
         {
             _logger.LogInformation("Fetching dashboard statistics for manager with userId: {UserId}", userId);
 
-            // Query neighborhoods managed by this user with aggregated statistics
             var statistics = await _context.ResidentialNeighborhoods
                 .AsNoTracking()
                 .Where(n => n.NeighborhoodManagerId == userId)
@@ -409,7 +408,8 @@ namespace SmartNeighborhoodAPI.Services
                 {
                     NeighborhoodId = n.Id,
                     UnitsCount = n.ResidentialUnits.Count,
-                    BlocksCount = n.ResidentialUnits.SelectMany(u => u.Blocks).Count()
+                    BlocksCount = n.ResidentialUnits.SelectMany(u => u.Blocks).Count(),
+                    FamiliesCount = n.ResidentialUnits.SelectMany(u => u.Blocks).SelectMany(b => b.Families).Count()
                 })
                 .ToListAsync(ct);
 
@@ -419,7 +419,7 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<ResidentialNeighborhoodManagerDashboardDto>.Success(
                     new ResidentialNeighborhoodManagerDashboardDto
                     {
-                        TotalNeighborhoods = 0,
+                        TotalFamilies = 0,
                         TotalUnits = 0,
                         TotalBlocks = 0
                     },
@@ -429,13 +429,13 @@ namespace SmartNeighborhoodAPI.Services
 
             var dashboard = new ResidentialNeighborhoodManagerDashboardDto
             {
-                TotalNeighborhoods = statistics.Count,
+                TotalFamilies = statistics.Sum(s => s.FamiliesCount),
                 TotalUnits = statistics.Sum(s => s.UnitsCount),
                 TotalBlocks = statistics.Sum(s => s.BlocksCount)
             };
 
-            _logger.LogInformation("Dashboard statistics retrieved successfully for manager {UserId}: {Neighborhoods} neighborhoods, {Units} units, {Blocks} blocks",
-                userId, dashboard.TotalNeighborhoods, dashboard.TotalUnits, dashboard.TotalBlocks);
+            _logger.LogInformation("Dashboard statistics retrieved successfully for manager {UserId}: {Families} families, {Units} units, {Blocks} blocks",
+                userId, dashboard.TotalFamilies, dashboard.TotalUnits, dashboard.TotalBlocks);
 
             return ApiResponse<ResidentialNeighborhoodManagerDashboardDto>.Success(dashboard, "تم جلب إحصائيات لوحة التحكم بنجاح");
         }
