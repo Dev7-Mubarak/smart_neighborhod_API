@@ -303,8 +303,10 @@ namespace SmartNeighborhoodAPI.Services
                 using var transaction = await _context.Database.BeginTransactionAsync();
                 try
                 {
-                    // Delete old manager account (if any)
-                    if (managerId != null)
+                    _context.ResidentialUnits.Remove(unit);
+                    await _context.SaveChangesAsync();
+
+                    if (!string.IsNullOrEmpty(managerId))
                     {
                         var oldManagerUser = await _userManager.FindByIdAsync(managerId);
                         if (oldManagerUser != null)
@@ -319,8 +321,6 @@ namespace SmartNeighborhoodAPI.Services
                         }
                     }
 
-                    _context.ResidentialUnits.Remove(unit);
-                    await _context.SaveChangesAsync();
                     await transaction.CommitAsync();
                     return ApiResponse<string>.Success("تم حذف الوحدة السكنية بنجاح");
                 }
@@ -471,22 +471,25 @@ namespace SmartNeighborhoodAPI.Services
 
 
                     var oldManagerId = unit.UnitManagerId;
-                    var oldManagerUser = await _userManager.FindByIdAsync(oldManagerId);
 
-                    // Step 5: Update unit manager
+                    // Step 5: Update unit manager FIRST before deleting old one
                     unit.UnitManagerId = user.Id;
+                    _context.ResidentialUnits.Update(unit);
                     await _context.SaveChangesAsync();
 
-                    // Step 6: Delete old manager account (if any)
-                    if (oldManagerUser != null)
+                    if (!string.IsNullOrEmpty(oldManagerId))
                     {
-                        var deleteResult = await _userManager.DeleteAsync(oldManagerUser);
-                        if (!deleteResult.Succeeded)
+                        var oldManagerUser = await _userManager.FindByIdAsync(oldManagerId);
+                        if (oldManagerUser != null)
                         {
-                            var errors = deleteResult.Errors.Select(e => new ErrorDetails { Field = e.Code, ErrorMessage = e.Description }).ToList();
-                            _logger.LogError("Failed to delete old residential unit manager with ID: {OldManagerId}", oldManagerUser.Id);
-                            // Rollback is handled by the catch block
-                            throw new Exception("فشل حذف المدير القديم");
+                            var deleteResult = await _userManager.DeleteAsync(oldManagerUser);
+                            if (!deleteResult.Succeeded)
+                            {
+                                var errors = deleteResult.Errors.Select(e => new ErrorDetails { Field = e.Code, ErrorMessage = e.Description }).ToList();
+                                _logger.LogError("Failed to delete old residential unit manager with ID: {OldManagerId}", oldManagerUser.Id);
+                                // Rollback is handled by the catch block
+                                throw new Exception("فشل حذف المدير القديم");
+                            }
                         }
                     }
 
@@ -583,6 +586,42 @@ namespace SmartNeighborhoodAPI.Services
             _logger.LogInformation("Retrieved {Count} residential units for manager with userId: {UserId}", result.Count, userId);
 
             return ApiResponse<List<ReturnResidentialUnitDto>>.Success(result, "تم جلب الوحدات السكنية بنجاح");
+        }
+
+        public async Task<ApiResponse<ReturnUnitBlocksDto>> GetBlocksAsync(int id)
+        {
+            var unit = await _context.ResidentialUnits
+                .Include(u => u.UnitManager)
+                    .ThenInclude(um => um.Person)
+                .Include(u => u.Blocks)
+                    .ThenInclude(b => b.BlockManager)
+                        .ThenInclude(bm => bm.Person)
+                .FirstOrDefaultAsync(u => u.Id == id);
+
+            if (unit == null)
+            {
+                return ApiResponse<ReturnUnitBlocksDto>.Error(
+                    HttpStatusCode.NotFound, 
+                    "الوحدة السكنية غير موجودة"
+                );
+            }
+
+            var result = new ReturnUnitBlocksDto
+            {
+                Id = unit.Id,
+                Name = unit.Name,
+                UnitManagerId = unit.UnitManagerId,
+                UnitManagerName = unit.UnitManager?.Person?.FullName ?? string.Empty,
+                Blocks = unit.Blocks.Select(b => new BlockSummaryDto
+                {
+                    Id = b.Id,
+                    Name = b.Name,
+                    BlockManagerId = b.BlockManagerId,
+                    BlockManagerName = b.BlockManager?.Person?.FullName ?? string.Empty
+                }).ToList()
+            };
+
+            return ApiResponse<ReturnUnitBlocksDto>.Success(result, "تم جلب المربعات بنجاح");
         }
 
         private ReturnResidentialUnitDto MapToDto(ResidentialUnit unit)
