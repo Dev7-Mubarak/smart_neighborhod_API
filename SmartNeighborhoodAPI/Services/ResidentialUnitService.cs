@@ -341,7 +341,9 @@ namespace SmartNeighborhoodAPI.Services
                 {
                     u.Id,
                     u.Name,
-                    BlocksCount = u.Blocks.Count
+                    u.UnitManagerId,
+                    u.UnitManager.Person.FullName,
+                    BlocksCount = u.Blocks.Count,
                 })
                 .ToListAsync();
 
@@ -351,9 +353,11 @@ namespace SmartNeighborhoodAPI.Services
                 TotalBlocks = units.Sum(u => u.BlocksCount),
                 Units = units.Select(u => new UnitStatsDto
                 {
-                    UnitId = u.Id,
-                    UnitName = u.Name,
-                    BlocksCount = u.BlocksCount
+                    Id = u.Id,
+                    Name = u.Name,
+                    UnitManagerId = u.UnitManagerId, 
+                    UnitManagerName = u.FullName,
+                    BlockCount = u.BlocksCount,
                 }).ToList()
             };
 

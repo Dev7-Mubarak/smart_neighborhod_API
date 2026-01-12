@@ -39,7 +39,8 @@ namespace SmartNeighborhoodAPI.Entites
                     Id = u.Id,
                     Name = u.Name,
                     UnitManagerId = u.UnitManagerId,
-                    UnitManagerName = u.UnitManager?.Person?.FullName ?? string.Empty
+                    UnitManagerName = u.UnitManager?.Person.FullName ?? string.Empty,
+                    BlockCount = u.Blocks.Count,
                 }).ToList(),
             };
         }

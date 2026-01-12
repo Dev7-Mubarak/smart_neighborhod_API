@@ -387,6 +387,10 @@ namespace SmartNeighborhoodAPI.Services
                 .Include(n => n.NeighborhoodManager)
                     .ThenInclude(nm => nm.Person)
                 .Include(n => n.ResidentialUnits)
+                    .ThenInclude(n => n.UnitManager)
+                        .ThenInclude(um => um.Person)
+                .Include(n => n.ResidentialUnits)
+                    .ThenInclude(u => u.Blocks)
                 .FirstOrDefaultAsync(n => n.Id == id);
 
             if (entity == null)
