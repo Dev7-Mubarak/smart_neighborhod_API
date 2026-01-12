@@ -12,5 +12,12 @@ namespace SmartNeighborhoodAPI.Interfaces
         Task<ApiResponse<Block>> GetByIdAsync(int id);
         Task<ApiResponse<BlockDetailesDto>> GetDetails(int blockId, int pageNumber, int pageSize, string? search);
         Task<ApiResponse<string>> UpdateAsync(int id, UpdateBlockDto blockDto);
+        
+        Task<ApiResponse<BlockDashboardDto>> GetDashboardAsync(CancellationToken ct = default);
+        
+        Task<ApiResponse<BlockManagerDashboardDto>> GetMyDashboardAsync(string userId, CancellationToken ct = default);
+        Task<ApiResponse<List<RetrunBlockDto>>> GetMyBlocksAsync(string userId, CancellationToken ct = default);
+        
+        Task<ApiResponse<ReturnBlockFamiliesDto>> GetFamiliesAsync(int id);
     }
 }

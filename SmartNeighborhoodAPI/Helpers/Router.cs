@@ -57,6 +57,11 @@ namespace SmartNeighborhoodAPI.Helpers
             public const string GetById = Prefix + "/{id:int}";
             public const string Update = Prefix + "/{id:int}";
             public const string Delete = Prefix + "/{id:int}";
+            public const string Dashboard = Prefix + "/dashboard";
+            public const string GetFamilies = Prefix + "/{id:int}/families";
+            
+            public const string GetMyBlocks = Prefix + "/me";
+            public const string GetMyDashboard = Prefix + "/me/dashboard";
         }
         public static class GovernmentInstitutions
         {
