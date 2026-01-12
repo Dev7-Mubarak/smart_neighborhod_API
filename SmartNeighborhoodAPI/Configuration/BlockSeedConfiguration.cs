@@ -16,35 +16,35 @@ namespace SmartNeighborhoodAPI.Configuration
                     Id = 1,
                     Name = "«·„—»⁄ «·√Ê·",
                     ResidentialUnitId = 1,
-                    BlockManagerId = "dddddddd-dddd-dddd-dddd-dddddddddddd"
+                    BlockManagerId = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
                 },
                 new Block
                 {
                     Id = 2,
                     Name = "«·„—»⁄ «·À«‰Ì",
                     ResidentialUnitId = 1,
-                    BlockManagerId = "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"
+                    BlockManagerId = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
                 },
                 new Block
                 {
                     Id = 3,
                     Name = "«·„—»⁄ «·À«·À",
                     ResidentialUnitId = 1,
-                    BlockManagerId = "ffffffff-ffff-ffff-ffff-ffffffffffff"
+                    BlockManagerId = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
                 },
                 new Block
                 {
                     Id = 4,
                     Name = "«·„—»⁄ «·—«»⁄",
                     ResidentialUnitId = 1,
-                    BlockManagerId = "10101010-1010-1010-1010-101010101010"
+                    BlockManagerId = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
                 },
                 new Block
                 {
                     Id = 5,
                     Name = "«·„—»⁄ «·Œ«„”",
                     ResidentialUnitId = 1,
-                    BlockManagerId = "20202020-2020-2020-2020-202020202020"
+                    BlockManagerId = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
                 }
             );
         }

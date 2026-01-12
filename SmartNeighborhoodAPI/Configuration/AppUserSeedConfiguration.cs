@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using SmartNeighborhoodAPI.Entites;
 
-namespace SmartNeighborhoodAPI.Configuration
-{
+namespace SmartNeighborhoodAPI.Configuration;
+
     public class AppUserSeedConfiguration : IEntityTypeConfiguration<AppUser>
     {
         public void Configure(EntityTypeBuilder<AppUser> builder)
@@ -25,4 +25,4 @@ namespace SmartNeighborhoodAPI.Configuration
         }
     }
 
-}
+

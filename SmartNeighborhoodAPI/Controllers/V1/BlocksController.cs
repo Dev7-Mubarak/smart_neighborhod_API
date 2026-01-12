@@ -5,6 +5,8 @@ using SmartNeighborhoodAPI.Helpers.DTOs.block;
 using SmartNeighborhoodAPI.Helpers.DTOs.Auth;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
+using System.Security.Claims;
+using SmartNeighborhoodAPI.Helpers;
 
 namespace SmartNeighborhoodAPI.Controllers.V1
 {
@@ -108,6 +110,57 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         public async Task<IActionResult> DeleteAsync([FromRoute, SwaggerParameter("Block ID to delete", Required = true)] int id)
         {
             return Response(await _BlockServices.DeleteAsync(id));
+        }
+
+        [HttpGet(Router.Blocks.Dashboard)]
+        [MapToApiVersion("1.0")]
+        [SwaggerOperation(Summary = "Get blocks dashboard (Admin only)", Description = "Returns dashboard statistics for all blocks.")]
+        [ProducesResponseType(typeof(BlockDashboardDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetDashboardAsync(CancellationToken ct)
+        {
+            return Response(await _BlockServices.GetDashboardAsync(ct));
+        }
+
+        [HttpGet(Router.Blocks.GetFamilies)]
+        [MapToApiVersion("1.0")]
+        [SwaggerOperation(
+            Summary = "Get families for a block",
+            Description = "Returns all families within a specific block.")]
+        [ProducesResponseType(typeof(ApiResponse<ReturnBlockFamiliesDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetFamiliesAsync([FromRoute, SwaggerParameter("Block ID to retrieve families for", Required = true)] int id)
+        {
+            return Response(await _BlockServices.GetFamiliesAsync(id));
+        }
+
+        [HttpGet(Router.Blocks.GetMyDashboard)]
+        [MapToApiVersion("1.0")]
+        [SwaggerOperation(
+            Summary = "Get my dashboard statistics (Block Manager only)",
+            Description = "Returns dashboard statistics for the authenticated block manager, including total families they manage.")]
+        [ProducesResponseType(typeof(ApiResponse<BlockManagerDashboardDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> GetMyDashboard(CancellationToken ct)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return Response(await _BlockServices.GetMyDashboardAsync(userId, ct));
+        }
+
+        [HttpGet(Router.Blocks.GetMyBlocks)]
+        [MapToApiVersion("1.0")]
+        [SwaggerOperation(
+            Summary = "Get my managed blocks (Block Manager only)",
+            Description = "Returns all blocks managed by the authenticated user.")]
+        [ProducesResponseType(typeof(ApiResponse<List<RetrunBlockDto>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> GetMyBlocks(CancellationToken ct)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return Response(await _BlockServices.GetMyBlocksAsync(userId, ct));
         }
     }
 }
