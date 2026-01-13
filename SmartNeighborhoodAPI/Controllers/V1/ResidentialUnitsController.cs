@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using SmartNeighborhoodAPI.Helpers.DTOs.Auth;
 using SmartNeighborhoodAPI.Helpers.DTOs.block;
 using SmartNeighborhoodAPI.Helpers.DTOs.ResidentialUnits;
 using Swashbuckle.AspNetCore.Annotations;
@@ -8,7 +9,6 @@ using System.Security.Claims;
 namespace SmartNeighborhoodAPI.Controllers.V1
 {
     [SwaggerTag("Residential Units management endpoints")]
-    [Authorize(Roles = Role.Admin + "," + Role.UnitManager)]
     public class ResidentialUnitsController : AppControllerBase
     {
         private readonly ResidentialUnitService _unitServices;
@@ -48,7 +48,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         public async Task<IActionResult> AddAsync([FromBody, SwaggerParameter("Unit data to create", Required = true)] AddResidentialUnitDto unitDto)
         {
-            return Response(await _unitServices.AddAsync(unitDto));
+            return Response(await _unitServices.CreateAsync(unitDto));
         }
 
         [HttpPut(Router.ResidentialUnits.Update)]
@@ -76,6 +76,74 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         public async Task<IActionResult> DeleteAsync([FromRoute, SwaggerParameter("Unit ID to delete", Required = true)] int id)
         {
             return Response(await _unitServices.DeleteAsync(id));
+        }
+
+        [HttpPut(Router.ResidentialUnits.ChangeManager)]
+        [MapToApiVersion("1.0")]
+        [Consumes("application/json")]
+        [SwaggerOperation(Summary = "Change unit manager", Description = "Changes the manager of a residential unit.")]
+        [ProducesResponseType(typeof(ReturnResidentialUnitDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ChangeManagerAsync(
+            [FromRoute, SwaggerParameter("Unit ID to change manager", Required = true)] int id,
+            [FromBody, SwaggerParameter("Manager change data", Required = true)] ChangeManagerDto dto)
+        {
+            return Response(await _unitServices.ChangeManagerAsync(id, dto));
+        }
+
+        [HttpGet(Router.ResidentialUnits.Dashboard)]
+        [MapToApiVersion("1.0")]
+        [Authorize(Roles = Role.Admin)]
+        [SwaggerOperation(Summary = "Get residential units dashboard (Admin only)", Description = "Returns dashboard statistics for residential units.")]
+        [ProducesResponseType(typeof(ResidentialUnitDashboardDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetDashboardAsync()
+        {
+            return Response(await _unitServices.GetDashboardAsync());
+        }
+
+        [HttpGet(Router.ResidentialUnits.GetMyDashboard)]
+        [MapToApiVersion("1.0")]
+        [SwaggerOperation(
+            Summary = "Get my dashboard statistics (Unit Manager only)",
+            Description = "Returns dashboard statistics for the authenticated unit manager, including total families and blocks they manage.")]
+        [ProducesResponseType(typeof(ApiResponse<ResidentialUnitManagerDashboardDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> GetMyDashboard(CancellationToken ct)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return Response(await _unitServices.GetMyDashboardAsync(userId, ct));
+        }
+
+        [HttpGet(Router.ResidentialUnits.GetMyUnits)]
+        [MapToApiVersion("1.0")]
+        [Authorize(Roles = Role.UnitManager)]
+        [SwaggerOperation(
+            Summary = "Get my managed residential units (Unit Manager only)",
+            Description = "Returns all residential units managed by the authenticated user, including blocks summary.")]
+        [ProducesResponseType(typeof(ApiResponse<List<ReturnResidentialUnitDto>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+        public async Task<IActionResult> GetMyUnits(CancellationToken ct)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return Response(await _unitServices.GetMyUnitsAsync(userId, ct));
+        }
+
+        [HttpGet(Router.ResidentialUnits.GetBlocks)]
+        [MapToApiVersion("1.0")]
+        [SwaggerOperation(
+            Summary = "Get blocks for a residential unit",
+            Description = "Returns all blocks within a specific residential unit, including block manager details.")]
+        [ProducesResponseType(typeof(ApiResponse<ReturnUnitBlocksDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> GetBlocksAsync([FromRoute, SwaggerParameter("Unit ID to retrieve blocks for", Required = true)] int id)
+        {
+            return Response(await _unitServices.GetBlocksAsync(id));
         }
 
     }

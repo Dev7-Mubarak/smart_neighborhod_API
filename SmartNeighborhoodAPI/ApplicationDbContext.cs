@@ -27,7 +27,16 @@ namespace SmartNeighborhoodAPI
             builder.ApplyConfiguration(new AppUserSeedConfiguration());
             builder.ApplyConfiguration(new IdentityUserRoleSeedConfiguration());
             builder.ApplyConfiguration(new ProjectCatgoryEntityTypeConfiguration());
-            //builder.ApplyConfiguration(new ProjectConfiguration());
+            builder.ApplyConfiguration(new ResidentialNeighborhoodConfiguration());
+            
+            // Seed data configurations for testing
+            builder.ApplyConfiguration(new PersonSeedConfiguration());
+            builder.ApplyConfiguration(new BlockManagersSeedConfiguration());
+            builder.ApplyConfiguration(new ResidentialNeighborhoodSeedConfiguration());
+            builder.ApplyConfiguration(new ResidentialUnitSeedConfiguration());
+            builder.ApplyConfiguration(new BlockSeedConfiguration());
+            builder.ApplyConfiguration(new FamilySeedConfiguration());
+            
             base.OnModelCreating(builder);
 
             builder.Entity<ResidentialUnit>()
@@ -131,5 +140,6 @@ namespace SmartNeighborhoodAPI
         public DbSet<ProjectTeam> ProjectTeams { get; set; }
         public DbSet<TeamRole> TeamRoles { get; set; }
         public DbSet<ResidentialUnit> ResidentialUnits { get; set; }
+        public DbSet<ResidentialNeighborhood> ResidentialNeighborhoods { get; set; }
     }
 }

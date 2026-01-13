@@ -130,18 +130,29 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.NotFound, "هذا الشخص غير موجود");
             }
 
-            var existingUser = await _userManager.FindByEmailAsync(blockManagerDto.Email);
+            // Check if identifier already exists
+            bool isEmail = blockManagerDto.Identifier.Contains('@');
+            AppUser existingUser = null;
+            
+            if (isEmail)
+            {
+                existingUser = await _userManager.FindByEmailAsync(blockManagerDto.Identifier);
+            }
+            else
+            {
+                existingUser = await _userManager.FindByNameAsync(blockManagerDto.Identifier);
+            }
 
             if (existingUser != null)
             {
-                _logger.LogWarning("Person with ID '{PersonId}' not found.", blockManagerDto.Email);
-                return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.Conflict, "هذا الايميل مستخدم بالفعل ");
+                _logger.LogWarning("Identifier '{Identifier}' is already used.", blockManagerDto.Identifier);
+                return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.Conflict, "المعرف (البريد الإلكتروني أو اسم المستخدم) مستخدم مسبقاً");
             }
 
             // Step 4: Create new manager account
             var createResult = await _authService.CreateBlockManagerAccountAsync(new CreateBlockManagerDto
             {
-                Email = blockManagerDto.Email,
+                Email = blockManagerDto.Identifier,
                 Password = blockManagerDto.Password,
                 PersonId = blockManagerDto.PersonId
             });
@@ -179,7 +190,7 @@ namespace SmartNeighborhoodAPI.Services
                 Name = block.Name,
                 //ManagerId = block.UnitManagerId,    
                 PersonId = person.Id,
-                Email = createResult.Data.Email,
+                Email = createResult.Data.Identifier,
                 Role = createResult.Data.Role,
                 FullName = person.FullName
             };
@@ -239,7 +250,7 @@ namespace SmartNeighborhoodAPI.Services
                     PersonId = blockDto.PersonId,
                     ManagerId = response.Data.Id,
                     Role = response.Data.Role,
-                    Email = response.Data.Email,
+                    Email = response.Data.Identifier,
                     FullName = person.FullName
                 };
 
@@ -358,6 +369,148 @@ namespace SmartNeighborhoodAPI.Services
             }
 
             return ApiResponse<BlockDetailesDto>.Success(block, "تم جلب تفاصيل المربع بنجاح.");
+        }
+
+        public async Task<ApiResponse<BlockDashboardDto>> GetDashboardAsync(CancellationToken ct = default)
+        {
+            var blocks = await _context.Blocks
+                .AsNoTracking()
+                .Select(b => new
+                {
+                    b.Id,
+                    b.Name,
+                    FamiliesCount = b.Families.Count,
+                    ManagerId = b.BlockManagerId,
+                    ManagerName = b.BlockManager.Person.FullName
+                })
+                .ToListAsync(ct);
+
+            var dashboard = new BlockDashboardDto
+            {
+                TotalBlocks = blocks.Count,
+                TotalFamilies = blocks.Sum(b => b.FamiliesCount),
+                Blocks = blocks.Select(b => new BlockStatsDto
+                {
+                    BlockId = b.Id,
+                    BlockName = b.Name,
+                    FamiliesCount = b.FamiliesCount,
+                    ManagerId = b.ManagerId,
+                    ManagerName = b.ManagerName
+                }).ToList()
+            };
+
+            return ApiResponse<BlockDashboardDto>.Success(dashboard, "تم جلب إحصائيات المربعات بنجاح");
+        }
+
+        public async Task<ApiResponse<BlockManagerDashboardDto>> GetMyDashboardAsync(string userId, CancellationToken ct = default)
+        {
+            _logger.LogInformation("Fetching dashboard statistics for block manager with userId: {UserId}", userId);
+
+            var statistics = await _context.Blocks
+                .AsNoTracking()
+                .Where(b => b.BlockManagerId == userId)
+                .Select(b => new
+                {
+                    BlockId = b.Id,
+                    FamiliesCount = b.Families.Count
+                })
+                .ToListAsync(ct);
+
+            if (!statistics.Any())
+            {
+                _logger.LogWarning("No blocks found for manager with userId: {UserId}", userId);
+                return ApiResponse<BlockManagerDashboardDto>.Success(
+                    new BlockManagerDashboardDto
+                    {
+                        TotalFamilies = 0
+                    },
+                    "لا توجد مربعات مرتبطة بهذا المدير"
+                );
+            }
+
+            var dashboard = new BlockManagerDashboardDto
+            {
+                TotalFamilies = statistics.Sum(s => s.FamiliesCount)
+            };
+
+            _logger.LogInformation("Dashboard statistics retrieved successfully for block manager {UserId}: {Families} families",
+                userId, dashboard.TotalFamilies);
+
+            return ApiResponse<BlockManagerDashboardDto>.Success(dashboard, "تم جلب إحصائيات لوحة التحكم بنجاح");
+        }
+
+        public async Task<ApiResponse<List<RetrunBlockDto>>> GetMyBlocksAsync(string userId, CancellationToken ct = default)
+        {
+            _logger.LogInformation("Fetching blocks for manager with userId: {UserId}", userId);
+
+            var blocks = await _context.Blocks
+                .AsNoTracking()
+                .Where(b => b.BlockManagerId == userId)
+                .Include(b => b.BlockManager)
+                    .ThenInclude(bm => bm.Person)
+                .Include(b => b.ResidentialUnit)
+                .OrderBy(b => b.Name)
+                .ToListAsync(ct);
+
+            if (!blocks.Any())
+            {
+                _logger.LogWarning("No blocks found for manager with userId: {UserId}", userId);
+                return ApiResponse<List<RetrunBlockDto>>.Success(
+                    new List<RetrunBlockDto>(),
+                    "لا توجد مربعات مرتبطة بهذا المدير"
+                );
+            }
+
+            var result = blocks.Select(b => new RetrunBlockDto
+            {
+                Id = b.Id,
+                Name = b.Name,
+                ManagerId = b.BlockManagerId,
+                PersonId = b.BlockManager.PersonId,
+                Email = b.BlockManager.Email ?? string.Empty,
+                Role = Role.BlockManager,
+                FullName = b.BlockManager.Person?.FullName ?? string.Empty
+            }).ToList();
+
+            _logger.LogInformation("Retrieved {Count} blocks for manager with userId: {UserId}", result.Count, userId);
+
+            return ApiResponse<List<RetrunBlockDto>>.Success(result, "تم جلب المربعات بنجاح");
+        }
+
+        public async Task<ApiResponse<ReturnBlockFamiliesDto>> GetFamiliesAsync(int id)
+        {
+            var block = await _context.Blocks
+                .Include(b => b.BlockManager)
+                    .ThenInclude(bm => bm.Person)
+                .Include(b => b.Families)
+                    .ThenInclude(f => f.FamilyCatgory)
+                .FirstOrDefaultAsync(b => b.Id == id);
+
+            if (block == null)
+            {
+                return ApiResponse<ReturnBlockFamiliesDto>.Error(
+                    HttpStatusCode.NotFound,
+                    "المربع غير موجود"
+                );
+            }
+
+            var result = new ReturnBlockFamiliesDto
+            {
+                Id = block.Id,
+                Name = block.Name,
+                BlockManagerId = block.BlockManagerId,
+                BlockManagerName = block.BlockManager?.Person?.FullName ?? string.Empty,
+                Families = block.Families.Select(f => new FamilySummaryDto
+                {
+                    Id = f.Id,
+                    Name = f.Name,
+                    Location = f.Location,
+                    FamilyCategoryId = f.FamilyCatgoryId,
+                    FamilyCategoryName = f.FamilyCatgory?.Name ?? string.Empty
+                }).ToList()
+            };
+
+            return ApiResponse<ReturnBlockFamiliesDto>.Success(result, "تم جلب العائلات بنجاح");
         }
 
     }

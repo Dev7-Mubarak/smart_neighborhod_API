@@ -2,9 +2,8 @@
 {
     public class ChangeManagerDto
     {
-        [Required(ErrorMessage = "Email is required")]
-        [EmailAddress]
-        public string Email { get; set; }
+        [Required(ErrorMessage = "Identifier is required")]
+        public string Identifier { get; set; }
 
         [Required(ErrorMessage = "Password is required")]
         [MinLength(8, ErrorMessage = "Password must be at least 8 characters long")]

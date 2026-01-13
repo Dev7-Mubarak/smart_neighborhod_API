@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SmartNeighborhoodAPI;
 
@@ -11,9 +12,11 @@ using SmartNeighborhoodAPI;
 namespace SmartNeighborhoodAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260111164520_seeddata")]
+    partial class seeddata
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -252,35 +255,35 @@ namespace SmartNeighborhoodAPI.Migrations
                         new
                         {
                             Id = 1,
-                            BlockManagerId = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+                            BlockManagerId = "dddddddd-dddd-dddd-dddd-dddddddddddd",
                             Name = "المربع الأول",
                             ResidentialUnitId = 1
                         },
                         new
                         {
                             Id = 2,
-                            BlockManagerId = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+                            BlockManagerId = "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
                             Name = "المربع الثاني",
                             ResidentialUnitId = 1
                         },
                         new
                         {
                             Id = 3,
-                            BlockManagerId = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+                            BlockManagerId = "ffffffff-ffff-ffff-ffff-ffffffffffff",
                             Name = "المربع الثالث",
                             ResidentialUnitId = 1
                         },
                         new
                         {
                             Id = 4,
-                            BlockManagerId = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+                            BlockManagerId = "10101010-1010-1010-1010-101010101010",
                             Name = "المربع الرابع",
                             ResidentialUnitId = 1
                         },
                         new
                         {
                             Id = 5,
-                            BlockManagerId = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+                            BlockManagerId = "20202020-2020-2020-2020-202020202020",
                             Name = "المربع الخامس",
                             ResidentialUnitId = 1
                         });
@@ -388,104 +391,6 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasIndex("FamilyCatgoryId");
 
                     b.ToTable("Families");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            BlockId = 1,
-                            FamilyCatgoryId = 1,
-                            FamilyNotes = "عائلة محتاجة للدعم",
-                            HousingType = 2,
-                            Location = "شارع الملك فهد، حي السلام",
-                            Name = "عائلة الأحمدي"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            BlockId = 1,
-                            FamilyCatgoryId = 3,
-                            FamilyNotes = "عائلة متوسطة الدخل",
-                            HousingType = 1,
-                            Location = "شارع العروبة، حي السلام",
-                            Name = "عائلة السعيد"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            BlockId = 2,
-                            FamilyCatgoryId = 2,
-                            FamilyNotes = "عائلة يتيمة",
-                            HousingType = 2,
-                            Location = "شارع الأمير سلطان، حي السلام",
-                            Name = "عائلة القحطاني"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            BlockId = 2,
-                            FamilyCatgoryId = 3,
-                            HousingType = 1,
-                            Location = "شارع الملك عبدالعزيز، حي السلام",
-                            Name = "عائلة الدوسري"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            BlockId = 3,
-                            FamilyCatgoryId = 1,
-                            FamilyNotes = "عائلة كبيرة",
-                            HousingType = 2,
-                            Location = "شارع الخليج، حي السلام",
-                            Name = "عائلة الشمري"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            BlockId = 3,
-                            FamilyCatgoryId = 3,
-                            HousingType = 1,
-                            Location = "شارع الأمل، حي السلام",
-                            Name = "عائلة الغامدي"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            BlockId = 4,
-                            FamilyCatgoryId = 2,
-                            FamilyNotes = "عائلة محتاجة",
-                            HousingType = 2,
-                            Location = "شارع النخيل، حي السلام",
-                            Name = "عائلة العمري"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            BlockId = 4,
-                            FamilyCatgoryId = 3,
-                            HousingType = 1,
-                            Location = "شارع الورود، حي السلام",
-                            Name = "عائلة المطيري"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            BlockId = 5,
-                            FamilyCatgoryId = 1,
-                            FamilyNotes = "عائلة أرملة",
-                            HousingType = 2,
-                            Location = "شارع السلام، حي السلام",
-                            Name = "عائلة الزهراني"
-                        },
-                        new
-                        {
-                            Id = 10,
-                            BlockId = 5,
-                            FamilyCatgoryId = 3,
-                            HousingType = 1,
-                            Location = "شارع الفيحاء، حي السلام",
-                            Name = "عائلة الحربي"
-                        });
                 });
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.FamilyCatgory", b =>
@@ -1089,17 +994,17 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "81ea4d44-aa3a-4f62-a0fb-5e5cd32b49b7",
+                            ConcurrencyStamp = "ad99dfa7-238d-43d5-8950-a9d9b20443ea",
                             Email = "sys.smartneighborhood@gmail.com",
                             EmailConfirmed = true,
                             IsActive = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "sys.smartneighborhood@gmail.com",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEOzr+MxrHDIDddkprnFimLLM44v40BaMmjxwBkJ5wmHvM/UgKaukPlt6qYNv+47cJA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAELvtVdpF8nmABz/4H5GqFUUcDXfca/2kG944piMMru/r934GQGMhwp8bp4SrLuTZ/A==",
                             PersonId = 1,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "5f78adc6-7316-4ed2-9031-2c65fec31b46",
+                            SecurityStamp = "4b832638-d017-40f3-9a8b-a274dc63d758",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         },
@@ -1107,17 +1012,17 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "e4d94504-2158-4c69-b932-74e2f4489e51",
+                            ConcurrencyStamp = "5b8078e4-0766-46c3-a2bd-79d095a16916",
                             Email = "neighborhood.manager@test.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "NEIGHBORHOOD.MANAGER@TEST.COM",
                             NormalizedUserName = "NEIGHBORHOODMANAGER1",
-                            PasswordHash = "AQAAAAIAAYagAAAAED/GIHO2H+h1E4YIUcB/e/Wi9gkpELJTHQCoJiqubE+u6dBa2Ibwc0kRwXrIkuqkpA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAECM+ebdtBxOdHf8Ik11L1BGPACJFNQMA/UTtBpRcErvb4ScdXSs4fE1j+SWVpDKm5w==",
                             PersonId = 2,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "74d7c2a0-8bdc-43b3-9c03-70f3c126e447",
+                            SecurityStamp = "d562bbe3-dd64-4116-9e17-3a0a895ae2cb",
                             TwoFactorEnabled = false,
                             UserName = "NeighborhoodManager1"
                         },
@@ -1125,17 +1030,17 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = "cccccccc-cccc-cccc-cccc-cccccccccccc",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "bf3c5639-c628-46ef-bd49-437ae3b17873",
+                            ConcurrencyStamp = "cf12abfb-47a8-4975-84a2-1ae87f941846",
                             Email = "unit.manager@test.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "UNIT.MANAGER@TEST.COM",
                             NormalizedUserName = "UNITMANAGER1",
-                            PasswordHash = "AQAAAAIAAYagAAAAEA/a+haLMlPWWob1Mv4neBS5wUotM07/pSEmo+Q07WsFQfkF7MZ3LVUa+LiKb6UksA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEB2EcEUWzhXDBAA5/2pmiI24rkOn5A/k+SZ9D2ZYmB+JldD+seI8P6fybmd4PSLZkg==",
                             PersonId = 3,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "bd0ff36b-bf87-494d-88aa-319e0a23203c",
+                            SecurityStamp = "05703117-de1f-4de0-8f49-f7f0c61fa1f0",
                             TwoFactorEnabled = false,
                             UserName = "UnitManager1"
                         },
@@ -1143,17 +1048,17 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = "dddddddd-dddd-dddd-dddd-dddddddddddd",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "13cef98f-baa6-4b74-a2c1-1fd2b3b50519",
+                            ConcurrencyStamp = "b2b618ef-9742-44f3-97e8-1f1631012b7f",
                             Email = "block.manager1@test.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "BLOCK.MANAGER1@TEST.COM",
                             NormalizedUserName = "BLOCKMANAGER1",
-                            PasswordHash = "AQAAAAIAAYagAAAAEEc0uqpTeQ7Y2ZKW5HJqjtD7wPbDd0w9N86750rUoCL1uEkSEaj5Zoj1dn1KTpmvXg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEGfUzijCeC1AkeF6dl/uZheFjjWHFMQBrw/3syF0h4Di1VowEG6JDBnk/OAJvs/4Pg==",
                             PersonId = 4,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "7e1cdcf5-ae0f-4648-a7ce-4a67b59b9408",
+                            SecurityStamp = "bc62e86e-0b97-4666-a133-e39b58d3ba0e",
                             TwoFactorEnabled = false,
                             UserName = "BlockManager1"
                         },
@@ -1161,17 +1066,17 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "30c8c763-2405-41e7-9c89-bfce1c45af00",
+                            ConcurrencyStamp = "a5b72a81-db98-4a99-acf9-bb37a23f0d45",
                             Email = "block.manager2@test.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "BLOCK.MANAGER2@TEST.COM",
                             NormalizedUserName = "BLOCKMANAGER2",
-                            PasswordHash = "AQAAAAIAAYagAAAAEMWWO0oaIOK23QzffSlt7TlUXTXKCBYXUbRieXwfDGODRWcXxml3Mb0HNwL3SLkXlg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEHdVDV54QMwPESBHun19Oc5l4pvaPSsdAeWdEEGpyyeF1gCbDsDAnPBmtfzN29UszA==",
                             PersonId = 5,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "9b0c500f-cddb-4ac3-a5ac-18dc2d852cba",
+                            SecurityStamp = "7d4b5475-aeac-4106-bd26-f3643e5e2703",
                             TwoFactorEnabled = false,
                             UserName = "BlockManager2"
                         },
@@ -1179,17 +1084,17 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = "ffffffff-ffff-ffff-ffff-ffffffffffff",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "0b3efc74-2f46-4bae-9fac-bce5a3d4eb6b",
+                            ConcurrencyStamp = "a9858722-f83e-4a12-a494-b8a9ee9c04ac",
                             Email = "block.manager3@test.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "BLOCK.MANAGER3@TEST.COM",
                             NormalizedUserName = "BLOCKMANAGER3",
-                            PasswordHash = "AQAAAAIAAYagAAAAEHj54CYcOLj8NLEZw/DHoSsEybzstLMG9wYu7dxAh7gdh0vHs5TWchfVS0jnoNqgvw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEHLqeRjkyTHj2qYNdNNl4dA8X7CkmCyyRDCqaTlyC0N1NyqNtICQGhYk4GQyy/3kvQ==",
                             PersonId = 6,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "9377aac8-58ed-4132-8b2a-1e81181a19eb",
+                            SecurityStamp = "cf5f6f53-52e2-4ad7-97c4-2bb71c1ded7b",
                             TwoFactorEnabled = false,
                             UserName = "BlockManager3"
                         },
@@ -1197,17 +1102,17 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = "10101010-1010-1010-1010-101010101010",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "d069b033-feea-4a1f-a7fe-b634ee015d7c",
+                            ConcurrencyStamp = "6574f636-5b87-4bd8-8e51-4ed6f2084929",
                             Email = "block.manager4@test.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "BLOCK.MANAGER4@TEST.COM",
                             NormalizedUserName = "BLOCKMANAGER4",
-                            PasswordHash = "AQAAAAIAAYagAAAAEF6oagJiKoVELrjQjeyFhFUQ0618wC0TAgNKYxzbItv3NRntNJUXxAEuatCahtqpqQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEFw+fPtV5q7PqHWHm2NJFDKuKW8RtgWBunDYvaoZNHQYL6GeJPZ1m7GQO+ypzg+R9A==",
                             PersonId = 7,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "d81a614c-c4bd-4287-9d6f-8bf597d75ce1",
+                            SecurityStamp = "d7e7f941-2219-4c56-a843-ffac8ca8936f",
                             TwoFactorEnabled = false,
                             UserName = "BlockManager4"
                         },
@@ -1215,17 +1120,17 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = "20202020-2020-2020-2020-202020202020",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "ecfe92b1-e338-43fc-9ae1-822687a59f43",
+                            ConcurrencyStamp = "dab6f815-bc3b-4be0-afe3-677d1b5db886",
                             Email = "block.manager5@test.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "BLOCK.MANAGER5@TEST.COM",
                             NormalizedUserName = "BLOCKMANAGER5",
-                            PasswordHash = "AQAAAAIAAYagAAAAEITb5Z2AFeGCzNBJ13V4ux0IQ4TGuReBlF8GoP5xxWIGgT8c3GMH812BWyos82gHVA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEOPsReAutro/ww0+1r+BnLqjVm43YB7jlA4bDWCmZPaO8G3H42O/PCcqjMrFsDza6A==",
                             PersonId = 8,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "e57bfef1-f0aa-4e46-97ab-334a30d439a7",
+                            SecurityStamp = "327a2f3d-e86a-4219-9325-ebdb05e03971",
                             TwoFactorEnabled = false,
                             UserName = "BlockManager5"
                         });
