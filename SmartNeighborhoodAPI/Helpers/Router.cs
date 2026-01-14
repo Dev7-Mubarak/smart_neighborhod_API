@@ -48,9 +48,8 @@ namespace SmartNeighborhoodAPI.Helpers
 
         public static class Blocks
         {
-            public const string Prefix = Rule + "blocks";
+            public const string Prefix = Rule + "residential-blocks";
 
-            public const string GetDetails = Prefix + "/details";
             public const string Add = Prefix;
             public const string ChangeManager = Prefix + "/{id:int}/manager";
             public const string GetAll = Prefix;

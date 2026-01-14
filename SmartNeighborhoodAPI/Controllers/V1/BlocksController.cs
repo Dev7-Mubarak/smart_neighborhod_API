@@ -22,18 +22,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             _BlockServices = BlockServices;
         }
 
-        [HttpGet(Router.Blocks.GetDetails)]
-        [SwaggerOperation(Summary = "Get block details", Description = "Returns details for a specific block including families.")]
-        [ProducesResponseType(typeof(BlockDetailesDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetDetails(
-            [FromQuery, SwaggerParameter("ID of the block", Required = true)] int blockId,
-            [FromQuery, SwaggerParameter("Page number", Required = false)] int pageNumber = 1,
-            [FromQuery, SwaggerParameter("Page size", Required = false)] int pageSize = 10,
-            [FromQuery, SwaggerParameter("Optional search term", Required = false)] string? search = null)
-        {
-            return Response(await _BlockServices.GetDetails(blockId, pageNumber, pageSize, search));
-        }
+
 
         [HttpPost(Router.Blocks.Add)]
         [MapToApiVersion("1.0")]

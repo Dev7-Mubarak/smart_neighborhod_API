@@ -92,7 +92,7 @@ namespace SmartNeighborhoodAPI.Services
                     //ManagerId = b.UnitManagerId,
                     Role = currentUser.Role,
                     Name = b.Name,
-                    Email = currentUser.Email,
+                    Identifier = currentUser.Email,
                     //PersonId = b.UnitManager.PersonId,
                     //FullName = b.UnitManager.Person.FullName
                 })
@@ -130,18 +130,10 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.NotFound, "هذا الشخص غير موجود");
             }
 
-            // Check if identifier already exists
-            bool isEmail = blockManagerDto.Identifier.Contains('@');
             AppUser existingUser = null;
             
-            if (isEmail)
-            {
-                existingUser = await _userManager.FindByEmailAsync(blockManagerDto.Identifier);
-            }
-            else
-            {
-                existingUser = await _userManager.FindByNameAsync(blockManagerDto.Identifier);
-            }
+            existingUser = await _userManager.FindByNameAsync(blockManagerDto.Identifier);
+           
 
             if (existingUser != null)
             {
@@ -152,7 +144,7 @@ namespace SmartNeighborhoodAPI.Services
             // Step 4: Create new manager account
             var createResult = await _authService.CreateBlockManagerAccountAsync(new CreateBlockManagerDto
             {
-                Email = blockManagerDto.Identifier,
+                Identifier = blockManagerDto.Identifier,
                 Password = blockManagerDto.Password,
                 PersonId = blockManagerDto.PersonId
             });
@@ -190,7 +182,7 @@ namespace SmartNeighborhoodAPI.Services
                 Name = block.Name,
                 //ManagerId = block.UnitManagerId,    
                 PersonId = person.Id,
-                Email = createResult.Data.Identifier,
+                Identifier = createResult.Data.Identifier,
                 Role = createResult.Data.Role,
                 FullName = person.FullName
             };
@@ -212,6 +204,19 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.Conflict, "اسم المربع موجود مسبقًا.");
             }
 
+            var existIdentifier = await _userManager.FindByNameAsync(blockDto.Identifier);
+            if (existIdentifier != null)
+            {
+                _logger.LogWarning("Identifier '{Identifier}' is already used", blockDto.Identifier);
+                return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.Conflict, "المعرف (البريد الإلكتروني أو اسم المستخدم) مستخدم مسبقاً");
+            }
+            var existResidentialUnit = await _context.ResidentialUnits.FindAsync(blockDto.ResitinalUnitId);
+            if (existResidentialUnit == null)
+            {
+                _logger.LogWarning("Residential Unit with ID {ResidentialUnitId} not found", blockDto.ResitinalUnitId);
+                return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.NotFound, "الوحدة السكنية غير موجودة.");
+            }
+
             var person = await _context.People.FindAsync(blockDto.PersonId);
             if (person == null)
             {
@@ -221,9 +226,10 @@ namespace SmartNeighborhoodAPI.Services
 
             CreateBlockManagerDto blockManagerDto = new CreateBlockManagerDto
             {
-                Email = blockDto.Email,
+                Identifier = blockDto.Identifier,
                 PersonId = blockDto.PersonId,
-                Password = blockDto.Password
+                Password = blockDto.Password,
+                ResitinalUnitId = blockDto.ResitinalUnitId
             };
 
             var response = await _authService.CreateBlockManagerAccountAsync(blockManagerDto);
@@ -236,7 +242,8 @@ namespace SmartNeighborhoodAPI.Services
             var block = new Block
             {
                 Name = blockDto.Name,
-                //UnitManagerId = response.Data.Id
+                BlockManagerId = response.Data.Id,
+                ResidentialUnit= existResidentialUnit
             };
 
             await _context.Blocks.AddAsync(block);
@@ -250,8 +257,10 @@ namespace SmartNeighborhoodAPI.Services
                     PersonId = blockDto.PersonId,
                     ManagerId = response.Data.Id,
                     Role = response.Data.Role,
-                    Email = response.Data.Identifier,
-                    FullName = person.FullName
+                    Identifier = response.Data.Identifier,
+                    FullName = person.FullName,
+                    ResitinalUnitId= blockDto.ResitinalUnitId
+
                 };
 
                 _logger.LogInformation("Successfully added block '{BlockName}' with ID {BlockId}", block.Name, block.Id);
@@ -316,60 +325,7 @@ namespace SmartNeighborhoodAPI.Services
 
             return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "فشل في حذف المربع.");
         }
-        public async Task<ApiResponse<BlockDetailesDto>> GetDetails(int blockId, int pageNumber, int pageSize, string? search)
-        {
-            var block = await _context.Blocks
-                .AsNoTracking()
-                .Where(x => x.Id == blockId)
-                .Select(x => new BlockDetailesDto
-                {
-                    Block = new BlockWithStatsDto
-                    {
-                        Id = x.Id,
-                        Name = x.Name,
-                        //ManagerName = x.UnitManager.Person.FullName,
-                        TotalFamilies = x.Families.Count,
-                        totalOrphans = x.Families.Count(f => f.FamilyCatgory.Id == 2),
-                        TotalWidows = x.Families.Count(f => f.FamilyCatgory.Id == 1),
-                    },
-                    Families = x.Families.Select(f => new FamilyDetailsDto
-                    {
-                        Id = f.Id,
-                        Name = f.Name,
-                        FamilyCatgoryId = f.FamilyCatgoryId,
-                        FamilyCatgoryName = f.FamilyCatgory.Name,
-                        BlockId = f.BlockId,
-                        BlockName = f.Block.Name,
-
-                        FamilyNotes = f.FamilyNotes,
-                        Location = f.Location,
-                        FamilyHeadId = f.FamilyMembers
-                            .Where(fm => fm.MemberFamilyRoleId == 1)
-                            .Select(fm => fm.PersonId)
-                            .FirstOrDefault(),
-
-                        FamilyHeadName = f.FamilyMembers
-                            .Where(fm => fm.MemberFamilyRoleId == 1)
-                            .Select(fm => fm.Person.FullName)
-                            .FirstOrDefault() ?? string.Empty,
-
-                        PhoneNumber = f.FamilyMembers
-                            .Where(fm => fm.MemberFamilyRoleId == 1)
-                            .Select(fm => fm.Person.PhoneNumber)
-                            .FirstOrDefault() ?? string.Empty,
-
-                    }).ToList()
-                })
-                .FirstOrDefaultAsync();
-
-            if (block == null)
-            {
-                _logger.LogWarning("Block with ID {BlockId} not found", blockId);
-                return ApiResponse<BlockDetailesDto>.Error(HttpStatusCode.NotFound, "المربع غير موجود.");
-            }
-
-            return ApiResponse<BlockDetailesDto>.Success(block, "تم جلب تفاصيل المربع بنجاح.");
-        }
+       
 
         public async Task<ApiResponse<BlockDashboardDto>> GetDashboardAsync(CancellationToken ct = default)
         {
@@ -467,7 +423,7 @@ namespace SmartNeighborhoodAPI.Services
                 Name = b.Name,
                 ManagerId = b.BlockManagerId,
                 PersonId = b.BlockManager.PersonId,
-                Email = b.BlockManager.Email ?? string.Empty,
+                Identifier = b.BlockManager.UserName ?? string.Empty,
                 Role = Role.BlockManager,
                 FullName = b.BlockManager.Person?.FullName ?? string.Empty
             }).ToList();
