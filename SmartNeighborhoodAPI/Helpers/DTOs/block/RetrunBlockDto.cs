@@ -8,7 +8,8 @@
         public string ManagerId { get; set; }
         public string Role { get; set; }
         public int PersonId { get; set; }
-        public string Email { get; set; }
+        public string Identifier { get; set; }
         public string FullName { get; set; }
+        public int ResitinalUnitId { get; set; }
     }
 }

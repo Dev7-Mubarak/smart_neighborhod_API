@@ -74,21 +74,21 @@ namespace SmartNeighborhoodAPI.Services
         }
         public async Task<ApiResponse<UserResponse>> CreateBlockManagerAccountAsync(CreateBlockManagerDto dto)
         {
-            _logger.LogInformation("Attempting to create a Block Manager for email: {Email}", dto.Email);
+            _logger.LogInformation("Attempting to create a Block Manager for email: {Email}", dto.Identifier);
 
             // Step 1: Check if user already exists
             var existingUser = await _context.Users.FirstOrDefaultAsync(x => x.PersonId == dto.PersonId);
             if (existingUser != null)
             {
-                    _logger.LogWarning("User {Email} is already assigned as a Block Manager.", dto.Email);
+                    _logger.LogWarning("User {Email} is already assigned as a Block Manager.", dto.Identifier);
                     return ApiResponse<UserResponse>.Error(HttpStatusCode.BadRequest, "هذا المستخدم هو مدير بالفعل لإحدى المربعات.");
             }
 
             // Step 2: Create new user if not exists
             AppUser user = existingUser ?? new AppUser
             {
-                Email = dto.Email,
-                UserName = dto.Email,
+                Email = dto.Identifier,
+                UserName = dto.Identifier,
                 PersonId = dto.PersonId,
                 IsActive = false,
             };
@@ -120,7 +120,7 @@ namespace SmartNeighborhoodAPI.Services
                         };
                     }).ToList();
 
-                    _logger.LogError("User creation failed for email {Email}. Errors: {@Errors}", dto.Email, errors);
+                    _logger.LogError("User creation failed for email {Email}. Errors: {@Errors}", dto.Identifier, errors);
                     return ApiResponse<UserResponse>.Error(HttpStatusCode.BadRequest, "حدث خطأ أثناء إنشاء المستخدم.", errors);
                 }
             }
@@ -129,22 +129,14 @@ namespace SmartNeighborhoodAPI.Services
             var roleResult = await _userManager.AddToRoleAsync(user, Role.BlockManager);
             if (!roleResult.Succeeded)
             {
-                _logger.LogError("Failed to assign role BlockManager to user {Email}. Errors: {@Errors}", dto.Email, roleResult.Errors);
+                _logger.LogError("Failed to assign role BlockManager to user {Email}. Errors: {@Errors}", dto.Identifier, roleResult.Errors);
                 return ApiResponse<UserResponse>.Error(HttpStatusCode.BadRequest, "تم إنشاء المستخدم ولكن فشل إسناد الدور BlockManager.");
             }
 
-            // Step 4: Generate OTP and send email
-            var otp = new Random().Next(100000, 999999).ToString();
-            user.EmailConfirmationCode = otp;
-            user.EmailConfirmationCodeExpiresAt = DateTime.UtcNow.AddHours(1);
+
 
             await _userManager.UpdateAsync(user);
 
-            await _emailSender.SendEmailAsync(
-                user.Email,
-                "رمز تأكيد البريد الإلكتروني",
-                $"مرحباً,<br/><br/>رمز تأكيد البريد الإلكتروني الخاص بك هو: <strong>{otp}</strong><br/>هذا الرمز سينتهي خلال ساعة واحدة."
-            );
 
             _logger.LogInformation("User created successfully: {Email}. OTP sent to email.", user.Email);
 

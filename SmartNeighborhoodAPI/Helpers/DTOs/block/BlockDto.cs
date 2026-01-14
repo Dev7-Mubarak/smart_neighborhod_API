@@ -6,11 +6,12 @@
         [MaxLength(30)]
         public string Name { get; set; }
         public int PersonId { get; set; }
-        [Required(ErrorMessage = "Email is required")] 
-        [EmailAddress]
-        public string Email { get; set; }
+        [Required(ErrorMessage = "Identifier is required")] 
+        public string Identifier { get; set; }
         [Required(ErrorMessage = "Password is required")]
         [DataType(DataType.Password)]   
         public string Password { get; set; }
+
+        public int ResitinalUnitId { get; set; }
     }
 }
