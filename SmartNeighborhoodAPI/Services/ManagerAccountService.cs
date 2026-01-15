@@ -31,7 +31,7 @@ namespace SmartNeighborhoodAPI.Services
             if (existingUserByPerson != null)
             {
                 _logger.LogWarning("User with PersonId {PersonId} already exists", personId);
-                return ApiResponse<AppUser>.Error(HttpStatusCode.BadRequest, "åÐÇ ÇáãÓÊÎÏã åæ ãÏíÑ ÈÇáÝÚá.");
+                return ApiResponse<AppUser>.Error(HttpStatusCode.BadRequest, "المستخدم لهذا الشخص موجود بالفعل.");
             }
 
             // 2. Check if email is already used
@@ -39,7 +39,7 @@ namespace SmartNeighborhoodAPI.Services
             if (existingUserByEmail != null)
             {
                 _logger.LogWarning("Email '{Email}' is already used.", email);
-                return ApiResponse<AppUser>.Error(HttpStatusCode.Conflict, "ÇáÈÑíÏ ÇáÅáßÊÑæäí ãÓÊÎÏã ãÓÈÞÇð.");
+                return ApiResponse<AppUser>.Error(HttpStatusCode.Conflict, "البريد الإلكتروني مستخدم بالفعل.");
             }
 
             // 3. Create new user
@@ -59,14 +59,14 @@ namespace SmartNeighborhoodAPI.Services
                 {
                     string arabicMessage = e.Code switch
                     {
-                        "DuplicateUserName" => "ÇáÈÑíÏ ÇáÅáßÊÑæäí ãÓÊÎÏã ãÓÈÞÇð.",
-                        "InvalidUserName" => "ÇÓã ÇáãÓÊÎÏã ÛíÑ ÕÇáÍ.",
-                        "PasswordTooShort" => "ßáãÉ ÇáãÑæÑ ÞÕíÑÉ ÌÏÇð.",
-                        "PasswordRequiresNonAlphanumeric" => "ßáãÉ ÇáãÑæÑ íÌÈ Ãä ÊÍÊæí Úáì ÑãÒ ÎÇÕ.",
-                        "PasswordRequiresDigit" => "ßáãÉ ÇáãÑæÑ íÌÈ Ãä ÊÍÊæí Úáì ÑÞã.",
-                        "PasswordRequiresLower" => "ßáãÉ ÇáãÑæÑ íÌÈ Ãä ÊÍÊæí Úáì ÍÑÝ ÕÛíÑ.",
-                        "PasswordRequiresUpper" => "ßáãÉ ÇáãÑæÑ íÌÈ Ãä ÊÍÊæí Úáì ÍÑÝ ßÈíÑ.",
-                        "PasswordIsRequired" => "ßáãÉ ÇáãÑæÑ ãØáæÈÉ.",
+                        "DuplicateUserName" => "المستخدم لهذا الشخص موجود بالفعل.",
+                        "InvalidUserName" => "اسم المستخدم غير صالح.",
+                        "PasswordTooShort" => "كلمة المرور قصيرة جداً.",
+                        "PasswordRequiresNonAlphanumeric" => "كلمة المرور تحتاج إلى رمز غير أبجدي رقمي.",
+                        "PasswordRequiresDigit" => "كلمة المرور تحتاج إلى رقم.",
+                        "PasswordRequiresLower" => "كلمة المرور تحتاج إلى حرف صغير  .",
+                        "PasswordRequiresUpper" => "كلمة المرور تحتاج إلى حرف كبير.",
+                        "PasswordIsRequired" => "كلمة المرور مطلوبة.",
                         _ => e.Description
                     };
 
@@ -77,7 +77,7 @@ namespace SmartNeighborhoodAPI.Services
                     };
                 }).ToList();
                 _logger.LogError("Failed to create new manager. Reason: {Reason}", string.Join(", ", errors.Select(e => e.ErrorMessage)));
-                return ApiResponse<AppUser>.Error(HttpStatusCode.BadRequest, "ÍÏË ÎØÃ ÃËäÇÁ ÅäÔÇÁ ÇáãÓÊÎÏã.", errors);
+                return ApiResponse<AppUser>.Error(HttpStatusCode.BadRequest, "فشل إنشاء حساب المدير.", errors);
             }
 
             // 4. Assign Role
@@ -91,8 +91,8 @@ namespace SmartNeighborhoodAPI.Services
             user.EmailConfirmationCode = otp;
             user.EmailConfirmationCodeExpiresAt = DateTime.UtcNow.AddHours(1);
             await _userManager.UpdateAsync(user);
-            await _emailSender.SendEmailAsync(user.Email, "Êã ÅäÔÇÁ ÇáÍÓÇÈ", $"Êã ÅäÔÇÁ ÍÓÇÈß ÈäÌÇÍ. ÑãÒ ÇáÊÍÞÞ åæ: {otp}"); 
-            return ApiResponse<AppUser>.Success(user, "Êã ÅäÔÇÁ ÇáÍÓÇÈ æÅÑÓÇá ÇáÈÑíÏ ÇáÅáßÊÑæäí.");
+            await _emailSender.SendEmailAsync(user.Email, "تأكيد البريد الإلكتروني", $"تم تأكيد بريدك الإلكتروني. رمز التأكيد هو: {otp}"); 
+            return ApiResponse<AppUser>.Success(user, "تم تأكيد البريد الإلكتروني بنجاح.");
         }
 
         public async Task<ApiResponse<string>> DeleteManagerAccountAsync(string userId)
@@ -100,7 +100,7 @@ namespace SmartNeighborhoodAPI.Services
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
-                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "ÇáãÓÊÎÏã ÛíÑ ãæÌæÏ.");
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "المستخدم غير موجود.");
             }
 
             var deleteResult = await _userManager.DeleteAsync(user);
@@ -108,10 +108,10 @@ namespace SmartNeighborhoodAPI.Services
             {
                 var errors = deleteResult.Errors.Select(e => new ErrorDetails { Field = e.Code, ErrorMessage = e.Description }).ToList(); 
                 _logger.LogError("Failed to delete manager user {UserId}.", userId);
-                return ApiResponse<string>.Error(HttpStatusCode.InternalServerError, "ÝÔá ÍÐÝ ÍÓÇÈ ÇáãÏíÑ.");
+                return ApiResponse<string>.Error(HttpStatusCode.InternalServerError, "فشل حذف حساب المدير.");
             }
 
-            return ApiResponse<string>.Success("Êã ÍÐÝ ÍÓÇÈ ÇáãÏíÑ ÈäÌÇÍ.");
+            return ApiResponse<string>.Success("تم حذف حساب المدير بنجاح.");
         }
     }
 }

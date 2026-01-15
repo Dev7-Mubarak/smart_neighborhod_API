@@ -109,10 +109,10 @@ namespace SmartNeighborhoodAPI.Services
         }
 
 
-        public async Task<ApiResponse<RetrunBlockDto>> ChangeManager(int id, ChangeManagerDto blockManagerDto)
+        public async Task<ApiResponse<RetrunBlockDto>> ChangeManager(int id, ChangeManagerDto dto)
         {
             _logger.LogInformation("Initiating change of block manager for BlockId: {BlockId}, PersonId: {PersonId}",
-                id, blockManagerDto.PersonId);
+                id, dto.PersonId);
 
             // Step 1: Validate block
             var block = await _context.Blocks.FindAsync(id);
@@ -123,75 +123,134 @@ namespace SmartNeighborhoodAPI.Services
             }
 
             // Step 2: Validate person
-            var person = await _context.People.FindAsync(blockManagerDto.PersonId);
+            var person = await _context.People.FindAsync(dto.PersonId);
             if (person == null)
             {
-                _logger.LogWarning("Person with ID '{PersonId}' not found.", blockManagerDto.PersonId);
-                return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.NotFound, "هذا الشخص غير موجود");
+                _logger.LogWarning("Person with ID '{PersonId}' not found.", dto.PersonId);
+                return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.NotFound, "الشخص غير موجود");
             }
 
-            AppUser existingUser = null;
-            
-            existingUser = await _userManager.FindByNameAsync(blockManagerDto.Identifier);
-           
+            // Check if user already exists for this person
+            var existingUserByPerson = await _userManager.Users.FirstOrDefaultAsync(u => u.PersonId == dto.PersonId);
+            if (existingUserByPerson != null)
+            {
+                _logger.LogWarning("User with PersonId {PersonId} already exists", dto.PersonId);
+                return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.BadRequest, "هذا المستخدم هو مدير بالفعل.");
+            }
+
+            // Check if identifier already exists
+            AppUser existingUser = await _userManager.FindByNameAsync(dto.Identifier);
 
             if (existingUser != null)
             {
-                _logger.LogWarning("Identifier '{Identifier}' is already used.", blockManagerDto.Identifier);
-                return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.Conflict, "المعرف (البريد الإلكتروني أو اسم المستخدم) مستخدم مسبقاً");
+                _logger.LogWarning("Identifier '{Identifier}' is already used.", dto.Identifier);
+                return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.Conflict, "المعرف (البريد الإلكتروني أو اسم المستخدم) مستخدم مسبقاً.");
             }
 
-            // Step 4: Create new manager account
-            var createResult = await _authService.CreateBlockManagerAccountAsync(new CreateBlockManagerDto
+            var strategy = _context.Database.CreateExecutionStrategy();
+
+            return await strategy.ExecuteAsync(async () =>
             {
-                Identifier = blockManagerDto.Identifier,
-                Password = blockManagerDto.Password,
-                PersonId = blockManagerDto.PersonId
-            });
-
-            if (!createResult.IsSuccess)
-            {
-                _logger.LogError("Failed to create new block manager. Reason: {Reason}", createResult.Message);
-                return ApiResponse<RetrunBlockDto>.Error(createResult.StatusCode, createResult.Message, createResult.Errors);
-            }
-
-
-            var oldManagerId = block.BlockManagerId;
-
-
-            // Step 5: Update block manager
-            //block.UnitManagerId = createResult.Data.Id;
-            _context.Blocks.Update(block);
-            await _context.SaveChangesAsync();
-
-            if (createResult.Data.Role == "BlockManager") { 
-                // Step 6: Delete old manager account (if any)
-                var deleteResult = await _authService.DeleteBlockManagerAccountByIdAsync(oldManagerId);
-                if (!deleteResult.IsSuccess)
+                using var transaction = await _context.Database.BeginTransactionAsync();
+                try
                 {
-                    _logger.LogError("Failed to delete old block manager with ID: {OldManagerId}", oldManagerId);
-                    return ApiResponse<RetrunBlockDto>.Error(deleteResult.StatusCode, deleteResult.Message, deleteResult.Errors);
+                    // Step 4: Create new manager account
+                    var user = new AppUser
+                    {
+                        UserName = dto.Identifier,
+                        Email = null,
+                        PersonId = dto.PersonId,
+                        IsActive = true,
+                        EmailConfirmed = true
+                    };
+
+                    var createResult = await _userManager.CreateAsync(user, dto.Password);
+
+                    if (!createResult.Succeeded)
+                    {
+                        List<ErrorDetails> errors = createResult.Errors.Select(e =>
+                        {
+                            string arabicMessage = e.Code switch
+                            {
+                                "DuplicateUserName" => "البريد الإلكتروني أو اسم المستخدم مستخدم مسبقاً.",
+                                "InvalidUserName" => "اسم المستخدم غير صالح.",
+                                "PasswordTooShort" => "كلمة المرور قصيرة جداً.",
+                                "PasswordRequiresNonAlphanumeric" => "كلمة المرور يجب أن تحتوي على رمز خاص.",
+                                "PasswordRequiresDigit" => "كلمة المرور يجب أن تحتوي على رقم.",
+                                "PasswordRequiresLower" => "كلمة المرور يجب أن تحتوي على حرف صغير.",
+                                "PasswordRequiresUpper" => "كلمة المرور يجب أن تحتوي على حرف كبير.",
+                                "PasswordIsRequired" => "كلمة المرور مطلوبة.",
+                                _ => e.Description
+                            };
+
+                            return new ErrorDetails
+                            {
+                                Field = e.Code,
+                                ErrorMessage = arabicMessage
+                            };
+                        }).ToList();
+                        _logger.LogError("Failed to create new block manager. Reason: {Reason}", string.Join(", ", errors.Select(e => e.ErrorMessage)));
+                        return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.BadRequest, "حدث خطأ أثناء إنشاء المستخدم.", errors);
+                    }
+
+                    if (!await _userManager.IsInRoleAsync(user, Role.BlockManager))
+                    {
+                        await _userManager.AddToRoleAsync(user, Role.BlockManager);
+                    }
+
+                    var oldManagerId = block.BlockManagerId;
+                    var oldManagerUser = await _userManager.FindByIdAsync(oldManagerId);
+
+                    // Step 5: Update block manager
+                    block.BlockManagerId = user.Id;
+                    await _context.SaveChangesAsync();
+
+                    // Step 6: Delete old manager account (if any)
+                    if (oldManagerUser != null)
+                    {
+                        var deleteResult = await _userManager.DeleteAsync(oldManagerUser);
+                        if (!deleteResult.Succeeded)
+                        {
+                            var errors = deleteResult.Errors.Select(e => new ErrorDetails { Field = e.Code, ErrorMessage = e.Description }).ToList();
+                            _logger.LogError("Failed to delete old block manager with ID: {OldManagerId}", oldManagerUser.Id);
+                            // Rollback is handled by the catch block
+                            throw new Exception("فشل حذف المدير القديم");
+                        }
+                    }
+
+                    await _context.Entry(block).Reference(e => e.BlockManager).LoadAsync();
+                    if (block.BlockManager != null)
+                    {
+                        await _context.Entry(block.BlockManager).Reference(nm => nm.Person).LoadAsync();
+                    }
+
+                    await transaction.CommitAsync();
+
+                    _logger.LogInformation("Block manager updated successfully for block '{Name}' (ID: {Id})",
+                        block.Name, block.Id);
+
+                    var returnBlockDto = new RetrunBlockDto
+                    {
+                        Id = block.Id,
+                        Name = block.Name,
+                        ManagerId = user.Id,
+                        PersonId = person.Id,
+                        Identifier = dto.Identifier,
+                        Role = Role.BlockManager,
+                        FullName = person.FullName,
+                        ResitinalUnitId = block.ResidentialUnitId
+                    };
+
+                    return ApiResponse<RetrunBlockDto>.Success(returnBlockDto,
+                        "تم تغيير مدير المربع بنجاح.");
                 }
-            }
-
-
-            // Step 7: Return success response
-            var returnBlockDto = new RetrunBlockDto
-            {
-                Id = block.Id,
-                Name = block.Name,
-                //ManagerId = block.UnitManagerId,    
-                PersonId = person.Id,
-                Identifier = createResult.Data.Identifier,
-                Role = createResult.Data.Role,
-                FullName = person.FullName
-            };
-
-            _logger.LogInformation("Block manager updated successfully for block '{BlockName}' (ID: {BlockId})",
-                block.Name, block.Id);
-
-            return ApiResponse<RetrunBlockDto>.Success(returnBlockDto,
-                "تم تحديث مدير المربع بنجاح. تم إرسال بيانات تسجيل الدخول عبر البريد الإلكتروني.");
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    _logger.LogError(ex, "Transaction failed in ChangeManager");
+                    return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.InternalServerError, "حدث خطأ أثناء معالجة الطلب.");
+                }
+            });
         }
         public async Task<ApiResponse<RetrunBlockDto>> AddAsync(BlockDto blockDto)
         {
@@ -224,54 +283,68 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.NotFound, "الشخص غير موجود.");
             }
 
-            CreateBlockManagerDto blockManagerDto = new CreateBlockManagerDto
-            {
-                Identifier = blockDto.Identifier,
-                PersonId = blockDto.PersonId,
-                Password = blockDto.Password,
-                ResitinalUnitId = blockDto.ResitinalUnitId
-            };
+            var strategy = _context.Database.CreateExecutionStrategy();
 
-            var response = await _authService.CreateBlockManagerAccountAsync(blockManagerDto);
-
-            if (!response.IsSuccess)
+            return await strategy.ExecuteAsync(async () =>
             {
-                return ApiResponse<RetrunBlockDto>.Error(response.StatusCode, response.Message, response.Errors);
-            }
-
-            var block = new Block
-            {
-                Name = blockDto.Name,
-                BlockManagerId = response.Data.Id,
-                ResidentialUnit= existResidentialUnit
-            };
-
-            await _context.Blocks.AddAsync(block);
-            if (await _context.SaveChangesAsync() > 0)
-            {
-                // Refactor and improve performance
-                var retrunBlock = new RetrunBlockDto
+                using var transaction = await _context.Database.BeginTransactionAsync();
+                try
                 {
-                    Id = block.Id,
-                    Name = blockDto.Name,
-                    PersonId = blockDto.PersonId,
-                    ManagerId = response.Data.Id,
-                    Role = response.Data.Role,
-                    Identifier = response.Data.Identifier,
-                    FullName = person.FullName,
-                    ResitinalUnitId= blockDto.ResitinalUnitId
+                    CreateBlockManagerDto blockManagerDto = new CreateBlockManagerDto
+                    {
+                        Identifier = blockDto.Identifier,
+                        PersonId = blockDto.PersonId,
+                        Password = blockDto.Password,
+                        ResitinalUnitId = blockDto.ResitinalUnitId
+                    };
 
-                };
+                    var response = await _authService.CreateBlockManagerAccountAsync(blockManagerDto);
 
-                _logger.LogInformation("Successfully added block '{BlockName}' with ID {BlockId}", block.Name, block.Id);
-                return ApiResponse<RetrunBlockDto>.Success(
-                    retrunBlock,
-                    "تمت إضافة البلوك بنجاح. تم إرسال رمز التأكيد إلى البريد الإلكتروني."
-                );
-            }
+                    if (!response.IsSuccess)
+                    {
+                        _logger.LogError("Failed to create block manager: {Error}", response.Message);
+                        return ApiResponse<RetrunBlockDto>.Error(response.StatusCode, response.Message, response.Errors);
+                    }
 
-            _logger.LogError("Failed to create block manager: {Error}", response.Message);
-            return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.BadRequest, "فشل في إضافة البلوك.");
+                    var block = new Block
+                    {
+                        Name = blockDto.Name,
+                        BlockManagerId = response.Data.Id,
+                        ResidentialUnit = existResidentialUnit
+                    };
+
+                    await _context.Blocks.AddAsync(block);
+                    await _context.SaveChangesAsync();
+
+                    await transaction.CommitAsync();
+
+                    // Refactor and improve performance
+                    var retrunBlock = new RetrunBlockDto
+                    {
+                        Id = block.Id,
+                        Name = blockDto.Name,
+                        PersonId = blockDto.PersonId,
+                        ManagerId = response.Data.Id,
+                        Role = response.Data.Role,
+                        Identifier = response.Data.Identifier,
+                        FullName = person.FullName,
+                        ResitinalUnitId = blockDto.ResitinalUnitId
+
+                    };
+
+                    _logger.LogInformation("Successfully added block '{BlockName}' with ID {BlockId}", block.Name, block.Id);
+                    return ApiResponse<RetrunBlockDto>.Success(
+                        retrunBlock,
+                        "تمت إضافة البلوك بنجاح. تم إرسال رمز التأكيد إلى البريد الإلكتروني."
+                    );
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    _logger.LogError(ex, "Transaction failed in AddAsync");
+                    return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.InternalServerError, "حدث خطأ أثناء إضافة البلوك.");
+                }
+            });
         }
         public async Task<ApiResponse<Block>> GetByIdAsync(int id)
         {
@@ -292,17 +365,29 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<string>.Error(HttpStatusCode.NotFound, "المربع غير موجود.");
             }
 
-            existingBlock.Name = blockDto.Name;
-            _context.Blocks.Update(existingBlock);
+            var strategy = _context.Database.CreateExecutionStrategy();
 
-            if (await _context.SaveChangesAsync() > 0)
+            return await strategy.ExecuteAsync(async () =>
             {
-                _logger.LogInformation("Block ID {BlockId} name updated to '{NewName}'", id, blockDto.Name);
-                return ApiResponse<string>.Success(message: "تم تحديث اسم المربع بنجاح.");
-            }
+                using var transaction = await _context.Database.BeginTransactionAsync();
+                try
+                {
+                    existingBlock.Name = blockDto.Name;
+                    _context.Blocks.Update(existingBlock);
+                    await _context.SaveChangesAsync();
 
-            _logger.LogError("Failed to update block with ID {BlockId}", id);
-            return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "فشل في تحديث المربع.");
+                    await transaction.CommitAsync();
+
+                    _logger.LogInformation("Block ID {BlockId} name updated to '{NewName}'", id, blockDto.Name);
+                    return ApiResponse<string>.Success(message: "تم تحديث اسم المربع بنجاح.");
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    _logger.LogError(ex, "Transaction failed in UpdateAsync");
+                    return ApiResponse<string>.Error(HttpStatusCode.InternalServerError, "حدث خطأ أثناء تحديث المربع.");
+                }
+            });
         }
         public async Task<ApiResponse<string>> DeleteAsync(int id)
         {
@@ -310,22 +395,44 @@ namespace SmartNeighborhoodAPI.Services
             if (block == null)
                 return ApiResponse<string>.Error(HttpStatusCode.NotFound, "المربع غير موجود.");
 
-            //var userRole = await _authService.GetUserRole(block.UnitManagerId);
-            //if (userRole != null && userRole == "BlockManager")
-            //{
-            //    var deleteResult = await _authService.DeleteBlockManagerAccountByIdAsync(block.UnitManagerId);
-            //    if (!deleteResult.IsSuccess)
-            //    {
-            //        _logger.LogError("Failed to delete block manager with ID: {ManagerId}", block.UnitManagerId);
-            //        return ApiResponse<string>.Error(deleteResult.StatusCode, deleteResult.Message, deleteResult.Errors);
-            //    }
-            //    _context.Blocks.Remove(block);
-            //    return ApiResponse<string>.Success("تم حذف المربع بنجاح.");
-            //}
+            var strategy = _context.Database.CreateExecutionStrategy();
 
-            return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "فشل في حذف المربع.");
+            return await strategy.ExecuteAsync(async () =>
+            {
+                using var transaction = await _context.Database.BeginTransactionAsync();
+                try
+                {
+                    _context.Blocks.Remove(block);
+                    await _context.SaveChangesAsync();
+
+                    if (block.BlockManagerId != null)
+                    {
+                        var userRole = await _authService.GetUserRole(block.BlockManagerId);
+                        if (userRole != null && userRole == "BlockManager")
+                        {
+                            var deleteResult = await _authService.DeleteBlockManagerAccountByIdAsync(block.BlockManagerId);
+                            if (!deleteResult.IsSuccess)
+                            {
+                                _logger.LogError("Failed to delete block manager with ID: {ManagerId}", block.BlockManagerId);
+                                return ApiResponse<string>.Error(deleteResult.StatusCode, deleteResult.Message, deleteResult.Errors);
+                            }
+                        }
+                    }
+
+                    await transaction.CommitAsync();
+
+                    return ApiResponse<string>.Success("تم حذف المربع بنجاح.");
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    _logger.LogError(ex, "Transaction failed in DeleteAsync");
+                    return ApiResponse<string>.Error(HttpStatusCode.InternalServerError, "حدث خطأ أثناء حذف المربع.");
+                }
+            });
         }
-       
+
+
 
         public async Task<ApiResponse<BlockDashboardDto>> GetDashboardAsync(CancellationToken ct = default)
         {
