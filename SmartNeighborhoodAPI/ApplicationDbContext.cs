@@ -28,6 +28,7 @@ namespace SmartNeighborhoodAPI
             builder.ApplyConfiguration(new IdentityUserRoleSeedConfiguration());
             builder.ApplyConfiguration(new ProjectCatgoryEntityTypeConfiguration());
             builder.ApplyConfiguration(new ResidentialNeighborhoodConfiguration());
+            builder.ApplyConfiguration(new ConflictCaseConfiguration());
             
             // Seed data configurations for testing
             builder.ApplyConfiguration(new PersonSeedConfiguration());
@@ -57,11 +58,7 @@ namespace SmartNeighborhoodAPI
                 .HasForeignKey<Block>(b => b.BlockManagerId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.Entity<ConflictCase>()
-            .HasOne(c => c.Block)
-            .WithMany(b => b.ConflictCases)
-            .HasForeignKey(c => c.BlockId)
-            .OnDelete(DeleteBehavior.Cascade);
+
 
 
             builder.Entity<ProjectBlock>()

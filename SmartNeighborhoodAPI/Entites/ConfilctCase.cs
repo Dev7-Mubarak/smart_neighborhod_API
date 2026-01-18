@@ -16,6 +16,8 @@ namespace OurProjectSmartNeiborhood.Entites
         [Required]
         public string Title { get; set; }
         public int BlockId { get; set; }
+        public string? ManagerId { get; set; }
+        public AppUser? Manager { get; set; }
         public Block Block { get; set; }
 
         public FamilyMember FirstParty { get; set; }

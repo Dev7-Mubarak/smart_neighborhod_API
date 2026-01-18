@@ -15,6 +15,8 @@ namespace OurProjectSmartNeiborhood.Entites
         public ProjectStatus ProjectStatus { get; set; }
         public double? Budget { get; set; }
         public ProjectPriority ProjectPriority { get; set; }
+        public int? ManagerId { get; set; }
+        public AppUser? Manager { get; set; }
 
         public ICollection<ProjectTeam> ProjectTeams { get; set; }
         public ICollection<ProjectFamily> ProjectFamilies { get; set; }

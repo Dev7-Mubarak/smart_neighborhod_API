@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SmartNeighborhoodAPI.Helpers.DTOs.ConflictType;
+using SmartNeighborhoodAPI.Interfaces;
 using SmartNeighborhoodAPI.Services;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -9,9 +10,9 @@ namespace SmartNeighborhoodAPI.Controllers.V1
     [SwaggerTag("Manage Conflict Case Types")]
     public class ConfilctCaseTypeController : AppControllerBase
     {
-        private readonly ConflictTypeService _conflictTypeService;
+        private readonly IConflictTypeService _conflictTypeService;
 
-        public ConfilctCaseTypeController(ConflictTypeService conflictTypeService)
+        public ConfilctCaseTypeController(IConflictTypeService conflictTypeService)
         {
             _conflictTypeService = conflictTypeService;
         }

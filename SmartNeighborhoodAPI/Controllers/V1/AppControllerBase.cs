@@ -5,7 +5,7 @@ using SmartNeighborhoodAPI.Helpers.Attrbuites;
 
 namespace SmartNeighborhoodAPI.Controllers.V1
 {
-    [Authorize]
+    //[Authorize]
     [ApiController]
     [ValidateActionFilter]
     [ApiVersion("1.0")]
