@@ -44,7 +44,7 @@ namespace SmartNeighborhoodAPI.Services
             {
                 Name = projectDto.Name,
                 Description = projectDto.Description,
-                //ManagerId = projectDto.ManagerId,
+                ManagerId = projectDto.ManagerId,
                 ProjectCatogoryId = projectDto.ProjectCatgoryId,
                 StartDate = projectDto.StartDate,
                 EndDate = projectDto.EndDate,

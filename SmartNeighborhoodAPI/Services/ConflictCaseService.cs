@@ -94,7 +94,7 @@ namespace SmartNeighborhoodAPI.Services
             _logger.LogInformation("Start adding ConflictCase");
 
             // 1️ Check if Manager exists
-            AppUser manager = null;
+            AppUser? manager = null;
             if (!string.IsNullOrWhiteSpace(conflictCaseDto.ManagerId))
             {
                 manager = await _userManager.FindByIdAsync(conflictCaseDto.ManagerId);
@@ -149,8 +149,7 @@ namespace SmartNeighborhoodAPI.Services
 
             // 7️ Map DTO → Entity
             var conflictCase = _mapper.Map<ConflictCase>(conflictCaseDto);
-            //conflictCase.ManagerId = manager.Id;
-            conflictCase.ImagePath = conflictCaseImage;
+            //conflictCase.ManagerId = manager.Id;            conflictCase.BlockId = manager.ManagesBlock!.Id;            conflictCase.ImagePath = conflictCaseImage;
 
             // 8️ Add and Save
             _context.ConfilctCases.Add(conflictCase);
@@ -158,7 +157,7 @@ namespace SmartNeighborhoodAPI.Services
 
             // 9️ Map back to return DTO
             var returnDto = _mapper.Map<ReturnConflictCaseDto>(conflictCase);
-            returnDto.ManagerName = manager.UserName;
+            returnDto.ManagerName = manager!.UserName;
 
             _logger.LogInformation("ConflictCase added successfully");
             return ApiResponse<ReturnConflictCaseDto>.Success(returnDto, "تمت إضافة القضية بنجاح.");
@@ -249,7 +248,7 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<string>.Error(HttpStatusCode.NotFound, "الطرف الثاني غير موجود.");
             }
 
-            AppUser manager = null;
+            AppUser? manager = null;
             if (!string.IsNullOrWhiteSpace(conflictCaseDto.ManagerId))
             {
                 manager = await _userManager.FindByIdAsync(conflictCaseDto.ManagerId);

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace SmartNeighborhoodAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class intialcreate : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -43,7 +43,7 @@ namespace SmartNeighborhoodAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ComplainTypes",
+                name: "ConfilctTypes",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -52,20 +52,7 @@ namespace SmartNeighborhoodAPI.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ComplainTypes", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ConfilctParties",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ConfilctParties", x => x.Id);
+                    table.PrimaryKey("PK_ConfilctTypes", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -82,16 +69,16 @@ namespace SmartNeighborhoodAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "FamilyTypes",
+                name: "GovernmentInstitutions",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FamilyTypes", x => x.Id);
+                    table.PrimaryKey("PK_GovernmentInstitutions", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -130,18 +117,16 @@ namespace SmartNeighborhoodAPI.Migrations
                     SecondName = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     ThirdName = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
-                    IsWhatsapp = table.Column<bool>(type: "bit", nullable: false),
-                    IsContactNumber = table.Column<bool>(type: "bit", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    DateOfBirth = table.Column<DateTime>(type: "date", nullable: false),
-                    Gender = table.Column<int>(type: "int", maxLength: 10, nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: true),
+                    IsWhatsapp = table.Column<bool>(type: "bit", nullable: true),
+                    IsContactNumber = table.Column<bool>(type: "bit", nullable: true),
+                    DateOfBirth = table.Column<DateTime>(type: "date", maxLength: 100, nullable: true),
+                    Gender = table.Column<int>(type: "int", maxLength: 10, nullable: true),
                     Image = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     BloodType = table.Column<int>(type: "int", nullable: false),
-                    IdentityNumber = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    IdentityType = table.Column<int>(type: "int", nullable: false),
                     MaritalStatus = table.Column<int>(type: "int", nullable: false),
                     OccupationStatus = table.Column<int>(type: "int", nullable: false),
+                    personType = table.Column<int>(type: "int", nullable: false),
                     Job = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: true)
                 },
                 constraints: table =>
@@ -161,6 +146,32 @@ namespace SmartNeighborhoodAPI.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ProjectCatogories", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TeamRoles",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TeamRoles", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Teams",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Teams", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -185,24 +196,23 @@ namespace SmartNeighborhoodAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Complains",
+                name: "GovernmentInstitutionContacts",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Outcome = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ComplainTypeId = table.Column<int>(type: "int", nullable: false),
-                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    SessionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IsResolved = table.Column<bool>(type: "bit", nullable: false)
+                    GovernmentInstitutionId = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Job = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Complains", x => x.Id);
+                    table.PrimaryKey("PK_GovernmentInstitutionContacts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Complains_ComplainTypes_ComplainTypeId",
-                        column: x => x.ComplainTypeId,
-                        principalTable: "ComplainTypes",
+                        name: "FK_GovernmentInstitutionContacts_GovernmentInstitutions_GovernmentInstitutionId",
+                        column: x => x.GovernmentInstitutionId,
+                        principalTable: "GovernmentInstitutions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -258,77 +268,39 @@ namespace SmartNeighborhoodAPI.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AspNetUsers_People_PersonId",
-                        column: x => x.PersonId,
-                        principalTable: "People",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+               
                 });
 
             migrationBuilder.CreateTable(
-                name: "Projects",
+                name: "TeamMembers",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
-                    ManagerId = table.Column<int>(type: "int", nullable: false),
-                    ProjectCatogoryId = table.Column<int>(type: "int", nullable: false),
-                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ProjectStatus = table.Column<int>(type: "int", nullable: false),
-                    Budget = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    ProjectPriority = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Projects", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Projects_People_ManagerId",
-                        column: x => x.ManagerId,
-                        principalTable: "People",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Projects_ProjectCatogories_ProjectCatogoryId",
-                        column: x => x.ProjectCatogoryId,
-                        principalTable: "ProjectCatogories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "PersonComplain",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    PesonId = table.Column<int>(type: "int", nullable: false),
+                    TeamId = table.Column<int>(type: "int", nullable: false),
                     PersonId = table.Column<int>(type: "int", nullable: false),
-                    ComplainId = table.Column<int>(type: "int", nullable: false),
-                    ConfilctPartyId = table.Column<int>(type: "int", nullable: false)
+                    DateOfJoin = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TeamRoleId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PersonComplain", x => x.Id);
+                    table.PrimaryKey("PK_TeamMembers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_PersonComplain_Complains_ComplainId",
-                        column: x => x.ComplainId,
-                        principalTable: "Complains",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_PersonComplain_ConfilctParties_ConfilctPartyId",
-                        column: x => x.ConfilctPartyId,
-                        principalTable: "ConfilctParties",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_PersonComplain_People_PersonId",
+                        name: "FK_TeamMembers_People_PersonId",
                         column: x => x.PersonId,
                         principalTable: "People",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TeamMembers_TeamRoles_TeamRoleId",
+                        column: x => x.TeamRoleId,
+                        principalTable: "TeamRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TeamMembers_Teams_TeamId",
+                        column: x => x.TeamId,
+                        principalTable: "Teams",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -419,43 +391,134 @@ namespace SmartNeighborhoodAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Blocks",
+                name: "Projects",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ManagerId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ProjectCatogoryId = table.Column<int>(type: "int", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ProjectStatus = table.Column<int>(type: "int", nullable: false),
+                    Budget = table.Column<double>(type: "float", nullable: true),
+                    ProjectPriority = table.Column<int>(type: "int", nullable: false),
+                    ManagerId = table.Column<int>(type: "int", nullable: true),
+                    ManagerId1 = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Blocks", x => x.Id);
+                    table.PrimaryKey("PK_Projects", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Blocks_AspNetUsers_ManagerId",
-                        column: x => x.ManagerId,
+                        name: "FK_Projects_AspNetUsers_ManagerId1",
+                        column: x => x.ManagerId1,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Projects_ProjectCatogories_ProjectCatogoryId",
+                        column: x => x.ProjectCatogoryId,
+                        principalTable: "ProjectCatogories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ResidentialNeighborhoods",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    NeighborhoodManagerId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ResidentialNeighborhoods", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ResidentialNeighborhoods_AspNetUsers_NeighborhoodManagerId",
+                        column: x => x.NeighborhoodManagerId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Teams",
+                name: "ProjectTeams",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ProjectId = table.Column<int>(type: "int", nullable: false),
+                    TeamId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProjectTeams", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProjectTeams_Projects_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Projects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProjectTeams_Teams_TeamId",
+                        column: x => x.TeamId,
+                        principalTable: "Teams",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ResidentialUnits",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ProjectId = table.Column<int>(type: "int", nullable: false),
-                    StartDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    EndDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    ResidentialNeighborhoodId = table.Column<int>(type: "int", nullable: false),
+                    UnitManagerId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Teams", x => x.Id);
+                    table.PrimaryKey("PK_ResidentialUnits", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Teams_Projects_ProjectId",
-                        column: x => x.ProjectId,
-                        principalTable: "Projects",
+                        name: "FK_ResidentialUnits_AspNetUsers_UnitManagerId",
+                        column: x => x.UnitManagerId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ResidentialUnits_ResidentialNeighborhoods_ResidentialNeighborhoodId",
+                        column: x => x.ResidentialNeighborhoodId,
+                        principalTable: "ResidentialNeighborhoods",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Blocks",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ResidentialUnitId = table.Column<int>(type: "int", nullable: false),
+                    BlockManagerId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Blocks", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Blocks_AspNetUsers_BlockManagerId",
+                        column: x => x.BlockManagerId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Blocks_ResidentialUnits_ResidentialUnitId",
+                        column: x => x.ResidentialUnitId,
+                        principalTable: "ResidentialUnits",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -468,9 +531,8 @@ namespace SmartNeighborhoodAPI.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Location = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FamilyNotes = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FamilyNotes = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     FamilyCatgoryId = table.Column<int>(type: "int", nullable: false),
-                    FamilyTypeId = table.Column<int>(type: "int", nullable: false),
                     HousingType = table.Column<int>(type: "int", nullable: false),
                     BlockId = table.Column<int>(type: "int", nullable: false)
                 },
@@ -488,40 +550,30 @@ namespace SmartNeighborhoodAPI.Migrations
                         column: x => x.FamilyCatgoryId,
                         principalTable: "FamilyCatgories",
                         principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Families_FamilyTypes_FamilyTypeId",
-                        column: x => x.FamilyTypeId,
-                        principalTable: "FamilyTypes",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "TeamMembers",
+                name: "ProjectBlock",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TeamId = table.Column<int>(type: "int", nullable: false),
-                    MemberId = table.Column<int>(type: "int", nullable: false),
-                    PersonId = table.Column<int>(type: "int", nullable: false),
-                    DateOfJoin = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MemberJob = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    ProjectId = table.Column<int>(type: "int", nullable: false),
+                    BlockId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TeamMembers", x => x.Id);
+                    table.PrimaryKey("PK_ProjectBlock", x => new { x.ProjectId, x.BlockId });
                     table.ForeignKey(
-                        name: "FK_TeamMembers_People_PersonId",
-                        column: x => x.PersonId,
-                        principalTable: "People",
+                        name: "FK_ProjectBlock_Blocks_BlockId",
+                        column: x => x.BlockId,
+                        principalTable: "Blocks",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_TeamMembers_Teams_TeamId",
-                        column: x => x.TeamId,
-                        principalTable: "Teams",
+                        name: "FK_ProjectBlock_Projects_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Projects",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -554,7 +606,7 @@ namespace SmartNeighborhoodAPI.Migrations
                         column: x => x.PersonId,
                         principalTable: "People",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -563,29 +615,83 @@ namespace SmartNeighborhoodAPI.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ProjectId = table.Column<int>(type: "int", nullable: true),
-                    FamilyId = table.Column<int>(type: "int", nullable: true),
-                    BlockId = table.Column<int>(type: "int", nullable: true)
+                    dateReceived = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ProjectID = table.Column<int>(type: "int", nullable: false),
+                    FamilyID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ProjectFamilies", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ProjectFamilies_Blocks_BlockId",
+                        name: "FK_ProjectFamilies_Families_FamilyID",
+                        column: x => x.FamilyID,
+                        principalTable: "Families",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ProjectFamilies_Projects_ProjectID",
+                        column: x => x.ProjectID,
+                        principalTable: "Projects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ConfilctCases",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    FirstPartyId = table.Column<int>(type: "int", nullable: false),
+                    SecondPartyId = table.Column<int>(type: "int", nullable: false),
+                    ConflictTypeId = table.Column<int>(type: "int", nullable: false),
+                    Notes = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ImagePath = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SessionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsResolved = table.Column<bool>(type: "bit", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BlockId = table.Column<int>(type: "int", nullable: false),
+                    ManagerId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    ConfilctTypeId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ConfilctCases", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ConfilctCases_AspNetUsers_ManagerId",
+                        column: x => x.ManagerId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_ConfilctCases_Blocks_BlockId",
                         column: x => x.BlockId,
                         principalTable: "Blocks",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ConfilctCases_ConfilctTypes_ConfilctTypeId",
+                        column: x => x.ConfilctTypeId,
+                        principalTable: "ConfilctTypes",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_ProjectFamilies_Families_FamilyId",
-                        column: x => x.FamilyId,
-                        principalTable: "Families",
-                        principalColumn: "Id");
+                        name: "FK_ConfilctCases_ConfilctTypes_ConflictTypeId",
+                        column: x => x.ConflictTypeId,
+                        principalTable: "ConfilctTypes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ProjectFamilies_Projects_ProjectId",
-                        column: x => x.ProjectId,
-                        principalTable: "Projects",
-                        principalColumn: "Id");
+                        name: "FK_ConfilctCases_FamilyMembers_FirstPartyId",
+                        column: x => x.FirstPartyId,
+                        principalTable: "FamilyMembers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ConfilctCases_FamilyMembers_SecondPartyId",
+                        column: x => x.SecondPartyId,
+                        principalTable: "FamilyMembers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.InsertData(
@@ -595,7 +701,20 @@ namespace SmartNeighborhoodAPI.Migrations
                 {
                     { "11111111-1111-1111-1111-111111111111", null, "Admin", "ADMIN" },
                     { "22222222-2222-2222-2222-222222222222", null, "BlockManager", "BLOCKMANAGER" },
-                    { "33333333-3333-3333-3333-333333333333", null, "User", "USER" }
+                    { "33333333-3333-3333-3333-333333333333", null, "UnitManager", "UNITMANAGER" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUsers",
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmationCode", "EmailConfirmationCodeExpiresAt", "EmailConfirmed", "IsActive", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PersonId", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[,]
+                {
+                    { "10101010-1010-1010-1010-101010101010", 0, "630a2666-9c20-45fd-84be-8563095d20b3", "block.manager4@test.com", null, null, true, true, false, null, "BLOCK.MANAGER4@TEST.COM", "BLOCKMANAGER4", "AQAAAAIAAYagAAAAEPYwj3ubFjMTqbea91am1ulqcMO3dXgihrx6ZlOj5qr8Dk17xqfNbsLSGFF2kaXMcA==", 7, null, false, "24924f21-5885-4c6d-acd1-ff5eaed0df3c", false, "BlockManager4" },
+                    { "20202020-2020-2020-2020-202020202020", 0, "9a43fde4-f1d4-42e1-bdee-fb1c2e3d99f3", "block.manager5@test.com", null, null, true, true, false, null, "BLOCK.MANAGER5@TEST.COM", "BLOCKMANAGER5", "AQAAAAIAAYagAAAAEO79bxK8HITbU2K2dt5wyRaAQ/8VX1lBbTt3xujAdmGhleIRf2P8AyLPpt9Zv/JWcw==", 8, null, false, "89efec93-1748-4608-b375-116ef1b4e6ed", false, "BlockManager5" },
+                    { "cccccccc-cccc-cccc-cccc-cccccccccccc", 0, "dcff18ff-b7cc-4ca6-bcbc-9f06a0d35db6", "unit.manager@test.com", null, null, true, true, false, null, "UNIT.MANAGER@TEST.COM", "UNITMANAGER1", "AQAAAAIAAYagAAAAELBgFYk4K4YgjVycfkfLxhualqub5gO/ePjNGXhuga6XIXrvGLK0dXSI4Yac1wsEKg==", 3, null, false, "beac4d88-4471-4f85-af77-c7f497a56e4d", false, "UnitManager1" },
+                    { "dddddddd-dddd-dddd-dddd-dddddddddddd", 0, "175653d7-4db1-4199-b34f-9c566429ecda", "block.manager1@test.com", null, null, true, true, false, null, "BLOCK.MANAGER1@TEST.COM", "BLOCKMANAGER1", "AQAAAAIAAYagAAAAECTg9Y9tQetQKr4L6HI/XJ57kIZrATbF1RlA1BrzVS15Z+DW94UO/exrd5SH6eEPqw==", 4, null, false, "ee6de8a2-cb51-46e2-8db5-58b7eaef8405", false, "BlockManager1" },
+                    { "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee", 0, "50b033be-e9d1-4ca3-abc6-6e12f091ab57", "block.manager2@test.com", null, null, true, true, false, null, "BLOCK.MANAGER2@TEST.COM", "BLOCKMANAGER2", "AQAAAAIAAYagAAAAEJWrYH86yC/psx8YlnEp7E3gD+7SBbHWXZu1ZGxV+fMFugt5XVCSNujM5rXfYL7IMQ==", 5, null, false, "a0500c63-82d8-4989-8506-cf05b9b3a0bc", false, "BlockManager2" },
+                    { "ffffffff-ffff-ffff-ffff-ffffffffffff", 0, "d5626388-5584-4171-814e-e228ec41d5dc", "block.manager3@test.com", null, null, true, true, false, null, "BLOCK.MANAGER3@TEST.COM", "BLOCKMANAGER3", "AQAAAAIAAYagAAAAELyF9jXVqhS9huWkTZY8zY9V1GhFQLPv3ETXQFptzD2IB9w1pitE5cGdU/h+ujpAWA==", 6, null, false, "c062d7a5-da78-4c8f-b66e-62e1b8b9c82e", false, "BlockManager3" }
                 });
 
             migrationBuilder.InsertData(
@@ -606,16 +725,6 @@ namespace SmartNeighborhoodAPI.Migrations
                     { 1, "A" },
                     { 2, "B" },
                     { 3, "C" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "FamilyTypes",
-                columns: new[] { "Id", "Name" },
-                values: new object[,]
-                {
-                    { 1, "عائلة أيتام" },
-                    { 2, "عائلة أرامل" },
-                    { 3, "عائلة طبيعية" }
                 });
 
             migrationBuilder.InsertData(
@@ -633,11 +742,18 @@ namespace SmartNeighborhoodAPI.Migrations
 
             migrationBuilder.InsertData(
                 table: "People",
-                columns: new[] { "Id", "BloodType", "DateOfBirth", "Email", "FirstName", "Gender", "IdentityNumber", "IdentityType", "Image", "IsContactNumber", "IsWhatsapp", "Job", "LastName", "MaritalStatus", "OccupationStatus", "PhoneNumber", "SecondName", "ThirdName" },
+                columns: new[] { "Id", "BloodType", "DateOfBirth", "FirstName", "Gender", "Image", "IsContactNumber", "IsWhatsapp", "Job", "LastName", "MaritalStatus", "OccupationStatus", "PhoneNumber", "SecondName", "ThirdName", "personType" },
                 values: new object[,]
                 {
-                    { 1, 5, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "ahmad@example.com", "أحمد", 0, "894754369053", 1, null, false, false, "مهندس", "الزهيري", 2, 2, "0791234567", "سعيد", "محمود" },
-                    { 2, 5, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "fatima@example.com", "فاطمة", 1, "8945784903588", 1, null, false, false, "طالبة", "الحسني", 1, 1, "0789876543", "خالد", "عبد الله" }
+                    { 1, 5, null, "أحمد", 0, null, null, null, "مهندس", "الزهيري", 2, 2, "0791234567", "سعيد", "محمود", 3 },
+                    { 2, 5, null, "فاطمة", 1, null, null, null, "طالبة", "الحسني", 1, 1, "0789876543", "خالد", "عبد الله", 0 },
+                    { 222, 0, new DateTime(1985, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "أحمد", 0, null, true, true, null, "السعيد", 2, 2, "0501234567", "محمد", "علي", 0 },
+                    { 223, 7, new DateTime(1988, 8, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "خالد", 0, null, true, true, null, "العمري", 2, 3, "0502345678", "عبدالله", "محمد", 0 },
+                    { 224, 2, new DateTime(1990, 3, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), "محمد", 0, null, true, true, null, "الأحمدي", 1, 1, "0503456789", "سعيد", "أحمد", 0 },
+                    { 225, 4, new DateTime(1987, 12, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), "عبدالرحمن", 0, null, true, true, null, "القحطاني", 2, 3, "0504567890", "فيصل", "عبدالله", 0 },
+                    { 226, 0, new DateTime(1992, 7, 18, 0, 0, 0, 0, DateTimeKind.Unspecified), "سعود", 0, null, true, true, null, "الدوسري", 1, 1, "0505678901", "يوسف", "علي", 0 },
+                    { 227, 6, new DateTime(1989, 11, 25, 0, 0, 0, 0, DateTimeKind.Unspecified), "فهد", 0, null, true, true, null, "الشمري", 2, 3, "0506789012", "إبراهيم", "محمد", 2 },
+                    { 228, 2, new DateTime(1991, 2, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "ناصر", 0, null, true, true, null, "الغامدي", 1, 1, "0507890123", "علي", "سعد", 2 }
                 });
 
             migrationBuilder.InsertData(
@@ -652,19 +768,67 @@ namespace SmartNeighborhoodAPI.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "AspNetUsers",
-                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmationCode", "EmailConfirmationCodeExpiresAt", "EmailConfirmed", "IsActive", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PersonId", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", 0, "1750a3c0-a1f0-4331-acca-41ae98d2e743", "admin@example.com", null, null, true, false, false, null, "ADMIN@EXAMPLE.COM", "ADMIN", "AQAAAAIAAYagAAAAEIKFp2z2kUHjXhpv/yG3l0q/b81uBrmYnIHwoUQoHoVvb21M1RRG9hcFIENyL2jBHA==", 1, null, false, "0d89e63f-432f-4631-ba69-fe80de98505c", false, "Admin" });
+                table: "TeamRoles",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "مدير المشروع" },
+                    { 2, "النائب" },
+                    { 3, "عضو" }
+                });
 
             migrationBuilder.InsertData(
-                table: "Projects",
-                columns: new[] { "Id", "Budget", "Description", "EndDate", "ManagerId", "Name", "ProjectCatogoryId", "ProjectPriority", "ProjectStatus", "StartDate" },
-                values: new object[] { 1, 100000m, "هذا مشروع تمهيدي", new DateTime(2025, 12, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), 1, "مشروع تجريبي", 1, 1, 0, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) });
+                table: "AspNetUsers",
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmationCode", "EmailConfirmationCodeExpiresAt", "EmailConfirmed", "IsActive", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PersonId", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[,]
+                {
+                    { "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", 0, "02e7328f-023a-42e0-aaf8-a4cbb690069b", "sys.smartneighborhood@gmail.com", null, null, true, false, false, null, "SYS.SMARTNEIGHBORHOOD@GMAIL.COM", "ADMIN", "AQAAAAIAAYagAAAAEN45HTZBbTnAqSDwjPPvHY8Se8kWsN27oEI8VsmicC0sbBSv2OI70ivXa6Fn2bwxgQ==", 1, null, false, "6e7e007b-2706-4e19-bbb3-9f197ffde15f", false, "Admin" },
+                    { "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb", 0, "64ebd0d1-a750-43ae-bd1b-3f4e95b1fb3f", "neighborhood.manager@test.com", null, null, true, true, false, null, "NEIGHBORHOOD.MANAGER@TEST.COM", "NEIGHBORHOODMANAGER1", "AQAAAAIAAYagAAAAEGKSXsOeR56GzuO2EWnxgkK0rOdAz3P6umfd2aeoHav4q8ekM4bsc7J7k5Iq+1Bk8w==", 2, null, false, "8e518d08-ebe2-4207-a3eb-657592b88ef1", false, "NeighborhoodManager1" }
+                });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
                 columns: new[] { "RoleId", "UserId" },
                 values: new object[] { "11111111-1111-1111-1111-111111111111", "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa" });
+
+            migrationBuilder.InsertData(
+                table: "ResidentialNeighborhoods",
+                columns: new[] { "Id", "Name", "NeighborhoodManagerId" },
+                values: new object[] { 1, "حي السلام", "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb" });
+
+            migrationBuilder.InsertData(
+                table: "ResidentialUnits",
+                columns: new[] { "Id", "Name", "ResidentialNeighborhoodId", "UnitManagerId" },
+                values: new object[] { 1, "الوحدة الأولى", 1, "cccccccc-cccc-cccc-cccc-cccccccccccc" });
+
+            migrationBuilder.InsertData(
+                table: "Blocks",
+                columns: new[] { "Id", "BlockManagerId", "Name", "ResidentialUnitId" },
+                values: new object[,]
+                {
+                    { 1, "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", "المربع الأول", 1 },
+                    { 2, "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", "المربع الثاني", 1 },
+                    { 3, "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", "المربع الثالث", 1 },
+                    { 4, "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", "المربع الرابع", 1 },
+                    { 5, "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", "المربع الخامس", 1 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Families",
+                columns: new[] { "Id", "BlockId", "FamilyCatgoryId", "FamilyNotes", "HousingType", "Location", "Name" },
+                values: new object[,]
+                {
+                    { 1, 1, 1, "عائلة محتاجة للدعم", 2, "شارع الملك فهد، حي السلام", "عائلة الأحمدي" },
+                    { 2, 1, 3, "عائلة متوسطة الدخل", 1, "شارع العروبة، حي السلام", "عائلة السعيد" },
+                    { 3, 2, 2, "عائلة يتيمة", 2, "شارع الأمير سلطان، حي السلام", "عائلة القحطاني" },
+                    { 4, 2, 3, null, 1, "شارع الملك عبدالعزيز، حي السلام", "عائلة الدوسري" },
+                    { 5, 3, 1, "عائلة كبيرة", 2, "شارع الخليج، حي السلام", "عائلة الشمري" },
+                    { 6, 3, 3, null, 1, "شارع الأمل، حي السلام", "عائلة الغامدي" },
+                    { 7, 4, 2, "عائلة محتاجة", 2, "شارع النخيل، حي السلام", "عائلة العمري" },
+                    { 8, 4, 3, null, 1, "شارع الورود، حي السلام", "عائلة المطيري" },
+                    { 9, 5, 1, "عائلة أرملة", 2, "شارع السلام، حي السلام", "عائلة الزهراني" },
+                    { 10, 5, 3, null, 1, "شارع الفيحاء، حي السلام", "عائلة الحربي" }
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AdGroup_GroupsId",
@@ -715,15 +879,42 @@ namespace SmartNeighborhoodAPI.Migrations
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
 
+    
+
             migrationBuilder.CreateIndex(
-                name: "IX_Blocks_ManagerId",
+                name: "IX_Blocks_ResidentialUnitId",
                 table: "Blocks",
+                column: "ResidentialUnitId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ConfilctCases_BlockId",
+                table: "ConfilctCases",
+                column: "BlockId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ConfilctCases_ConfilctTypeId",
+                table: "ConfilctCases",
+                column: "ConfilctTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ConfilctCases_ConflictTypeId",
+                table: "ConfilctCases",
+                column: "ConflictTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ConfilctCases_FirstPartyId",
+                table: "ConfilctCases",
+                column: "FirstPartyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ConfilctCases_ManagerId",
+                table: "ConfilctCases",
                 column: "ManagerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Complains_ComplainTypeId",
-                table: "Complains",
-                column: "ComplainTypeId");
+                name: "IX_ConfilctCases_SecondPartyId",
+                table: "ConfilctCases",
+                column: "SecondPartyId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Families_BlockId",
@@ -734,11 +925,6 @@ namespace SmartNeighborhoodAPI.Migrations
                 name: "IX_Families_FamilyCatgoryId",
                 table: "Families",
                 column: "FamilyCatgoryId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Families_FamilyTypeId",
-                table: "Families",
-                column: "FamilyTypeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_FamilyMembers_FamilyId",
@@ -756,19 +942,14 @@ namespace SmartNeighborhoodAPI.Migrations
                 column: "PersonId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PersonComplain_ComplainId",
-                table: "PersonComplain",
-                column: "ComplainId");
+                name: "IX_GovernmentInstitutionContacts_GovernmentInstitutionId",
+                table: "GovernmentInstitutionContacts",
+                column: "GovernmentInstitutionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PersonComplain_ConfilctPartyId",
-                table: "PersonComplain",
-                column: "ConfilctPartyId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PersonComplain_PersonId",
-                table: "PersonComplain",
-                column: "PersonId");
+                name: "IX_ProjectBlock_BlockId",
+                table: "ProjectBlock",
+                column: "BlockId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProjectCatogories_Name",
@@ -777,29 +958,57 @@ namespace SmartNeighborhoodAPI.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProjectFamilies_BlockId",
+                name: "IX_ProjectFamilies_FamilyID",
                 table: "ProjectFamilies",
-                column: "BlockId");
+                column: "FamilyID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProjectFamilies_FamilyId",
+                name: "IX_ProjectFamilies_ProjectID",
                 table: "ProjectFamilies",
-                column: "FamilyId");
+                column: "ProjectID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProjectFamilies_ProjectId",
-                table: "ProjectFamilies",
-                column: "ProjectId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Projects_ManagerId",
+                name: "IX_Projects_ManagerId1",
                 table: "Projects",
-                column: "ManagerId");
+                column: "ManagerId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Projects_ProjectCatogoryId",
                 table: "Projects",
                 column: "ProjectCatogoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectTeams_ProjectId",
+                table: "ProjectTeams",
+                column: "ProjectId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectTeams_TeamId",
+                table: "ProjectTeams",
+                column: "TeamId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ResidentialNeighborhoods_Name",
+                table: "ResidentialNeighborhoods",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ResidentialNeighborhoods_NeighborhoodManagerId",
+                table: "ResidentialNeighborhoods",
+                column: "NeighborhoodManagerId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ResidentialUnits_ResidentialNeighborhoodId",
+                table: "ResidentialUnits",
+                column: "ResidentialNeighborhoodId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ResidentialUnits_UnitManagerId",
+                table: "ResidentialUnits",
+                column: "UnitManagerId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_TeamMembers_PersonId",
@@ -812,9 +1021,9 @@ namespace SmartNeighborhoodAPI.Migrations
                 column: "TeamId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Teams_ProjectId",
-                table: "Teams",
-                column: "ProjectId");
+                name: "IX_TeamMembers_TeamRoleId",
+                table: "TeamMembers",
+                column: "TeamRoleId");
         }
 
         /// <inheritdoc />
@@ -839,13 +1048,19 @@ namespace SmartNeighborhoodAPI.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "FamilyMembers");
+                name: "ConfilctCases");
 
             migrationBuilder.DropTable(
-                name: "PersonComplain");
+                name: "GovernmentInstitutionContacts");
+
+            migrationBuilder.DropTable(
+                name: "ProjectBlock");
 
             migrationBuilder.DropTable(
                 name: "ProjectFamilies");
+
+            migrationBuilder.DropTable(
+                name: "ProjectTeams");
 
             migrationBuilder.DropTable(
                 name: "TeamMembers");
@@ -860,22 +1075,31 @@ namespace SmartNeighborhoodAPI.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "MemberFamilyRoles");
+                name: "ConfilctTypes");
 
             migrationBuilder.DropTable(
-                name: "Complains");
+                name: "FamilyMembers");
 
             migrationBuilder.DropTable(
-                name: "ConfilctParties");
+                name: "GovernmentInstitutions");
 
             migrationBuilder.DropTable(
-                name: "Families");
+                name: "Projects");
+
+            migrationBuilder.DropTable(
+                name: "TeamRoles");
 
             migrationBuilder.DropTable(
                 name: "Teams");
 
             migrationBuilder.DropTable(
-                name: "ComplainTypes");
+                name: "Families");
+
+            migrationBuilder.DropTable(
+                name: "MemberFamilyRoles");
+
+            migrationBuilder.DropTable(
+                name: "ProjectCatogories");
 
             migrationBuilder.DropTable(
                 name: "Blocks");
@@ -884,16 +1108,13 @@ namespace SmartNeighborhoodAPI.Migrations
                 name: "FamilyCatgories");
 
             migrationBuilder.DropTable(
-                name: "FamilyTypes");
+                name: "ResidentialUnits");
 
             migrationBuilder.DropTable(
-                name: "Projects");
+                name: "ResidentialNeighborhoods");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
-
-            migrationBuilder.DropTable(
-                name: "ProjectCatogories");
 
             migrationBuilder.DropTable(
                 name: "People");

@@ -38,6 +38,14 @@ namespace SmartNeighborhoodAPI.Configuration
                 .HasColumnType("decimal(18,2)")
                 .IsRequired(false);
 
+            builder.Property(p => p.ManagerId)
+                .IsRequired(false);
+
+            builder.HasOne(p => p.Manager)
+                .WithMany()
+                .HasForeignKey(p => p.ManagerId)
+                .OnDelete(DeleteBehavior.SetNull);
+
             builder.HasOne(p => p.ProjectCatogory)
                 .WithMany(c => c.Projects)
                 .HasForeignKey(p => p.ProjectCatogoryId)
