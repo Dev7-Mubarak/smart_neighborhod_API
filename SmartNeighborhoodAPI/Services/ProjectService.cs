@@ -142,7 +142,6 @@ namespace SmartNeighborhoodAPI.Services
         public async Task<ApiResponse<ReturnProjectDto>> GetByIdAsync(int id)
         {
             var project = await _context.Projects
-                //.Include(x => x.Manager)
                 .Include(x => x.ProjectCatogory)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
@@ -151,6 +150,12 @@ namespace SmartNeighborhoodAPI.Services
             {
                 _logger.LogError("Project not found with ID {ProjectId}.", id);
                 return ApiResponse<ReturnProjectDto>.Error(HttpStatusCode.NotFound, "المشروع غير موجود");
+            }
+
+            Person managerPerson = null;
+            if (project.ManagerId.HasValue)
+            {
+                managerPerson = await _context.People.FirstOrDefaultAsync(p => p.Id == project.ManagerId.Value);
             }
 
             var returnDto = new ReturnProjectDto
@@ -163,11 +168,11 @@ namespace SmartNeighborhoodAPI.Services
                 EndDate = project.EndDate,
                 ProjectStatus = GetDisplayName(project.ProjectStatus),
                 ProjectPriority = GetDisplayName(project.ProjectPriority),
-                //Manager = new CustomPersonDto
-                //{
-                //    Id = project.Manager.Id,
-                //    FullName = project.Manager.FullName
-                //},
+                Manager = managerPerson != null ? new CustomPersonDto
+                {
+                    Id = managerPerson.Id,
+                    FullName = managerPerson.FullName
+                } : null,
                 ProjectCatgory = project.ProjectCatogory
             };
 
@@ -429,14 +434,14 @@ namespace SmartNeighborhoodAPI.Services
                             Id = f.Id,
                             Name = f.Name,
                             BlockId = f.BlockId,
-                            BlockName = f.Block.Name,
+                            BlockName = b.Name,
                             FamilyCatgoryId = f.FamilyCatgoryId,
                             FamilyCatgoryName = f.FamilyCatgory?.Name,
                             Location = f.Location,
                             FamilyNotes = f.FamilyNotes,
-                            FamilyHeadId = head.Id,
-                            FamilyHeadName = head?.Person?.FullName,
-                            PhoneNumber = head?.Person?.PhoneNumber,
+                            FamilyHeadId = head?.Id ?? 0,
+                            FamilyHeadName = head?.Person?.FullName ?? "",
+                            PhoneNumber = head?.Person?.PhoneNumber ?? "",
                         };
                     })
                     .ToList()

@@ -62,26 +62,15 @@ namespace SmartNeighborhoodAPI.Services
                 .Include(c => c.SecondParty).ThenInclude(sp => sp.Person)
                 .AsNoTracking();
 
-            //var allowedBlockIds = await _hierarchyService.GetAllowedBlockIdsAsync();
+            var conflictCases = await query.ToListAsync();
+            var conflictCaseDtos = _mapper.Map<IEnumerable<GetConflictCaseDto>>(conflictCases);
 
-            //if (!allowedBlockIds.Any())
-            //{
-            //    _logger.LogInformation("User {UserId} has no blocks in hierarchy.", currentUser.Id);
-            //    return ApiResponse<IEnumerable<GetConflictCaseDto>>
-            //        .Success(Enumerable.Empty<GetConflictCaseDto>(), "لا توجد قضايا نزاع.");
-            //}
-
-            //query = query.Where(c => allowedBlockIds.Contains(c.BlockId));
-
-            //var conflictCases = await query.ToListAsync();
-            //var conflictCaseDtos = _mapper.Map<IEnumerable<GetConflictCaseDto>>(conflictCases);
-
-            //if (conflictCaseDtos.Any())
-            //{
-            //    _logger.LogInformation("Found {Count} ConflictCases", conflictCaseDtos.Count());
-            //    return ApiResponse<IEnumerable<GetConflictCaseDto>>
-            //        .Success(conflictCaseDtos, "تم جلب جميع القضايا بنجاح.");
-            //}
+            if (conflictCaseDtos.Any())
+            {
+                _logger.LogInformation("Found {Count} ConflictCases", conflictCaseDtos.Count());
+                return ApiResponse<IEnumerable<GetConflictCaseDto>>
+                    .Success(conflictCaseDtos, "تم جلب جميع القضايا بنجاح.");
+            }
 
             _logger.LogWarning("No ConflictCases found");
             return ApiResponse<IEnumerable<GetConflictCaseDto>>
