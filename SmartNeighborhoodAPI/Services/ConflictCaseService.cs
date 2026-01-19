@@ -150,7 +150,6 @@ namespace SmartNeighborhoodAPI.Services
             // 7️ Map DTO → Entity
             var conflictCase = _mapper.Map<ConflictCase>(conflictCaseDto);
             conflictCase.ManagerId = manager.Id;
-            conflictCase.BlockId = manager.ManagesBlock!.Id;
             conflictCase.ImagePath = conflictCaseImage;
 
             // 8️ Add and Save
