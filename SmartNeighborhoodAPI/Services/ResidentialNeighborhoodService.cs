@@ -405,19 +405,14 @@ namespace SmartNeighborhoodAPI.Services
         {
             _logger.LogInformation("Fetching dashboard statistics for manager with userId: {UserId}", userId);
 
-            var statistics = await _context.ResidentialNeighborhoods
-                .AsNoTracking()
+            var neighborhoods = await _context.ResidentialNeighborhoods
+                .Include(n => n.ResidentialUnits)
+                    .ThenInclude(u => u.Blocks)
+                        .ThenInclude(b => b.Families)
                 .Where(n => n.NeighborhoodManagerId == userId)
-                .Select(n => new
-                {
-                    NeighborhoodId = n.Id,
-                    UnitsCount = n.ResidentialUnits.Count,
-                    BlocksCount = n.ResidentialUnits.SelectMany(u => u.Blocks).Count(),
-                    FamiliesCount = n.ResidentialUnits.SelectMany(u => u.Blocks).SelectMany(b => b.Families).Count()
-                })
                 .ToListAsync(ct);
 
-            if (!statistics.Any())
+            if (!neighborhoods.Any())
             {
                 _logger.LogWarning("No neighborhoods found for manager with userId: {UserId}", userId);
                 return ApiResponse<ResidentialNeighborhoodManagerDashboardDto>.Success(
@@ -433,9 +428,9 @@ namespace SmartNeighborhoodAPI.Services
 
             var dashboard = new ResidentialNeighborhoodManagerDashboardDto
             {
-                TotalFamilies = statistics.Sum(s => s.FamiliesCount),
-                TotalUnits = statistics.Sum(s => s.UnitsCount),
-                TotalBlocks = statistics.Sum(s => s.BlocksCount)
+                TotalFamilies = neighborhoods.Sum(n => n.ResidentialUnits.Sum(u => u.Blocks.Sum(b => b.Families.Count))),
+                TotalUnits = neighborhoods.Sum(n => n.ResidentialUnits.Count),
+                TotalBlocks = neighborhoods.Sum(n => n.ResidentialUnits.Sum(u => u.Blocks.Count))
             };
 
             _logger.LogInformation("Dashboard statistics retrieved successfully for manager {UserId}: {Families} families, {Units} units, {Blocks} blocks",

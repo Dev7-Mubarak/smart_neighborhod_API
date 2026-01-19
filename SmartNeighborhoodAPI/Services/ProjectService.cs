@@ -100,7 +100,6 @@ namespace SmartNeighborhoodAPI.Services
 
             var query = _context.Projects
                 .Include(x => x.ProjectCatogory)
-                //.Include(x => x.Manager)
                 .AsNoTracking()
                 .AsQueryable();
 
@@ -113,19 +112,26 @@ namespace SmartNeighborhoodAPI.Services
 
             if (projects.Count > 0)
             {
-                var projectDtos = projects.Select(project => new ReturnProjectDto
-                {
-                    Id = project.Id,
-                    Name = project.Name,
-                    Description = project.Description,
-                    StartDate = project.StartDate,
-                    EndDate = project.EndDate,
-                    ProjectStatus = GetDisplayName(project.ProjectStatus),
-                    ProjectPriority = GetDisplayName(project.ProjectPriority),
-                    Budget = project.Budget,
-                    //Manager = new CustomPersonDto { Id = project.Manager.Id, FullName = project.Manager.FullName },
-                    ProjectCatgory = project.ProjectCatogory
-                }).ToList();
+                var projectDtos = (from project in projects
+                                   join person in _context.People on project.ManagerId equals person.Id into gj
+                                   from subperson in gj.DefaultIfEmpty()
+                                   select new ReturnProjectDto
+                                   {
+                                       Id = project.Id,
+                                       Name = project.Name,
+                                       Description = project.Description,
+                                       StartDate = project.StartDate,
+                                       EndDate = project.EndDate,
+                                       ProjectStatus = GetDisplayName(project.ProjectStatus),
+                                       ProjectPriority = GetDisplayName(project.ProjectPriority),
+                                       Budget = project.Budget,
+                                       Manager = subperson != null ? new CustomPersonDto
+                                       {
+                                           Id = subperson.Id,
+                                           FullName = subperson.FullName
+                                       } : null,
+                                       ProjectCatgory = project.ProjectCatogory
+                                   }).ToList();
 
                 _logger.LogInformation("Retrieved {Count} projects successfully.", projectDtos.Count);
 
