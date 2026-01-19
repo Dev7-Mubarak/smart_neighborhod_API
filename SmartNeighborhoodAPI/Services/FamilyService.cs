@@ -260,12 +260,16 @@ namespace SmartNeighborhoodAPI.Services
             if (headOfTheFamily == null)
             {
                 _logger.LogWarning("Family ID {FamilyId} does not have a head of family (role ID 1).", id);
-                return ApiResponse<ReturnFamilyInfoDto>.Error(HttpStatusCode.NotFound, "لا يوجد عائل محدد لهذه الأسرة.");
+                // Return empty list for FamilyMembers
+                family.FamilyMembers = new List<ReturnFamilyMemberWithFullInfo>();
+                family.HeadOfFamily = null;
+            }
+            else
+            {
+                family.HeadOfFamily = headOfTheFamily;
             }
 
-            _logger.LogInformation("Head of family found. Returning family details.");
-
-            family.HeadOfFamily = headOfTheFamily;
+            _logger.LogInformation("Returning family details.");
 
             return ApiResponse<ReturnFamilyInfoDto>.Success(family, "تم جلب تفاصيل الأسرة بنجاح.");
         }
