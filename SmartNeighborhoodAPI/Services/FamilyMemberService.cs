@@ -107,11 +107,8 @@ namespace SmartNeighborhoodAPI.Services
 
             if (!familyMembers.Any())
             {
-                _logger.LogWarning("لم يتم العثور على أي فرد من أفراد الأسرة.");
-                return ApiResponse<IEnumerable<ReturnFamilyMemberWithFullInfo>>.Error(
-                    HttpStatusCode.NotFound,
-                    "لم يتم العثور على أي فرد من أفراد الأسرة."
-                );
+                _logger.LogInformation("No family members found.");
+                return ApiResponse<IEnumerable<ReturnFamilyMemberWithFullInfo>>.Success(Enumerable.Empty<ReturnFamilyMemberWithFullInfo>(), "تم جلب أفراد الأسرة بنجاح.");
             }
 
             var returnFamilyMember = familyMembers.Select(x => new ReturnFamilyMemberWithFullInfo
