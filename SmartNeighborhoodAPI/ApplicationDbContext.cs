@@ -27,6 +27,12 @@ namespace SmartNeighborhoodAPI
             builder.ApplyConfiguration(new AppUserSeedConfiguration());
             builder.ApplyConfiguration(new IdentityUserRoleSeedConfiguration());
             builder.ApplyConfiguration(new ProjectCatgoryEntityTypeConfiguration());
+            builder.ApplyConfiguration(new ProjectConfiguration());
+            builder.ApplyConfiguration(new IDCardApplicationConfiguration());
+            builder.ApplyConfiguration(new PassportApplicationConfiguration());
+            builder.ApplyConfiguration(new MedicineConfiguration());
+            builder.ApplyConfiguration(new MedicineBatchConfiguration());
+            
             builder.ApplyConfiguration(new ResidentialNeighborhoodConfiguration());
             
             // Seed data configurations for testing
@@ -121,6 +127,13 @@ namespace SmartNeighborhoodAPI
         public DbSet<GovernmentInstitutionContact> GovernmentInstitutionContacts { get; set; }
 
         public DbSet<GovernmentInstitution> GovernmentInstitutions { get; set; }
+        public DbSet<Vehicle> Vehicles { get; set; }
+
+        public DbSet<PassportApplication> PassportApplications { get; set; }
+        public DbSet<IDCardApplication> IDCardApplications { get; set; }
+
+        public DbSet<Medicine> Medicines { get; set; }
+        public DbSet<MedicineBatch> MedicineBatches { get; set; }
 
         public DbSet<Person> People { get; set; }
         public DbSet<Family> Families { get; set; }
