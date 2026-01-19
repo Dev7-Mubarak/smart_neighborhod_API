@@ -40,24 +40,61 @@ namespace SmartNeighborhoodAPI.Services
 
             if (currentUser.Role == Role.BlockManager)
             {
-                query = query.Where(b => b.ManagerId == currentUser.Id);
+                var rootBlockIds = await _context.Blocks
+                    //.Where(b => b.UnitManagerId == currentUser.Id)
+                    .Select(b => b.Id)
+                    .ToListAsync();
+
+                if (!rootBlockIds.Any())
+                {
+                    _logger.LogInformation("Block manager {UserId} has no managed blocks.", currentUser.Id);
+                    return ApiResponse<IEnumerable<RetrunBlockDto>>
+                        .Success(Enumerable.Empty<RetrunBlockDto>(), "لا توجد بيانات متاحة.");
+                }
+
+         
+                var flatBlocks = await _context.Blocks
+                    .Select(b => new { b.Id, b.BlockManagerId })
+                    .ToListAsync();
+
+                var allowedIds = new HashSet<int>(rootBlockIds);
+                var queue = new Queue<int>(rootBlockIds);
+
+                while (queue.Count > 0)
+                {
+                    var currentId = queue.Dequeue();
+
+                    var children = flatBlocks
+                        //.Where(x => x.BlockManagerId == currentId)
+                        .Select(x => x.Id);
+
+                    foreach (var childId in children)
+                    {
+                        if (allowedIds.Add(childId))
+                            queue.Enqueue(childId);
+                    }
+                }
+
+                query = _context.Blocks.Where(b => allowedIds.Contains(b.Id));
             }
-            else if (currentUser.Role == Role.User)
+            else if (currentUser.Role == Role.BlockManager)
             {
                 _logger.LogWarning("User {UserId} attempted to access blocks without permission", currentUser.Id);
-                return ApiResponse<IEnumerable<RetrunBlockDto>>.Error(HttpStatusCode.Unauthorized, "ليس لديك صلاحية الوصول إلى هذه البيانات.");
+                return ApiResponse<IEnumerable<RetrunBlockDto>>.Error(
+                    HttpStatusCode.Unauthorized,
+                    "ليس لديك صلاحية الوصول إلى هذه البيانات.");
             }
 
             var blocks = await query
                 .Select(b => new RetrunBlockDto
                 {
                     Id = b.Id,
-                    ManagerId = b.ManagerId,
-                    Role = currentUser.Role, 
+                    //ManagerId = b.UnitManagerId,
+                    Role = currentUser.Role,
                     Name = b.Name,
                     Email = currentUser.Email,
-                    PersonId = b.Manager.PersonId,
-                    FullName = b.Manager.Person.FullName
+                    //PersonId = b.UnitManager.PersonId,
+                    //FullName = b.UnitManager.Person.FullName
                 })
                 .AsNoTracking()
                 .ToListAsync();
@@ -70,6 +107,7 @@ namespace SmartNeighborhoodAPI.Services
 
             return ApiResponse<IEnumerable<RetrunBlockDto>>.Success(blocks, message);
         }
+
 
         public async Task<ApiResponse<RetrunBlockDto>> ChangeManager(int id, ChangeManagerDto blockManagerDto)
         {
@@ -92,18 +130,29 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.NotFound, "هذا الشخص غير موجود");
             }
 
-            var existingUser = await _userManager.FindByEmailAsync(blockManagerDto.Email);
+            // Check if identifier already exists
+            bool isEmail = blockManagerDto.Identifier.Contains('@');
+            AppUser existingUser = null;
+            
+            if (isEmail)
+            {
+                existingUser = await _userManager.FindByEmailAsync(blockManagerDto.Identifier);
+            }
+            else
+            {
+                existingUser = await _userManager.FindByNameAsync(blockManagerDto.Identifier);
+            }
 
             if (existingUser != null)
             {
-                _logger.LogWarning("Person with ID '{PersonId}' not found.", blockManagerDto.Email);
-                return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.Conflict, "هذا الايميل مستخدم بالفعل ");
+                _logger.LogWarning("Identifier '{Identifier}' is already used.", blockManagerDto.Identifier);
+                return ApiResponse<RetrunBlockDto>.Error(HttpStatusCode.Conflict, "المعرف (البريد الإلكتروني أو اسم المستخدم) مستخدم مسبقاً");
             }
 
             // Step 4: Create new manager account
             var createResult = await _authService.CreateBlockManagerAccountAsync(new CreateBlockManagerDto
             {
-                Email = blockManagerDto.Email,
+                Email = blockManagerDto.Identifier,
                 Password = blockManagerDto.Password,
                 PersonId = blockManagerDto.PersonId
             });
@@ -115,11 +164,11 @@ namespace SmartNeighborhoodAPI.Services
             }
 
 
-            var oldManagerId = block.ManagerId;
+            var oldManagerId = block.BlockManagerId;
 
 
             // Step 5: Update block manager
-            block.ManagerId = createResult.Data.Id;
+            //block.UnitManagerId = createResult.Data.Id;
             _context.Blocks.Update(block);
             await _context.SaveChangesAsync();
 
@@ -139,9 +188,9 @@ namespace SmartNeighborhoodAPI.Services
             {
                 Id = block.Id,
                 Name = block.Name,
-                ManagerId = block.ManagerId,
+                //ManagerId = block.UnitManagerId,    
                 PersonId = person.Id,
-                Email = createResult.Data.Email,
+                Email = createResult.Data.Identifier,
                 Role = createResult.Data.Role,
                 FullName = person.FullName
             };
@@ -187,7 +236,7 @@ namespace SmartNeighborhoodAPI.Services
             var block = new Block
             {
                 Name = blockDto.Name,
-                ManagerId = response.Data.Id
+                //UnitManagerId = response.Data.Id
             };
 
             await _context.Blocks.AddAsync(block);
@@ -201,7 +250,7 @@ namespace SmartNeighborhoodAPI.Services
                     PersonId = blockDto.PersonId,
                     ManagerId = response.Data.Id,
                     Role = response.Data.Role,
-                    Email = response.Data.Email,
+                    Email = response.Data.Identifier,
                     FullName = person.FullName
                 };
 
@@ -252,18 +301,18 @@ namespace SmartNeighborhoodAPI.Services
             if (block == null)
                 return ApiResponse<string>.Error(HttpStatusCode.NotFound, "المربع غير موجود.");
 
-            var userRole = await _authService.GetUserRole(block.ManagerId);
-            if (userRole != null && userRole == "BlockManager")
-            {
-                var deleteResult = await _authService.DeleteBlockManagerAccountByIdAsync(block.ManagerId);
-                if (!deleteResult.IsSuccess)
-                {
-                    _logger.LogError("Failed to delete block manager with ID: {ManagerId}", block.ManagerId);
-                    return ApiResponse<string>.Error(deleteResult.StatusCode, deleteResult.Message, deleteResult.Errors);
-                }
-                _context.Blocks.Remove(block);
-                return ApiResponse<string>.Success("تم حذف المربع بنجاح.");
-            }
+            //var userRole = await _authService.GetUserRole(block.UnitManagerId);
+            //if (userRole != null && userRole == "BlockManager")
+            //{
+            //    var deleteResult = await _authService.DeleteBlockManagerAccountByIdAsync(block.UnitManagerId);
+            //    if (!deleteResult.IsSuccess)
+            //    {
+            //        _logger.LogError("Failed to delete block manager with ID: {ManagerId}", block.UnitManagerId);
+            //        return ApiResponse<string>.Error(deleteResult.StatusCode, deleteResult.Message, deleteResult.Errors);
+            //    }
+            //    _context.Blocks.Remove(block);
+            //    return ApiResponse<string>.Success("تم حذف المربع بنجاح.");
+            //}
 
             return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "فشل في حذف المربع.");
         }
@@ -278,7 +327,7 @@ namespace SmartNeighborhoodAPI.Services
                     {
                         Id = x.Id,
                         Name = x.Name,
-                        ManagerName = x.Manager.Person.FullName,
+                        //ManagerName = x.UnitManager.Person.FullName,
                         TotalFamilies = x.Families.Count,
                         totalOrphans = x.Families.Count(f => f.FamilyCatgory.Id == 2),
                         TotalWidows = x.Families.Count(f => f.FamilyCatgory.Id == 1),
@@ -320,6 +369,148 @@ namespace SmartNeighborhoodAPI.Services
             }
 
             return ApiResponse<BlockDetailesDto>.Success(block, "تم جلب تفاصيل المربع بنجاح.");
+        }
+
+        public async Task<ApiResponse<BlockDashboardDto>> GetDashboardAsync(CancellationToken ct = default)
+        {
+            var blocks = await _context.Blocks
+                .AsNoTracking()
+                .Select(b => new
+                {
+                    b.Id,
+                    b.Name,
+                    FamiliesCount = b.Families.Count,
+                    ManagerId = b.BlockManagerId,
+                    ManagerName = b.BlockManager.Person.FullName
+                })
+                .ToListAsync(ct);
+
+            var dashboard = new BlockDashboardDto
+            {
+                TotalBlocks = blocks.Count,
+                TotalFamilies = blocks.Sum(b => b.FamiliesCount),
+                Blocks = blocks.Select(b => new BlockStatsDto
+                {
+                    BlockId = b.Id,
+                    BlockName = b.Name,
+                    FamiliesCount = b.FamiliesCount,
+                    ManagerId = b.ManagerId,
+                    ManagerName = b.ManagerName
+                }).ToList()
+            };
+
+            return ApiResponse<BlockDashboardDto>.Success(dashboard, "تم جلب إحصائيات المربعات بنجاح");
+        }
+
+        public async Task<ApiResponse<BlockManagerDashboardDto>> GetMyDashboardAsync(string userId, CancellationToken ct = default)
+        {
+            _logger.LogInformation("Fetching dashboard statistics for block manager with userId: {UserId}", userId);
+
+            var statistics = await _context.Blocks
+                .AsNoTracking()
+                .Where(b => b.BlockManagerId == userId)
+                .Select(b => new
+                {
+                    BlockId = b.Id,
+                    FamiliesCount = b.Families.Count
+                })
+                .ToListAsync(ct);
+
+            if (!statistics.Any())
+            {
+                _logger.LogWarning("No blocks found for manager with userId: {UserId}", userId);
+                return ApiResponse<BlockManagerDashboardDto>.Success(
+                    new BlockManagerDashboardDto
+                    {
+                        TotalFamilies = 0
+                    },
+                    "لا توجد مربعات مرتبطة بهذا المدير"
+                );
+            }
+
+            var dashboard = new BlockManagerDashboardDto
+            {
+                TotalFamilies = statistics.Sum(s => s.FamiliesCount)
+            };
+
+            _logger.LogInformation("Dashboard statistics retrieved successfully for block manager {UserId}: {Families} families",
+                userId, dashboard.TotalFamilies);
+
+            return ApiResponse<BlockManagerDashboardDto>.Success(dashboard, "تم جلب إحصائيات لوحة التحكم بنجاح");
+        }
+
+        public async Task<ApiResponse<List<RetrunBlockDto>>> GetMyBlocksAsync(string userId, CancellationToken ct = default)
+        {
+            _logger.LogInformation("Fetching blocks for manager with userId: {UserId}", userId);
+
+            var blocks = await _context.Blocks
+                .AsNoTracking()
+                .Where(b => b.BlockManagerId == userId)
+                .Include(b => b.BlockManager)
+                    .ThenInclude(bm => bm.Person)
+                .Include(b => b.ResidentialUnit)
+                .OrderBy(b => b.Name)
+                .ToListAsync(ct);
+
+            if (!blocks.Any())
+            {
+                _logger.LogWarning("No blocks found for manager with userId: {UserId}", userId);
+                return ApiResponse<List<RetrunBlockDto>>.Success(
+                    new List<RetrunBlockDto>(),
+                    "لا توجد مربعات مرتبطة بهذا المدير"
+                );
+            }
+
+            var result = blocks.Select(b => new RetrunBlockDto
+            {
+                Id = b.Id,
+                Name = b.Name,
+                ManagerId = b.BlockManagerId,
+                PersonId = b.BlockManager.PersonId,
+                Email = b.BlockManager.Email ?? string.Empty,
+                Role = Role.BlockManager,
+                FullName = b.BlockManager.Person?.FullName ?? string.Empty
+            }).ToList();
+
+            _logger.LogInformation("Retrieved {Count} blocks for manager with userId: {UserId}", result.Count, userId);
+
+            return ApiResponse<List<RetrunBlockDto>>.Success(result, "تم جلب المربعات بنجاح");
+        }
+
+        public async Task<ApiResponse<ReturnBlockFamiliesDto>> GetFamiliesAsync(int id)
+        {
+            var block = await _context.Blocks
+                .Include(b => b.BlockManager)
+                    .ThenInclude(bm => bm.Person)
+                .Include(b => b.Families)
+                    .ThenInclude(f => f.FamilyCatgory)
+                .FirstOrDefaultAsync(b => b.Id == id);
+
+            if (block == null)
+            {
+                return ApiResponse<ReturnBlockFamiliesDto>.Error(
+                    HttpStatusCode.NotFound,
+                    "المربع غير موجود"
+                );
+            }
+
+            var result = new ReturnBlockFamiliesDto
+            {
+                Id = block.Id,
+                Name = block.Name,
+                BlockManagerId = block.BlockManagerId,
+                BlockManagerName = block.BlockManager?.Person?.FullName ?? string.Empty,
+                Families = block.Families.Select(f => new FamilySummaryDto
+                {
+                    Id = f.Id,
+                    Name = f.Name,
+                    Location = f.Location,
+                    FamilyCategoryId = f.FamilyCatgoryId,
+                    FamilyCategoryName = f.FamilyCatgory?.Name ?? string.Empty
+                }).ToList()
+            };
+
+            return ApiResponse<ReturnBlockFamiliesDto>.Success(result, "تم جلب العائلات بنجاح");
         }
 
     }

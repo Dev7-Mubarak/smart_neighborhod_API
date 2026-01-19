@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using SmartNeighborhoodAPI.Entites;
 
-namespace SmartNeighborhoodAPI.Configuration
-{
+namespace SmartNeighborhoodAPI.Configuration;
+
     public class AppUserSeedConfiguration : IEntityTypeConfiguration<AppUser>
     {
         public void Configure(EntityTypeBuilder<AppUser> builder)
@@ -17,7 +17,7 @@ namespace SmartNeighborhoodAPI.Configuration
                 Email = "sys.smartneighborhood@gmail.com",
                 NormalizedEmail = "sys.smartneighborhood@gmail.com",
                 EmailConfirmed = true,
-                PersonId = 9,
+                PersonId = 1,
                 PasswordHash = new PasswordHasher<AppUser>().HashPassword(null, "Mub_12345")
             };
 
@@ -25,4 +25,4 @@ namespace SmartNeighborhoodAPI.Configuration
         }
     }
 
-}
+

@@ -45,6 +45,9 @@ namespace OurProjectSmartNeiborhood.Configuration
             builder.Property(p => p.MaritalStatus)
                 .IsRequired();
 
+            builder.Property(p => p.personType)
+                 .IsRequired();
+
             builder.Property(p => p.Job)
                 .HasMaxLength(30);
 

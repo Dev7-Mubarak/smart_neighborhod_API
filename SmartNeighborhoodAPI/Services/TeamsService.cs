@@ -209,7 +209,7 @@ namespace SmartNeighborhoodAPI.Services
             var projects = await _context.ProjectTeams
                 .Where(pt => pt.TeamId == teamId)
                 .Include(pt => pt.Project)
-                    .ThenInclude(p => p.Manager)
+                    //.ThenInclude(p => p.Manager)
                 .Include(pt => pt.Project)
                     .ThenInclude(p => p.ProjectCatogory)
                 .Select(pt => pt.Project)
@@ -233,11 +233,11 @@ namespace SmartNeighborhoodAPI.Services
                 ProjectStatus = GetDisplayName(project.ProjectStatus),
                 ProjectPriority = GetDisplayName(project.ProjectPriority),
                 Budget = project.Budget,
-                Manager = new CustomPersonDto
-                {
-                    Id = project.Manager.Id,
-                    FullName = project.Manager.FullName
-                },
+                //Manager = new CustomPersonDto
+                //{
+                //    Id = project.Manager.Id,
+                //    FullName = project.Manager.FullName
+                //},
                 ProjectCatgory = project.ProjectCatogory
             }).ToList();
 
