@@ -59,23 +59,23 @@ namespace SmartNeighborhoodAPI
                 .Property(c => c.Notes)
                 .IsRequired(false);
 
-            // Admin user seed
-            var adminUserId = "aaaaaaaa-aaaa-aaaa-bbbb-aaaaaaaaaaaa";
+            //// Admin user seed
+            //var adminUserId = "aaaaaaaa-aaaa-aaaa-bbbb-aaaaaaaaaaaa";
 
-            var hasher = new PasswordHasher<AppUser>();
-            var adminUser = new AppUser
-            {
-                Id = adminUserId,
-                UserName = "Admin",
-                NormalizedUserName = "ADMIN",
-                Email = "sys.smartneighborhood@gmail.com",
-                NormalizedEmail = "SYS.SMARTNEIGHBORHOOD@GMAIL.COM",
-                EmailConfirmed = true,
-                PersonId = 1,
-                PasswordHash = hasher.HashPassword(null, "Mub_12345")
-            };
+            //var hasher = new PasswordHasher<AppUser>();
+            //var adminUser = new AppUser
+            //{
+            //    Id = adminUserId,
+            //    UserName = "Admin",
+            //    NormalizedUserName = "ADMIN",
+            //    Email = "sys.smartneighborhood@gmail.com",
+            //    NormalizedEmail = "SYS.SMARTNEIGHBORHOOD@GMAIL.COM",
+            //    EmailConfirmed = true,
+            //    PersonId = 1,
+            //    PasswordHash = hasher.HashPassword(null, "Mub_12345")
+            //};
 
-            builder.Entity<AppUser>().HasData(adminUser);
+            //builder.Entity<AppUser>().HasData(adminUser);
 
         }
         public DbSet<GovernmentInstitutionContact> GovernmentInstitutionContacts { get; set; }
@@ -106,5 +106,7 @@ namespace SmartNeighborhoodAPI
         public DbSet<TeamMember> TeamMembers { get; set; }
         public DbSet<ProjectTeam> ProjectTeams { get; set; }
         public DbSet<TeamRole> TeamRoles { get; set; }
+        public DbSet<ResidentialUnit> ResidentialUnits { get; set; }
+        public DbSet<ResidentialNeighborhood> ResidentialNeighborhoods { get; set; }
     }
 }

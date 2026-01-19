@@ -12,8 +12,8 @@ using SmartNeighborhoodAPI;
 namespace SmartNeighborhoodAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251112100442_ReNameFromAuthorityToGovernmentInstitutions")]
-    partial class ReNameFromAuthorityToGovernmentInstitutions
+    [Migration("20260112110332_seeddataforfamilies")]
+    partial class seeddataforfamilies
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -82,8 +82,8 @@ namespace SmartNeighborhoodAPI.Migrations
                         new
                         {
                             Id = "33333333-3333-3333-3333-333333333333",
-                            Name = "User",
-                            NormalizedName = "USER"
+                            Name = "UnitManager",
+                            NormalizedName = "UNITMANAGER"
                         });
                 });
 
@@ -231,7 +231,7 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ManagerId")
+                    b.Property<string>("BlockManagerId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
@@ -239,11 +239,54 @@ namespace SmartNeighborhoodAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("ResidentialUnitId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("ManagerId");
+                    b.HasIndex("BlockManagerId")
+                        .IsUnique();
+
+                    b.HasIndex("ResidentialUnitId");
 
                     b.ToTable("Blocks");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            BlockManagerId = "dddddddd-dddd-dddd-dddd-dddddddddddd",
+                            Name = "المربع الأول",
+                            ResidentialUnitId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            BlockManagerId = "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
+                            Name = "المربع الثاني",
+                            ResidentialUnitId = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            BlockManagerId = "ffffffff-ffff-ffff-ffff-ffffffffffff",
+                            Name = "المربع الثالث",
+                            ResidentialUnitId = 1
+                        },
+                        new
+                        {
+                            Id = 4,
+                            BlockManagerId = "10101010-1010-1010-1010-101010101010",
+                            Name = "المربع الرابع",
+                            ResidentialUnitId = 1
+                        },
+                        new
+                        {
+                            Id = 5,
+                            BlockManagerId = "20202020-2020-2020-2020-202020202020",
+                            Name = "المربع الخامس",
+                            ResidentialUnitId = 1
+                        });
                 });
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.ConfilctType", b =>
@@ -271,6 +314,9 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("BlockId")
+                        .HasColumnType("int");
+
                     b.Property<int>("ConflictTypeId")
                         .HasColumnType("int");
 
@@ -283,10 +329,6 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     b.Property<bool>("IsResolved")
                         .HasColumnType("bit");
-
-                    b.Property<string>("ManagerId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
@@ -303,11 +345,11 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("BlockId");
+
                     b.HasIndex("ConflictTypeId");
 
                     b.HasIndex("FirstPartyId");
-
-                    b.HasIndex("ManagerId");
 
                     b.HasIndex("SecondPartyId");
 
@@ -349,6 +391,104 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasIndex("FamilyCatgoryId");
 
                     b.ToTable("Families");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            BlockId = 1,
+                            FamilyCatgoryId = 1,
+                            FamilyNotes = "عائلة محتاجة للدعم",
+                            HousingType = 2,
+                            Location = "شارع الملك فهد، حي السلام",
+                            Name = "عائلة الأحمدي"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            BlockId = 1,
+                            FamilyCatgoryId = 3,
+                            FamilyNotes = "عائلة متوسطة الدخل",
+                            HousingType = 1,
+                            Location = "شارع العروبة، حي السلام",
+                            Name = "عائلة السعيد"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            BlockId = 2,
+                            FamilyCatgoryId = 2,
+                            FamilyNotes = "عائلة يتيمة",
+                            HousingType = 2,
+                            Location = "شارع الأمير سلطان، حي السلام",
+                            Name = "عائلة القحطاني"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            BlockId = 2,
+                            FamilyCatgoryId = 3,
+                            HousingType = 1,
+                            Location = "شارع الملك عبدالعزيز، حي السلام",
+                            Name = "عائلة الدوسري"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            BlockId = 3,
+                            FamilyCatgoryId = 1,
+                            FamilyNotes = "عائلة كبيرة",
+                            HousingType = 2,
+                            Location = "شارع الخليج، حي السلام",
+                            Name = "عائلة الشمري"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            BlockId = 3,
+                            FamilyCatgoryId = 3,
+                            HousingType = 1,
+                            Location = "شارع الأمل، حي السلام",
+                            Name = "عائلة الغامدي"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            BlockId = 4,
+                            FamilyCatgoryId = 2,
+                            FamilyNotes = "عائلة محتاجة",
+                            HousingType = 2,
+                            Location = "شارع النخيل، حي السلام",
+                            Name = "عائلة العمري"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            BlockId = 4,
+                            FamilyCatgoryId = 3,
+                            HousingType = 1,
+                            Location = "شارع الورود، حي السلام",
+                            Name = "عائلة المطيري"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            BlockId = 5,
+                            FamilyCatgoryId = 1,
+                            FamilyNotes = "عائلة أرملة",
+                            HousingType = 2,
+                            Location = "شارع السلام، حي السلام",
+                            Name = "عائلة الزهراني"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            BlockId = 5,
+                            FamilyCatgoryId = 3,
+                            HousingType = 1,
+                            Location = "شارع الفيحاء، حي السلام",
+                            Name = "عائلة الحربي"
+                        });
                 });
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.FamilyCatgory", b =>
@@ -543,6 +683,9 @@ namespace SmartNeighborhoodAPI.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
+                    b.Property<int>("personType")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.ToTable("People");
@@ -560,7 +703,8 @@ namespace SmartNeighborhoodAPI.Migrations
                             OccupationStatus = 2,
                             PhoneNumber = "0791234567",
                             SecondName = "سعيد",
-                            ThirdName = "محمود"
+                            ThirdName = "محمود",
+                            personType = 3
                         },
                         new
                         {
@@ -574,7 +718,127 @@ namespace SmartNeighborhoodAPI.Migrations
                             OccupationStatus = 1,
                             PhoneNumber = "0789876543",
                             SecondName = "خالد",
-                            ThirdName = "عبد الله"
+                            ThirdName = "عبد الله",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 222,
+                            BloodType = 0,
+                            DateOfBirth = new DateTime(1985, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "أحمد",
+                            Gender = 0,
+                            IsContactNumber = true,
+                            IsWhatsapp = true,
+                            LastName = "السعيد",
+                            MaritalStatus = 2,
+                            OccupationStatus = 2,
+                            PhoneNumber = "0501234567",
+                            SecondName = "محمد",
+                            ThirdName = "علي",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 223,
+                            BloodType = 7,
+                            DateOfBirth = new DateTime(1988, 8, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "خالد",
+                            Gender = 0,
+                            IsContactNumber = true,
+                            IsWhatsapp = true,
+                            LastName = "العمري",
+                            MaritalStatus = 2,
+                            OccupationStatus = 3,
+                            PhoneNumber = "0502345678",
+                            SecondName = "عبدالله",
+                            ThirdName = "محمد",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 224,
+                            BloodType = 2,
+                            DateOfBirth = new DateTime(1990, 3, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "محمد",
+                            Gender = 0,
+                            IsContactNumber = true,
+                            IsWhatsapp = true,
+                            LastName = "الأحمدي",
+                            MaritalStatus = 1,
+                            OccupationStatus = 1,
+                            PhoneNumber = "0503456789",
+                            SecondName = "سعيد",
+                            ThirdName = "أحمد",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 225,
+                            BloodType = 4,
+                            DateOfBirth = new DateTime(1987, 12, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "عبدالرحمن",
+                            Gender = 0,
+                            IsContactNumber = true,
+                            IsWhatsapp = true,
+                            LastName = "القحطاني",
+                            MaritalStatus = 2,
+                            OccupationStatus = 3,
+                            PhoneNumber = "0504567890",
+                            SecondName = "فيصل",
+                            ThirdName = "عبدالله",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 226,
+                            BloodType = 0,
+                            DateOfBirth = new DateTime(1992, 7, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "سعود",
+                            Gender = 0,
+                            IsContactNumber = true,
+                            IsWhatsapp = true,
+                            LastName = "الدوسري",
+                            MaritalStatus = 1,
+                            OccupationStatus = 1,
+                            PhoneNumber = "0505678901",
+                            SecondName = "يوسف",
+                            ThirdName = "علي",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 227,
+                            BloodType = 6,
+                            DateOfBirth = new DateTime(1989, 11, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "فهد",
+                            Gender = 0,
+                            IsContactNumber = true,
+                            IsWhatsapp = true,
+                            LastName = "الشمري",
+                            MaritalStatus = 2,
+                            OccupationStatus = 3,
+                            PhoneNumber = "0506789012",
+                            SecondName = "إبراهيم",
+                            ThirdName = "محمد",
+                            personType = 2
+                        },
+                        new
+                        {
+                            Id = 228,
+                            BloodType = 2,
+                            DateOfBirth = new DateTime(1991, 2, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "ناصر",
+                            Gender = 0,
+                            IsContactNumber = true,
+                            IsWhatsapp = true,
+                            LastName = "الغامدي",
+                            MaritalStatus = 1,
+                            OccupationStatus = 1,
+                            PhoneNumber = "0507890123",
+                            SecondName = "علي",
+                            ThirdName = "سعد",
+                            personType = 2
                         });
                 });
 
@@ -586,23 +850,18 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<decimal?>("Budget")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double?>("Budget")
+                        .HasColumnType("float");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("ManagerId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(40)
-                        .HasColumnType("nvarchar(40)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ProjectCatogoryId")
                         .HasColumnType("int");
@@ -618,26 +877,9 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ManagerId");
-
                     b.HasIndex("ProjectCatogoryId");
 
-                    b.ToTable("Projects", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Budget = 100000m,
-                            Description = "هذا مشروع تمهيدي",
-                            EndDate = new DateTime(2025, 12, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ManagerId = 1,
-                            Name = "مشروع تجريبي",
-                            ProjectCatogoryId = 1,
-                            ProjectPriority = 1,
-                            ProjectStatus = 0,
-                            StartDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
-                        });
+                    b.ToTable("Projects");
                 });
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.ProjectCatogory", b =>
@@ -850,71 +1092,146 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "56f289eb-8c87-485d-95f8-a1996a9d093a",
+                            ConcurrencyStamp = "21683088-4ec1-4ec5-9ea3-21fb77e7786d",
                             Email = "sys.smartneighborhood@gmail.com",
                             EmailConfirmed = true,
                             IsActive = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "sys.smartneighborhood@gmail.com",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEF2t+TidAOCxOYTxuPgMGkNw4NuaM4/JH2oS4gdBmCCykMFJhEGmn6Ihi2kUBLXNmw==",
-                            PersonId = 9,
+                            PasswordHash = "AQAAAAIAAYagAAAAEAy3JPVkFDvphF4YwdU9pYTDi1E2syl9obPzwkRsVdsnVAibhynU697BlfEZZRkb/Q==",
+                            PersonId = 1,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "6610cdf1-ad8c-413d-b509-6d055b30538f",
+                            SecurityStamp = "f79ae376-4d5a-4a85-8130-a3068e995613",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         },
                         new
                         {
-                            Id = "aaaaaaaa-aaaa-aaaa-bbbb-aaaaaaaaaaaa",
+                            Id = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "2c4c5f3b-c0cc-4238-b5a7-91d1a27f3b5b",
-                            Email = "sys.smartneighborhood@gmail.com",
+                            ConcurrencyStamp = "85000fb3-d7d6-47a5-8067-10ef46986a3f",
+                            Email = "neighborhood.manager@test.com",
                             EmailConfirmed = true,
-                            IsActive = false,
+                            IsActive = true,
                             LockoutEnabled = false,
-                            NormalizedEmail = "SYS.SMARTNEIGHBORHOOD@GMAIL.COM",
-                            NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEF6MpC3OKjKZhHGYd3pidUcGW8fokAqPuijEyqf+mmilUI1u1eknbDMeD4zBdq32iw==",
-                            PersonId = 1,
+                            NormalizedEmail = "NEIGHBORHOOD.MANAGER@TEST.COM",
+                            NormalizedUserName = "NEIGHBORHOODMANAGER1",
+                            PasswordHash = "AQAAAAIAAYagAAAAEE1SvnaCaPFZpbQHFu5I6gvtqEvfhK5tDKir14YBqDVh/9Rl2tJ4yGm22rxZIgYqhA==",
+                            PersonId = 2,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "aa8c94b1-1dbc-4c56-ad8f-d73554359986",
+                            SecurityStamp = "0599cd83-7915-4434-bdeb-94c196cdd7e8",
                             TwoFactorEnabled = false,
-                            UserName = "Admin"
+                            UserName = "NeighborhoodManager1"
+                        },
+                        new
+                        {
+                            Id = "cccccccc-cccc-cccc-cccc-cccccccccccc",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "845c9793-6aa6-4c3d-8905-e965c2198a08",
+                            Email = "unit.manager@test.com",
+                            EmailConfirmed = true,
+                            IsActive = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "UNIT.MANAGER@TEST.COM",
+                            NormalizedUserName = "UNITMANAGER1",
+                            PasswordHash = "AQAAAAIAAYagAAAAELdCOiyVIZttZ4Yl/Ck3fGrwgE9b/KSvdnFvIVfy0C+uZ980/5YCGb/GFZEnzZswgg==",
+                            PersonId = 3,
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "6f42c013-d1c5-429b-8307-4899707e9b89",
+                            TwoFactorEnabled = false,
+                            UserName = "UnitManager1"
+                        },
+                        new
+                        {
+                            Id = "dddddddd-dddd-dddd-dddd-dddddddddddd",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "5a6e8858-48f1-4e11-a1cf-8f59a3e96e41",
+                            Email = "block.manager1@test.com",
+                            EmailConfirmed = true,
+                            IsActive = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "BLOCK.MANAGER1@TEST.COM",
+                            NormalizedUserName = "BLOCKMANAGER1",
+                            PasswordHash = "AQAAAAIAAYagAAAAEBqG5JV2uaapkcXYtRZXgHBb+fRCG9va4IweC2x/30pa1ZQsvqtf1sgOOCJHVFahhQ==",
+                            PersonId = 4,
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "e8c0ee21-1707-4714-8d6f-3b70e8559d33",
+                            TwoFactorEnabled = false,
+                            UserName = "BlockManager1"
+                        },
+                        new
+                        {
+                            Id = "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "f2276b22-238d-41dc-8093-7833b547b3b9",
+                            Email = "block.manager2@test.com",
+                            EmailConfirmed = true,
+                            IsActive = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "BLOCK.MANAGER2@TEST.COM",
+                            NormalizedUserName = "BLOCKMANAGER2",
+                            PasswordHash = "AQAAAAIAAYagAAAAEP0ItioypvBtT6icR2PNTB5m6PZCKydydokQRqVtsLTMiTzQ7JaI9PRiCFmpkWba+g==",
+                            PersonId = 5,
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "6f960618-9dc9-49f9-823e-af7fb8664c87",
+                            TwoFactorEnabled = false,
+                            UserName = "BlockManager2"
+                        },
+                        new
+                        {
+                            Id = "ffffffff-ffff-ffff-ffff-ffffffffffff",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "3790f01f-2294-4cc4-8bc1-2cba31daa7de",
+                            Email = "block.manager3@test.com",
+                            EmailConfirmed = true,
+                            IsActive = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "BLOCK.MANAGER3@TEST.COM",
+                            NormalizedUserName = "BLOCKMANAGER3",
+                            PasswordHash = "AQAAAAIAAYagAAAAEGzdhEPSmtiMtoJWd4LDDJlViAc5ZGjep9dwaSIxzDgWstp3HhjQSmDmqzEhM94VlA==",
+                            PersonId = 6,
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "9452030b-8d9a-476b-9104-61f13fb6b2c5",
+                            TwoFactorEnabled = false,
+                            UserName = "BlockManager3"
+                        },
+                        new
+                        {
+                            Id = "10101010-1010-1010-1010-101010101010",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "bb54d2f0-6595-4f93-8727-e5ab96e5fa20",
+                            Email = "block.manager4@test.com",
+                            EmailConfirmed = true,
+                            IsActive = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "BLOCK.MANAGER4@TEST.COM",
+                            NormalizedUserName = "BLOCKMANAGER4",
+                            PasswordHash = "AQAAAAIAAYagAAAAELJDymwUOf4oAw0/wk/URXYhrHgTE173uIrdkG0PB/AgUx47aghzGXCl4NZ6A+XeKw==",
+                            PersonId = 7,
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "fbc82c86-d9cc-4f01-bfd4-5ffe9f6444a4",
+                            TwoFactorEnabled = false,
+                            UserName = "BlockManager4"
+                        },
+                        new
+                        {
+                            Id = "20202020-2020-2020-2020-202020202020",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "ff2ea36b-696e-49d3-9a32-6890f3595b8f",
+                            Email = "block.manager5@test.com",
+                            EmailConfirmed = true,
+                            IsActive = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "BLOCK.MANAGER5@TEST.COM",
+                            NormalizedUserName = "BLOCKMANAGER5",
+                            PasswordHash = "AQAAAAIAAYagAAAAEH3TDYhc6YI3QQ9HVJ0Z4J8bSUTv9qeAYSqrDSyrGx5JFJVH/3twookhqJaDEgicSw==",
+                            PersonId = 8,
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "57657e04-fb4d-4063-8be2-5c9f073a93fe",
+                            TwoFactorEnabled = false,
+                            UserName = "BlockManager5"
                         });
-                });
-
-            modelBuilder.Entity("SmartNeighborhoodAPI.Entites.Contact", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AuthorityId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("GovernmentInstitutionId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Job")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Phone")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GovernmentInstitutionId");
-
-                    b.ToTable("Contacts");
                 });
 
             modelBuilder.Entity("SmartNeighborhoodAPI.Entites.GovernmentInstitution", b =>
@@ -932,6 +1249,50 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("GovernmentInstitutions");
+                });
+
+            modelBuilder.Entity("SmartNeighborhoodAPI.Entites.GovernmentInstitutionContact", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("GovernmentInstitutionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Job")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GovernmentInstitutionId");
+
+                    b.ToTable("GovernmentInstitutionContacts");
+                });
+
+            modelBuilder.Entity("SmartNeighborhoodAPI.Entites.ProjectBlock", b =>
+                {
+                    b.Property<int>("ProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BlockId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ProjectId", "BlockId");
+
+                    b.HasIndex("BlockId");
+
+                    b.ToTable("ProjectBlock");
                 });
 
             modelBuilder.Entity("SmartNeighborhoodAPI.Entites.ProjectTeam", b =>
@@ -955,6 +1316,80 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasIndex("TeamId");
 
                     b.ToTable("ProjectTeams");
+                });
+
+            modelBuilder.Entity("SmartNeighborhoodAPI.Entites.ResidentialNeighborhood", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("NeighborhoodManagerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.HasIndex("NeighborhoodManagerId")
+                        .IsUnique();
+
+                    b.ToTable("ResidentialNeighborhoods");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "حي السلام",
+                            NeighborhoodManagerId = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+                        });
+                });
+
+            modelBuilder.Entity("SmartNeighborhoodAPI.Entites.ResidentialUnit", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ResidentialNeighborhoodId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UnitManagerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ResidentialNeighborhoodId");
+
+                    b.HasIndex("UnitManagerId")
+                        .IsUnique();
+
+                    b.ToTable("ResidentialUnits");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "الوحدة الأولى",
+                            ResidentialNeighborhoodId = 1,
+                            UnitManagerId = "cccccccc-cccc-cccc-cccc-cccccccccccc"
+                        });
                 });
 
             modelBuilder.Entity("SmartNeighborhoodAPI.Entites.TeamRole", b =>
@@ -1059,17 +1494,31 @@ namespace SmartNeighborhoodAPI.Migrations
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.Block", b =>
                 {
-                    b.HasOne("SmartNeighborhoodAPI.Entites.AppUser", "Manager")
-                        .WithMany()
-                        .HasForeignKey("ManagerId")
+                    b.HasOne("SmartNeighborhoodAPI.Entites.AppUser", "BlockManager")
+                        .WithOne("ManagesBlock")
+                        .HasForeignKey("OurProjectSmartNeiborhood.Entites.Block", "BlockManagerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SmartNeighborhoodAPI.Entites.ResidentialUnit", "ResidentialUnit")
+                        .WithMany("Blocks")
+                        .HasForeignKey("ResidentialUnitId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Manager");
+                    b.Navigation("BlockManager");
+
+                    b.Navigation("ResidentialUnit");
                 });
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.ConflictCase", b =>
                 {
+                    b.HasOne("OurProjectSmartNeiborhood.Entites.Block", "Block")
+                        .WithMany("ConflictCases")
+                        .HasForeignKey("BlockId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("OurProjectSmartNeiborhood.Entites.ConfilctType", "ConflictType")
                         .WithMany("Conflicts")
                         .HasForeignKey("ConflictTypeId")
@@ -1082,23 +1531,17 @@ namespace SmartNeighborhoodAPI.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("SmartNeighborhoodAPI.Entites.AppUser", "Manager")
-                        .WithMany()
-                        .HasForeignKey("ManagerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("OurProjectSmartNeiborhood.Entites.FamilyMember", "SecondParty")
                         .WithMany("SecondPartyConflictCases")
                         .HasForeignKey("SecondPartyId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.Navigation("Block");
+
                     b.Navigation("ConflictType");
 
                     b.Navigation("FirstParty");
-
-                    b.Navigation("Manager");
 
                     b.Navigation("SecondParty");
                 });
@@ -1151,19 +1594,11 @@ namespace SmartNeighborhoodAPI.Migrations
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.Project", b =>
                 {
-                    b.HasOne("OurProjectSmartNeiborhood.Entites.Person", "Manager")
-                        .WithMany()
-                        .HasForeignKey("ManagerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("OurProjectSmartNeiborhood.Entites.ProjectCatogory", "ProjectCatogory")
                         .WithMany("Projects")
                         .HasForeignKey("ProjectCatogoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Manager");
 
                     b.Navigation("ProjectCatogory");
                 });
@@ -1225,15 +1660,34 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.Navigation("Person");
                 });
 
-            modelBuilder.Entity("SmartNeighborhoodAPI.Entites.Contact", b =>
+            modelBuilder.Entity("SmartNeighborhoodAPI.Entites.GovernmentInstitutionContact", b =>
                 {
                     b.HasOne("SmartNeighborhoodAPI.Entites.GovernmentInstitution", "GovernmentInstitution")
-                        .WithMany("Contacts")
+                        .WithMany("GovernmentInstitutionContacts")
                         .HasForeignKey("GovernmentInstitutionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("GovernmentInstitution");
+                });
+
+            modelBuilder.Entity("SmartNeighborhoodAPI.Entites.ProjectBlock", b =>
+                {
+                    b.HasOne("OurProjectSmartNeiborhood.Entites.Block", "Block")
+                        .WithMany("ProjectBlocks")
+                        .HasForeignKey("BlockId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("OurProjectSmartNeiborhood.Entites.Project", "Project")
+                        .WithMany("ProjectBlocks")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Block");
+
+                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("SmartNeighborhoodAPI.Entites.ProjectTeam", b =>
@@ -1255,9 +1709,43 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.Navigation("Team");
                 });
 
+            modelBuilder.Entity("SmartNeighborhoodAPI.Entites.ResidentialNeighborhood", b =>
+                {
+                    b.HasOne("SmartNeighborhoodAPI.Entites.AppUser", "NeighborhoodManager")
+                        .WithOne("ManagesNeighborhood")
+                        .HasForeignKey("SmartNeighborhoodAPI.Entites.ResidentialNeighborhood", "NeighborhoodManagerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("NeighborhoodManager");
+                });
+
+            modelBuilder.Entity("SmartNeighborhoodAPI.Entites.ResidentialUnit", b =>
+                {
+                    b.HasOne("SmartNeighborhoodAPI.Entites.ResidentialNeighborhood", "ResidentialNeighborhood")
+                        .WithMany("ResidentialUnits")
+                        .HasForeignKey("ResidentialNeighborhoodId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SmartNeighborhoodAPI.Entites.AppUser", "UnitManager")
+                        .WithOne("ManagesUnit")
+                        .HasForeignKey("SmartNeighborhoodAPI.Entites.ResidentialUnit", "UnitManagerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ResidentialNeighborhood");
+
+                    b.Navigation("UnitManager");
+                });
+
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.Block", b =>
                 {
+                    b.Navigation("ConflictCases");
+
                     b.Navigation("Families");
+
+                    b.Navigation("ProjectBlocks");
                 });
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.ConfilctType", b =>
@@ -1298,6 +1786,8 @@ namespace SmartNeighborhoodAPI.Migrations
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.Project", b =>
                 {
+                    b.Navigation("ProjectBlocks");
+
                     b.Navigation("ProjectFamilies");
 
                     b.Navigation("ProjectTeams");
@@ -1315,9 +1805,28 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.Navigation("TeamMembers");
                 });
 
+            modelBuilder.Entity("SmartNeighborhoodAPI.Entites.AppUser", b =>
+                {
+                    b.Navigation("ManagesBlock");
+
+                    b.Navigation("ManagesNeighborhood");
+
+                    b.Navigation("ManagesUnit");
+                });
+
             modelBuilder.Entity("SmartNeighborhoodAPI.Entites.GovernmentInstitution", b =>
                 {
-                    b.Navigation("Contacts");
+                    b.Navigation("GovernmentInstitutionContacts");
+                });
+
+            modelBuilder.Entity("SmartNeighborhoodAPI.Entites.ResidentialNeighborhood", b =>
+                {
+                    b.Navigation("ResidentialUnits");
+                });
+
+            modelBuilder.Entity("SmartNeighborhoodAPI.Entites.ResidentialUnit", b =>
+                {
+                    b.Navigation("Blocks");
                 });
 
             modelBuilder.Entity("SmartNeighborhoodAPI.Entites.TeamRole", b =>

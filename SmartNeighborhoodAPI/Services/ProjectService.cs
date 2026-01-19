@@ -16,12 +16,14 @@ namespace SmartNeighborhoodAPI.Services
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
         private readonly ILogger<Project> _logger;
+        private readonly UserContextService _userContextService;
 
-        public ProjectService(ApplicationDbContext context, IMapper mapper, ILogger<Project> logger)
+        public ProjectService(ApplicationDbContext context, IMapper mapper, ILogger<Project> logger, UserContextService userContextService)
         {
             _context = context;
             _mapper = mapper;
             _logger = logger;
+            _userContextService = userContextService;
         }
         public async Task<ApiResponse<ReturnProjectDto>> AddAsync(ProjectDto projectDto)
         {
@@ -42,7 +44,7 @@ namespace SmartNeighborhoodAPI.Services
             {
                 Name = projectDto.Name,
                 Description = projectDto.Description,
-                ManagerId = projectDto.ManagerId,
+                //ManagerId = projectDto.ManagerId,
                 ProjectCatogoryId = projectDto.ProjectCatgoryId,
                 StartDate = projectDto.StartDate,
                 EndDate = projectDto.EndDate,
@@ -91,7 +93,6 @@ namespace SmartNeighborhoodAPI.Services
             _logger.LogError("Delete failed: SaveChanges returned 0 for Project ID {ProjectId}.", id);
             return ApiResponse<string>.Error(HttpStatusCode.NotModified, "فشل حذف المشروع");
         }
-
         public async Task<ApiResponse<IEnumerable<ReturnProjectDto>>> GetAll(int? ProjectCategoryId)
         {
             _logger.LogInformation("Fetching all Projects{CategoryFilter}",
@@ -99,7 +100,7 @@ namespace SmartNeighborhoodAPI.Services
 
             var query = _context.Projects
                 .Include(x => x.ProjectCatogory)
-                .Include(x => x.Manager)
+                //.Include(x => x.Manager)
                 .AsNoTracking()
                 .AsQueryable();
 
@@ -122,7 +123,7 @@ namespace SmartNeighborhoodAPI.Services
                     ProjectStatus = GetDisplayName(project.ProjectStatus),
                     ProjectPriority = GetDisplayName(project.ProjectPriority),
                     Budget = project.Budget,
-                    Manager = new CustomPersonDto { Id = project.Manager.Id, FullName = project.Manager.FullName },
+                    //Manager = new CustomPersonDto { Id = project.Manager.Id, FullName = project.Manager.FullName },
                     ProjectCatgory = project.ProjectCatogory
                 }).ToList();
 
@@ -137,10 +138,11 @@ namespace SmartNeighborhoodAPI.Services
             return ApiResponse<IEnumerable<ReturnProjectDto>>.Error(HttpStatusCode.NotFound, "لا توجد مشاريع");
         }
 
+
         public async Task<ApiResponse<ReturnProjectDto>> GetByIdAsync(int id)
         {
             var project = await _context.Projects
-                .Include(x => x.Manager)
+                //.Include(x => x.Manager)
                 .Include(x => x.ProjectCatogory)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Id == id);
@@ -161,11 +163,11 @@ namespace SmartNeighborhoodAPI.Services
                 EndDate = project.EndDate,
                 ProjectStatus = GetDisplayName(project.ProjectStatus),
                 ProjectPriority = GetDisplayName(project.ProjectPriority),
-                Manager = new CustomPersonDto
-                {
-                    Id = project.Manager.Id,
-                    FullName = project.Manager.FullName
-                },
+                //Manager = new CustomPersonDto
+                //{
+                //    Id = project.Manager.Id,
+                //    FullName = project.Manager.FullName
+                //},
                 ProjectCatgory = project.ProjectCatogory
             };
 
@@ -203,7 +205,7 @@ namespace SmartNeighborhoodAPI.Services
             // Manual property update
             existingProject.Name = projectDto.Name;
             existingProject.Description = projectDto.Description;
-            existingProject.ManagerId = projectDto.ManagerId;
+            //existingProject.ManagerId = projectDto.ManagerId;
             existingProject.ProjectCatogoryId = projectDto.ProjectCatgoryId;
             existingProject.StartDate = projectDto.StartDate;
             existingProject.EndDate = projectDto.EndDate;
