@@ -78,6 +78,7 @@ builder.Services.AddScoped<ResidentialUnitService>();
 builder.Services.AddScoped<IResidentialNeighborhoodService, ResidentialNeighborhoodService>();
 builder.Services.AddScoped<IGovernmentInstitutionsService, GovernmentInstitutionsService>();
 builder.Services.AddScoped<IGovernmentInstitutionContactService, GovernmentInstitutionContactService>();
+builder.Services.AddScoped<IPassportApplicationService, PassportApplicationService>();
 
 
 builder.Host.UseSerilog((context, loggerConfig) =>

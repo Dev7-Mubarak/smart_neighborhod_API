@@ -27,55 +27,15 @@ namespace SmartNeighborhoodAPI
             builder.ApplyConfiguration(new AppUserSeedConfiguration());
             builder.ApplyConfiguration(new IdentityUserRoleSeedConfiguration());
             builder.ApplyConfiguration(new ProjectCatgoryEntityTypeConfiguration());
-            builder.ApplyConfiguration(new ResidentialNeighborhoodConfiguration());
+            builder.ApplyConfiguration(new ProjectConfiguration());
+            builder.ApplyConfiguration(new MedicineConfiguration());
+            builder.ApplyConfiguration(new MedicineBatchConfiguration());
+            builder.ApplyConfiguration(new IDCardApplicationConfiguration());
+            builder.ApplyConfiguration(new PassportApplicationConfiguration());
+            builder.ApplyConfiguration(new VehicleConfiguration());
+ 
             
-            // Seed data configurations for testing
-            builder.ApplyConfiguration(new PersonSeedConfiguration());
-            builder.ApplyConfiguration(new BlockManagersSeedConfiguration());
-            builder.ApplyConfiguration(new ResidentialNeighborhoodSeedConfiguration());
-            builder.ApplyConfiguration(new ResidentialUnitSeedConfiguration());
-            builder.ApplyConfiguration(new BlockSeedConfiguration());
-            builder.ApplyConfiguration(new FamilySeedConfiguration());
-            
-            base.OnModelCreating(builder);
 
-            builder.Entity<ResidentialUnit>()
-                .HasOne(u => u.UnitManager)
-                .WithOne(a => a.ManagesUnit)
-                .HasForeignKey<ResidentialUnit>(u => u.UnitManagerId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            builder.Entity<Block>()
-                .HasOne(b => b.ResidentialUnit)
-                .WithMany(u => u.Blocks)
-                .HasForeignKey(b => b.ResidentialUnitId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            builder.Entity<Block>()
-                .HasOne(b => b.BlockManager)
-                .WithOne(a => a.ManagesBlock)
-                .HasForeignKey<Block>(b => b.BlockManagerId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            builder.Entity<ConflictCase>()
-            .HasOne(c => c.Block)
-            .WithMany(b => b.ConflictCases)
-            .HasForeignKey(c => c.BlockId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-
-            builder.Entity<ProjectBlock>()
-                .HasKey(pb => new { pb.ProjectId, pb.BlockId }); 
-
-            builder.Entity<ProjectBlock>()
-                .HasOne(pb => pb.Project)
-                .WithMany(p => p.ProjectBlocks)
-                .HasForeignKey(pb => pb.ProjectId);
-
-            builder.Entity<ProjectBlock>()
-                .HasOne(pb => pb.Block)
-                .WithMany(b => b.ProjectBlocks)
-                .HasForeignKey(pb => pb.BlockId);
 
             builder.Entity<TeamRole>().HasData(
                    new TeamRole { Id = 1, Name = "مدير المشروع"},
@@ -121,6 +81,13 @@ namespace SmartNeighborhoodAPI
         public DbSet<GovernmentInstitutionContact> GovernmentInstitutionContacts { get; set; }
 
         public DbSet<GovernmentInstitution> GovernmentInstitutions { get; set; }
+        public DbSet<Vehicle> Vehicles { get; set; }
+
+        public DbSet<PassportApplication> PassportApplications { get; set; }
+        public DbSet<IDCardApplication> IDCardApplications { get; set; }
+
+        public DbSet<Medicine> Medicines { get; set; }
+        public DbSet<MedicineBatch> MedicineBatches { get; set; }
 
         public DbSet<Person> People { get; set; }
         public DbSet<Family> Families { get; set; }

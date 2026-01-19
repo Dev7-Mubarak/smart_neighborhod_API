@@ -1,0 +1,16 @@
+﻿using SmartNeighborhoodAPI.Entites.Enums;
+
+public class UpdatePassportApplicationDto
+{
+    [Required]
+    public int Id { get; set; }
+
+    [Required]
+    [MaxLength(100)]
+    public string ApplicationNumber { get; set; } = string.Empty;
+
+    public ApplicationStatus Status { get; set; } = ApplicationStatus.Received;
+
+    public string? Notes { get; set; }
+}
+

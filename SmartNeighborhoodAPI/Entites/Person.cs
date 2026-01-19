@@ -1,5 +1,6 @@
-﻿using System.Text.Json.Serialization;
+﻿using SmartNeighborhoodAPI.Entites;
 using SmartNeighborhoodAPI.Entites.Enums;
+using System.Text.Json.Serialization;
 
 namespace OurProjectSmartNeiborhood.Entites
 {
@@ -30,6 +31,7 @@ namespace OurProjectSmartNeiborhood.Entites
         public string? Job { get; set; }
         public List<FamilyMember> FamilyMembers { get; set; }
         public ICollection<TeamMember> TeamMemberships { get; set; }
+        public ICollection<Vehicle>? Vehicles { get; set; }
 
         [JsonIgnore]
         public string FullName =>
