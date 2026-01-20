@@ -1,7 +1,9 @@
-﻿using SmartNeighborhoodAPI.Helpers.DTOs.Person;
+﻿using SmartNeighborhoodAPI.Entites;
+using SmartNeighborhoodAPI.Helpers.DTOs.Person;
 using SmartNeighborhoodAPI.Services;
 using System.Net;
 using SmartNeighborhoodAPI.Interfaces;
+using Microsoft.AspNetCore.Identity;
 
 namespace OurProjectSmartNeiborhood.Services
 {
@@ -15,9 +17,10 @@ namespace OurProjectSmartNeiborhood.Services
         private string _personImagePath;
         private readonly UserContextService _userContextService;
         private readonly ILogger<PersonService> _logger;
+        private readonly UserManager<AppUser> _userManager;
 
 
-        public PersonService(ApplicationDbContext context, IMapper mapper, IWebHostEnvironment webHostEnvironment, ImageService imageService, ILogger<PersonService> logger, UserContextService userContextService)
+        public PersonService(ApplicationDbContext context, IMapper mapper, IWebHostEnvironment webHostEnvironment, ImageService imageService, ILogger<PersonService> logger, UserContextService userContextService, UserManager<AppUser> userManager)
         {
             _context = context;
             _mapper = mapper;
@@ -26,6 +29,7 @@ namespace OurProjectSmartNeiborhood.Services
             _imageService = imageService;
             _logger = logger;
             _userContextService = userContextService;
+            _userManager = userManager;
         }
 
         public async Task<ApiResponse<Person>> AddAsync(CreatePersonDto dto)
@@ -67,6 +71,17 @@ namespace OurProjectSmartNeiborhood.Services
                 .FirstOrDefaultAsync(p => p.Id == id);
             if (entity == null)
                 return ApiResponse<string>.Error(HttpStatusCode.NotFound, "الشخص غير موجود.");
+
+            var associatedUser = await _userManager.Users.FirstOrDefaultAsync(u => u.PersonId == id);
+            if (associatedUser != null)
+            {
+                var deleteResult = await _userManager.DeleteAsync(associatedUser);
+                if (!deleteResult.Succeeded)
+                {
+                    _logger.LogError("Failed to delete associated user for person {PersonId}", id);
+                    return ApiResponse<string>.Error(HttpStatusCode.InternalServerError, "فشل في حذف الحساب المرتبط بالشخص.");
+                }
+            }
 
             _context.Remove(entity);
             if (!string.IsNullOrEmpty(entity.Image))
