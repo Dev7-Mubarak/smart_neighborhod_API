@@ -60,6 +60,7 @@ builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.Configure<JWT>(builder.Configuration.GetSection("Jwt"));
 builder.Services.AddScoped<ConflictCaseService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+
 builder.Services.AddScoped<PersonService>();
 builder.Services.AddScoped<FamilyCatgoryService>();
 builder.Services.AddScoped<FamilyService>();
