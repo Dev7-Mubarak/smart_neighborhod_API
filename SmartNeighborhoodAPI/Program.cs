@@ -1,23 +1,25 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.AspNetCore.Localization;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
-using MramProject.Interface;
-using MramProject.Services;
-using OurProjectSmartNeiborhood.Services;
-using Serilog;
+﻿using Microsoft.AspNetCore.Mvc.Versioning;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using SmartNeighborhoodAPI.Entites;
+using Microsoft.AspNetCore.Identity;
 using SmartNeighborhoodAPI.Interfaces;
-using SmartNeighborhoodAPI.Middlewares;
-using SmartNeighborhoodAPI.Services;
-using System.Globalization;
-using System.Net;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+using OurProjectSmartNeiborhood.Services;
+using MramProject.Interface;
+using Serilog;
+using MramProject.Services;
 using System.Threading.RateLimiting;
+using System.Text.Json;
+using System.Net;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using System.Text.Json.Serialization;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using SmartNeighborhoodAPI.Middlewares;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -172,6 +174,17 @@ builder.Services.AddControllers()
         {
             options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
         });
+builder.Services.AddApiVersioning(options =>
+{
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.ReportApiVersions = true;
+});
+builder.Services.AddVersionedApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV";
+    options.SubstituteApiVersionInUrl = true;
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -201,6 +214,7 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
+builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 var app = builder.Build();
 app.UseRequestLocalization();
 //app.UseMiddleware<ExceptionHandlingMiddleware>();

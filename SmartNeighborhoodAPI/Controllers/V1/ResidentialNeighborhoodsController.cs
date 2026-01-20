@@ -87,7 +87,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         [SwaggerOperation(
             Summary = "Get my managed neighborhoods (Manager only)",
             Description = "Returns all residential neighborhoods managed by the authenticated user, including residential units and blocks summary.")]
-        [ProducesResponseType(typeof(ApiResponse<List<ReturnResidentialNeighborhoodDto>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<List<ReturnResidentialUnitDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> GetMyNeighborhoods(CancellationToken ct)
