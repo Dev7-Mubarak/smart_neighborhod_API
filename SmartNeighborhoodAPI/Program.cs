@@ -67,7 +67,7 @@ builder.Services.AddScoped<MemberFamilyRoleService>();
 builder.Services.AddScoped<BlockServices>();
 builder.Services.AddScoped<ImageService>();
 builder.Services.AddScoped<ConflictCaseService>();
-builder.Services.AddScoped<ConflictTypeService>();
+builder.Services.AddScoped<IConflictTypeService,ConflictTypeService>();
 builder.Services.AddScoped<ProjectCatgoryService>();
 builder.Services.AddScoped<ProjectService>();
 builder.Services.AddScoped<ProjectFamilieservice>();
@@ -79,6 +79,10 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<UserContextService>();
 builder.Services.AddScoped<IGovernmentInstitutionsService, GovernmentInstitutionsService>();
 builder.Services.AddScoped<IGovernmentInstitutionContactService, GovernmentInstitutionContactService>();
+builder.Services.AddScoped<IResidentialNeighborhoodService, ResidentialNeighborhoodService>();
+builder.Services.AddScoped<ResidentialUnitService, ResidentialUnitService>();
+
+
 
 
 

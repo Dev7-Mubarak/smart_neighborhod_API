@@ -48,7 +48,7 @@ namespace SmartNeighborhoodAPI.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -268,7 +268,7 @@ namespace SmartNeighborhoodAPI.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-       
+            
                 });
 
             migrationBuilder.CreateTable(
@@ -455,12 +455,7 @@ namespace SmartNeighborhoodAPI.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ProjectTeams", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ProjectTeams_Projects_ProjectId",
-                        column: x => x.ProjectId,
-                        principalTable: "Projects",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+         
                     table.ForeignKey(
                         name: "FK_ProjectTeams_Teams_TeamId",
                         column: x => x.TeamId,
@@ -651,8 +646,7 @@ namespace SmartNeighborhoodAPI.Migrations
                     IsResolved = table.Column<bool>(type: "bit", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     BlockId = table.Column<int>(type: "int", nullable: true),
-                    ManagerId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    ConfilctTypeId = table.Column<int>(type: "int", nullable: true)
+                    ManagerId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -669,11 +663,6 @@ namespace SmartNeighborhoodAPI.Migrations
                         principalTable: "Blocks",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ConfilctCases_ConfilctTypes_ConfilctTypeId",
-                        column: x => x.ConfilctTypeId,
-                        principalTable: "ConfilctTypes",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_ConfilctCases_ConfilctTypes_ConflictTypeId",
                         column: x => x.ConflictTypeId,
@@ -708,7 +697,17 @@ namespace SmartNeighborhoodAPI.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmationCode", "EmailConfirmationCodeExpiresAt", "EmailConfirmed", "IsActive", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PersonId", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb", 0, "90f79cfa-938c-403e-b72c-07a1ad6b305d", "neighborhood.manager@test.com", null, null, true, true, false, null, "NEIGHBORHOOD.MANAGER@TEST.COM", "NEIGHBORHOODMANAGER1", "AQAAAAIAAYagAAAAELhPoGacZ/oN4j6DqtwsCICCjcki95H5XDMKPyjmpW0jPygAw+y2SPISNfeeeGvQ3w==", 2, null, false, "fc83a7c3-6217-421c-8c21-4df58a72416e", false, "NeighborhoodManager1" });
+                values: new object[] { "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb", 0, "1442da9c-ddd8-4716-a936-a8604f832d0d", "neighborhood.manager@test.com", null, null, true, true, false, null, "NEIGHBORHOOD.MANAGER@TEST.COM", "NEIGHBORHOODMANAGER1", "AQAAAAIAAYagAAAAEJqTmyx/hAAclS5eSH8EmcoeFlnj4v9WSjI8r8lFVnbIM8QD4iY2WPWjZrACEDORfw==", 2, null, false, "1e5160bc-467d-46a1-8aae-69a2fdd456af", false, "NeighborhoodManager1" });
+
+            migrationBuilder.InsertData(
+                table: "ConfilctTypes",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "صلح" },
+                    { 2, "معاهدات" },
+                    { 3, "اتفاقيات" }
+                });
 
             migrationBuilder.InsertData(
                 table: "FamilyCatgories",
@@ -718,6 +717,15 @@ namespace SmartNeighborhoodAPI.Migrations
                     { 1, "A" },
                     { 2, "B" },
                     { 3, "C" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "GovernmentInstitutions",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "مؤسسة المياه والصرف" },
+                    { 2, "مركز شرطة المكلا" }
                 });
 
             migrationBuilder.InsertData(
@@ -813,17 +821,46 @@ namespace SmartNeighborhoodAPI.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "Teams",
+                columns: new[] { "Id", "Name" },
+                values: new object[,]
+                {
+                    { 1, "فريق التنمية المجتمعية" },
+                    { 2, "فريق الخدمات الميدانية" }
+                });
+
+            migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmationCode", "EmailConfirmationCodeExpiresAt", "EmailConfirmed", "IsActive", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PersonId", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
                 values: new object[,]
                 {
-                    { "10101010-1010-1010-1010-101010101010", 0, "79271c9c-bc00-49c6-8b90-f81b6752cf33", "block.manager4@test.com", null, null, true, true, false, null, "BLOCK.MANAGER4@TEST.COM", "BLOCKMANAGER4", "AQAAAAIAAYagAAAAEKKDUuaqkx7GBefZuoFl4qNkOJzk+aZ8ZgUfLi6H+0KUMt0bXUT44ATdxmmALLkBng==", 7, null, false, "b49b1fda-1d4a-4a58-87a4-57c6acd308a7", false, "BlockManager4" },
-                    { "20202020-2020-2020-2020-202020202020", 0, "027037f2-e438-4288-bb0c-25b73a510ce6", "block.manager5@test.com", null, null, true, true, false, null, "BLOCK.MANAGER5@TEST.COM", "BLOCKMANAGER5", "AQAAAAIAAYagAAAAEEB3Lsq6rPuA+5UpWMs5D8khu4ruRPZxsq+8mK0/WkBBOoNHaQF7tth9mJTMHGTavw==", 8, null, false, "7712931f-5636-49f6-aa64-f3bebf450eae", false, "BlockManager5" },
-                    { "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", 0, "695f4ae2-44ab-49f6-9393-d46880ba38fb", "sys.smartneighborhood@gmail.com", null, null, true, false, false, null, "SYS.SMARTNEIGHBORHOOD@GMAIL.COM", "ADMIN", "AQAAAAIAAYagAAAAEBLKwpW6VFBYMLYUpZHwWvoq0K+nURGAqH8T7kEkk2CP0yUL0h0GRgsrlvj2mXlzjA==", 1, null, false, "d3a563f6-b5e4-44ff-b3a5-2b2a228b4868", false, "Admin" },
-                    { "cccccccc-cccc-cccc-cccc-cccccccccccc", 0, "40052b47-71f9-47f9-b9ea-9cd426c470f2", "unit.manager@test.com", null, null, true, true, false, null, "UNIT.MANAGER@TEST.COM", "UNITMANAGER1", "AQAAAAIAAYagAAAAEKHPEJPxmgstoGQnv7bSIRDCcaZ1rQ7ZC1Wjy7usixEf/Zs+5AEf90i/qUb6yhVTBg==", 3, null, false, "54555566-0520-43f1-a664-e64aa74ed4ab", false, "UnitManager1" },
-                    { "dddddddd-dddd-dddd-dddd-dddddddddddd", 0, "4a9db97c-08e3-4cc4-a5e0-4b0dc89d7dc5", "block.manager1@test.com", null, null, true, true, false, null, "BLOCK.MANAGER1@TEST.COM", "BLOCKMANAGER1", "AQAAAAIAAYagAAAAEBZA6QozvQF3EQPcpQc+6N14xr/vuKFzDm6ZpoeRUBcppuxtwAXrMjRSmUGEzskBoQ==", 4, null, false, "38a3641f-499c-4b9f-aa17-0a5ae0a13e6f", false, "BlockManager1" },
-                    { "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee", 0, "bba5b935-b583-4094-9d68-528516775fcf", "block.manager2@test.com", null, null, true, true, false, null, "BLOCK.MANAGER2@TEST.COM", "BLOCKMANAGER2", "AQAAAAIAAYagAAAAEOMu+qAePP2NJq6cetnCVk3tEkwgMlGAoaoUMEssvOy2xBQ7+7N5YHm5kYogkEnYkw==", 5, null, false, "a240b0ed-9050-4ef9-b8a2-832fae864ba0", false, "BlockManager2" },
-                    { "ffffffff-ffff-ffff-ffff-ffffffffffff", 0, "f995e56e-f93b-44eb-8c8a-c2be26250ba2", "block.manager3@test.com", null, null, true, true, false, null, "BLOCK.MANAGER3@TEST.COM", "BLOCKMANAGER3", "AQAAAAIAAYagAAAAEH262/ag1Mn1cctPUIaWSfH4IwxpFYFFHNnP/1/LvtL2aWo3RSRfOdaCqx8jN0w2Nw==", 6, null, false, "58e685b4-569d-40fd-bfa3-c05943952990", false, "BlockManager3" }
+                    { "10101010-1010-1010-1010-101010101010", 0, "4b975235-892c-42c9-a02c-9c8ac5e4f6c8", "block.manager4@test.com", null, null, true, true, false, null, "BLOCK.MANAGER4@TEST.COM", "BLOCKMANAGER4", "AQAAAAIAAYagAAAAEB8StXqFvEBNo8psW4XuY1oU1E6kSr7MGUOtuRQOCNw4M1sRvdvPVc6IiEzhWewhzw==", 7, null, false, "0214d37f-5408-4ee0-b09b-13da602c6d00", false, "BlockManager4" },
+                    { "20202020-2020-2020-2020-202020202020", 0, "66134406-1776-4d0a-9758-2a3e995cd9cd", "block.manager5@test.com", null, null, true, true, false, null, "BLOCK.MANAGER5@TEST.COM", "BLOCKMANAGER5", "AQAAAAIAAYagAAAAEPaiEFEKUj6IWnEuj75CfkE7aX6SaNHmUdUDMZRUk0mQ1s5Cjb2B+56KPPeJpqn2rg==", 8, null, false, "c64debf4-e694-488a-bdcc-fe4f47a23c63", false, "BlockManager5" },
+                    { "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", 0, "4c218d40-08e8-4cb9-9753-8ba8ae08db6b", "sys.smartneighborhood@gmail.com", null, null, true, false, false, null, "SYS.SMARTNEIGHBORHOOD@GMAIL.COM", "ADMIN", "AQAAAAIAAYagAAAAEO0t8TEAnUVo6hQwofacwvFDjR3k1NmnXaDgLmu1WJR2Rq+MWdK45gWC0DnGMygysg==", 1, null, false, "21f67657-3430-463e-8eda-e8bd9470cc54", false, "Admin" },
+                    { "cccccccc-cccc-cccc-cccc-cccccccccccc", 0, "d7423f4c-687b-4fe0-bbc8-9f85f2028fff", "unit.manager@test.com", null, null, true, true, false, null, "UNIT.MANAGER@TEST.COM", "UNITMANAGER1", "AQAAAAIAAYagAAAAEGl+z75O3QaRaN1ixqN9hgjtiTKqcHdTD+owHVmEm/RZULzC2sILgrP+MKAlpspdvw==", 3, null, false, "e368055f-1aee-4936-8cf8-3c7bbcdc29de", false, "UnitManager1" },
+                    { "dddddddd-dddd-dddd-dddd-dddddddddddd", 0, "8ad46d1e-22e0-4bfc-a0bc-615b20aed10d", "block.manager1@test.com", null, null, true, true, false, null, "BLOCK.MANAGER1@TEST.COM", "BLOCKMANAGER1", "AQAAAAIAAYagAAAAELsIwVcUC2RE97y0aDpF6dOjVPT8ypmxOSJd7nKchIvE4bOu/55HIHHVlrrmPDDCdg==", 4, null, false, "da0c9f82-031e-4e0e-9b2c-0d92bfcdd593", false, "BlockManager1" },
+                    { "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee", 0, "86e12aec-d41b-4b18-b06a-14576028f95e", "block.manager2@test.com", null, null, true, true, false, null, "BLOCK.MANAGER2@TEST.COM", "BLOCKMANAGER2", "AQAAAAIAAYagAAAAEE/Tn7JwNz6tn3wqQRP14YusT4uOCFb21L72GOJhRiJdFE0SVBM21sCDfQIUAz4G3A==", 5, null, false, "174487f8-006c-466d-8b84-938472ec2bb3", false, "BlockManager2" },
+                    { "ffffffff-ffff-ffff-ffff-ffffffffffff", 0, "70582f4f-eae3-4378-a7e0-0486998eb00a", "block.manager3@test.com", null, null, true, true, false, null, "BLOCK.MANAGER3@TEST.COM", "BLOCKMANAGER3", "AQAAAAIAAYagAAAAECFC1wI2NnT2sp9s2wHwf3EhPtSm5fK7hecYFNjqTx9zbqHYRs0GtehHkji8ijCe/Q==", 6, null, false, "732d6401-ab1f-4eac-a3bf-4f9bc15b6a22", false, "BlockManager3" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "GovernmentInstitutionContacts",
+                columns: new[] { "Id", "GovernmentInstitutionId", "Job", "Name", "Phone" },
+                values: new object[,]
+                {
+                    { 1, 1, "مدير محطة المياه", "مهندس علي سالم", "0777001111" },
+                    { 2, 1, "مسؤولة الصرف الصحي", "أمينة محمد", "0777002222" },
+                    { 3, 2, "ضابط ارتباط", "نقيب خالد الشامي", "0777013333" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "ProjectTeams",
+                columns: new[] { "Id", "ProjectId", "TeamId" },
+                values: new object[,]
+                {
+                    { 1, 1, 1 },
+                    { 2, 2, 1 },
+                    { 3, 3, 2 }
                 });
 
             migrationBuilder.InsertData(
@@ -917,6 +954,57 @@ namespace SmartNeighborhoodAPI.Migrations
                     { 20, 15, 2, null, 1, "الطابق الأرضي، مبنى 15", "عائلة مختار" }
                 });
 
+            migrationBuilder.InsertData(
+                table: "FamilyMembers",
+                columns: new[] { "Id", "FamilyId", "MemberFamilyRoleId", "PersonId" },
+                values: new object[,]
+                {
+                    { 1, 1, 1, 11 },
+                    { 2, 1, 2, 12 },
+                    { 3, 1, 3, 13 },
+                    { 4, 2, 1, 14 },
+                    { 5, 2, 2, 15 },
+                    { 6, 2, 4, 16 },
+                    { 7, 3, 1, 17 },
+                    { 8, 3, 2, 18 },
+                    { 9, 3, 4, 19 },
+                    { 10, 4, 1, 20 },
+                    { 11, 4, 2, 21 },
+                    { 12, 4, 3, 22 },
+                    { 13, 5, 1, 23 },
+                    { 14, 5, 2, 24 },
+                    { 15, 5, 4, 25 },
+                    { 16, 6, 1, 26 },
+                    { 17, 6, 2, 27 },
+                    { 18, 6, 3, 28 },
+                    { 19, 7, 1, 29 },
+                    { 20, 7, 2, 30 },
+                    { 21, 7, 3, 31 },
+                    { 22, 8, 1, 32 },
+                    { 23, 8, 2, 33 },
+                    { 24, 8, 4, 34 },
+                    { 25, 11, 1, 35 },
+                    { 26, 11, 2, 36 },
+                    { 27, 12, 1, 37 },
+                    { 28, 12, 2, 38 },
+                    { 29, 13, 1, 39 },
+                    { 30, 13, 2, 40 },
+                    { 31, 14, 1, 41 },
+                    { 32, 14, 2, 42 },
+                    { 33, 15, 1, 43 },
+                    { 34, 15, 2, 44 },
+                    { 35, 16, 1, 45 },
+                    { 36, 16, 2, 46 },
+                    { 37, 17, 1, 47 },
+                    { 38, 17, 2, 48 },
+                    { 39, 18, 1, 49 },
+                    { 40, 18, 2, 50 },
+                    { 41, 19, 1, 51 },
+                    { 42, 19, 2, 52 },
+                    { 43, 20, 1, 53 },
+                    { 44, 20, 2, 54 }
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AdGroup_GroupsId",
                 table: "AdGroup",
@@ -976,11 +1064,6 @@ namespace SmartNeighborhoodAPI.Migrations
                 name: "IX_ConfilctCases_BlockId",
                 table: "ConfilctCases",
                 column: "BlockId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ConfilctCases_ConfilctTypeId",
-                table: "ConfilctCases",
-                column: "ConfilctTypeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ConfilctCases_ConflictTypeId",
@@ -1078,7 +1161,6 @@ namespace SmartNeighborhoodAPI.Migrations
                 table: "ResidentialNeighborhoods",
                 column: "Name",
                 unique: true);
-
 
 
             migrationBuilder.CreateIndex(

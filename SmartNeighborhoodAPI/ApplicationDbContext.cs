@@ -37,6 +37,16 @@ namespace SmartNeighborhoodAPI
             builder.ApplyConfiguration(new ResidentialUnitSeedConfiguration());
             builder.ApplyConfiguration(new BlockSeedConfiguration());
             builder.ApplyConfiguration(new FamilySeedConfiguration());
+            builder.ApplyConfiguration(new FamilyMemberSeedConfiguration());
+            builder.ApplyConfiguration(new ConfilctTypeConfiguration());
+            builder.ApplyConfiguration(new TeamSeedConfiguration());
+            builder.ApplyConfiguration(new ProjectTeamSeedConfiguration());
+            builder.ApplyConfiguration(new GovernmentInstitutionSeedConfiguration());
+            builder.ApplyConfiguration(new GovernmentInstitutionContactSeedConfiguration());
+             
+        
+
+
             
             base.OnModelCreating(builder);
 

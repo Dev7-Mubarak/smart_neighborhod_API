@@ -12,7 +12,7 @@ using SmartNeighborhoodAPI;
 namespace SmartNeighborhoodAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260121134433_init")]
+    [Migration("20260121151327_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -410,11 +410,29 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
                     b.ToTable("ConfilctTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "صلح"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "معاهدات"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "اتفاقيات"
+                        });
                 });
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.ConflictCase", b =>
@@ -426,9 +444,6 @@ namespace SmartNeighborhoodAPI.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("BlockId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ConfilctTypeId")
                         .HasColumnType("int");
 
                     b.Property<int>("ConflictTypeId")
@@ -462,8 +477,6 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("BlockId");
-
-                    b.HasIndex("ConfilctTypeId");
 
                     b.HasIndex("ConflictTypeId");
 
@@ -765,6 +778,316 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasIndex("PersonId");
 
                     b.ToTable("FamilyMembers");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            FamilyId = 1,
+                            MemberFamilyRoleId = 1,
+                            PersonId = 11
+                        },
+                        new
+                        {
+                            Id = 2,
+                            FamilyId = 1,
+                            MemberFamilyRoleId = 2,
+                            PersonId = 12
+                        },
+                        new
+                        {
+                            Id = 3,
+                            FamilyId = 1,
+                            MemberFamilyRoleId = 3,
+                            PersonId = 13
+                        },
+                        new
+                        {
+                            Id = 4,
+                            FamilyId = 2,
+                            MemberFamilyRoleId = 1,
+                            PersonId = 14
+                        },
+                        new
+                        {
+                            Id = 5,
+                            FamilyId = 2,
+                            MemberFamilyRoleId = 2,
+                            PersonId = 15
+                        },
+                        new
+                        {
+                            Id = 6,
+                            FamilyId = 2,
+                            MemberFamilyRoleId = 4,
+                            PersonId = 16
+                        },
+                        new
+                        {
+                            Id = 7,
+                            FamilyId = 3,
+                            MemberFamilyRoleId = 1,
+                            PersonId = 17
+                        },
+                        new
+                        {
+                            Id = 8,
+                            FamilyId = 3,
+                            MemberFamilyRoleId = 2,
+                            PersonId = 18
+                        },
+                        new
+                        {
+                            Id = 9,
+                            FamilyId = 3,
+                            MemberFamilyRoleId = 4,
+                            PersonId = 19
+                        },
+                        new
+                        {
+                            Id = 10,
+                            FamilyId = 4,
+                            MemberFamilyRoleId = 1,
+                            PersonId = 20
+                        },
+                        new
+                        {
+                            Id = 11,
+                            FamilyId = 4,
+                            MemberFamilyRoleId = 2,
+                            PersonId = 21
+                        },
+                        new
+                        {
+                            Id = 12,
+                            FamilyId = 4,
+                            MemberFamilyRoleId = 3,
+                            PersonId = 22
+                        },
+                        new
+                        {
+                            Id = 13,
+                            FamilyId = 5,
+                            MemberFamilyRoleId = 1,
+                            PersonId = 23
+                        },
+                        new
+                        {
+                            Id = 14,
+                            FamilyId = 5,
+                            MemberFamilyRoleId = 2,
+                            PersonId = 24
+                        },
+                        new
+                        {
+                            Id = 15,
+                            FamilyId = 5,
+                            MemberFamilyRoleId = 4,
+                            PersonId = 25
+                        },
+                        new
+                        {
+                            Id = 16,
+                            FamilyId = 6,
+                            MemberFamilyRoleId = 1,
+                            PersonId = 26
+                        },
+                        new
+                        {
+                            Id = 17,
+                            FamilyId = 6,
+                            MemberFamilyRoleId = 2,
+                            PersonId = 27
+                        },
+                        new
+                        {
+                            Id = 18,
+                            FamilyId = 6,
+                            MemberFamilyRoleId = 3,
+                            PersonId = 28
+                        },
+                        new
+                        {
+                            Id = 19,
+                            FamilyId = 7,
+                            MemberFamilyRoleId = 1,
+                            PersonId = 29
+                        },
+                        new
+                        {
+                            Id = 20,
+                            FamilyId = 7,
+                            MemberFamilyRoleId = 2,
+                            PersonId = 30
+                        },
+                        new
+                        {
+                            Id = 21,
+                            FamilyId = 7,
+                            MemberFamilyRoleId = 3,
+                            PersonId = 31
+                        },
+                        new
+                        {
+                            Id = 22,
+                            FamilyId = 8,
+                            MemberFamilyRoleId = 1,
+                            PersonId = 32
+                        },
+                        new
+                        {
+                            Id = 23,
+                            FamilyId = 8,
+                            MemberFamilyRoleId = 2,
+                            PersonId = 33
+                        },
+                        new
+                        {
+                            Id = 24,
+                            FamilyId = 8,
+                            MemberFamilyRoleId = 4,
+                            PersonId = 34
+                        },
+                        new
+                        {
+                            Id = 25,
+                            FamilyId = 11,
+                            MemberFamilyRoleId = 1,
+                            PersonId = 35
+                        },
+                        new
+                        {
+                            Id = 26,
+                            FamilyId = 11,
+                            MemberFamilyRoleId = 2,
+                            PersonId = 36
+                        },
+                        new
+                        {
+                            Id = 27,
+                            FamilyId = 12,
+                            MemberFamilyRoleId = 1,
+                            PersonId = 37
+                        },
+                        new
+                        {
+                            Id = 28,
+                            FamilyId = 12,
+                            MemberFamilyRoleId = 2,
+                            PersonId = 38
+                        },
+                        new
+                        {
+                            Id = 29,
+                            FamilyId = 13,
+                            MemberFamilyRoleId = 1,
+                            PersonId = 39
+                        },
+                        new
+                        {
+                            Id = 30,
+                            FamilyId = 13,
+                            MemberFamilyRoleId = 2,
+                            PersonId = 40
+                        },
+                        new
+                        {
+                            Id = 31,
+                            FamilyId = 14,
+                            MemberFamilyRoleId = 1,
+                            PersonId = 41
+                        },
+                        new
+                        {
+                            Id = 32,
+                            FamilyId = 14,
+                            MemberFamilyRoleId = 2,
+                            PersonId = 42
+                        },
+                        new
+                        {
+                            Id = 33,
+                            FamilyId = 15,
+                            MemberFamilyRoleId = 1,
+                            PersonId = 43
+                        },
+                        new
+                        {
+                            Id = 34,
+                            FamilyId = 15,
+                            MemberFamilyRoleId = 2,
+                            PersonId = 44
+                        },
+                        new
+                        {
+                            Id = 35,
+                            FamilyId = 16,
+                            MemberFamilyRoleId = 1,
+                            PersonId = 45
+                        },
+                        new
+                        {
+                            Id = 36,
+                            FamilyId = 16,
+                            MemberFamilyRoleId = 2,
+                            PersonId = 46
+                        },
+                        new
+                        {
+                            Id = 37,
+                            FamilyId = 17,
+                            MemberFamilyRoleId = 1,
+                            PersonId = 47
+                        },
+                        new
+                        {
+                            Id = 38,
+                            FamilyId = 17,
+                            MemberFamilyRoleId = 2,
+                            PersonId = 48
+                        },
+                        new
+                        {
+                            Id = 39,
+                            FamilyId = 18,
+                            MemberFamilyRoleId = 1,
+                            PersonId = 49
+                        },
+                        new
+                        {
+                            Id = 40,
+                            FamilyId = 18,
+                            MemberFamilyRoleId = 2,
+                            PersonId = 50
+                        },
+                        new
+                        {
+                            Id = 41,
+                            FamilyId = 19,
+                            MemberFamilyRoleId = 1,
+                            PersonId = 51
+                        },
+                        new
+                        {
+                            Id = 42,
+                            FamilyId = 19,
+                            MemberFamilyRoleId = 2,
+                            PersonId = 52
+                        },
+                        new
+                        {
+                            Id = 43,
+                            FamilyId = 20,
+                            MemberFamilyRoleId = 1,
+                            PersonId = 53
+                        },
+                        new
+                        {
+                            Id = 44,
+                            FamilyId = 20,
+                            MemberFamilyRoleId = 2,
+                            PersonId = 54
+                        });
                 });
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.Group", b =>
@@ -1825,6 +2148,18 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Teams");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "فريق التنمية المجتمعية"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "فريق الخدمات الميدانية"
+                        });
                 });
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.TeamMember", b =>
@@ -1942,17 +2277,17 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "695f4ae2-44ab-49f6-9393-d46880ba38fb",
+                            ConcurrencyStamp = "4c218d40-08e8-4cb9-9753-8ba8ae08db6b",
                             Email = "sys.smartneighborhood@gmail.com",
                             EmailConfirmed = true,
                             IsActive = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "SYS.SMARTNEIGHBORHOOD@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEBLKwpW6VFBYMLYUpZHwWvoq0K+nURGAqH8T7kEkk2CP0yUL0h0GRgsrlvj2mXlzjA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEO0t8TEAnUVo6hQwofacwvFDjR3k1NmnXaDgLmu1WJR2Rq+MWdK45gWC0DnGMygysg==",
                             PersonId = 1,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "d3a563f6-b5e4-44ff-b3a5-2b2a228b4868",
+                            SecurityStamp = "21f67657-3430-463e-8eda-e8bd9470cc54",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         },
@@ -1960,17 +2295,17 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "90f79cfa-938c-403e-b72c-07a1ad6b305d",
+                            ConcurrencyStamp = "1442da9c-ddd8-4716-a936-a8604f832d0d",
                             Email = "neighborhood.manager@test.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "NEIGHBORHOOD.MANAGER@TEST.COM",
                             NormalizedUserName = "NEIGHBORHOODMANAGER1",
-                            PasswordHash = "AQAAAAIAAYagAAAAELhPoGacZ/oN4j6DqtwsCICCjcki95H5XDMKPyjmpW0jPygAw+y2SPISNfeeeGvQ3w==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEJqTmyx/hAAclS5eSH8EmcoeFlnj4v9WSjI8r8lFVnbIM8QD4iY2WPWjZrACEDORfw==",
                             PersonId = 2,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "fc83a7c3-6217-421c-8c21-4df58a72416e",
+                            SecurityStamp = "1e5160bc-467d-46a1-8aae-69a2fdd456af",
                             TwoFactorEnabled = false,
                             UserName = "NeighborhoodManager1"
                         },
@@ -1978,17 +2313,17 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = "cccccccc-cccc-cccc-cccc-cccccccccccc",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "40052b47-71f9-47f9-b9ea-9cd426c470f2",
+                            ConcurrencyStamp = "d7423f4c-687b-4fe0-bbc8-9f85f2028fff",
                             Email = "unit.manager@test.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "UNIT.MANAGER@TEST.COM",
                             NormalizedUserName = "UNITMANAGER1",
-                            PasswordHash = "AQAAAAIAAYagAAAAEKHPEJPxmgstoGQnv7bSIRDCcaZ1rQ7ZC1Wjy7usixEf/Zs+5AEf90i/qUb6yhVTBg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEGl+z75O3QaRaN1ixqN9hgjtiTKqcHdTD+owHVmEm/RZULzC2sILgrP+MKAlpspdvw==",
                             PersonId = 3,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "54555566-0520-43f1-a664-e64aa74ed4ab",
+                            SecurityStamp = "e368055f-1aee-4936-8cf8-3c7bbcdc29de",
                             TwoFactorEnabled = false,
                             UserName = "UnitManager1"
                         },
@@ -1996,17 +2331,17 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = "dddddddd-dddd-dddd-dddd-dddddddddddd",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "4a9db97c-08e3-4cc4-a5e0-4b0dc89d7dc5",
+                            ConcurrencyStamp = "8ad46d1e-22e0-4bfc-a0bc-615b20aed10d",
                             Email = "block.manager1@test.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "BLOCK.MANAGER1@TEST.COM",
                             NormalizedUserName = "BLOCKMANAGER1",
-                            PasswordHash = "AQAAAAIAAYagAAAAEBZA6QozvQF3EQPcpQc+6N14xr/vuKFzDm6ZpoeRUBcppuxtwAXrMjRSmUGEzskBoQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAELsIwVcUC2RE97y0aDpF6dOjVPT8ypmxOSJd7nKchIvE4bOu/55HIHHVlrrmPDDCdg==",
                             PersonId = 4,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "38a3641f-499c-4b9f-aa17-0a5ae0a13e6f",
+                            SecurityStamp = "da0c9f82-031e-4e0e-9b2c-0d92bfcdd593",
                             TwoFactorEnabled = false,
                             UserName = "BlockManager1"
                         },
@@ -2014,17 +2349,17 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "bba5b935-b583-4094-9d68-528516775fcf",
+                            ConcurrencyStamp = "86e12aec-d41b-4b18-b06a-14576028f95e",
                             Email = "block.manager2@test.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "BLOCK.MANAGER2@TEST.COM",
                             NormalizedUserName = "BLOCKMANAGER2",
-                            PasswordHash = "AQAAAAIAAYagAAAAEOMu+qAePP2NJq6cetnCVk3tEkwgMlGAoaoUMEssvOy2xBQ7+7N5YHm5kYogkEnYkw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEE/Tn7JwNz6tn3wqQRP14YusT4uOCFb21L72GOJhRiJdFE0SVBM21sCDfQIUAz4G3A==",
                             PersonId = 5,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "a240b0ed-9050-4ef9-b8a2-832fae864ba0",
+                            SecurityStamp = "174487f8-006c-466d-8b84-938472ec2bb3",
                             TwoFactorEnabled = false,
                             UserName = "BlockManager2"
                         },
@@ -2032,17 +2367,17 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = "ffffffff-ffff-ffff-ffff-ffffffffffff",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "f995e56e-f93b-44eb-8c8a-c2be26250ba2",
+                            ConcurrencyStamp = "70582f4f-eae3-4378-a7e0-0486998eb00a",
                             Email = "block.manager3@test.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "BLOCK.MANAGER3@TEST.COM",
                             NormalizedUserName = "BLOCKMANAGER3",
-                            PasswordHash = "AQAAAAIAAYagAAAAEH262/ag1Mn1cctPUIaWSfH4IwxpFYFFHNnP/1/LvtL2aWo3RSRfOdaCqx8jN0w2Nw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAECFC1wI2NnT2sp9s2wHwf3EhPtSm5fK7hecYFNjqTx9zbqHYRs0GtehHkji8ijCe/Q==",
                             PersonId = 6,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "58e685b4-569d-40fd-bfa3-c05943952990",
+                            SecurityStamp = "732d6401-ab1f-4eac-a3bf-4f9bc15b6a22",
                             TwoFactorEnabled = false,
                             UserName = "BlockManager3"
                         },
@@ -2050,17 +2385,17 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = "10101010-1010-1010-1010-101010101010",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "79271c9c-bc00-49c6-8b90-f81b6752cf33",
+                            ConcurrencyStamp = "4b975235-892c-42c9-a02c-9c8ac5e4f6c8",
                             Email = "block.manager4@test.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "BLOCK.MANAGER4@TEST.COM",
                             NormalizedUserName = "BLOCKMANAGER4",
-                            PasswordHash = "AQAAAAIAAYagAAAAEKKDUuaqkx7GBefZuoFl4qNkOJzk+aZ8ZgUfLi6H+0KUMt0bXUT44ATdxmmALLkBng==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEB8StXqFvEBNo8psW4XuY1oU1E6kSr7MGUOtuRQOCNw4M1sRvdvPVc6IiEzhWewhzw==",
                             PersonId = 7,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "b49b1fda-1d4a-4a58-87a4-57c6acd308a7",
+                            SecurityStamp = "0214d37f-5408-4ee0-b09b-13da602c6d00",
                             TwoFactorEnabled = false,
                             UserName = "BlockManager4"
                         },
@@ -2068,17 +2403,17 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = "20202020-2020-2020-2020-202020202020",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "027037f2-e438-4288-bb0c-25b73a510ce6",
+                            ConcurrencyStamp = "66134406-1776-4d0a-9758-2a3e995cd9cd",
                             Email = "block.manager5@test.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "BLOCK.MANAGER5@TEST.COM",
                             NormalizedUserName = "BLOCKMANAGER5",
-                            PasswordHash = "AQAAAAIAAYagAAAAEEB3Lsq6rPuA+5UpWMs5D8khu4ruRPZxsq+8mK0/WkBBOoNHaQF7tth9mJTMHGTavw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEPaiEFEKUj6IWnEuj75CfkE7aX6SaNHmUdUDMZRUk0mQ1s5Cjb2B+56KPPeJpqn2rg==",
                             PersonId = 8,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "7712931f-5636-49f6-aa64-f3bebf450eae",
+                            SecurityStamp = "c64debf4-e694-488a-bdcc-fe4f47a23c63",
                             TwoFactorEnabled = false,
                             UserName = "BlockManager5"
                         });
@@ -2099,6 +2434,18 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("GovernmentInstitutions");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "مؤسسة المياه والصرف"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "مركز شرطة المكلا"
+                        });
                 });
 
             modelBuilder.Entity("SmartNeighborhoodAPI.Entites.GovernmentInstitutionContact", b =>
@@ -2128,6 +2475,32 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasIndex("GovernmentInstitutionId");
 
                     b.ToTable("GovernmentInstitutionContacts");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            GovernmentInstitutionId = 1,
+                            Job = "مدير محطة المياه",
+                            Name = "مهندس علي سالم",
+                            Phone = "0777001111"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            GovernmentInstitutionId = 1,
+                            Job = "مسؤولة الصرف الصحي",
+                            Name = "أمينة محمد",
+                            Phone = "0777002222"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            GovernmentInstitutionId = 2,
+                            Job = "ضابط ارتباط",
+                            Name = "نقيب خالد الشامي",
+                            Phone = "0777013333"
+                        });
                 });
 
             modelBuilder.Entity("SmartNeighborhoodAPI.Entites.ProjectBlock", b =>
@@ -2166,6 +2539,26 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasIndex("TeamId");
 
                     b.ToTable("ProjectTeams");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ProjectId = 1,
+                            TeamId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ProjectId = 2,
+                            TeamId = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            ProjectId = 3,
+                            TeamId = 2
+                        });
                 });
 
             modelBuilder.Entity("SmartNeighborhoodAPI.Entites.ResidentialNeighborhood", b =>
@@ -2482,12 +2875,8 @@ namespace SmartNeighborhoodAPI.Migrations
                         .HasForeignKey("BlockId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("OurProjectSmartNeiborhood.Entites.ConfilctType", null)
-                        .WithMany("Conflicts")
-                        .HasForeignKey("ConfilctTypeId");
-
                     b.HasOne("OurProjectSmartNeiborhood.Entites.ConfilctType", "ConflictType")
-                        .WithMany()
+                        .WithMany("Conflicts")
                         .HasForeignKey("ConflictTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
