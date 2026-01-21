@@ -1,5 +1,6 @@
 ﻿using SmartNeighborhoodAPI.Entites;
 using SmartNeighborhoodAPI.Helpers.DTOs.Person;
+using SmartNeighborhoodAPI.Interfaces;
 using SmartNeighborhoodAPI.Services;
 using System.Net;
 using SmartNeighborhoodAPI.Interfaces;
@@ -29,7 +30,6 @@ namespace OurProjectSmartNeiborhood.Services
             _imageService = imageService;
             _logger = logger;
             _userContextService = userContextService;
-            _userManager = userManager;
         }
 
         public async Task<ApiResponse<Person>> AddAsync(CreatePersonDto dto)
@@ -70,8 +70,8 @@ namespace OurProjectSmartNeiborhood.Services
                 .Include(p => p.FamilyMembers)
                 .FirstOrDefaultAsync(p => p.Id == id);
             if (entity == null)
-                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "الشخص غير موجود.");
 
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "الشخص غير موجود.");
             var associatedUser = await _userManager.Users.FirstOrDefaultAsync(u => u.PersonId == id);
             if (associatedUser != null)
             {
@@ -82,6 +82,8 @@ namespace OurProjectSmartNeiborhood.Services
                     return ApiResponse<string>.Error(HttpStatusCode.InternalServerError, "فشل في حذف الحساب المرتبط بالشخص.");
                 }
             }
+
+       
 
             _context.Remove(entity);
             if (!string.IsNullOrEmpty(entity.Image))

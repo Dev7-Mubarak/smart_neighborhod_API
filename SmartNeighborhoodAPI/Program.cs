@@ -1,25 +1,23 @@
-﻿using Microsoft.AspNetCore.Mvc.Versioning;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using SmartNeighborhoodAPI.Entites;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
-using SmartNeighborhoodAPI.Interfaces;
-using OurProjectSmartNeiborhood.Services;
-using MramProject.Interface;
-using Serilog;
-using MramProject.Services;
-using System.Threading.RateLimiting;
-using System.Text.Json;
-using System.Net;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using Microsoft.AspNetCore.Identity.UI.Services;
-using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.SwaggerGen;
+using MramProject.Interface;
+using MramProject.Services;
+using OurProjectSmartNeiborhood.Services;
+using Serilog;
+using SmartNeighborhoodAPI.Entites;
+using SmartNeighborhoodAPI.Interfaces;
 using SmartNeighborhoodAPI.Middlewares;
-using Microsoft.EntityFrameworkCore;
+using SmartNeighborhoodAPI.Services;
+using System.Globalization;
+using System.Net;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +33,7 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("RemoteTestingConnection")));
+
 
 //builder.Services.AddLocalization(options =>
 //{
@@ -58,7 +57,7 @@ builder.Services.AddIdentity<AppUser, IdentityRole>()
 
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.Configure<JWT>(builder.Configuration.GetSection("Jwt"));
-builder.Services.AddScoped<ConflictCaseService>();
+
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddScoped<PersonService>();
@@ -67,7 +66,8 @@ builder.Services.AddScoped<FamilyService>();
 builder.Services.AddScoped<MemberFamilyRoleService>();
 builder.Services.AddScoped<BlockServices>();
 builder.Services.AddScoped<ImageService>();
-builder.Services.AddScoped<IConflictTypeService, ConflictTypeService>();
+builder.Services.AddScoped<ConflictCaseService>();
+builder.Services.AddScoped<ConflictTypeService>();
 builder.Services.AddScoped<ProjectCatgoryService>();
 builder.Services.AddScoped<ProjectService>();
 builder.Services.AddScoped<ProjectFamilieservice>();
@@ -77,10 +77,9 @@ builder.Services.AddScoped<FamilyMemberService>();
 builder.Services.AddScoped<TeamRoleService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<UserContextService>();
-builder.Services.AddScoped<ResidentialUnitService>();
-builder.Services.AddScoped<IResidentialNeighborhoodService, ResidentialNeighborhoodService>();
 builder.Services.AddScoped<IGovernmentInstitutionsService, GovernmentInstitutionsService>();
 builder.Services.AddScoped<IGovernmentInstitutionContactService, GovernmentInstitutionContactService>();
+
 
 
 builder.Host.UseSerilog((context, loggerConfig) =>
@@ -175,17 +174,6 @@ builder.Services.AddControllers()
         {
             options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
         });
-builder.Services.AddApiVersioning(options =>
-{
-    options.AssumeDefaultVersionWhenUnspecified = true;
-    options.DefaultApiVersion = new ApiVersion(1, 0);
-    options.ReportApiVersions = true;
-});
-builder.Services.AddVersionedApiExplorer(options =>
-{
-    options.GroupNameFormat = "'v'VVV";
-    options.SubstituteApiVersionInUrl = true;
-});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -215,7 +203,6 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
-builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 var app = builder.Build();
 app.UseRequestLocalization();
 //app.UseMiddleware<ExceptionHandlingMiddleware>();

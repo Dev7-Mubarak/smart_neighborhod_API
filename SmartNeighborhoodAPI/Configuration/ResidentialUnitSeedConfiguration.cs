@@ -14,7 +14,7 @@ namespace SmartNeighborhoodAPI.Configuration
                 new ResidentialUnit
                 {
                     Id = 1,
-                    Name = "ÇáæÍÏÉ ÇáÃæáì",
+                    Name = "Ø§Ù„ÙˆØ­Ø¯Ø© Ø§Ù„Ø³ÙƒÙ†ÙŠØ© 1",
                     ResidentialNeighborhoodId = 1,
                     UnitManagerId = "cccccccc-cccc-cccc-cccc-cccccccccccc"
                 }

@@ -52,19 +52,45 @@ namespace SmartNeighborhoodAPI.Configuration
                 .OnDelete(DeleteBehavior.Cascade);
 
 
-            // 🌱 Seed one project (assumes ManagerId = 1 and ProjectCatogoryId = 1 already exist)
-            builder.HasData(new Project
-            {
-                Id = 1,
-                Name = "مشروع تجريبي",
-                Description = "هذا مشروع تمهيدي",
-                ProjectCatogoryId = 1,
-                StartDate = new DateTime(2025, 1, 1),
-                EndDate = new DateTime(2025, 12, 31),
-                ProjectStatus = ProjectStatus.Planned,
-                ProjectPriority = ProjectPriority.Medium,
-                Budget = 100000
-            });
+            // 🌱 Seed three projects (assumes ProjectCatogoryIds already exist)
+            builder.HasData(
+                new Project
+                {
+                    Id = 1,
+                    Name = "مشروع تجريبي",
+                    Description = "هذا مشروع تمهيدي",
+                    ProjectCatogoryId = 1,
+                    StartDate = new DateTime(2025, 1, 1),
+                    EndDate = new DateTime(2025, 12, 31),
+                    ProjectStatus = ProjectStatus.Planned,
+                    ProjectPriority = ProjectPriority.Medium,
+                    Budget = 100000
+                },
+                new Project
+                {
+                    Id = 2,
+                    Name = "حملة نظافة الحي",
+                    Description = "تحسين النظافة والمرافق في المنطقة",
+                    ProjectCatogoryId = 4,
+                    StartDate = new DateTime(2025, 3, 1),
+                    EndDate = new DateTime(2025, 3, 31),
+                    ProjectStatus = ProjectStatus.Planned,
+                    ProjectPriority = ProjectPriority.High,
+                    Budget = 15000
+                },
+                new Project
+                {
+                    Id = 3,
+                    Name = "تطوير ملعب الحي",
+                    Description = "إنشاء ملعب مصغر وتجهيزات رياضية",
+                    ProjectCatogoryId = 1,
+                    StartDate = new DateTime(2025, 4, 15),
+                    EndDate = new DateTime(2025, 9, 15),
+                    ProjectStatus = ProjectStatus.Planned,
+                    ProjectPriority = ProjectPriority.Medium,
+                    Budget = 40000
+                }
+            );
         }
     }
 }

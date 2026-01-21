@@ -258,36 +258,141 @@ namespace SmartNeighborhoodAPI.Migrations
                         new
                         {
                             Id = 1,
-                            BlockManagerId = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-                            Name = "المربع الأول",
+                            BlockManagerId = "dddddddd-dddd-dddd-dddd-dddddddddddd",
+                            Name = "مبنى 1",
                             ResidentialUnitId = 1
                         },
                         new
                         {
                             Id = 2,
-                            BlockManagerId = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-                            Name = "المربع الثاني",
+                            BlockManagerId = "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
+                            Name = "مبنى 2",
                             ResidentialUnitId = 1
                         },
                         new
                         {
                             Id = 3,
-                            BlockManagerId = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-                            Name = "المربع الثالث",
+                            BlockManagerId = "ffffffff-ffff-ffff-ffff-ffffffffffff",
+                            Name = "مبنى 3",
                             ResidentialUnitId = 1
                         },
                         new
                         {
                             Id = 4,
-                            BlockManagerId = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-                            Name = "المربع الرابع",
+                            BlockManagerId = "10101010-1010-1010-1010-101010101010",
+                            Name = "مبنى 4",
                             ResidentialUnitId = 1
                         },
                         new
                         {
                             Id = 5,
-                            BlockManagerId = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-                            Name = "المربع الخامس",
+                            BlockManagerId = "20202020-2020-2020-2020-202020202020",
+                            Name = "مبنى 5",
+                            ResidentialUnitId = 1
+                        },
+                        new
+                        {
+                            Id = 6,
+                            BlockManagerId = "dddddddd-dddd-dddd-dddd-dddddddddddd",
+                            Name = "مبنى 6",
+                            ResidentialUnitId = 1
+                        },
+                        new
+                        {
+                            Id = 7,
+                            BlockManagerId = "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
+                            Name = "مبنى 7",
+                            ResidentialUnitId = 1
+                        },
+                        new
+                        {
+                            Id = 8,
+                            BlockManagerId = "ffffffff-ffff-ffff-ffff-ffffffffffff",
+                            Name = "مبنى 8",
+                            ResidentialUnitId = 1
+                        },
+                        new
+                        {
+                            Id = 9,
+                            BlockManagerId = "10101010-1010-1010-1010-101010101010",
+                            Name = "مبنى 9",
+                            ResidentialUnitId = 1
+                        },
+                        new
+                        {
+                            Id = 10,
+                            BlockManagerId = "20202020-2020-2020-2020-202020202020",
+                            Name = "مبنى 10",
+                            ResidentialUnitId = 1
+                        },
+                        new
+                        {
+                            Id = 11,
+                            BlockManagerId = "dddddddd-dddd-dddd-dddd-dddddddddddd",
+                            Name = "مبنى 11",
+                            ResidentialUnitId = 1
+                        },
+                        new
+                        {
+                            Id = 12,
+                            BlockManagerId = "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
+                            Name = "مبنى 12",
+                            ResidentialUnitId = 1
+                        },
+                        new
+                        {
+                            Id = 13,
+                            BlockManagerId = "ffffffff-ffff-ffff-ffff-ffffffffffff",
+                            Name = "مبنى 13",
+                            ResidentialUnitId = 1
+                        },
+                        new
+                        {
+                            Id = 14,
+                            BlockManagerId = "10101010-1010-1010-1010-101010101010",
+                            Name = "مبنى 14",
+                            ResidentialUnitId = 1
+                        },
+                        new
+                        {
+                            Id = 15,
+                            BlockManagerId = "20202020-2020-2020-2020-202020202020",
+                            Name = "مبنى 15",
+                            ResidentialUnitId = 1
+                        },
+                        new
+                        {
+                            Id = 16,
+                            BlockManagerId = "dddddddd-dddd-dddd-dddd-dddddddddddd",
+                            Name = "مبنى 16",
+                            ResidentialUnitId = 1
+                        },
+                        new
+                        {
+                            Id = 17,
+                            BlockManagerId = "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
+                            Name = "مبنى 17",
+                            ResidentialUnitId = 1
+                        },
+                        new
+                        {
+                            Id = 18,
+                            BlockManagerId = "ffffffff-ffff-ffff-ffff-ffffffffffff",
+                            Name = "مبنى 18",
+                            ResidentialUnitId = 1
+                        },
+                        new
+                        {
+                            Id = 19,
+                            BlockManagerId = "10101010-1010-1010-1010-101010101010",
+                            Name = "مبنى 19",
+                            ResidentialUnitId = 1
+                        },
+                        new
+                        {
+                            Id = 20,
+                            BlockManagerId = "20202020-2020-2020-2020-202020202020",
+                            Name = "مبنى 20",
                             ResidentialUnitId = 1
                         });
                 });
@@ -410,30 +515,30 @@ namespace SmartNeighborhoodAPI.Migrations
                             Id = 1,
                             BlockId = 1,
                             FamilyCatgoryId = 1,
-                            FamilyNotes = "عائلة محتاجة للدعم",
+                            FamilyNotes = "لا ملاحظات",
                             HousingType = 2,
-                            Location = "شارع الملك فهد، حي السلام",
-                            Name = "عائلة الأحمدي"
+                            Location = "البيت 1، الحي القديم",
+                            Name = "عائلة الغانم"
                         },
                         new
                         {
                             Id = 2,
                             BlockId = 1,
                             FamilyCatgoryId = 3,
-                            FamilyNotes = "عائلة متوسطة الدخل",
+                            FamilyNotes = "تأجير طويل الأمد",
                             HousingType = 1,
-                            Location = "شارع العروبة، حي السلام",
-                            Name = "عائلة السعيد"
+                            Location = "البيت 2، شارع البحر",
+                            Name = "عائلة الملاح"
                         },
                         new
                         {
                             Id = 3,
                             BlockId = 2,
                             FamilyCatgoryId = 2,
-                            FamilyNotes = "عائلة يتيمة",
+                            FamilyNotes = "عائلة مع العديد من الأولاد",
                             HousingType = 2,
-                            Location = "شارع الأمير سلطان، حي السلام",
-                            Name = "عائلة القحطاني"
+                            Location = "الزاوية الجنوبية، مبنى 2",
+                            Name = "عائلة العكبري"
                         },
                         new
                         {
@@ -441,18 +546,18 @@ namespace SmartNeighborhoodAPI.Migrations
                             BlockId = 2,
                             FamilyCatgoryId = 3,
                             HousingType = 1,
-                            Location = "شارع الملك عبدالعزيز، حي السلام",
-                            Name = "عائلة الدوسري"
+                            Location = "الطابق الأول، مبنى 2",
+                            Name = "عائلة العمري"
                         },
                         new
                         {
                             Id = 5,
                             BlockId = 3,
                             FamilyCatgoryId = 1,
-                            FamilyNotes = "عائلة كبيرة",
+                            FamilyNotes = "تحتاج دعم صحّي",
                             HousingType = 2,
-                            Location = "شارع الخليج، حي السلام",
-                            Name = "عائلة الشمري"
+                            Location = "الحي الشمالي، مبنى 3",
+                            Name = "عائلة الهاشمي"
                         },
                         new
                         {
@@ -460,18 +565,18 @@ namespace SmartNeighborhoodAPI.Migrations
                             BlockId = 3,
                             FamilyCatgoryId = 3,
                             HousingType = 1,
-                            Location = "شارع الأمل، حي السلام",
-                            Name = "عائلة الغامدي"
+                            Location = "الطابق الثاني، مبنى 3",
+                            Name = "عائلة الحمادي"
                         },
                         new
                         {
                             Id = 7,
                             BlockId = 4,
                             FamilyCatgoryId = 2,
-                            FamilyNotes = "عائلة محتاجة",
+                            FamilyNotes = "أحد أفراد الأسرة بحاجة لرعاية",
                             HousingType = 2,
-                            Location = "شارع النخيل، حي السلام",
-                            Name = "عائلة العمري"
+                            Location = "الشارع العام، مبنى 4",
+                            Name = "عائلة الحدري"
                         },
                         new
                         {
@@ -479,18 +584,18 @@ namespace SmartNeighborhoodAPI.Migrations
                             BlockId = 4,
                             FamilyCatgoryId = 3,
                             HousingType = 1,
-                            Location = "شارع الورود، حي السلام",
-                            Name = "عائلة المطيري"
+                            Location = "الصفحة الشرقية، مبنى 4",
+                            Name = "عائلة البساطي"
                         },
                         new
                         {
                             Id = 9,
                             BlockId = 5,
                             FamilyCatgoryId = 1,
-                            FamilyNotes = "عائلة أرملة",
+                            FamilyNotes = "عائلة مستقرة",
                             HousingType = 2,
-                            Location = "شارع السلام، حي السلام",
-                            Name = "عائلة الزهراني"
+                            Location = "المنطقة الجنوبية، مبنى 5",
+                            Name = "عائلة الملاح"
                         },
                         new
                         {
@@ -498,8 +603,101 @@ namespace SmartNeighborhoodAPI.Migrations
                             BlockId = 5,
                             FamilyCatgoryId = 3,
                             HousingType = 1,
-                            Location = "شارع الفيحاء، حي السلام",
-                            Name = "عائلة الحربي"
+                            Location = "الطابق الأرضي، مبنى 5",
+                            Name = "عائلة القحطاني"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            BlockId = 6,
+                            FamilyCatgoryId = 1,
+                            HousingType = 2,
+                            Location = "الطابق الأول، مبنى 6",
+                            Name = "عائلة الشريف"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            BlockId = 7,
+                            FamilyCatgoryId = 2,
+                            FamilyNotes = "تحتاج دعم تعليمي",
+                            HousingType = 1,
+                            Location = "البيت 2، مبنى 7",
+                            Name = "عائلة الزبيري"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            BlockId = 8,
+                            FamilyCatgoryId = 3,
+                            HousingType = 2,
+                            Location = "الزاوية الغربية، مبنى 8",
+                            Name = "عائلة الهاشمي"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            BlockId = 9,
+                            FamilyCatgoryId = 3,
+                            HousingType = 1,
+                            Location = "الشقة 3، مبنى 9",
+                            Name = "عائلة العرادي"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            BlockId = 10,
+                            FamilyCatgoryId = 1,
+                            FamilyNotes = "أم عازبة",
+                            HousingType = 2,
+                            Location = "الطابق العلوي، مبنى 10",
+                            Name = "عائلة القاضي"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            BlockId = 11,
+                            FamilyCatgoryId = 3,
+                            HousingType = 1,
+                            Location = "مبنى 11، شارع السوق",
+                            Name = "عائلة الربيعي"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            BlockId = 12,
+                            FamilyCatgoryId = 2,
+                            FamilyNotes = "عائلة كبيرة",
+                            HousingType = 2,
+                            Location = "المنطقة 12، مبنى 12",
+                            Name = "عائلة الحاج"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            BlockId = 13,
+                            FamilyCatgoryId = 3,
+                            HousingType = 1,
+                            Location = "الطابق الثاني، مبنى 13",
+                            Name = "عائلة السقاف"
+                        },
+                        new
+                        {
+                            Id = 19,
+                            BlockId = 14,
+                            FamilyCatgoryId = 3,
+                            HousingType = 2,
+                            Location = "منزل صغير، مبنى 14",
+                            Name = "عائلة العولقي"
+                        },
+                        new
+                        {
+                            Id = 20,
+                            BlockId = 15,
+                            FamilyCatgoryId = 2,
+                            HousingType = 1,
+                            Location = "الطابق الأرضي، مبنى 15",
+                            Name = "عائلة مختار"
                         });
                 });
 
@@ -720,137 +918,766 @@ namespace SmartNeighborhoodAPI.Migrations
                         },
                         new
                         {
-                            Id = 2,
-                            BloodType = 5,
-                            FirstName = "فاطمة",
-                            Gender = 1,
-                            Job = "طالبة",
-                            LastName = "الحسني",
-                            MaritalStatus = 1,
-                            OccupationStatus = 1,
-                            PhoneNumber = "0789876543",
-                            SecondName = "خالد",
-                            ThirdName = "عبد الله",
-                            personType = 0
-                        },
-                        new
-                        {
-                            Id = 222,
-                            BloodType = 0,
-                            DateOfBirth = new DateTime(1985, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            FirstName = "أحمد",
-                            Gender = 0,
-                            IsContactNumber = true,
-                            IsWhatsapp = true,
-                            LastName = "السعيد",
-                            MaritalStatus = 2,
-                            OccupationStatus = 2,
-                            PhoneNumber = "0501234567",
-                            SecondName = "محمد",
-                            ThirdName = "علي",
-                            personType = 0
-                        },
-                        new
-                        {
-                            Id = 223,
-                            BloodType = 7,
-                            DateOfBirth = new DateTime(1988, 8, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            FirstName = "خالد",
+                            Id = 3,
+                            BloodType = 6,
+                            DateOfBirth = new DateTime(1982, 4, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "سالم",
                             Gender = 0,
                             IsContactNumber = true,
                             IsWhatsapp = true,
                             LastName = "العمري",
                             MaritalStatus = 2,
-                            OccupationStatus = 3,
-                            PhoneNumber = "0502345678",
-                            SecondName = "عبدالله",
-                            ThirdName = "محمد",
-                            personType = 0
+                            OccupationStatus = 2,
+                            PhoneNumber = "0771122334",
+                            SecondName = "بن راشد",
+                            ThirdName = "عوض",
+                            personType = 2
                         },
                         new
                         {
-                            Id = 224,
-                            BloodType = 2,
-                            DateOfBirth = new DateTime(1990, 3, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            FirstName = "محمد",
+                            Id = 4,
+                            BloodType = 0,
+                            DateOfBirth = new DateTime(1979, 9, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "خالد",
                             Gender = 0,
                             IsContactNumber = true,
                             IsWhatsapp = true,
-                            LastName = "الأحمدي",
-                            MaritalStatus = 1,
-                            OccupationStatus = 1,
-                            PhoneNumber = "0503456789",
-                            SecondName = "سعيد",
-                            ThirdName = "أحمد",
-                            personType = 0
+                            LastName = "الغرمي",
+                            MaritalStatus = 2,
+                            OccupationStatus = 2,
+                            PhoneNumber = "0772233445",
+                            SecondName = "بن حمد",
+                            ThirdName = "محمد",
+                            personType = 1
                         },
                         new
                         {
-                            Id = 225,
+                            Id = 5,
+                            BloodType = 5,
+                            DateOfBirth = new DateTime(1985, 2, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "يوسف",
+                            Gender = 0,
+                            IsContactNumber = true,
+                            IsWhatsapp = true,
+                            LastName = "الملاح",
+                            MaritalStatus = 2,
+                            OccupationStatus = 2,
+                            PhoneNumber = "0773344556",
+                            SecondName = "محمد",
+                            ThirdName = "سالم",
+                            personType = 1
+                        },
+                        new
+                        {
+                            Id = 6,
                             BloodType = 4,
-                            DateOfBirth = new DateTime(1987, 12, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            FirstName = "عبدالرحمن",
+                            DateOfBirth = new DateTime(1980, 6, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "عبدالله",
+                            Gender = 0,
+                            IsContactNumber = true,
+                            IsWhatsapp = true,
+                            LastName = "الهادي",
+                            MaritalStatus = 2,
+                            OccupationStatus = 2,
+                            PhoneNumber = "0774455667",
+                            SecondName = "سالم",
+                            ThirdName = "محمد",
+                            personType = 1
+                        },
+                        new
+                        {
+                            Id = 7,
+                            BloodType = 2,
+                            DateOfBirth = new DateTime(1986, 11, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "علي",
+                            Gender = 0,
+                            IsContactNumber = true,
+                            IsWhatsapp = true,
+                            LastName = "الدفعي",
+                            MaritalStatus = 2,
+                            OccupationStatus = 2,
+                            PhoneNumber = "0775566778",
+                            SecondName = "حسن",
+                            ThirdName = "سالم",
+                            personType = 1
+                        },
+                        new
+                        {
+                            Id = 8,
+                            BloodType = 7,
+                            DateOfBirth = new DateTime(1978, 3, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "ناصر",
                             Gender = 0,
                             IsContactNumber = true,
                             IsWhatsapp = true,
                             LastName = "القحطاني",
                             MaritalStatus = 2,
-                            OccupationStatus = 3,
-                            PhoneNumber = "0504567890",
-                            SecondName = "فيصل",
-                            ThirdName = "عبدالله",
+                            OccupationStatus = 2,
+                            PhoneNumber = "0776677889",
+                            SecondName = "عبد الرحمن",
+                            ThirdName = "بدر",
+                            personType = 1
+                        },
+                        new
+                        {
+                            Id = 11,
+                            BloodType = 0,
+                            DateOfBirth = new DateTime(1975, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "محمد",
+                            Gender = 0,
+                            Job = "سائق",
+                            LastName = "الغانم",
+                            MaritalStatus = 2,
+                            OccupationStatus = 2,
+                            PhoneNumber = "0791110001",
+                            SecondName = "سعيد",
+                            ThirdName = "صالح",
                             personType = 0
                         },
                         new
                         {
-                            Id = 226,
+                            Id = 12,
+                            BloodType = 2,
+                            DateOfBirth = new DateTime(1978, 5, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "مريم",
+                            Gender = 1,
+                            LastName = "الغانم",
+                            MaritalStatus = 2,
+                            OccupationStatus = 3,
+                            PhoneNumber = "0791110002",
+                            SecondName = "صالح",
+                            ThirdName = "محمد",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 13,
                             BloodType = 0,
-                            DateOfBirth = new DateTime(1992, 7, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            FirstName = "سعود",
+                            DateOfBirth = new DateTime(2005, 9, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "سعيد",
                             Gender = 0,
-                            IsContactNumber = true,
-                            IsWhatsapp = true,
-                            LastName = "الدوسري",
+                            LastName = "الغانم",
                             MaritalStatus = 1,
                             OccupationStatus = 1,
-                            PhoneNumber = "0505678901",
-                            SecondName = "يوسف",
+                            PhoneNumber = "0791110003",
+                            SecondName = "محمد",
+                            ThirdName = "سعيد",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 14,
+                            BloodType = 6,
+                            DateOfBirth = new DateTime(1980, 7, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "أحمد",
+                            Gender = 0,
+                            LastName = "الملاح",
+                            MaritalStatus = 2,
+                            OccupationStatus = 2,
+                            PhoneNumber = "0791122001",
+                            SecondName = "عبد الله",
+                            ThirdName = "خليل",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 15,
+                            BloodType = 5,
+                            DateOfBirth = new DateTime(1982, 10, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "سمية",
+                            Gender = 1,
+                            LastName = "الملاح",
+                            MaritalStatus = 2,
+                            OccupationStatus = 3,
+                            PhoneNumber = "0791122002",
+                            SecondName = "خليل",
+                            ThirdName = "عبد الله",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 16,
+                            BloodType = 2,
+                            DateOfBirth = new DateTime(2008, 4, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "هند",
+                            Gender = 1,
+                            LastName = "الملاح",
+                            MaritalStatus = 1,
+                            OccupationStatus = 1,
+                            PhoneNumber = "0791122003",
+                            SecondName = "أحمد",
+                            ThirdName = "خليل",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 17,
+                            BloodType = 7,
+                            DateOfBirth = new DateTime(1970, 3, 21, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "عبد الولي",
+                            Gender = 0,
+                            LastName = "العكبري",
+                            MaritalStatus = 2,
+                            OccupationStatus = 3,
+                            PhoneNumber = "0791133001",
+                            SecondName = "بن سالم",
+                            ThirdName = "خميس",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 18,
+                            BloodType = 1,
+                            DateOfBirth = new DateTime(1974, 6, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "نورة",
+                            Gender = 1,
+                            LastName = "العكبري",
+                            MaritalStatus = 2,
+                            OccupationStatus = 3,
+                            PhoneNumber = "0791133002",
+                            SecondName = "خميس",
+                            ThirdName = "بن سالم",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 19,
+                            BloodType = 2,
+                            DateOfBirth = new DateTime(2006, 12, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "سارة",
+                            Gender = 1,
+                            LastName = "العكبري",
+                            MaritalStatus = 1,
+                            OccupationStatus = 1,
+                            PhoneNumber = "0791133003",
+                            SecondName = "عبد الولي",
+                            ThirdName = "خميس",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 20,
+                            BloodType = 0,
+                            DateOfBirth = new DateTime(1983, 2, 28, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "خالد",
+                            Gender = 0,
+                            LastName = "العمري",
+                            MaritalStatus = 2,
+                            OccupationStatus = 2,
+                            PhoneNumber = "0791144001",
+                            SecondName = "سعيد",
+                            ThirdName = "خالد",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 21,
+                            BloodType = 0,
+                            DateOfBirth = new DateTime(1985, 8, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "رنا",
+                            Gender = 1,
+                            LastName = "العمري",
+                            MaritalStatus = 2,
+                            OccupationStatus = 2,
+                            PhoneNumber = "0791144002",
+                            SecondName = "خالد",
+                            ThirdName = "سعيد",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 22,
+                            BloodType = 6,
+                            DateOfBirth = new DateTime(2010, 5, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "مازن",
+                            Gender = 0,
+                            LastName = "العمري",
+                            MaritalStatus = 1,
+                            OccupationStatus = 1,
+                            PhoneNumber = "0791144003",
+                            SecondName = "خالد",
+                            ThirdName = "سعيد",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 23,
+                            BloodType = 2,
+                            DateOfBirth = new DateTime(1976, 10, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "سالم",
+                            Gender = 0,
+                            LastName = "الهاشمي",
+                            MaritalStatus = 2,
+                            OccupationStatus = 2,
+                            PhoneNumber = "0791155001",
+                            SecondName = "المعطي",
+                            ThirdName = "بن",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 24,
+                            BloodType = 5,
+                            DateOfBirth = new DateTime(1979, 1, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "هناء",
+                            Gender = 1,
+                            LastName = "الهاشمي",
+                            MaritalStatus = 2,
+                            OccupationStatus = 3,
+                            PhoneNumber = "0791155002",
+                            SecondName = "سالم",
+                            ThirdName = "المعطي",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 25,
+                            BloodType = 7,
+                            DateOfBirth = new DateTime(2009, 9, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "ليلى",
+                            Gender = 1,
+                            LastName = "الهاشمي",
+                            MaritalStatus = 1,
+                            OccupationStatus = 1,
+                            PhoneNumber = "0791155003",
+                            SecondName = "سالم",
+                            ThirdName = "المعطي",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 26,
+                            BloodType = 0,
+                            DateOfBirth = new DateTime(1988, 4, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "هشام",
+                            Gender = 0,
+                            LastName = "الحمادي",
+                            MaritalStatus = 2,
+                            OccupationStatus = 2,
+                            PhoneNumber = "0791166001",
+                            SecondName = "عبد الله",
+                            ThirdName = "بن",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 27,
+                            BloodType = 2,
+                            DateOfBirth = new DateTime(1990, 12, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "نهى",
+                            Gender = 1,
+                            LastName = "الحمادي",
+                            MaritalStatus = 2,
+                            OccupationStatus = 2,
+                            PhoneNumber = "0791166002",
+                            SecondName = "هشام",
+                            ThirdName = "عبد الله",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 28,
+                            BloodType = 2,
+                            DateOfBirth = new DateTime(2012, 7, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "ريان",
+                            Gender = 0,
+                            LastName = "الحمادي",
+                            MaritalStatus = 1,
+                            OccupationStatus = 1,
+                            PhoneNumber = "0791166003",
+                            SecondName = "هشام",
+                            ThirdName = "عبد الله",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 29,
+                            BloodType = 0,
+                            DateOfBirth = new DateTime(1972, 11, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "عبد الكريم",
+                            Gender = 0,
+                            LastName = "الحدري",
+                            MaritalStatus = 2,
+                            OccupationStatus = 3,
+                            PhoneNumber = "0791177001",
+                            SecondName = "حسن",
+                            ThirdName = "صالح",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 30,
+                            BloodType = 7,
+                            DateOfBirth = new DateTime(1975, 2, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "فاطمة",
+                            Gender = 1,
+                            LastName = "الحدري",
+                            MaritalStatus = 2,
+                            OccupationStatus = 3,
+                            PhoneNumber = "0791177002",
+                            SecondName = "عبد الكريم",
+                            ThirdName = "حسن",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 31,
+                            BloodType = 6,
+                            DateOfBirth = new DateTime(2007, 3, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "ريان",
+                            Gender = 0,
+                            LastName = "الحدري",
+                            MaritalStatus = 1,
+                            OccupationStatus = 1,
+                            PhoneNumber = "0791177003",
+                            SecondName = "عبد الكريم",
+                            ThirdName = "حسن",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 32,
+                            BloodType = 0,
+                            DateOfBirth = new DateTime(1986, 9, 19, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "يوسف",
+                            Gender = 0,
+                            LastName = "البساطي",
+                            MaritalStatus = 2,
+                            OccupationStatus = 2,
+                            PhoneNumber = "0791188001",
+                            SecondName = "عبد الله",
                             ThirdName = "علي",
                             personType = 0
                         },
                         new
                         {
-                            Id = 227,
-                            BloodType = 6,
-                            DateOfBirth = new DateTime(1989, 11, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            FirstName = "فهد",
-                            Gender = 0,
-                            IsContactNumber = true,
-                            IsWhatsapp = true,
-                            LastName = "الشمري",
+                            Id = 33,
+                            BloodType = 3,
+                            DateOfBirth = new DateTime(1988, 11, 23, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "سعاد",
+                            Gender = 1,
+                            LastName = "البساطي",
                             MaritalStatus = 2,
                             OccupationStatus = 3,
-                            PhoneNumber = "0506789012",
-                            SecondName = "إبراهيم",
-                            ThirdName = "محمد",
-                            personType = 2
+                            PhoneNumber = "0791188002",
+                            SecondName = "يوسف",
+                            ThirdName = "عبد الله",
+                            personType = 0
                         },
                         new
                         {
-                            Id = 228,
-                            BloodType = 2,
-                            DateOfBirth = new DateTime(1991, 2, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            FirstName = "ناصر",
-                            Gender = 0,
-                            IsContactNumber = true,
-                            IsWhatsapp = true,
-                            LastName = "الغامدي",
+                            Id = 34,
+                            BloodType = 7,
+                            DateOfBirth = new DateTime(2011, 6, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "عائشة",
+                            Gender = 1,
+                            LastName = "البساطي",
                             MaritalStatus = 1,
                             OccupationStatus = 1,
-                            PhoneNumber = "0507890123",
+                            PhoneNumber = "0791188003",
+                            SecondName = "يوسف",
+                            ThirdName = "عبد الله",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 35,
+                            BloodType = 0,
+                            DateOfBirth = new DateTime(1979, 5, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "سعد",
+                            Gender = 0,
+                            LastName = "المرزوقي",
+                            MaritalStatus = 2,
+                            OccupationStatus = 2,
+                            PhoneNumber = "0791199001",
+                            SecondName = "محمد",
+                            ThirdName = "الشريف",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 36,
+                            BloodType = 2,
+                            DateOfBirth = new DateTime(1981, 8, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "هناء",
+                            Gender = 1,
+                            LastName = "المرزوقي",
+                            MaritalStatus = 2,
+                            OccupationStatus = 3,
+                            PhoneNumber = "0791199002",
+                            SecondName = "سعد",
+                            ThirdName = "محمد",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 37,
+                            BloodType = 6,
+                            DateOfBirth = new DateTime(1982, 3, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "عمر",
+                            Gender = 0,
+                            LastName = "الزبيري",
+                            MaritalStatus = 2,
+                            OccupationStatus = 2,
+                            PhoneNumber = "0791199003",
+                            SecondName = "سعيد",
+                            ThirdName = "الزبيري",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 38,
+                            BloodType = 5,
+                            DateOfBirth = new DateTime(1984, 11, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "نجلاء",
+                            Gender = 1,
+                            LastName = "الزبيري",
+                            MaritalStatus = 2,
+                            OccupationStatus = 3,
+                            PhoneNumber = "0791199004",
+                            SecondName = "عمر",
+                            ThirdName = "سعيد",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 39,
+                            BloodType = 2,
+                            DateOfBirth = new DateTime(1975, 6, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "عبد الرحمن",
+                            Gender = 0,
+                            LastName = "الهاشمي",
+                            MaritalStatus = 2,
+                            OccupationStatus = 2,
+                            PhoneNumber = "0791199005",
+                            SecondName = "محيي",
+                            ThirdName = "الهاشمي",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 40,
+                            BloodType = 7,
+                            DateOfBirth = new DateTime(1978, 2, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "آمنة",
+                            Gender = 1,
+                            LastName = "الهاشمي",
+                            MaritalStatus = 2,
+                            OccupationStatus = 3,
+                            PhoneNumber = "0791199006",
+                            SecondName = "عبد الرحمن",
+                            ThirdName = "محيي",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 41,
+                            BloodType = 0,
+                            DateOfBirth = new DateTime(1986, 12, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "قاسم",
+                            Gender = 0,
+                            LastName = "العرادي",
+                            MaritalStatus = 2,
+                            OccupationStatus = 2,
+                            PhoneNumber = "0791199007",
                             SecondName = "علي",
-                            ThirdName = "سعد",
-                            personType = 2
+                            ThirdName = "العرادي",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 42,
+                            BloodType = 2,
+                            DateOfBirth = new DateTime(1987, 4, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "سلوى",
+                            Gender = 1,
+                            LastName = "العرادي",
+                            MaritalStatus = 2,
+                            OccupationStatus = 3,
+                            PhoneNumber = "0791199008",
+                            SecondName = "قاسم",
+                            ThirdName = "علي",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 43,
+                            BloodType = 7,
+                            DateOfBirth = new DateTime(1974, 7, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "ماهر",
+                            Gender = 0,
+                            LastName = "القاضي",
+                            MaritalStatus = 2,
+                            OccupationStatus = 3,
+                            PhoneNumber = "0791199009",
+                            SecondName = "خالد",
+                            ThirdName = "القاضي",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 44,
+                            BloodType = 0,
+                            DateOfBirth = new DateTime(1976, 9, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "مريم",
+                            Gender = 1,
+                            LastName = "القاضي",
+                            MaritalStatus = 2,
+                            OccupationStatus = 3,
+                            PhoneNumber = "0791199010",
+                            SecondName = "ماهر",
+                            ThirdName = "خالد",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 45,
+                            BloodType = 2,
+                            DateOfBirth = new DateTime(1989, 1, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "سيف",
+                            Gender = 0,
+                            LastName = "الربيعي",
+                            MaritalStatus = 2,
+                            OccupationStatus = 2,
+                            PhoneNumber = "0791199011",
+                            SecondName = "عوض",
+                            ThirdName = "الربيعي",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 46,
+                            BloodType = 1,
+                            DateOfBirth = new DateTime(1990, 5, 27, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "هاجر",
+                            Gender = 1,
+                            LastName = "الربيعي",
+                            MaritalStatus = 2,
+                            OccupationStatus = 2,
+                            PhoneNumber = "0791199012",
+                            SecondName = "سيف",
+                            ThirdName = "عوض",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 47,
+                            BloodType = 0,
+                            DateOfBirth = new DateTime(1973, 10, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "عبد الله",
+                            Gender = 0,
+                            LastName = "الحاج",
+                            MaritalStatus = 2,
+                            OccupationStatus = 3,
+                            PhoneNumber = "0791199013",
+                            SecondName = "محمود",
+                            ThirdName = "الحاج",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 48,
+                            BloodType = 2,
+                            DateOfBirth = new DateTime(1975, 12, 19, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "هدى",
+                            Gender = 1,
+                            LastName = "الحاج",
+                            MaritalStatus = 2,
+                            OccupationStatus = 3,
+                            PhoneNumber = "0791199014",
+                            SecondName = "عبد الله",
+                            ThirdName = "محمود",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 49,
+                            BloodType = 6,
+                            DateOfBirth = new DateTime(1984, 2, 28, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "صالح",
+                            Gender = 0,
+                            LastName = "السقاف",
+                            MaritalStatus = 2,
+                            OccupationStatus = 2,
+                            PhoneNumber = "0791199015",
+                            SecondName = "علي",
+                            ThirdName = "السقاف",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 50,
+                            BloodType = 0,
+                            DateOfBirth = new DateTime(1986, 6, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "نجلاء",
+                            Gender = 1,
+                            LastName = "السقاف",
+                            MaritalStatus = 2,
+                            OccupationStatus = 3,
+                            PhoneNumber = "0791199016",
+                            SecondName = "صالح",
+                            ThirdName = "علي",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 51,
+                            BloodType = 4,
+                            DateOfBirth = new DateTime(1988, 11, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "هاني",
+                            Gender = 0,
+                            LastName = "العولقي",
+                            MaritalStatus = 2,
+                            OccupationStatus = 2,
+                            PhoneNumber = "0791199017",
+                            SecondName = "سالم",
+                            ThirdName = "العولقي",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 52,
+                            BloodType = 2,
+                            DateOfBirth = new DateTime(1990, 8, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "صفية",
+                            Gender = 1,
+                            LastName = "العولقي",
+                            MaritalStatus = 2,
+                            OccupationStatus = 3,
+                            PhoneNumber = "0791199018",
+                            SecondName = "هاني",
+                            ThirdName = "سالم",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 53,
+                            BloodType = 7,
+                            DateOfBirth = new DateTime(1977, 3, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "مختار",
+                            Gender = 0,
+                            LastName = "مختار",
+                            MaritalStatus = 2,
+                            OccupationStatus = 2,
+                            PhoneNumber = "0791199019",
+                            SecondName = "سليم",
+                            ThirdName = "مختار",
+                            personType = 0
+                        },
+                        new
+                        {
+                            Id = 54,
+                            BloodType = 0,
+                            DateOfBirth = new DateTime(1979, 4, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FirstName = "أماني",
+                            Gender = 1,
+                            LastName = "مختار",
+                            MaritalStatus = 2,
+                            OccupationStatus = 3,
+                            PhoneNumber = "0791199020",
+                            SecondName = "مختار",
+                            ThirdName = "سليم",
+                            personType = 0
                         });
                 });
 
@@ -1112,17 +1939,17 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "13cbc3f9-57b5-457c-96c8-0aa978d521d0",
+                            ConcurrencyStamp = "695f4ae2-44ab-49f6-9393-d46880ba38fb",
                             Email = "sys.smartneighborhood@gmail.com",
                             EmailConfirmed = true,
                             IsActive = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "SYS.SMARTNEIGHBORHOOD@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEOWSwkRSIvCuGMAiydMi6cQqRuRWiJCScL1+0UVtaC87cgZ8tn0pmHDRXnucNB2dxg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEBLKwpW6VFBYMLYUpZHwWvoq0K+nURGAqH8T7kEkk2CP0yUL0h0GRgsrlvj2mXlzjA==",
                             PersonId = 1,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "afce7774-eae2-4343-bfa6-bc02b75c2b13",
+                            SecurityStamp = "d3a563f6-b5e4-44ff-b3a5-2b2a228b4868",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         },
@@ -1130,17 +1957,17 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "3b983a2a-65e5-4941-b529-e2c03352cabc",
+                            ConcurrencyStamp = "90f79cfa-938c-403e-b72c-07a1ad6b305d",
                             Email = "neighborhood.manager@test.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "NEIGHBORHOOD.MANAGER@TEST.COM",
                             NormalizedUserName = "NEIGHBORHOODMANAGER1",
-                            PasswordHash = "AQAAAAIAAYagAAAAEERbovDVWv+SdJr17oJiLSHN9lwbeFvXBkJkO6omChadmAIsY4xcicICoPDQNu7W1g==",
+                            PasswordHash = "AQAAAAIAAYagAAAAELhPoGacZ/oN4j6DqtwsCICCjcki95H5XDMKPyjmpW0jPygAw+y2SPISNfeeeGvQ3w==",
                             PersonId = 2,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "b32ce32e-55fc-4399-946a-7d96c16a59e6",
+                            SecurityStamp = "fc83a7c3-6217-421c-8c21-4df58a72416e",
                             TwoFactorEnabled = false,
                             UserName = "NeighborhoodManager1"
                         },
@@ -1148,17 +1975,17 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = "cccccccc-cccc-cccc-cccc-cccccccccccc",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "5e22b832-f59c-4de8-a44c-23882065fb4f",
+                            ConcurrencyStamp = "40052b47-71f9-47f9-b9ea-9cd426c470f2",
                             Email = "unit.manager@test.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "UNIT.MANAGER@TEST.COM",
                             NormalizedUserName = "UNITMANAGER1",
-                            PasswordHash = "AQAAAAIAAYagAAAAEFoo07HEVuSOsHWl6OV2M/ylPXb1pqKpZY+LDPaQNDeWd/KH8SFdcxIx7q7Flkdpiw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEKHPEJPxmgstoGQnv7bSIRDCcaZ1rQ7ZC1Wjy7usixEf/Zs+5AEf90i/qUb6yhVTBg==",
                             PersonId = 3,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "78cf0d60-fd2a-415c-a564-307df82973c0",
+                            SecurityStamp = "54555566-0520-43f1-a664-e64aa74ed4ab",
                             TwoFactorEnabled = false,
                             UserName = "UnitManager1"
                         },
@@ -1166,17 +1993,17 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = "dddddddd-dddd-dddd-dddd-dddddddddddd",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "cb0bac59-0eb5-4698-9af4-83e75fc6d8fc",
+                            ConcurrencyStamp = "4a9db97c-08e3-4cc4-a5e0-4b0dc89d7dc5",
                             Email = "block.manager1@test.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "BLOCK.MANAGER1@TEST.COM",
                             NormalizedUserName = "BLOCKMANAGER1",
-                            PasswordHash = "AQAAAAIAAYagAAAAEB8q+g1u2YQbCI5Zuy1cZKDmyDFM8EyrdoI2Bh+HPWnQEl+JEbxVwX/Hc/rT5mrulg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEBZA6QozvQF3EQPcpQc+6N14xr/vuKFzDm6ZpoeRUBcppuxtwAXrMjRSmUGEzskBoQ==",
                             PersonId = 4,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "fcea23e8-fe17-47d3-b65e-aa356cc3fa26",
+                            SecurityStamp = "38a3641f-499c-4b9f-aa17-0a5ae0a13e6f",
                             TwoFactorEnabled = false,
                             UserName = "BlockManager1"
                         },
@@ -1184,17 +2011,17 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "b57ba11e-1b30-4510-a4f3-f49b425d3843",
+                            ConcurrencyStamp = "bba5b935-b583-4094-9d68-528516775fcf",
                             Email = "block.manager2@test.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "BLOCK.MANAGER2@TEST.COM",
                             NormalizedUserName = "BLOCKMANAGER2",
-                            PasswordHash = "AQAAAAIAAYagAAAAEO0wVW4YZYApme3kyHk7cOPpP7tK/eeuju/n5GlGLasNqTjv91fk+hqIBPRJWAISzw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEOMu+qAePP2NJq6cetnCVk3tEkwgMlGAoaoUMEssvOy2xBQ7+7N5YHm5kYogkEnYkw==",
                             PersonId = 5,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "0807bb9e-c04d-4ebb-a174-8c1c22c65ba3",
+                            SecurityStamp = "a240b0ed-9050-4ef9-b8a2-832fae864ba0",
                             TwoFactorEnabled = false,
                             UserName = "BlockManager2"
                         },
@@ -1202,17 +2029,17 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = "ffffffff-ffff-ffff-ffff-ffffffffffff",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "55b5631a-de10-400e-8a3a-9672d0489679",
+                            ConcurrencyStamp = "f995e56e-f93b-44eb-8c8a-c2be26250ba2",
                             Email = "block.manager3@test.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "BLOCK.MANAGER3@TEST.COM",
                             NormalizedUserName = "BLOCKMANAGER3",
-                            PasswordHash = "AQAAAAIAAYagAAAAEKgp9ssp8plMf6nw7aCLCwwSMy9m5Qaeb7ejmRs+/uF1Mfjg6FHoT3FAmadd3AG3YQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEH262/ag1Mn1cctPUIaWSfH4IwxpFYFFHNnP/1/LvtL2aWo3RSRfOdaCqx8jN0w2Nw==",
                             PersonId = 6,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "f510ff53-97ad-487f-9c82-0b5e6ededdf6",
+                            SecurityStamp = "58e685b4-569d-40fd-bfa3-c05943952990",
                             TwoFactorEnabled = false,
                             UserName = "BlockManager3"
                         },
@@ -1220,17 +2047,17 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = "10101010-1010-1010-1010-101010101010",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "060b3ad0-d96d-4870-afd2-24e0f35a7319",
+                            ConcurrencyStamp = "79271c9c-bc00-49c6-8b90-f81b6752cf33",
                             Email = "block.manager4@test.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "BLOCK.MANAGER4@TEST.COM",
                             NormalizedUserName = "BLOCKMANAGER4",
-                            PasswordHash = "AQAAAAIAAYagAAAAEEmpaikg+gsNCxhslU4uyg52wHrVAS0FsZPvbjAkcUXM9b33MfWXOWjC+5p7pNuoWQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEKKDUuaqkx7GBefZuoFl4qNkOJzk+aZ8ZgUfLi6H+0KUMt0bXUT44ATdxmmALLkBng==",
                             PersonId = 7,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "f0399d39-a5be-4b30-923d-6ced626184fc",
+                            SecurityStamp = "b49b1fda-1d4a-4a58-87a4-57c6acd308a7",
                             TwoFactorEnabled = false,
                             UserName = "BlockManager4"
                         },
@@ -1238,17 +2065,17 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = "20202020-2020-2020-2020-202020202020",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "30059f73-3b8d-4ade-a9be-6b94dbb74a7a",
+                            ConcurrencyStamp = "027037f2-e438-4288-bb0c-25b73a510ce6",
                             Email = "block.manager5@test.com",
                             EmailConfirmed = true,
                             IsActive = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "BLOCK.MANAGER5@TEST.COM",
                             NormalizedUserName = "BLOCKMANAGER5",
-                            PasswordHash = "AQAAAAIAAYagAAAAEK4VtXkgiZELClLRERNwpECBtlZLNrCV2o8f/IeggmcW/M0RhWQxDql9gNJ9oGng2g==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEEB3Lsq6rPuA+5UpWMs5D8khu4ruRPZxsq+8mK0/WkBBOoNHaQF7tth9mJTMHGTavw==",
                             PersonId = 8,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "b41411ff-f03c-4104-a114-f14aa3d56dc7",
+                            SecurityStamp = "7712931f-5636-49f6-aa64-f3bebf450eae",
                             TwoFactorEnabled = false,
                             UserName = "BlockManager5"
                         });
@@ -1369,7 +2196,121 @@ namespace SmartNeighborhoodAPI.Migrations
                         new
                         {
                             Id = 1,
+                            Name = "حي 22 مايو",
+                            NeighborhoodManagerId = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "حي أكتوبر",
+                            NeighborhoodManagerId = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "حي ابن سيناء",
+                            NeighborhoodManagerId = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "حي الثورة",
+                            NeighborhoodManagerId = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "حي الحرشيات",
+                            NeighborhoodManagerId = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+                        },
+                        new
+                        {
+                            Id = 6,
                             Name = "حي السلام",
+                            NeighborhoodManagerId = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Name = "حي الشهيد خالد",
+                            NeighborhoodManagerId = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Name = "حي الصديق",
+                            NeighborhoodManagerId = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Name = "حي الصيادين",
+                            NeighborhoodManagerId = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Name = "حي العمال",
+                            NeighborhoodManagerId = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Name = "حي العيص",
+                            NeighborhoodManagerId = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Name = "حي المتضررين",
+                            NeighborhoodManagerId = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Name = "حي النصر",
+                            NeighborhoodManagerId = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Name = "حي امبيخة",
+                            NeighborhoodManagerId = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Name = "حي بويش",
+                            NeighborhoodManagerId = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Name = "حي خلف",
+                            NeighborhoodManagerId = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Name = "حي روكب",
+                            NeighborhoodManagerId = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            Name = "حي فوه القديمة",
+                            NeighborhoodManagerId = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+                        },
+                        new
+                        {
+                            Id = 19,
+                            Name = "حي نوفمبر",
+                            NeighborhoodManagerId = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
+                        },
+                        new
+                        {
+                            Id = 20,
+                            Name = "مربع واحد",
                             NeighborhoodManagerId = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"
                         });
                 });
@@ -1406,7 +2347,7 @@ namespace SmartNeighborhoodAPI.Migrations
                         new
                         {
                             Id = 1,
-                            Name = "الوحدة الأولى",
+                            Name = "الوحدة السكنية 1",
                             ResidentialNeighborhoodId = 1,
                             UnitManagerId = "cccccccc-cccc-cccc-cccc-cccccccccccc"
                         });

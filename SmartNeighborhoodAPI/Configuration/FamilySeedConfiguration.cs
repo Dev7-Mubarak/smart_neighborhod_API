@@ -10,113 +10,39 @@ namespace SmartNeighborhoodAPI.Configuration
     {
         public void Configure(EntityTypeBuilder<Family> builder)
         {
-            // Seed 10 families across the 5 blocks for testing
+            // Seed 20 families across the blocks for testing
             builder.HasData(
                 // Block 1 - 2 families
-                new Family
-                {
-                    Id = 1,
-                    Name = "ÚÇÆáÉ ÇáÃÍãÏí",
-                    Location = "ÔÇÑÚ Çáãáß İåÏ¡ Íí ÇáÓáÇã",
-                    FamilyNotes = "ÚÇÆáÉ ãÍÊÇÌÉ ááÏÚã",
-                    FamilyCatgoryId = 1, // Widows category
-                    HousingType = HousingType.Property,
-                    BlockId = 1
-                },
-                new Family
-                {
-                    Id = 2,
-                    Name = "ÚÇÆáÉ ÇáÓÚíÏ",
-                    Location = "ÔÇÑÚ ÇáÚÑæÈÉ¡ Íí ÇáÓáÇã",
-                    FamilyNotes = "ÚÇÆáÉ ãÊæÓØÉ ÇáÏÎá",
-                    FamilyCatgoryId = 3, // Category C
-                    HousingType = HousingType.Rent,
-                    BlockId = 1
-                },
+                new Family { Id = 1, Name = "Ø¹Ø§Ø¦Ù„Ø© Ø§Ù„ØºØ§Ù†Ù…", Location = "Ø§Ù„Ø¨ÙŠØª 1ØŒ Ø§Ù„Ø­ÙŠ Ø§Ù„Ù‚Ø¯ÙŠÙ…", FamilyNotes = "Ù„Ø§ Ù…Ù„Ø§Ø­Ø¸Ø§Øª", FamilyCatgoryId = 1, HousingType = HousingType.Property, BlockId = 1 },
+                new Family { Id = 2, Name = "Ø¹Ø§Ø¦Ù„Ø© Ø§Ù„Ù…Ù„Ø§Ø­", Location = "Ø§Ù„Ø¨ÙŠØª 2ØŒ Ø´Ø§Ø±Ø¹ Ø§Ù„Ø¨Ø­Ø±", FamilyNotes = "ØªØ£Ø¬ÙŠØ± Ø·ÙˆÙŠÙ„ Ø§Ù„Ø£Ù…Ø¯", FamilyCatgoryId = 3, HousingType = HousingType.Rent, BlockId = 1 },
+
                 // Block 2 - 2 families
-                new Family
-                {
-                    Id = 3,
-                    Name = "ÚÇÆáÉ ÇáŞÍØÇäí",
-                    Location = "ÔÇÑÚ ÇáÃãíÑ ÓáØÇä¡ Íí ÇáÓáÇã",
-                    FamilyNotes = "ÚÇÆáÉ íÊíãÉ",
-                    FamilyCatgoryId = 2, // Orphans category
-                    HousingType = HousingType.Property,
-                    BlockId = 2
-                },
-                new Family
-                {
-                    Id = 4,
-                    Name = "ÚÇÆáÉ ÇáÏæÓÑí",
-                    Location = "ÔÇÑÚ Çáãáß ÚÈÏÇáÚÒíÒ¡ Íí ÇáÓáÇã",
-                    FamilyNotes = null,
-                    FamilyCatgoryId = 3, // Category C
-                    HousingType = HousingType.Rent,
-                    BlockId = 2
-                },
+                new Family { Id = 3, Name = "Ø¹Ø§Ø¦Ù„Ø© Ø§Ù„Ø¹ÙƒØ¨Ø±ÙŠ", Location = "Ø§Ù„Ø²Ø§ÙˆÙŠØ© Ø§Ù„Ø¬Ù†ÙˆØ¨ÙŠØ©ØŒ Ù…Ø¨Ù†Ù‰ 2", FamilyNotes = "Ø¹Ø§Ø¦Ù„Ø© Ù…Ø¹ Ø§Ù„Ø¹Ø¯ÙŠØ¯ Ù…Ù† Ø§Ù„Ø£ÙˆÙ„Ø§Ø¯", FamilyCatgoryId = 2, HousingType = HousingType.Property, BlockId = 2 },
+                new Family { Id = 4, Name = "Ø¹Ø§Ø¦Ù„Ø© Ø§Ù„Ø¹Ù…Ø±ÙŠ", Location = "Ø§Ù„Ø·Ø§Ø¨Ù‚ Ø§Ù„Ø£ÙˆÙ„ØŒ Ù…Ø¨Ù†Ù‰ 2", FamilyNotes = null, FamilyCatgoryId = 3, HousingType = HousingType.Rent, BlockId = 2 },
+
                 // Block 3 - 2 families
-                new Family
-                {
-                    Id = 5,
-                    Name = "ÚÇÆáÉ ÇáÔãÑí",
-                    Location = "ÔÇÑÚ ÇáÎáíÌ¡ Íí ÇáÓáÇã",
-                    FamilyNotes = "ÚÇÆáÉ ßÈíÑÉ",
-                    FamilyCatgoryId = 1, // Widows category
-                    HousingType = HousingType.Property,
-                    BlockId = 3
-                },
-                new Family
-                {
-                    Id = 6,
-                    Name = "ÚÇÆáÉ ÇáÛÇãÏí",
-                    Location = "ÔÇÑÚ ÇáÃãá¡ Íí ÇáÓáÇã",
-                    FamilyNotes = null,
-                    FamilyCatgoryId = 3, // Category C
-                    HousingType = HousingType.Rent,
-                    BlockId = 3
-                },
+                new Family { Id = 5, Name = "Ø¹Ø§Ø¦Ù„Ø© Ø§Ù„Ù‡Ø§Ø´Ù…ÙŠ", Location = "Ø§Ù„Ø­ÙŠ Ø§Ù„Ø´Ù…Ø§Ù„ÙŠØŒ Ù…Ø¨Ù†Ù‰ 3", FamilyNotes = "ØªØ­ØªØ§Ø¬ Ø¯Ø¹Ù… ØµØ­Ù‘ÙŠ", FamilyCatgoryId = 1, HousingType = HousingType.Property, BlockId = 3 },
+                new Family { Id = 6, Name = "Ø¹Ø§Ø¦Ù„Ø© Ø§Ù„Ø­Ù…Ø§Ø¯ÙŠ", Location = "Ø§Ù„Ø·Ø§Ø¨Ù‚ Ø§Ù„Ø«Ø§Ù†ÙŠØŒ Ù…Ø¨Ù†Ù‰ 3", FamilyNotes = null, FamilyCatgoryId = 3, HousingType = HousingType.Rent, BlockId = 3 },
+
                 // Block 4 - 2 families
-                new Family
-                {
-                    Id = 7,
-                    Name = "ÚÇÆáÉ ÇáÚãÑí",
-                    Location = "ÔÇÑÚ ÇáäÎíá¡ Íí ÇáÓáÇã",
-                    FamilyNotes = "ÚÇÆáÉ ãÍÊÇÌÉ",
-                    FamilyCatgoryId = 2, // Orphans category
-                    HousingType = HousingType.Property,
-                    BlockId = 4
-                },
-                new Family
-                {
-                    Id = 8,
-                    Name = "ÚÇÆáÉ ÇáãØíÑí",
-                    Location = "ÔÇÑÚ ÇáæÑæÏ¡ Íí ÇáÓáÇã",
-                    FamilyNotes = null,
-                    FamilyCatgoryId = 3, // Category C
-                    HousingType = HousingType.Rent,
-                    BlockId = 4
-                },
+                new Family { Id = 7, Name = "Ø¹Ø§Ø¦Ù„Ø© Ø§Ù„Ø­Ø¯Ø±ÙŠ", Location = "Ø§Ù„Ø´Ø§Ø±Ø¹ Ø§Ù„Ø¹Ø§Ù…ØŒ Ù…Ø¨Ù†Ù‰ 4", FamilyNotes = "Ø£Ø­Ø¯ Ø£ÙØ±Ø§Ø¯ Ø§Ù„Ø£Ø³Ø±Ø© Ø¨Ø­Ø§Ø¬Ø© Ù„Ø±Ø¹Ø§ÙŠØ©", FamilyCatgoryId = 2, HousingType = HousingType.Property, BlockId = 4 },
+                new Family { Id = 8, Name = "Ø¹Ø§Ø¦Ù„Ø© Ø§Ù„Ø¨Ø³Ø§Ø·ÙŠ", Location = "Ø§Ù„ØµÙØ­Ø© Ø§Ù„Ø´Ø±Ù‚ÙŠØ©ØŒ Ù…Ø¨Ù†Ù‰ 4", FamilyNotes = null, FamilyCatgoryId = 3, HousingType = HousingType.Rent, BlockId = 4 },
+
                 // Block 5 - 2 families
-                new Family
-                {
-                    Id = 9,
-                    Name = "ÚÇÆáÉ ÇáÒåÑÇäí",
-                    Location = "ÔÇÑÚ ÇáÓáÇã¡ Íí ÇáÓáÇã",
-                    FamilyNotes = "ÚÇÆáÉ ÃÑãáÉ",
-                    FamilyCatgoryId = 1, // Widows category
-                    HousingType = HousingType.Property,
-                    BlockId = 5
-                },
-                new Family
-                {
-                    Id = 10,
-                    Name = "ÚÇÆáÉ ÇáÍÑÈí",
-                    Location = "ÔÇÑÚ ÇáİíÍÇÁ¡ Íí ÇáÓáÇã",
-                    FamilyNotes = null,
-                    FamilyCatgoryId = 3, // Category C
-                    HousingType = HousingType.Rent,
-                    BlockId = 5
-                }
+                new Family { Id = 9, Name = "Ø¹Ø§Ø¦Ù„Ø© Ø§Ù„Ù…Ù„Ø§Ø­", Location = "Ø§Ù„Ù…Ù†Ø·Ù‚Ø© Ø§Ù„Ø¬Ù†ÙˆØ¨ÙŠØ©ØŒ Ù…Ø¨Ù†Ù‰ 5", FamilyNotes = "Ø¹Ø§Ø¦Ù„Ø© Ù…Ø³ØªÙ‚Ø±Ø©", FamilyCatgoryId = 1, HousingType = HousingType.Property, BlockId = 5 },
+                new Family { Id = 10, Name = "Ø¹Ø§Ø¦Ù„Ø© Ø§Ù„Ù‚Ø­Ø·Ø§Ù†ÙŠ", Location = "Ø§Ù„Ø·Ø§Ø¨Ù‚ Ø§Ù„Ø£Ø±Ø¶ÙŠØŒ Ù…Ø¨Ù†Ù‰ 5", FamilyNotes = null, FamilyCatgoryId = 3, HousingType = HousingType.Rent, BlockId = 5 },
+
+                // Additional families (11-20)
+                new Family { Id = 11, Name = "Ø¹Ø§Ø¦Ù„Ø© Ø§Ù„Ø´Ø±ÙŠÙ", Location = "Ø§Ù„Ø·Ø§Ø¨Ù‚ Ø§Ù„Ø£ÙˆÙ„ØŒ Ù…Ø¨Ù†Ù‰ 6", FamilyNotes = null, FamilyCatgoryId = 1, HousingType = HousingType.Property, BlockId = 6 },
+                new Family { Id = 12, Name = "Ø¹Ø§Ø¦Ù„Ø© Ø§Ù„Ø²Ø¨ÙŠØ±ÙŠ", Location = "Ø§Ù„Ø¨ÙŠØª 2ØŒ Ù…Ø¨Ù†Ù‰ 7", FamilyNotes = "ØªØ­ØªØ§Ø¬ Ø¯Ø¹Ù… ØªØ¹Ù„ÙŠÙ…ÙŠ", FamilyCatgoryId = 2, HousingType = HousingType.Rent, BlockId = 7 },
+                new Family { Id = 13, Name = "Ø¹Ø§Ø¦Ù„Ø© Ø§Ù„Ù‡Ø§Ø´Ù…ÙŠ", Location = "Ø§Ù„Ø²Ø§ÙˆÙŠØ© Ø§Ù„ØºØ±Ø¨ÙŠØ©ØŒ Ù…Ø¨Ù†Ù‰ 8", FamilyNotes = null, FamilyCatgoryId = 3, HousingType = HousingType.Property, BlockId = 8 },
+                new Family { Id = 14, Name = "Ø¹Ø§Ø¦Ù„Ø© Ø§Ù„Ø¹Ø±Ø§Ø¯ÙŠ", Location = "Ø§Ù„Ø´Ù‚Ø© 3ØŒ Ù…Ø¨Ù†Ù‰ 9", FamilyNotes = null, FamilyCatgoryId = 3, HousingType = HousingType.Rent, BlockId = 9 },
+                new Family { Id = 15, Name = "Ø¹Ø§Ø¦Ù„Ø© Ø§Ù„Ù‚Ø§Ø¶ÙŠ", Location = "Ø§Ù„Ø·Ø§Ø¨Ù‚ Ø§Ù„Ø¹Ù„ÙˆÙŠØŒ Ù…Ø¨Ù†Ù‰ 10", FamilyNotes = "Ø£Ù… Ø¹Ø§Ø²Ø¨Ø©", FamilyCatgoryId = 1, HousingType = HousingType.Property, BlockId = 10 },
+                new Family { Id = 16, Name = "Ø¹Ø§Ø¦Ù„Ø© Ø§Ù„Ø±Ø¨ÙŠØ¹ÙŠ", Location = "Ù…Ø¨Ù†Ù‰ 11ØŒ Ø´Ø§Ø±Ø¹ Ø§Ù„Ø³ÙˆÙ‚", FamilyNotes = null, FamilyCatgoryId = 3, HousingType = HousingType.Rent, BlockId = 11 },
+                new Family { Id = 17, Name = "Ø¹Ø§Ø¦Ù„Ø© Ø§Ù„Ø­Ø§Ø¬", Location = "Ø§Ù„Ù…Ù†Ø·Ù‚Ø© 12ØŒ Ù…Ø¨Ù†Ù‰ 12", FamilyNotes = "Ø¹Ø§Ø¦Ù„Ø© ÙƒØ¨ÙŠØ±Ø©", FamilyCatgoryId = 2, HousingType = HousingType.Property, BlockId = 12 },
+                new Family { Id = 18, Name = "Ø¹Ø§Ø¦Ù„Ø© Ø§Ù„Ø³Ù‚Ø§Ù", Location = "Ø§Ù„Ø·Ø§Ø¨Ù‚ Ø§Ù„Ø«Ø§Ù†ÙŠØŒ Ù…Ø¨Ù†Ù‰ 13", FamilyNotes = null, FamilyCatgoryId = 3, HousingType = HousingType.Rent, BlockId = 13 },
+                new Family { Id = 19, Name = "Ø¹Ø§Ø¦Ù„Ø© Ø§Ù„Ø¹ÙˆÙ„Ù‚ÙŠ", Location = "Ù…Ù†Ø²Ù„ ØµØºÙŠØ±ØŒ Ù…Ø¨Ù†Ù‰ 14", FamilyNotes = null, FamilyCatgoryId = 3, HousingType = HousingType.Property, BlockId = 14 },
+                new Family { Id = 20, Name = "Ø¹Ø§Ø¦Ù„Ø© Ù…Ø®ØªØ§Ø±", Location = "Ø§Ù„Ø·Ø§Ø¨Ù‚ Ø§Ù„Ø£Ø±Ø¶ÙŠØŒ Ù…Ø¨Ù†Ù‰ 15", FamilyNotes = null, FamilyCatgoryId = 2, HousingType = HousingType.Rent, BlockId = 15 }
             );
         }
     }

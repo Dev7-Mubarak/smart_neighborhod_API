@@ -9,43 +9,28 @@ namespace SmartNeighborhoodAPI.Configuration
     {
         public void Configure(EntityTypeBuilder<Block> builder)
         {
-            // Seed 5 Blocks for testing the endpoint GET /api/residential-units/{id}/blocks
+            // Seed 20 Blocks for testing the endpoint GET /api/residential-units/{id}/blocks
             builder.HasData(
-                new Block
-                {
-                    Id = 1,
-                    Name = "ÇáãÑÈÚ ÇáÃæá",
-                    ResidentialUnitId = 1,
-                    BlockManagerId = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
-                },
-                new Block
-                {
-                    Id = 2,
-                    Name = "ÇáãÑÈÚ ÇáËÇäí",
-                    ResidentialUnitId = 1,
-                    BlockManagerId = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
-                },
-                new Block
-                {
-                    Id = 3,
-                    Name = "ÇáãÑÈÚ ÇáËÇáË",
-                    ResidentialUnitId = 1,
-                    BlockManagerId = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
-                },
-                new Block
-                {
-                    Id = 4,
-                    Name = "ÇáãÑÈÚ ÇáÑÇÈÚ",
-                    ResidentialUnitId = 1,
-                    BlockManagerId = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
-                },
-                new Block
-                {
-                    Id = 5,
-                    Name = "ÇáãÑÈÚ ÇáÎÇãÓ",
-                    ResidentialUnitId = 1,
-                    BlockManagerId = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
-                }
+                new Block { Id = 1, Name = "Ù…Ø¨Ù†Ù‰ 1", ResidentialUnitId = 1, BlockManagerId = "dddddddd-dddd-dddd-dddd-dddddddddddd" },
+                new Block { Id = 2, Name = "Ù…Ø¨Ù†Ù‰ 2", ResidentialUnitId = 1, BlockManagerId = "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee" },
+                new Block { Id = 3, Name = "Ù…Ø¨Ù†Ù‰ 3", ResidentialUnitId = 1, BlockManagerId = "ffffffff-ffff-ffff-ffff-ffffffffffff" },
+                new Block { Id = 4, Name = "Ù…Ø¨Ù†Ù‰ 4", ResidentialUnitId = 1, BlockManagerId = "10101010-1010-1010-1010-101010101010" },
+                new Block { Id = 5, Name = "Ù…Ø¨Ù†Ù‰ 5", ResidentialUnitId = 1, BlockManagerId = "20202020-2020-2020-2020-202020202020" },
+                new Block { Id = 6, Name = "Ù…Ø¨Ù†Ù‰ 6", ResidentialUnitId = 1, BlockManagerId = "dddddddd-dddd-dddd-dddd-dddddddddddd" },
+                new Block { Id = 7, Name = "Ù…Ø¨Ù†Ù‰ 7", ResidentialUnitId = 1, BlockManagerId = "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee" },
+                new Block { Id = 8, Name = "Ù…Ø¨Ù†Ù‰ 8", ResidentialUnitId = 1, BlockManagerId = "ffffffff-ffff-ffff-ffff-ffffffffffff" },
+                new Block { Id = 9, Name = "Ù…Ø¨Ù†Ù‰ 9", ResidentialUnitId = 1, BlockManagerId = "10101010-1010-1010-1010-101010101010" },
+                new Block { Id = 10, Name = "Ù…Ø¨Ù†Ù‰ 10", ResidentialUnitId = 1, BlockManagerId = "20202020-2020-2020-2020-202020202020" },
+                new Block { Id = 11, Name = "Ù…Ø¨Ù†Ù‰ 11", ResidentialUnitId = 1, BlockManagerId = "dddddddd-dddd-dddd-dddd-dddddddddddd" },
+                new Block { Id = 12, Name = "Ù…Ø¨Ù†Ù‰ 12", ResidentialUnitId = 1, BlockManagerId = "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee" },
+                new Block { Id = 13, Name = "Ù…Ø¨Ù†Ù‰ 13", ResidentialUnitId = 1, BlockManagerId = "ffffffff-ffff-ffff-ffff-ffffffffffff" },
+                new Block { Id = 14, Name = "Ù…Ø¨Ù†Ù‰ 14", ResidentialUnitId = 1, BlockManagerId = "10101010-1010-1010-1010-101010101010" },
+                new Block { Id = 15, Name = "Ù…Ø¨Ù†Ù‰ 15", ResidentialUnitId = 1, BlockManagerId = "20202020-2020-2020-2020-202020202020" },
+                new Block { Id = 16, Name = "Ù…Ø¨Ù†Ù‰ 16", ResidentialUnitId = 1, BlockManagerId = "dddddddd-dddd-dddd-dddd-dddddddddddd" },
+                new Block { Id = 17, Name = "Ù…Ø¨Ù†Ù‰ 17", ResidentialUnitId = 1, BlockManagerId = "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee" },
+                new Block { Id = 18, Name = "Ù…Ø¨Ù†Ù‰ 18", ResidentialUnitId = 1, BlockManagerId = "ffffffff-ffff-ffff-ffff-ffffffffffff" },
+                new Block { Id = 19, Name = "Ù…Ø¨Ù†Ù‰ 19", ResidentialUnitId = 1, BlockManagerId = "10101010-1010-1010-1010-101010101010" },
+                new Block { Id = 20, Name = "Ù…Ø¨Ù†Ù‰ 20", ResidentialUnitId = 1, BlockManagerId = "20202020-2020-2020-2020-202020202020" }
             );
         }
     }

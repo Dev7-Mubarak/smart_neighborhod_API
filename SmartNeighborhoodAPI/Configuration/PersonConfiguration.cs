@@ -66,22 +66,8 @@ namespace OurProjectSmartNeiborhood.Configuration
                     MaritalStatus = MaritalStatus.Married,
                     personType = PersonType.Admin,
                     Job = "مهندس"
-                },
-                new Person
-                {
-                    Id = 2,
-                    FirstName = "فاطمة",
-                    SecondName = "خالد",
-                    ThirdName = "عبد الله",
-                    LastName = "الحسني",
-                    PhoneNumber = "0789876543",
-                    Gender = Gender.Female,
-                    BloodType = BloodType.ABNegative,
-                    OccupationStatus = OccupationStatus.Student,
-                    MaritalStatus = MaritalStatus.Single,
-                    personType = PersonType.Citizen,
-                    Job = "طالبة"
                 }
+     
             );
         }
     }
