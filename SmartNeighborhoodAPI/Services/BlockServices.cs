@@ -465,41 +465,49 @@ namespace SmartNeighborhoodAPI.Services
             return ApiResponse<BlockDashboardDto>.Success(dashboard, "تم جلب إحصائيات المربعات بنجاح");
         }
 
-        public async Task<ApiResponse<BlockManagerDashboardDto>> GetMyDashboardAsync(string userId, CancellationToken ct = default)
+        public async Task<ApiResponse<BlockDashboardDto>> GetMyDashboardAsync(CancellationToken ct = default)
         {
+            var currentUser = _userContextService.GetCurrentUser();
+            var userId = currentUser.Id;
+
             _logger.LogInformation("Fetching dashboard statistics for block manager with userId: {UserId}", userId);
 
-            var statistics = await _context.Blocks
+            var blocks = await _context.Blocks
                 .AsNoTracking()
                 .Where(b => b.BlockManagerId == userId)
-                .Select(b => new
-                {
-                    BlockId = b.Id,
-                    FamiliesCount = b.Families.Count
-                })
+                .Include(b => b.BlockManager)
+                    .ThenInclude(bm => bm.Person)
                 .ToListAsync(ct);
 
-            if (!statistics.Any())
+            if (!blocks.Any())
             {
                 _logger.LogWarning("No blocks found for manager with userId: {UserId}", userId);
-                return ApiResponse<BlockManagerDashboardDto>.Success(
-                    new BlockManagerDashboardDto
-                    {
-                        TotalFamilies = 0
-                    },
-                    "لا توجد مربعات مرتبطة بهذا المدير"
-                );
+                var empty = new BlockDashboardDto
+                {
+                    TotalBlocks = 0,
+                    TotalFamilies = 0,
+                    Blocks = new List<BlockStatsDto>()
+                };
+                return ApiResponse<BlockDashboardDto>.Success(empty, "لا توجد مربعات مرتبطة بهذا المدير");
             }
 
-            var dashboard = new BlockManagerDashboardDto
+            var dashboard = new BlockDashboardDto
             {
-                TotalFamilies = statistics.Sum(s => s.FamiliesCount)
+                TotalBlocks = blocks.Count,
+                TotalFamilies = blocks.Sum(b => b.Families.Count),
+                Blocks = blocks.Select(b => new BlockStatsDto
+                {
+                    BlockId = b.Id,
+                    BlockName = b.Name,
+                    FamiliesCount = b.Families.Count,
+                    ManagerId = b.BlockManagerId,
+                    ManagerName = b.BlockManager?.Person?.FullName ?? string.Empty
+                }).ToList()
             };
 
-            _logger.LogInformation("Dashboard statistics retrieved successfully for block manager {UserId}: {Families} families",
-                userId, dashboard.TotalFamilies);
+            _logger.LogInformation("Dashboard statistics retrieved successfully for block manager {UserId}: {Blocks} blocks", userId, dashboard.TotalBlocks);
 
-            return ApiResponse<BlockManagerDashboardDto>.Success(dashboard, "تم جلب إحصائيات لوحة التحكم بنجاح");
+            return ApiResponse<BlockDashboardDto>.Success(dashboard, "تم جلب إحصائيات لوحة التحكم بنجاح");
         }
 
         public async Task<ApiResponse<List<RetrunBlockDto>>> GetMyBlocksAsync(string userId, CancellationToken ct = default)

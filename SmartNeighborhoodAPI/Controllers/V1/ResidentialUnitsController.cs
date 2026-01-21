@@ -100,46 +100,26 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         [HttpGet(Router.ResidentialUnits.Dashboard)]
         [MapToApiVersion("1.0")]
         [Authorize]
-        [SwaggerOperation(Summary = "Get residential units dashboard (Admin or Unit Manager)", Description = "Returns dashboard statistics for admin (all units) or unit manager (their units).")]
+        [SwaggerOperation(Summary = "Get residential units dashboard", Description = "Returns dashboard statistics and units list. Admin gets all units; manager gets their units.")]
         [ProducesResponseType(typeof(ResidentialUnitDashboardDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<ResidentialUnitManagerDashboardDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> GetDashboardAsync(CancellationToken ct)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(userId))
-                return Unauthorized();
-
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-                return Unauthorized();
-
-            if (await _userManager.IsInRoleAsync(user, Role.Admin))
-            {
-                return Response(await _unitServices.GetDashboardAsync());
-            }
-
-            if (await _userManager.IsInRoleAsync(user, Role.UnitManager))
-            {
-                return Response(await _unitServices.GetMyDashboardAsync(userId, ct));
-            }
-
-            return Forbid();
+            return Response(await _unitServices.GetDashboardAsync(ct));
         }
 
         [HttpGet(Router.ResidentialUnits.GetMyDashboard)]
         [MapToApiVersion("1.0")]
         [SwaggerOperation(
             Summary = "Get my dashboard statistics (Unit Manager only)",
-            Description = "Returns dashboard statistics for the authenticated unit manager, including total families and blocks they manage.")]
-        [ProducesResponseType(typeof(ApiResponse<ResidentialUnitManagerDashboardDto>), StatusCodes.Status200OK)]
+            Description = "Returns dashboard statistics for the authenticated unit manager, including units list.")]
+        [ProducesResponseType(typeof(ResidentialUnitDashboardDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> GetMyDashboard(CancellationToken ct)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            return Response(await _unitServices.GetMyDashboardAsync(userId, ct));
+            return Response(await _unitServices.GetMyDashboardAsync(ct));
         }
 
         [HttpGet(Router.ResidentialUnits.GetMyUnits)]

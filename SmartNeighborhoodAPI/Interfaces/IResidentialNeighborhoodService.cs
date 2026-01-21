@@ -17,7 +17,7 @@ namespace SmartNeighborhoodAPI.Interfaces
         Task<ApiResponse<ReturnResidentialUnitDto>> GetUnitsAsync(int id);
         
         // Manager-specific endpoints
-        Task<ApiResponse<ResidentialNeighborhoodManagerDashboardDto>> GetMyDashboardAsync(string userId, CancellationToken ct = default);
+        Task<ApiResponse<ResidentialDashboardDto>> GetMyDashboardAsync(CancellationToken ct = default);
         Task<ApiResponse<List<ReturnResidentialUnitDto>>> GetMyNeighborhoodsAsync(string userId, CancellationToken ct = default);
     }
 }

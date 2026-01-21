@@ -14,7 +14,7 @@ namespace SmartNeighborhoodAPI.Interfaces
         
         Task<ApiResponse<BlockDashboardDto>> GetDashboardAsync(CancellationToken ct = default);
         
-        Task<ApiResponse<BlockManagerDashboardDto>> GetMyDashboardAsync(string userId, CancellationToken ct = default);
+        Task<ApiResponse<BlockDashboardDto>> GetMyDashboardAsync(CancellationToken ct = default);
         Task<ApiResponse<List<RetrunBlockDto>>> GetMyBlocksAsync(string userId, CancellationToken ct = default);
         
         Task<ApiResponse<ReturnBlockFamiliesDto>> GetFamiliesAsync(int id);

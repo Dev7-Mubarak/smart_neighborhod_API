@@ -26,10 +26,6 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             _userManager = userManager;
         }
 
-        private IActionResult Response<T>(ApiResponse<T> response)
-        {
-            return StatusCode((int)response.StatusCode, response);
-        }
 
         [HttpGet(ResidentialNeighborhoods.GetAll)]
         [SwaggerOperation(Summary = "Get all residential neighborhoods (Admin only)")]
@@ -65,32 +61,13 @@ namespace SmartNeighborhoodAPI.Controllers.V1
 
         [HttpGet(ResidentialNeighborhoods.Dashboard)]
         [Authorize]
-        [SwaggerOperation(Summary = "Get residential neighborhood dashboard statistics (Admin or Manager)")]
+        [SwaggerOperation(Summary = "Get residential neighborhood dashboard", Description = "Returns dashboard statistics and neighborhoods list. Admin gets all neighborhoods; manager gets their neighborhoods.")]
         [ProducesResponseType(typeof(ResidentialDashboardDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<ResidentialNeighborhoodManagerDashboardDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> GetDashboard(CancellationToken ct)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(userId))
-                return Unauthorized();
-
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-                return Unauthorized();
-
-            if (await _userManager.IsInRoleAsync(user, Role.Admin))
-            {
-                return Response(await _service.GetDashboardAsync(ct));
-            }
-
-            if (await _userManager.IsInRoleAsync(user, Role.ResidentialNeighborhoodManager))
-            {
-                return Response(await _service.GetMyDashboardAsync(userId, ct));
-            }
-
-            return Forbid();
+            return Response(await _service.GetDashboardAsync(ct));
         }
 
         [HttpGet(ResidentialNeighborhoods.Units)]
@@ -101,14 +78,13 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         [HttpGet(ResidentialNeighborhoods.GetMyDashboard)]
         [SwaggerOperation(
             Summary = "Get my dashboard statistics (Manager only)",
-            Description = "Returns dashboard statistics for the authenticated residential neighborhood manager, including total neighborhoods, units, and blocks they manage.")]
-        [ProducesResponseType(typeof(ApiResponse<ResidentialNeighborhoodManagerDashboardDto>), StatusCodes.Status200OK)]
+            Description = "Returns dashboard statistics for the authenticated residential neighborhood manager, including neighborhoods list.")]
+        [ProducesResponseType(typeof(ResidentialDashboardDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> GetMyDashboard(CancellationToken ct)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            return Response(await _service.GetMyDashboardAsync(userId, ct));
+            return Response(await _service.GetMyDashboardAsync(ct));
         }
 
         [HttpGet(ResidentialNeighborhoods.GetMyNeighborhoods)]

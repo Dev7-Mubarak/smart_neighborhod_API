@@ -16,13 +16,15 @@ namespace SmartNeighborhoodAPI.Services
         private readonly UserManager<AppUser> _userManager;
         private readonly IEmailSender _emailSender;
         private readonly ILogger<ResidentialNeighborhoodService> _logger;
+        private readonly UserContextService _userContextService;
 
-        public ResidentialNeighborhoodService(ApplicationDbContext context, UserManager<AppUser> userManager, IEmailSender emailSender, ILogger<ResidentialNeighborhoodService> logger)
+        public ResidentialNeighborhoodService(ApplicationDbContext context, UserManager<AppUser> userManager, IEmailSender emailSender, ILogger<ResidentialNeighborhoodService> logger, UserContextService userContextService)
         {
             _context = context;
             _userManager = userManager;
             _emailSender = emailSender;
             _logger = logger;
+            _userContextService = userContextService;
         }
 
         public async Task<ApiResponse<ReturnResidentialNeighborhoodDto>> CreateAsync(CreateResidentialNeighborhoodDto dto)
@@ -395,43 +397,53 @@ namespace SmartNeighborhoodAPI.Services
             return ApiResponse<ReturnResidentialUnitDto>.Success(entity.ToResidentialUnitDto(), "تم جلب الوحدات السكنية بنجاح");
         }
 
-        public async Task<ApiResponse<ResidentialNeighborhoodManagerDashboardDto>> GetMyDashboardAsync(string userId, CancellationToken ct = default)
+        public async Task<ApiResponse<ResidentialDashboardDto>> GetMyDashboardAsync(CancellationToken ct = default)
         {
+            var currentUser = _userContextService.GetCurrentUser();
+            var userId = currentUser.Id;
             _logger.LogInformation("Fetching dashboard statistics for manager with userId: {UserId}", userId);
 
             var neighborhoods = await _context.ResidentialNeighborhoods
+                .AsNoTracking()
+                .Include(n => n.NeighborhoodManager)
+                    .ThenInclude(nm => nm.Person)
                 .Include(n => n.ResidentialUnits)
                     .ThenInclude(u => u.Blocks)
-                        .ThenInclude(b => b.Families)
                 .Where(n => n.NeighborhoodManagerId == userId)
-                .Where(n => n.ResidentialUnits.Any())
                 .ToListAsync(ct);
 
             if (!neighborhoods.Any())
             {
                 _logger.LogWarning("No neighborhoods found for manager with userId: {UserId}", userId);
-                return ApiResponse<ResidentialNeighborhoodManagerDashboardDto>.Success(
-                    new ResidentialNeighborhoodManagerDashboardDto
-                    {
-                        TotalFamilies = 0,
-                        TotalUnits = 0,
-                        TotalBlocks = 0
-                    },
-                    "لا توجد أحياء سكنية مرتبطة بهذا المدير"
-                );
+                var empty = new ResidentialDashboardDto
+                {
+                    TotalNeighborhoods = 0,
+                    TotalUnits = 0,
+                    TotalBlocks = 0,
+                    Neighborhoods = new List<NeighborhoodStatsDto>()
+                };
+                return ApiResponse<ResidentialDashboardDto>.Success(empty, "لا توجد أحياء سكنية مرتبطة بهذا المدير");
             }
 
-            var dashboard = new ResidentialNeighborhoodManagerDashboardDto
+            var dashboard = new ResidentialDashboardDto
             {
-                TotalFamilies = neighborhoods.Sum(n => n.ResidentialUnits.Sum(u => u.Blocks.Sum(b => b.Families.Count))),
+                TotalNeighborhoods = neighborhoods.Count,
                 TotalUnits = neighborhoods.Sum(n => n.ResidentialUnits.Count),
-                TotalBlocks = neighborhoods.Sum(n => n.ResidentialUnits.Sum(u => u.Blocks.Count))
+                TotalBlocks = neighborhoods.Sum(n => n.ResidentialUnits.Sum(u => u.Blocks.Count)),
+                Neighborhoods = neighborhoods.Select(n => new NeighborhoodStatsDto
+                {
+                    NeighborhoodId = n.Id,
+                    NeighborhoodName = n.Name,
+                    UnitsCount = n.ResidentialUnits.Count,
+                    BlocksCount = n.ResidentialUnits.Sum(u => u.Blocks.Count),
+                    ManagerId = n.NeighborhoodManagerId,
+                    ManagerName = n.NeighborhoodManager?.Person?.FullName ?? string.Empty
+                }).ToList()
             };
 
-            _logger.LogInformation("Dashboard statistics retrieved successfully for manager {UserId}: {Families} families, {Units} units, {Blocks} blocks",
-                userId, dashboard.TotalFamilies, dashboard.TotalUnits, dashboard.TotalBlocks);
+            _logger.LogInformation("Dashboard statistics retrieved successfully for manager {UserId}: {Neighborhoods} neighborhoods", userId, dashboard.TotalNeighborhoods);
 
-            return ApiResponse<ResidentialNeighborhoodManagerDashboardDto>.Success(dashboard, "تم جلب إحصائيات لوحة التحكم بنجاح");
+            return ApiResponse<ResidentialDashboardDto>.Success(dashboard, "تم جلب إحصائيات لوحة التحكم بنجاح");
         }
 
         public async Task<ApiResponse<List<ReturnResidentialUnitDto>>> GetMyNeighborhoodsAsync(string userId, CancellationToken ct = default)

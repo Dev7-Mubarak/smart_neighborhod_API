@@ -18,15 +18,17 @@ namespace SmartNeighborhoodAPI.Services
         private readonly ILogger<ResidentialUnit> _logger;
         private readonly UserManager<AppUser> _userManager;
         private readonly IEmailSender _emailSender;
+        private readonly UserContextService _userContextService;
 
 
-        public ResidentialUnitService(ApplicationDbContext context, IAuthService authService, ILogger<ResidentialUnit> logger, UserManager<AppUser> userManager, IEmailSender emailSender)
+        public ResidentialUnitService(ApplicationDbContext context, IAuthService authService, ILogger<ResidentialUnit> logger, UserManager<AppUser> userManager, IEmailSender emailSender, UserContextService userContextService)
         {
             _context = context;
             _authService = authService;
             _userManager = userManager;
             _logger = logger;
             _emailSender = emailSender;
+            _userContextService = userContextService;
         }
 
 
@@ -333,35 +335,69 @@ namespace SmartNeighborhoodAPI.Services
             });
         }
 
-        public async Task<ApiResponse<ResidentialUnitDashboardDto>> GetDashboardAsync()
+        public async Task<ApiResponse<ResidentialUnitDashboardDto>> GetDashboardAsync(CancellationToken ct = default)
         {
-            var units = await _context.ResidentialUnits
-                .AsNoTracking()
-                .Select(u => new
-                {
-                    u.Id,
-                    u.Name,
-                    u.UnitManagerId,
-                    u.UnitManager.Person.FullName,
-                    BlocksCount = u.Blocks.Count,
-                })
-                .ToListAsync();
+            var currentUser = _userContextService.GetCurrentUser();
 
-            var dashboard = new ResidentialUnitDashboardDto
+            if (currentUser.Role == Role.Admin)
             {
-                TotalUnits = units.Count,
-                TotalBlocks = units.Sum(u => u.BlocksCount),
-                Units = units.Select(u => new UnitStatsDto
-                {
-                    Id = u.Id,
-                    Name = u.Name,
-                    UnitManagerId = u.UnitManagerId, 
-                    UnitManagerName = u.FullName,
-                    BlockCount = u.BlocksCount,
-                }).ToList()
-            };
+                var units = await _context.ResidentialUnits
+                    .AsNoTracking()
+                    .Include(u => u.UnitManager)
+                        .ThenInclude(um => um.Person)
+                    .Include(u => u.Blocks)
+                    .OrderBy(u => u.Name)
+                    .ToListAsync(ct);
 
-            return ApiResponse<ResidentialUnitDashboardDto>.Success(dashboard);
+                var dashboard = new ResidentialUnitDashboardDto
+                {
+                    TotalUnits = units.Count,
+                    TotalBlocks = units.Sum(u => u.Blocks.Count),
+                    Units = units.Select(u => new UnitStatsDto
+                    {
+                        Id = u.Id,
+                        Name = u.Name,
+                        UnitManagerId = u.UnitManagerId,
+                        UnitManagerName = u.UnitManager?.Person?.FullName ?? string.Empty,
+                        BlockCount = u.Blocks.Count
+                    }).ToList()
+                };
+
+                return ApiResponse<ResidentialUnitDashboardDto>.Success(dashboard);
+            }
+
+            // Unit Manager: return their own units in the same shape
+            if (currentUser.Role == Role.UnitManager)
+            {
+                var userId = currentUser.Id;
+
+                var units = await _context.ResidentialUnits
+                    .AsNoTracking()
+                    .Include(u => u.UnitManager)
+                        .ThenInclude(um => um.Person)
+                    .Include(u => u.Blocks)
+                    .Where(u => u.UnitManagerId == userId)
+                    .OrderBy(u => u.Name)
+                    .ToListAsync(ct);
+
+                var dashboard = new ResidentialUnitDashboardDto
+                {
+                    TotalUnits = units.Count,
+                    TotalBlocks = units.Sum(u => u.Blocks.Count),
+                    Units = units.Select(u => new UnitStatsDto
+                    {
+                        Id = u.Id,
+                        Name = u.Name,
+                        UnitManagerId = u.UnitManagerId,
+                        UnitManagerName = u.UnitManager?.Person?.FullName ?? string.Empty,
+                        BlockCount = u.Blocks.Count
+                    }).ToList()
+                };
+
+                return ApiResponse<ResidentialUnitDashboardDto>.Success(dashboard);
+            }
+
+            return ApiResponse<ResidentialUnitDashboardDto>.Error(System.Net.HttpStatusCode.Forbidden, "ليس لديك صلاحية للوصول للوحدة");
         }
 
         public async Task<ApiResponse<ReturnResidentialUnitDto>> ChangeManagerAsync(int id, ChangeManagerDto dto)
@@ -520,44 +556,51 @@ namespace SmartNeighborhoodAPI.Services
             });
         }
 
-        public async Task<ApiResponse<ResidentialUnitManagerDashboardDto>> GetMyDashboardAsync(string userId, CancellationToken ct = default)
+        public async Task<ApiResponse<ResidentialUnitDashboardDto>> GetMyDashboardAsync(CancellationToken ct = default)
         {
+            var currentUser = _userContextService.GetCurrentUser();
+            var userId = currentUser.Id;
+
             _logger.LogInformation("Fetching dashboard statistics for unit manager with userId: {UserId}", userId);
 
-            var statistics = await _context.ResidentialUnits
+            var units = await _context.ResidentialUnits
                 .AsNoTracking()
+                .Include(u => u.UnitManager)
+                    .ThenInclude(um => um.Person)
+                .Include(u => u.Blocks)
                 .Where(u => u.UnitManagerId == userId)
-                .Select(u => new
-                {
-                    UnitId = u.Id,
-                    BlocksCount = u.Blocks.Count,
-                    FamiliesCount = u.Blocks.SelectMany(b => b.Families).Count()
-                })
+                .OrderBy(u => u.Name)
                 .ToListAsync(ct);
 
-            if (!statistics.Any())
+            if (!units.Any())
             {
                 _logger.LogWarning("No residential units found for manager with userId: {UserId}", userId);
-                return ApiResponse<ResidentialUnitManagerDashboardDto>.Success(
-                    new ResidentialUnitManagerDashboardDto
-                    {
-                        TotalFamilies = 0,
-                        TotalBlocks = 0
-                    },
-                    "لا توجد وحدات سكنية مرتبطة بهذا المدير"
-                );
+                var empty = new ResidentialUnitDashboardDto
+                {
+                    TotalUnits = 0,
+                    TotalBlocks = 0,
+                    Units = new List<UnitStatsDto>()
+                };
+                return ApiResponse<ResidentialUnitDashboardDto>.Success(empty, "لا توجد وحدات سكنية مرتبطة بهذا المدير");
             }
 
-            var dashboard = new ResidentialUnitManagerDashboardDto
+            var dashboard = new ResidentialUnitDashboardDto
             {
-                TotalFamilies = statistics.Sum(s => s.FamiliesCount),
-                TotalBlocks = statistics.Sum(s => s.BlocksCount)
+                TotalUnits = units.Count,
+                TotalBlocks = units.Sum(u => u.Blocks.Count),
+                Units = units.Select(u => new UnitStatsDto
+                {
+                    Id = u.Id,
+                    Name = u.Name,
+                    UnitManagerId = u.UnitManagerId,
+                    UnitManagerName = u.UnitManager?.Person?.FullName ?? string.Empty,
+                    BlockCount = u.Blocks.Count
+                }).ToList()
             };
 
-            _logger.LogInformation("Dashboard statistics retrieved successfully for unit manager {UserId}: {Families} families, {Blocks} blocks",
-                userId, dashboard.TotalFamilies, dashboard.TotalBlocks);
+            _logger.LogInformation("Dashboard statistics retrieved successfully for unit manager {UserId}: {Units} units", userId, dashboard.TotalUnits);
 
-            return ApiResponse<ResidentialUnitManagerDashboardDto>.Success(dashboard, "تم جلب إحصائيات لوحة التحكم بنجاح");
+            return ApiResponse<ResidentialUnitDashboardDto>.Success(dashboard, "تم جلب إحصائيات لوحة التحكم بنجاح");
         }
 
         public async Task<ApiResponse<List<ReturnResidentialUnitDto>>> GetMyUnitsAsync(string userId, CancellationToken ct = default)

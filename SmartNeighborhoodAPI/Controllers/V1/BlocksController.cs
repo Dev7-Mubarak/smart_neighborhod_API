@@ -128,14 +128,13 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         [MapToApiVersion("1.0")]
         [SwaggerOperation(
             Summary = "Get my dashboard statistics (Block Manager only)",
-            Description = "Returns dashboard statistics for the authenticated block manager, including total families they manage.")]
-        [ProducesResponseType(typeof(ApiResponse<BlockManagerDashboardDto>), StatusCodes.Status200OK)]
+            Description = "Returns dashboard statistics for the authenticated block manager, including list of blocks and totals.")]
+        [ProducesResponseType(typeof(BlockDashboardDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> GetMyDashboard(CancellationToken ct)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            return Response(await _BlockServices.GetMyDashboardAsync(userId, ct));
+            return Response(await _BlockServices.GetMyDashboardAsync(ct));
         }
 
         [HttpGet(Router.Blocks.GetMyBlocks)]
