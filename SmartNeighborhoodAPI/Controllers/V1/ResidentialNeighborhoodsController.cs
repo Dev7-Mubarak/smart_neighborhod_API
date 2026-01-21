@@ -6,6 +6,8 @@ using SmartNeighborhoodAPI.Helpers.DTOs.ResidentialNeighborhood;
 using SmartNeighborhoodAPI.Interfaces;
 using static SmartNeighborhoodAPI.Helpers.Router;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
+using SmartNeighborhoodAPI.Entites;
 
 namespace SmartNeighborhoodAPI.Controllers.V1
 {
@@ -15,11 +17,13 @@ namespace SmartNeighborhoodAPI.Controllers.V1
     public class ResidentialNeighborhoodsController : AppControllerBase
     {
         private readonly IResidentialNeighborhoodService _service;
+        private readonly UserManager<AppUser> _userManager;
 
         public ResidentialNeighborhoodsController(
-            IResidentialNeighborhoodService service)
+            IResidentialNeighborhoodService service, UserManager<AppUser> userManager)
         {
             _service = service;
+            _userManager = userManager;
         }
 
         private IActionResult Response<T>(ApiResponse<T> response)
@@ -60,10 +64,34 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             => Response(await _service.ChangeManagerAsync(id, dto));
 
         [HttpGet(ResidentialNeighborhoods.Dashboard)]
-        [Authorize(Roles = Role.Admin)]
-        [SwaggerOperation(Summary = "Get residential neighborhood dashboard statistics (Admin only)")]
+        [Authorize]
+        [SwaggerOperation(Summary = "Get residential neighborhood dashboard statistics (Admin or Manager)")]
+        [ProducesResponseType(typeof(ResidentialDashboardDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<ResidentialNeighborhoodManagerDashboardDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
         public async Task<IActionResult> GetDashboard(CancellationToken ct)
-            => Response(await _service.GetDashboardAsync(ct));
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+                return Unauthorized();
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return Unauthorized();
+
+            if (await _userManager.IsInRoleAsync(user, Role.Admin))
+            {
+                return Response(await _service.GetDashboardAsync(ct));
+            }
+
+            if (await _userManager.IsInRoleAsync(user, Role.ResidentialNeighborhoodManager))
+            {
+                return Response(await _service.GetMyDashboardAsync(userId, ct));
+            }
+
+            return Forbid();
+        }
 
         [HttpGet(ResidentialNeighborhoods.Units)]
         [SwaggerOperation(Summary = "Get units (Admin only)")]
