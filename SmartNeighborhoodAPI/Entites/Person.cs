@@ -28,6 +28,24 @@ namespace OurProjectSmartNeiborhood.Entites
         public PersonType personType { get; set; }
         [MaxLength(30)]
         public string? Job { get; set; }
+
+        // National ID (بطاقة شخصية)
+        [MaxLength(30)]
+        public string? NationalId { get; set; }
+
+        // Vehicle info
+        public VehicleType? VehicleType { get; set; }
+        [MaxLength(50)]
+        public string? VehicleRegistrationNumber { get; set; }
+
+        // Residency status (Resident or Displaced)
+        public ResidencyStatus? ResidencyStatus { get; set; }
+
+        // Chronic disease info
+        public bool? HasChronicDiseases { get; set; }
+        [MaxLength(250)]
+        public string? ChronicDiseasesNotes { get; set; }
+
         public List<FamilyMember> FamilyMembers { get; set; }
         public ICollection<TeamMember> TeamMemberships { get; set; }
 

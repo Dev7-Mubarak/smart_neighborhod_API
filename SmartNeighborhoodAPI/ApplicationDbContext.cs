@@ -20,7 +20,7 @@ namespace SmartNeighborhoodAPI
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            builder.ApplyConfiguration(new PersonConfiguration());
+            //builder.ApplyConfiguration(new PersonConfiguration());
             builder.ApplyConfiguration(new MemberFamilyRoleConfiguration());
             builder.ApplyConfiguration(new FamilyCatgoryConfiguration());
             builder.ApplyConfiguration(new IdentityRoleSeedConfiguration());
@@ -29,10 +29,9 @@ namespace SmartNeighborhoodAPI
             builder.ApplyConfiguration(new ProjectCatgoryEntityTypeConfiguration());
             builder.ApplyConfiguration(new ResidentialNeighborhoodConfiguration());
             builder.ApplyConfiguration(new ConflictCaseConfiguration());
-            
+
             // Seed data configurations for testing
-            builder.ApplyConfiguration(new PersonSeedConfiguration());
-            builder.ApplyConfiguration(new BlockManagersSeedConfiguration());
+            //builder.ApplyConfiguration(new PersonSeedConfiguration());
             builder.ApplyConfiguration(new ResidentialNeighborhoodSeedConfiguration());
             builder.ApplyConfiguration(new ResidentialUnitSeedConfiguration());
             builder.ApplyConfiguration(new BlockSeedConfiguration());
@@ -43,11 +42,14 @@ namespace SmartNeighborhoodAPI
             builder.ApplyConfiguration(new ProjectTeamSeedConfiguration());
             builder.ApplyConfiguration(new GovernmentInstitutionSeedConfiguration());
             builder.ApplyConfiguration(new GovernmentInstitutionContactSeedConfiguration());
-             
-        
+            builder.ApplyConfiguration(new ProjectSeedConfiguration_200());
+            builder.ApplyConfiguration(new TeamSeedConfiguration_50());
+            builder.ApplyConfiguration(new TeamMemberSeedConfiguration_250());
 
 
-            
+
+
+
             base.OnModelCreating(builder);
 
             builder.Entity<ResidentialUnit>()

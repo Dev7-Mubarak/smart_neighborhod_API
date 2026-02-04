@@ -11,6 +11,6 @@ namespace SmartNeighborhoodAPI.Interfaces
         Task<ApiResponse<List<ReturnFamilyDto>>> GetAllAsync();
         Task<ApiResponse<ReturnFamilyDto>> GetById(int id);
         Task<ApiResponse<ReturnFamilyInfoDto>> GetDetailesAsync(int id);
-        Task<ApiResponse<string>> UpdateAsync(int id, FamilyDto familyDto);
+        Task<ApiResponse<ReturnFamilyDto>> UpdateAsync(int id, FamilyDto familyDto);
     }
 }

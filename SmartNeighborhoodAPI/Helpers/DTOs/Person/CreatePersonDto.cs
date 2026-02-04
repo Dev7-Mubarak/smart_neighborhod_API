@@ -48,4 +48,26 @@ public class CreatePersonDto
 
     [MaxLength(30, ErrorMessage = "يجب ألا يزيد اسم الوظيفة عن 30 حرفًا.")]
     public string? Job { get; set; }
+
+    [MaxLength(30, ErrorMessage = "National ID must not exceed 30 characters.")]
+    [SwaggerSchema("National ID / Personal ID number (e.g., Yemen national ID)")]
+    public string? NationalId { get; set; }
+
+    [SwaggerSchema("Vehicle type: Unknown, Motorcycle, Car, Pickup, Truck, Bus, Tractor, Bicycle")]
+    public VehicleType? VehicleType { get; set; }
+
+    [MaxLength(50, ErrorMessage = "Vehicle registration number must not exceed 50 characters.")]
+    [SwaggerSchema("Vehicle registration number issued by government (if any)")]
+    public string? VehicleRegistrationNumber { get; set; }
+
+    [Required(ErrorMessage = "Residency status is required.")]
+    [SwaggerSchema("Residency status: Resident or Displaced")]
+    public ResidencyStatus ResidencyStatus { get; set; }
+
+    [SwaggerSchema("Does the person suffer from chronic diseases?")]
+    public bool? HasChronicDiseases { get; set; }
+
+    [MaxLength(250, ErrorMessage = "Disease notes must not exceed 250 characters.")]
+    [SwaggerSchema("Notes about chronic diseases (optional)")]
+    public string? ChronicDiseasesNotes { get; set; }
 }

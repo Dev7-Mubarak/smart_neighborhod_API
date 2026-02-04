@@ -80,9 +80,8 @@ builder.Services.AddScoped<UserContextService>();
 builder.Services.AddScoped<IGovernmentInstitutionsService, GovernmentInstitutionsService>();
 builder.Services.AddScoped<IGovernmentInstitutionContactService, GovernmentInstitutionContactService>();
 builder.Services.AddScoped<IResidentialNeighborhoodService, ResidentialNeighborhoodService>();
-builder.Services.AddScoped<ResidentialUnitService, ResidentialUnitService>();
-
-
+builder.Services.AddScoped<ResidentialUnitService>();
+  builder.Services.AddScoped<IDashboardService, DashboardService>();
 
 
 
@@ -179,9 +178,15 @@ builder.Services.AddControllers()
             options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
             options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
         });
+        
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
+    // Use full type names to avoid duplicate schema Ids when different types share the same class name
+    c.CustomSchemaIds(type => type.FullName);
+
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "SmartNeibourhood", Version = "v1" });
+
     // Add JWT Authentication to Swagger
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
@@ -217,7 +222,7 @@ app.UseRequestLocalization();
 app.UseSwagger();
 app.UseSwaggerUI(options =>
 {
-    options.RoutePrefix = "swagger";
+    options.RoutePrefix = "";
 });
 
 app.UseRateLimiter();

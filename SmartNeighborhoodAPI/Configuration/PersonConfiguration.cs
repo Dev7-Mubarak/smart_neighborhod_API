@@ -51,24 +51,10 @@ namespace OurProjectSmartNeiborhood.Configuration
             builder.Property(p => p.Job)
                 .HasMaxLength(30);
 
-            builder.HasData(
-                new Person
-                {
-                    Id = 1,
-                    FirstName = "أحمد",
-                    SecondName = "سعيد",
-                    ThirdName = "محمود",
-                    LastName = "الزهيري",
-                    PhoneNumber = "0791234567",
-                    Gender = Gender.Male,
-                    BloodType = BloodType.ABNegative,
-                    OccupationStatus = OccupationStatus.Employee,
-                    MaritalStatus = MaritalStatus.Married,
-                    personType = PersonType.Admin,
-                    Job = "مهندس"
-                }
-     
-            );
+            // Seed moved to PersonSeedConfiguration.cs to avoid duplicate Id conflicts
+            // builder.HasData(...) removed here intentionally
+            
+            
         }
     }
 }
