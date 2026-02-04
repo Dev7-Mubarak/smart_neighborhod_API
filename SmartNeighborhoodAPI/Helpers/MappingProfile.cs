@@ -1,10 +1,11 @@
-﻿using OurProjectSmartNeiborhood.Services;
-using SmartNeighborhoodAPI.Helpers.DTOs.ConfilctCase;
+﻿using SmartNeighborhoodAPI.Helpers.DTOs.ConfilctCase;
 using SmartNeighborhoodAPI.Helpers.DTOs.ConflictType;
 using SmartNeighborhoodAPI.Helpers.DTOs.FamilyMember;
+using SmartNeighborhoodAPI.Helpers.DTOs.Issue;
 using SmartNeighborhoodAPI.Helpers.DTOs.Person;
 using SmartNeighborhoodAPI.Helpers.DTOs.Project;
 using SmartNeighborhoodAPI.Helpers.DTOs.TeamMembers;
+using SmartNeighborhoodAPI.Entites;
 
 public class MappingProfile : Profile
 {
@@ -44,6 +45,9 @@ public class MappingProfile : Profile
     .ForMember(dest => dest.SecondPartyName, opt => opt.MapFrom(src => src.SecondParty.Person.FullName))
     .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.ImagePath));
 
-
+        CreateMap<Issue, IssueDto>().ReverseMap();
+        CreateMap<CreateIssueDto, Issue>();
+        CreateMap<UpdateIssueDto, Issue>();
     }
 }
+
