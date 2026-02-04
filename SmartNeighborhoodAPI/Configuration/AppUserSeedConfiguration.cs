@@ -1,15 +1,18 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using OurProjectSmartNeiborhood.Entites;
 using SmartNeighborhoodAPI.Entites;
 
-namespace SmartNeighborhoodAPI.Configuration;
-
-    public class AppUserSeedConfiguration : IEntityTypeConfiguration<AppUser>
+public class AppUserSeedConfiguration : IEntityTypeConfiguration<AppUser>
+{
+    public void Configure(EntityTypeBuilder<AppUser> builder)
     {
-        public void Configure(EntityTypeBuilder<AppUser> builder)
-        {
-            var adminUserId = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";
+        var hasher = new PasswordHasher<AppUser>();
+        var adminUserId = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";
 
-            var adminUser = new AppUser
+        builder.HasData(
+            new AppUser
             {
                 Id = adminUserId,
                 UserName = "Admin",
@@ -19,10 +22,7 @@ namespace SmartNeighborhoodAPI.Configuration;
                 EmailConfirmed = true,
                 PersonId = 1,
                 PasswordHash = new PasswordHasher<AppUser>().HashPassword(null!, "Mub_12345")
-            };
-
-            builder.HasData(adminUser);
-        }
+            }
+            );
     }
-
-
+}

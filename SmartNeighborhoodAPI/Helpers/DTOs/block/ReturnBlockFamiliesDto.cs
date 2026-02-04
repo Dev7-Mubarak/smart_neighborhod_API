@@ -18,5 +18,10 @@ namespace SmartNeighborhoodAPI.Helpers.DTOs.block
         public string Location { get; set; } = string.Empty;
         public int FamilyCategoryId { get; set; }
         public string FamilyCategoryName { get; set; } = string.Empty;
+
+        // New fields requested: Family head person id, name and family notes
+        public int? FamilyHeadId { get; set; }
+        public string FamilyHeadName { get; set; } = string.Empty;
+        public string FamilyNotes { get; set; } = string.Empty;
     }
 }

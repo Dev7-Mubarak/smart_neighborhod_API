@@ -273,19 +273,20 @@ namespace SmartNeighborhoodAPI.Services
 
             return ApiResponse<ReturnFamilyInfoDto>.Success(family, "تم جلب تفاصيل الأسرة بنجاح.");
         }
-        public async Task<ApiResponse<string>> UpdateAsync(int id, FamilyDto familyDto)
+        public async Task<ApiResponse<ReturnFamilyDto>> UpdateAsync(int id, FamilyDto familyDto)
         {
             _logger.LogInformation("Attempting to update Family with ID: {Id}", id);
 
             // Find the existing family
             var existingFamily = await _context.Families
                 .Include(f => f.FamilyMembers) // include related members
+                    .ThenInclude(fm => fm.Person)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
             if (existingFamily is null)
             {
                 _logger.LogWarning("Family with ID {Id} not found.", id);
-                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "العائلة غير موجودة");
+                return ApiResponse<ReturnFamilyDto>.Error(HttpStatusCode.NotFound, "العائلة غير موجودة");
             }
 
             // Validate family category
@@ -293,7 +294,7 @@ namespace SmartNeighborhoodAPI.Services
             if (!familyCategoryExists)
             {
                 _logger.LogWarning("Family Category with ID {Id} not found.", familyDto.FamilyCatgoryId);
-                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "فئة العائلة غير موجودة");
+                return ApiResponse<ReturnFamilyDto>.Error(HttpStatusCode.NotFound, "فئة العائلة غير موجودة");
             }
 
             // Validate block
@@ -301,7 +302,7 @@ namespace SmartNeighborhoodAPI.Services
             if (!blockExists)
             {
                 _logger.LogWarning("Block with ID {Id} not found.", familyDto.BlockId);
-                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "البلوك غير موجود");
+                return ApiResponse<ReturnFamilyDto>.Error(HttpStatusCode.NotFound, "البلوك غير موجود");
             }
 
             // Validate person exists
@@ -309,7 +310,7 @@ namespace SmartNeighborhoodAPI.Services
             if (!personExists)
             {
                 _logger.LogWarning("Person with ID {Id} not found.", familyDto.FamilyHeadId);
-                return ApiResponse<string>.Error(HttpStatusCode.NotFound, "الشخص غير موجود");
+                return ApiResponse<ReturnFamilyDto>.Error(HttpStatusCode.NotFound, "الشخص غير موجود");
             }
 
             // Get the role for family head
@@ -319,7 +320,7 @@ namespace SmartNeighborhoodAPI.Services
             if (headOfFamilyRole == null)
             {
                 _logger.LogError("Head of family role 'أب' not found.");
-                return ApiResponse<string>.Error(HttpStatusCode.InternalServerError, "دور رب الأسرة غير موجود");
+                return ApiResponse<ReturnFamilyDto>.Error(HttpStatusCode.InternalServerError, "دور رب الأسرة غير موجود");
             }
 
             // Update basic family information
@@ -361,11 +362,18 @@ namespace SmartNeighborhoodAPI.Services
             if (await _context.SaveChangesAsync() > 0)
             {
                 _logger.LogInformation("Family with ID {Id} updated successfully.", id);
-                return ApiResponse<string>.Success("تم تحديث العائلة بنجاح");
+                var updated = await GetById(id);
+                if (!updated.IsSuccess)
+                {
+                    _logger.LogError("Failed to retrieve family after update: {Message}", updated.Message);
+                    return ApiResponse<ReturnFamilyDto>.Error(updated.StatusCode, updated.Message);
+                }
+
+                return ApiResponse<ReturnFamilyDto>.Success(updated.Data, "تم تحديث العائلة بنجاح");
             }
 
             _logger.LogError("Failed to update Family with ID {Id}.", id);
-            return ApiResponse<string>.Error(HttpStatusCode.NotModified, "فشل في تحديث العائلة");
+            return ApiResponse<ReturnFamilyDto>.Error(HttpStatusCode.NotModified, "فشل في تحديث العائلة");
         }
 
         public async Task<ApiResponse<string>> DeleteAsync(int id)

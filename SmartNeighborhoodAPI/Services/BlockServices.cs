@@ -491,6 +491,7 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<BlockDashboardDto>.Success(empty, "لا توجد مربعات مرتبطة بهذا المدير");
             }
 
+
             var dashboard = new BlockDashboardDto
             {
                 TotalBlocks = blocks.Count,
@@ -555,6 +556,9 @@ namespace SmartNeighborhoodAPI.Services
                     .ThenInclude(bm => bm.Person)
                 .Include(b => b.Families)
                     .ThenInclude(f => f.FamilyCatgory)
+                .Include(b => b.Families)
+                    .ThenInclude(f => f.FamilyMembers)
+                        .ThenInclude(fm => fm.Person)
                 .FirstOrDefaultAsync(b => b.Id == id);
 
             if (block == null)
@@ -571,13 +575,20 @@ namespace SmartNeighborhoodAPI.Services
                 Name = block.Name,
                 BlockManagerId = block.BlockManagerId,
                 BlockManagerName = block.BlockManager?.Person?.FullName ?? string.Empty,
-                Families = block.Families.Select(f => new FamilySummaryDto
-                {
-                    Id = f.Id,
-                    Name = f.Name,
-                    Location = f.Location,
-                    FamilyCategoryId = f.FamilyCatgoryId,
-                    FamilyCategoryName = f.FamilyCatgory?.Name ?? string.Empty
+                Families = block.Families.Select(f => {
+                    // Find family head: MemberFamilyRoleId == 1 (أب)
+                    var head = f.FamilyMembers.FirstOrDefault(x => x.MemberFamilyRoleId == 1);
+                    return new FamilySummaryDto
+                    {
+                        Id = f.Id,
+                        Name = f.Name,
+                        Location = f.Location,
+                        FamilyCategoryId = f.FamilyCatgoryId,
+                        FamilyCategoryName = f.FamilyCatgory?.Name ?? string.Empty,
+                        FamilyHeadId = head?.PersonId,
+                        FamilyHeadName = head?.Person?.FullName ?? string.Empty,
+                        FamilyNotes = f.FamilyNotes ?? string.Empty
+                    };
                 }).ToList()
             };
 

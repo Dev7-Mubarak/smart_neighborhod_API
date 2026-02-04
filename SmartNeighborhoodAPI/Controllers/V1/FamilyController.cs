@@ -63,7 +63,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
 
         [HttpPut(Router.Families.Update)]
         [SwaggerOperation(Summary = "Update a family")]
-        [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(typeof(ReturnFamilyDto), 200)]
         [ProducesResponseType(typeof(ProblemDetails), 404)]
         [ProducesResponseType(typeof(ProblemDetails), 304)]
         public async Task<IActionResult> UpdateAsync(

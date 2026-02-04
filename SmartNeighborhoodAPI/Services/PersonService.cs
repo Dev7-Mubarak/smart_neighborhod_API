@@ -54,6 +54,12 @@ namespace OurProjectSmartNeiborhood.Services
                 MaritalStatus = dto.MaritalStatus,
                 OccupationStatus = dto.OccupationStatus,
                 Job = dto.Job,
+                NationalId = dto.NationalId,
+                VehicleType = dto.VehicleType,
+                VehicleRegistrationNumber = dto.VehicleRegistrationNumber,
+                ResidencyStatus = dto.ResidencyStatus,
+                HasChronicDiseases = dto.HasChronicDiseases,
+                ChronicDiseasesNotes = dto.ChronicDiseasesNotes
             };
 
             await _context.People.AddAsync(person);
@@ -125,7 +131,13 @@ namespace OurProjectSmartNeiborhood.Services
                                             OccupationStatus = GetDisplayName(p.OccupationStatus),
                                             MaritalStatus = GetDisplayName(p.MaritalStatus),
                                             PersonType = GetDisplayName(p.personType),
-                                            Job = p.Job
+                                            Job = p.Job,
+                                            NationalId = p.NationalId,
+                                            VehicleType = GetDisplayName(p.VehicleType),
+                                            VehicleRegistrationNumber = p.VehicleRegistrationNumber,
+                                            ResidencyStatus = GetDisplayName(p.ResidencyStatus),
+                                            HasChronicDiseases = p.HasChronicDiseases,
+                                            ChronicDiseasesNotes = p.ChronicDiseasesNotes
                                         })
                                         .ToPaginatedListAsync(pageNumber, pageSize);
 
@@ -149,7 +161,13 @@ namespace OurProjectSmartNeiborhood.Services
                 BloodType = GetDisplayName(p.BloodType),
                 OccupationStatus = GetDisplayName(p.OccupationStatus),
                 MaritalStatus = GetDisplayName(p.MaritalStatus),
-                Job = p.Job
+                Job = p.Job,
+                NationalId = p.NationalId,
+                VehicleType = GetDisplayName(p.VehicleType),
+                VehicleRegistrationNumber = p.VehicleRegistrationNumber,
+                ResidencyStatus = GetDisplayName(p.ResidencyStatus),
+                HasChronicDiseases = p.HasChronicDiseases,
+                ChronicDiseasesNotes = p.ChronicDiseasesNotes
             }).ToPaginatedListAsync(pageNumber, pageSize);
 
             if (people == null)
@@ -184,7 +202,13 @@ namespace OurProjectSmartNeiborhood.Services
                 BloodType = GetDisplayName(person.BloodType),
                 OccupationStatus = GetDisplayName(person.OccupationStatus),
                 MaritalStatus = GetDisplayName(person.MaritalStatus),
-                Job = person.Job
+                Job = person.Job,
+                NationalId = person.NationalId,
+                VehicleType = GetDisplayName(person.VehicleType),
+                VehicleRegistrationNumber = person.VehicleRegistrationNumber,
+                ResidencyStatus = GetDisplayName(person.ResidencyStatus),
+                HasChronicDiseases = person.HasChronicDiseases,
+                ChronicDiseasesNotes = person.ChronicDiseasesNotes
             };
 
             return ApiResponse<PersonDto>.Success(dto, "تم جلب بيانات الشخص بنجاح.");
