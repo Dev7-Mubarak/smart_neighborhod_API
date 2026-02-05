@@ -24,7 +24,7 @@ namespace SmartNeighborhoodAPI.Services
             _mapper = mapper;
         }
 
-        public async Task<ApiResponse<PaginatedResult<IssueDto>>> GetAllIssuesAsync(string status, string priority, string category, string sortBy, string sortOrder, int page, int limit)
+        public async Task<ApiResponse<PaginatedResult<IssueDto>>> GetAllIssuesAsync(string? status, string? priority, string? category, string? sortBy, string? sortOrder, int page, int limit)
         {
             var query = _context.Issues.AsQueryable();
 

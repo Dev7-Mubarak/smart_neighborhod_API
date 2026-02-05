@@ -132,5 +132,6 @@ namespace SmartNeighborhoodAPI
         public DbSet<ResidentialUnit> ResidentialUnits { get; set; }
         public DbSet<ResidentialNeighborhood> ResidentialNeighborhoods { get; set; }
         public DbSet<Issue> Issues { get; set; }
+     
     }
 }

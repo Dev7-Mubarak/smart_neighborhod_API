@@ -48,7 +48,7 @@ namespace SmartNeighborhoodAPI.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -120,14 +120,20 @@ namespace SmartNeighborhoodAPI.Migrations
                     PhoneNumber = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: true),
                     IsWhatsapp = table.Column<bool>(type: "bit", nullable: true),
                     IsContactNumber = table.Column<bool>(type: "bit", nullable: true),
-                    DateOfBirth = table.Column<DateTime>(type: "date", maxLength: 100, nullable: true),
-                    Gender = table.Column<int>(type: "int", maxLength: 10, nullable: true),
+                    DateOfBirth = table.Column<DateTime>(type: "datetime2", maxLength: 100, nullable: true),
+                    Gender = table.Column<int>(type: "int", nullable: true),
                     Image = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     BloodType = table.Column<int>(type: "int", nullable: false),
                     MaritalStatus = table.Column<int>(type: "int", nullable: false),
                     OccupationStatus = table.Column<int>(type: "int", nullable: false),
                     personType = table.Column<int>(type: "int", nullable: false),
-                    Job = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: true)
+                    Job = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: true),
+                    NationalId = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: true),
+                    VehicleType = table.Column<int>(type: "int", nullable: true),
+                    VehicleRegistrationNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    ResidencyStatus = table.Column<int>(type: "int", nullable: true),
+                    HasChronicDiseases = table.Column<bool>(type: "bit", nullable: true),
+                    ChronicDiseasesNotes = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -268,7 +274,7 @@ namespace SmartNeighborhoodAPI.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-            
+ 
                 });
 
             migrationBuilder.CreateTable(
@@ -391,6 +397,40 @@ namespace SmartNeighborhoodAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Issues",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Category = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Priority = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ReporterId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    AssigneeId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    Attachments = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ResolvedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Issues", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Issues_AspNetUsers_AssigneeId",
+                        column: x => x.AssigneeId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_Issues_AspNetUsers_ReporterId",
+                        column: x => x.ReporterId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Projects",
                 columns: table => new
                 {
@@ -455,7 +495,12 @@ namespace SmartNeighborhoodAPI.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ProjectTeams", x => x.Id);
-         
+                    table.ForeignKey(
+                        name: "FK_ProjectTeams_Projects_ProjectId",
+                        column: x => x.ProjectId,
+                        principalTable: "Projects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ProjectTeams_Teams_TeamId",
                         column: x => x.TeamId,
@@ -646,7 +691,8 @@ namespace SmartNeighborhoodAPI.Migrations
                     IsResolved = table.Column<bool>(type: "bit", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     BlockId = table.Column<int>(type: "int", nullable: true),
-                    ManagerId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    ManagerId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    ConfilctTypeId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -663,6 +709,11 @@ namespace SmartNeighborhoodAPI.Migrations
                         principalTable: "Blocks",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ConfilctCases_ConfilctTypes_ConfilctTypeId",
+                        column: x => x.ConfilctTypeId,
+                        principalTable: "ConfilctTypes",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_ConfilctCases_ConfilctTypes_ConflictTypeId",
                         column: x => x.ConflictTypeId,
@@ -697,17 +748,7 @@ namespace SmartNeighborhoodAPI.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmationCode", "EmailConfirmationCodeExpiresAt", "EmailConfirmed", "IsActive", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PersonId", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb", 0, "1442da9c-ddd8-4716-a936-a8604f832d0d", "neighborhood.manager@test.com", null, null, true, true, false, null, "NEIGHBORHOOD.MANAGER@TEST.COM", "NEIGHBORHOODMANAGER1", "AQAAAAIAAYagAAAAEJqTmyx/hAAclS5eSH8EmcoeFlnj4v9WSjI8r8lFVnbIM8QD4iY2WPWjZrACEDORfw==", 2, null, false, "1e5160bc-467d-46a1-8aae-69a2fdd456af", false, "NeighborhoodManager1" });
-
-            migrationBuilder.InsertData(
-                table: "ConfilctTypes",
-                columns: new[] { "Id", "Name" },
-                values: new object[,]
-                {
-                    { 1, "صلح" },
-                    { 2, "معاهدات" },
-                    { 3, "اتفاقيات" }
-                });
+                values: new object[] { "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", 0, "42955eb4-0ad4-47b6-a61d-b09d15adc2bc", "sys.smartneighborhood@gmail.com", null, null, true, false, false, null, "SYS.SMARTNEIGHBORHOOD@GMAIL.COM", "ADMIN", "AQAAAAIAAYagAAAAEK7ZtjEP6775wgToEJvNZWJcGxzvOKYj0UtBeoCp975VjyqRUgYRxDOaAKpFppTzNw==", 1, null, false, "a5787a6a-ea8d-403b-a2ac-414c29030920", false, "Admin" });
 
             migrationBuilder.InsertData(
                 table: "FamilyCatgories",
@@ -717,15 +758,6 @@ namespace SmartNeighborhoodAPI.Migrations
                     { 1, "A" },
                     { 2, "B" },
                     { 3, "C" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "GovernmentInstitutions",
-                columns: new[] { "Id", "Name" },
-                values: new object[,]
-                {
-                    { 1, "مؤسسة المياه والصرف" },
-                    { 2, "مركز شرطة المكلا" }
                 });
 
             migrationBuilder.InsertData(
@@ -739,64 +771,6 @@ namespace SmartNeighborhoodAPI.Migrations
                     { 4, "ابنة" },
                     { 5, "جد" },
                     { 6, "جدة" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "People",
-                columns: new[] { "Id", "BloodType", "DateOfBirth", "FirstName", "Gender", "Image", "IsContactNumber", "IsWhatsapp", "Job", "LastName", "MaritalStatus", "OccupationStatus", "PhoneNumber", "SecondName", "ThirdName", "personType" },
-                values: new object[,]
-                {
-                    { 1, 5, null, "أحمد", 0, null, null, null, "مهندس", "الزهيري", 2, 2, "0791234567", "سعيد", "محمود", 3 },
-                    { 3, 6, new DateTime(1982, 4, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), "سالم", 0, null, true, true, null, "العمري", 2, 2, "0771122334", "بن راشد", "عوض", 2 },
-                    { 4, 0, new DateTime(1979, 9, 12, 0, 0, 0, 0, DateTimeKind.Unspecified), "خالد", 0, null, true, true, null, "الغرمي", 2, 2, "0772233445", "بن حمد", "محمد", 1 },
-                    { 5, 5, new DateTime(1985, 2, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "يوسف", 0, null, true, true, null, "الملاح", 2, 2, "0773344556", "محمد", "سالم", 1 },
-                    { 6, 4, new DateTime(1980, 6, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), "عبدالله", 0, null, true, true, null, "الهادي", 2, 2, "0774455667", "سالم", "محمد", 1 },
-                    { 7, 2, new DateTime(1986, 11, 4, 0, 0, 0, 0, DateTimeKind.Unspecified), "علي", 0, null, true, true, null, "الدفعي", 2, 2, "0775566778", "حسن", "سالم", 1 },
-                    { 8, 7, new DateTime(1978, 3, 17, 0, 0, 0, 0, DateTimeKind.Unspecified), "ناصر", 0, null, true, true, null, "القحطاني", 2, 2, "0776677889", "عبد الرحمن", "بدر", 1 },
-                    { 11, 0, new DateTime(1975, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), "محمد", 0, null, null, null, "سائق", "الغانم", 2, 2, "0791110001", "سعيد", "صالح", 0 },
-                    { 12, 2, new DateTime(1978, 5, 2, 0, 0, 0, 0, DateTimeKind.Unspecified), "مريم", 1, null, null, null, null, "الغانم", 2, 3, "0791110002", "صالح", "محمد", 0 },
-                    { 13, 0, new DateTime(2005, 9, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "سعيد", 0, null, null, null, null, "الغانم", 1, 1, "0791110003", "محمد", "سعيد", 0 },
-                    { 14, 6, new DateTime(1980, 7, 12, 0, 0, 0, 0, DateTimeKind.Unspecified), "أحمد", 0, null, null, null, null, "الملاح", 2, 2, "0791122001", "عبد الله", "خليل", 0 },
-                    { 15, 5, new DateTime(1982, 10, 8, 0, 0, 0, 0, DateTimeKind.Unspecified), "سمية", 1, null, null, null, null, "الملاح", 2, 3, "0791122002", "خليل", "عبد الله", 0 },
-                    { 16, 2, new DateTime(2008, 4, 3, 0, 0, 0, 0, DateTimeKind.Unspecified), "هند", 1, null, null, null, null, "الملاح", 1, 1, "0791122003", "أحمد", "خليل", 0 },
-                    { 17, 7, new DateTime(1970, 3, 21, 0, 0, 0, 0, DateTimeKind.Unspecified), "عبد الولي", 0, null, null, null, null, "العكبري", 2, 3, "0791133001", "بن سالم", "خميس", 0 },
-                    { 18, 1, new DateTime(1974, 6, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), "نورة", 1, null, null, null, null, "العكبري", 2, 3, "0791133002", "خميس", "بن سالم", 0 },
-                    { 19, 2, new DateTime(2006, 12, 25, 0, 0, 0, 0, DateTimeKind.Unspecified), "سارة", 1, null, null, null, null, "العكبري", 1, 1, "0791133003", "عبد الولي", "خميس", 0 },
-                    { 20, 0, new DateTime(1983, 2, 28, 0, 0, 0, 0, DateTimeKind.Unspecified), "خالد", 0, null, null, null, null, "العمري", 2, 2, "0791144001", "سعيد", "خالد", 0 },
-                    { 21, 0, new DateTime(1985, 8, 9, 0, 0, 0, 0, DateTimeKind.Unspecified), "رنا", 1, null, null, null, null, "العمري", 2, 2, "0791144002", "خالد", "سعيد", 0 },
-                    { 22, 6, new DateTime(2010, 5, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), "مازن", 0, null, null, null, null, "العمري", 1, 1, "0791144003", "خالد", "سعيد", 0 },
-                    { 23, 2, new DateTime(1976, 10, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "سالم", 0, null, null, null, null, "الهاشمي", 2, 2, "0791155001", "المعطي", "بن", 0 },
-                    { 24, 5, new DateTime(1979, 1, 22, 0, 0, 0, 0, DateTimeKind.Unspecified), "هناء", 1, null, null, null, null, "الهاشمي", 2, 3, "0791155002", "سالم", "المعطي", 0 },
-                    { 25, 7, new DateTime(2009, 9, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "ليلى", 1, null, null, null, null, "الهاشمي", 1, 1, "0791155003", "سالم", "المعطي", 0 },
-                    { 26, 0, new DateTime(1988, 4, 20, 0, 0, 0, 0, DateTimeKind.Unspecified), "هشام", 0, null, null, null, null, "الحمادي", 2, 2, "0791166001", "عبد الله", "بن", 0 },
-                    { 27, 2, new DateTime(1990, 12, 2, 0, 0, 0, 0, DateTimeKind.Unspecified), "نهى", 1, null, null, null, null, "الحمادي", 2, 2, "0791166002", "هشام", "عبد الله", 0 },
-                    { 28, 2, new DateTime(2012, 7, 9, 0, 0, 0, 0, DateTimeKind.Unspecified), "ريان", 0, null, null, null, null, "الحمادي", 1, 1, "0791166003", "هشام", "عبد الله", 0 },
-                    { 29, 0, new DateTime(1972, 11, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), "عبد الكريم", 0, null, null, null, null, "الحدري", 2, 3, "0791177001", "حسن", "صالح", 0 },
-                    { 30, 7, new DateTime(1975, 2, 6, 0, 0, 0, 0, DateTimeKind.Unspecified), "فاطمة", 1, null, null, null, null, "الحدري", 2, 3, "0791177002", "عبد الكريم", "حسن", 0 },
-                    { 31, 6, new DateTime(2007, 3, 3, 0, 0, 0, 0, DateTimeKind.Unspecified), "ريان", 0, null, null, null, null, "الحدري", 1, 1, "0791177003", "عبد الكريم", "حسن", 0 },
-                    { 32, 0, new DateTime(1986, 9, 19, 0, 0, 0, 0, DateTimeKind.Unspecified), "يوسف", 0, null, null, null, null, "البساطي", 2, 2, "0791188001", "عبد الله", "علي", 0 },
-                    { 33, 3, new DateTime(1988, 11, 23, 0, 0, 0, 0, DateTimeKind.Unspecified), "سعاد", 1, null, null, null, null, "البساطي", 2, 3, "0791188002", "يوسف", "عبد الله", 0 },
-                    { 34, 7, new DateTime(2011, 6, 6, 0, 0, 0, 0, DateTimeKind.Unspecified), "عائشة", 1, null, null, null, null, "البساطي", 1, 1, "0791188003", "يوسف", "عبد الله", 0 },
-                    { 35, 0, new DateTime(1979, 5, 5, 0, 0, 0, 0, DateTimeKind.Unspecified), "سعد", 0, null, null, null, null, "المرزوقي", 2, 2, "0791199001", "محمد", "الشريف", 0 },
-                    { 36, 2, new DateTime(1981, 8, 12, 0, 0, 0, 0, DateTimeKind.Unspecified), "هناء", 1, null, null, null, null, "المرزوقي", 2, 3, "0791199002", "سعد", "محمد", 0 },
-                    { 37, 6, new DateTime(1982, 3, 14, 0, 0, 0, 0, DateTimeKind.Unspecified), "عمر", 0, null, null, null, null, "الزبيري", 2, 2, "0791199003", "سعيد", "الزبيري", 0 },
-                    { 38, 5, new DateTime(1984, 11, 2, 0, 0, 0, 0, DateTimeKind.Unspecified), "نجلاء", 1, null, null, null, null, "الزبيري", 2, 3, "0791199004", "عمر", "سعيد", 0 },
-                    { 39, 2, new DateTime(1975, 6, 9, 0, 0, 0, 0, DateTimeKind.Unspecified), "عبد الرحمن", 0, null, null, null, null, "الهاشمي", 2, 2, "0791199005", "محيي", "الهاشمي", 0 },
-                    { 40, 7, new DateTime(1978, 2, 18, 0, 0, 0, 0, DateTimeKind.Unspecified), "آمنة", 1, null, null, null, null, "الهاشمي", 2, 3, "0791199006", "عبد الرحمن", "محيي", 0 },
-                    { 41, 0, new DateTime(1986, 12, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "قاسم", 0, null, null, null, null, "العرادي", 2, 2, "0791199007", "علي", "العرادي", 0 },
-                    { 42, 2, new DateTime(1987, 4, 9, 0, 0, 0, 0, DateTimeKind.Unspecified), "سلوى", 1, null, null, null, null, "العرادي", 2, 3, "0791199008", "قاسم", "علي", 0 },
-                    { 43, 7, new DateTime(1974, 7, 22, 0, 0, 0, 0, DateTimeKind.Unspecified), "ماهر", 0, null, null, null, null, "القاضي", 2, 3, "0791199009", "خالد", "القاضي", 0 },
-                    { 44, 0, new DateTime(1976, 9, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), "مريم", 1, null, null, null, null, "القاضي", 2, 3, "0791199010", "ماهر", "خالد", 0 },
-                    { 45, 2, new DateTime(1989, 1, 12, 0, 0, 0, 0, DateTimeKind.Unspecified), "سيف", 0, null, null, null, null, "الربيعي", 2, 2, "0791199011", "عوض", "الربيعي", 0 },
-                    { 46, 1, new DateTime(1990, 5, 27, 0, 0, 0, 0, DateTimeKind.Unspecified), "هاجر", 1, null, null, null, null, "الربيعي", 2, 2, "0791199012", "سيف", "عوض", 0 },
-                    { 47, 0, new DateTime(1973, 10, 3, 0, 0, 0, 0, DateTimeKind.Unspecified), "عبد الله", 0, null, null, null, null, "الحاج", 2, 3, "0791199013", "محمود", "الحاج", 0 },
-                    { 48, 2, new DateTime(1975, 12, 19, 0, 0, 0, 0, DateTimeKind.Unspecified), "هدى", 1, null, null, null, null, "الحاج", 2, 3, "0791199014", "عبد الله", "محمود", 0 },
-                    { 49, 6, new DateTime(1984, 2, 28, 0, 0, 0, 0, DateTimeKind.Unspecified), "صالح", 0, null, null, null, null, "السقاف", 2, 2, "0791199015", "علي", "السقاف", 0 },
-                    { 50, 0, new DateTime(1986, 6, 6, 0, 0, 0, 0, DateTimeKind.Unspecified), "نجلاء", 1, null, null, null, null, "السقاف", 2, 3, "0791199016", "صالح", "علي", 0 },
-                    { 51, 4, new DateTime(1988, 11, 11, 0, 0, 0, 0, DateTimeKind.Unspecified), "هاني", 0, null, null, null, null, "العولقي", 2, 2, "0791199017", "سالم", "العولقي", 0 },
-                    { 52, 2, new DateTime(1990, 8, 8, 0, 0, 0, 0, DateTimeKind.Unspecified), "صفية", 1, null, null, null, null, "العولقي", 2, 3, "0791199018", "هاني", "سالم", 0 },
-                    { 53, 7, new DateTime(1977, 3, 3, 0, 0, 0, 0, DateTimeKind.Unspecified), "مختار", 0, null, null, null, null, "مختار", 2, 2, "0791199019", "سليم", "مختار", 0 },
-                    { 54, 0, new DateTime(1979, 4, 4, 0, 0, 0, 0, DateTimeKind.Unspecified), "أماني", 1, null, null, null, null, "مختار", 2, 3, "0791199020", "مختار", "سليم", 0 }
                 });
 
             migrationBuilder.InsertData(
@@ -818,191 +792,6 @@ namespace SmartNeighborhoodAPI.Migrations
                     { 1, "مدير المشروع" },
                     { 2, "النائب" },
                     { 3, "عضو" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Teams",
-                columns: new[] { "Id", "Name" },
-                values: new object[,]
-                {
-                    { 1, "فريق التنمية المجتمعية" },
-                    { 2, "فريق الخدمات الميدانية" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "AspNetUsers",
-                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmationCode", "EmailConfirmationCodeExpiresAt", "EmailConfirmed", "IsActive", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PersonId", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[,]
-                {
-                    { "10101010-1010-1010-1010-101010101010", 0, "4b975235-892c-42c9-a02c-9c8ac5e4f6c8", "block.manager4@test.com", null, null, true, true, false, null, "BLOCK.MANAGER4@TEST.COM", "BLOCKMANAGER4", "AQAAAAIAAYagAAAAEB8StXqFvEBNo8psW4XuY1oU1E6kSr7MGUOtuRQOCNw4M1sRvdvPVc6IiEzhWewhzw==", 7, null, false, "0214d37f-5408-4ee0-b09b-13da602c6d00", false, "BlockManager4" },
-                    { "20202020-2020-2020-2020-202020202020", 0, "66134406-1776-4d0a-9758-2a3e995cd9cd", "block.manager5@test.com", null, null, true, true, false, null, "BLOCK.MANAGER5@TEST.COM", "BLOCKMANAGER5", "AQAAAAIAAYagAAAAEPaiEFEKUj6IWnEuj75CfkE7aX6SaNHmUdUDMZRUk0mQ1s5Cjb2B+56KPPeJpqn2rg==", 8, null, false, "c64debf4-e694-488a-bdcc-fe4f47a23c63", false, "BlockManager5" },
-                    { "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", 0, "4c218d40-08e8-4cb9-9753-8ba8ae08db6b", "sys.smartneighborhood@gmail.com", null, null, true, false, false, null, "SYS.SMARTNEIGHBORHOOD@GMAIL.COM", "ADMIN", "AQAAAAIAAYagAAAAEO0t8TEAnUVo6hQwofacwvFDjR3k1NmnXaDgLmu1WJR2Rq+MWdK45gWC0DnGMygysg==", 1, null, false, "21f67657-3430-463e-8eda-e8bd9470cc54", false, "Admin" },
-                    { "cccccccc-cccc-cccc-cccc-cccccccccccc", 0, "d7423f4c-687b-4fe0-bbc8-9f85f2028fff", "unit.manager@test.com", null, null, true, true, false, null, "UNIT.MANAGER@TEST.COM", "UNITMANAGER1", "AQAAAAIAAYagAAAAEGl+z75O3QaRaN1ixqN9hgjtiTKqcHdTD+owHVmEm/RZULzC2sILgrP+MKAlpspdvw==", 3, null, false, "e368055f-1aee-4936-8cf8-3c7bbcdc29de", false, "UnitManager1" },
-                    { "dddddddd-dddd-dddd-dddd-dddddddddddd", 0, "8ad46d1e-22e0-4bfc-a0bc-615b20aed10d", "block.manager1@test.com", null, null, true, true, false, null, "BLOCK.MANAGER1@TEST.COM", "BLOCKMANAGER1", "AQAAAAIAAYagAAAAELsIwVcUC2RE97y0aDpF6dOjVPT8ypmxOSJd7nKchIvE4bOu/55HIHHVlrrmPDDCdg==", 4, null, false, "da0c9f82-031e-4e0e-9b2c-0d92bfcdd593", false, "BlockManager1" },
-                    { "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee", 0, "86e12aec-d41b-4b18-b06a-14576028f95e", "block.manager2@test.com", null, null, true, true, false, null, "BLOCK.MANAGER2@TEST.COM", "BLOCKMANAGER2", "AQAAAAIAAYagAAAAEE/Tn7JwNz6tn3wqQRP14YusT4uOCFb21L72GOJhRiJdFE0SVBM21sCDfQIUAz4G3A==", 5, null, false, "174487f8-006c-466d-8b84-938472ec2bb3", false, "BlockManager2" },
-                    { "ffffffff-ffff-ffff-ffff-ffffffffffff", 0, "70582f4f-eae3-4378-a7e0-0486998eb00a", "block.manager3@test.com", null, null, true, true, false, null, "BLOCK.MANAGER3@TEST.COM", "BLOCKMANAGER3", "AQAAAAIAAYagAAAAECFC1wI2NnT2sp9s2wHwf3EhPtSm5fK7hecYFNjqTx9zbqHYRs0GtehHkji8ijCe/Q==", 6, null, false, "732d6401-ab1f-4eac-a3bf-4f9bc15b6a22", false, "BlockManager3" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "GovernmentInstitutionContacts",
-                columns: new[] { "Id", "GovernmentInstitutionId", "Job", "Name", "Phone" },
-                values: new object[,]
-                {
-                    { 1, 1, "مدير محطة المياه", "مهندس علي سالم", "0777001111" },
-                    { 2, 1, "مسؤولة الصرف الصحي", "أمينة محمد", "0777002222" },
-                    { 3, 2, "ضابط ارتباط", "نقيب خالد الشامي", "0777013333" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "ProjectTeams",
-                columns: new[] { "Id", "ProjectId", "TeamId" },
-                values: new object[,]
-                {
-                    { 1, 1, 1 },
-                    { 2, 2, 1 },
-                    { 3, 3, 2 }
-                });
-
-            migrationBuilder.InsertData(
-                table: "ResidentialNeighborhoods",
-                columns: new[] { "Id", "Name", "NeighborhoodManagerId" },
-                values: new object[,]
-                {
-                    { 1, "حي 22 مايو", "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb" },
-                    { 2, "حي أكتوبر", "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb" },
-                    { 3, "حي ابن سيناء", "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb" },
-                    { 4, "حي الثورة", "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb" },
-                    { 5, "حي الحرشيات", "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb" },
-                    { 6, "حي السلام", "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb" },
-                    { 7, "حي الشهيد خالد", "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb" },
-                    { 8, "حي الصديق", "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb" },
-                    { 9, "حي الصيادين", "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb" },
-                    { 10, "حي العمال", "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb" },
-                    { 11, "حي العيص", "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb" },
-                    { 12, "حي المتضررين", "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb" },
-                    { 13, "حي النصر", "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb" },
-                    { 14, "حي امبيخة", "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb" },
-                    { 15, "حي بويش", "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb" },
-                    { 16, "حي خلف", "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb" },
-                    { 17, "حي روكب", "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb" },
-                    { 18, "حي فوه القديمة", "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb" },
-                    { 19, "حي نوفمبر", "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb" },
-                    { 20, "مربع واحد", "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "AspNetUserRoles",
-                columns: new[] { "RoleId", "UserId" },
-                values: new object[] { "11111111-1111-1111-1111-111111111111", "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa" });
-
-            migrationBuilder.InsertData(
-                table: "ResidentialUnits",
-                columns: new[] { "Id", "Name", "ResidentialNeighborhoodId", "UnitManagerId" },
-                values: new object[] { 1, "الوحدة السكنية 1", 1, "cccccccc-cccc-cccc-cccc-cccccccccccc" });
-
-            migrationBuilder.InsertData(
-                table: "Blocks",
-                columns: new[] { "Id", "BlockManagerId", "Name", "ResidentialUnitId" },
-                values: new object[,]
-                {
-                    { 1, "dddddddd-dddd-dddd-dddd-dddddddddddd", "مبنى 1", 1 },
-                    { 2, "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee", "مبنى 2", 1 },
-                    { 3, "ffffffff-ffff-ffff-ffff-ffffffffffff", "مبنى 3", 1 },
-                    { 4, "10101010-1010-1010-1010-101010101010", "مبنى 4", 1 },
-                    { 5, "20202020-2020-2020-2020-202020202020", "مبنى 5", 1 },
-                    { 6, "dddddddd-dddd-dddd-dddd-dddddddddddd", "مبنى 6", 1 },
-                    { 7, "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee", "مبنى 7", 1 },
-                    { 8, "ffffffff-ffff-ffff-ffff-ffffffffffff", "مبنى 8", 1 },
-                    { 9, "10101010-1010-1010-1010-101010101010", "مبنى 9", 1 },
-                    { 10, "20202020-2020-2020-2020-202020202020", "مبنى 10", 1 },
-                    { 11, "dddddddd-dddd-dddd-dddd-dddddddddddd", "مبنى 11", 1 },
-                    { 12, "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee", "مبنى 12", 1 },
-                    { 13, "ffffffff-ffff-ffff-ffff-ffffffffffff", "مبنى 13", 1 },
-                    { 14, "10101010-1010-1010-1010-101010101010", "مبنى 14", 1 },
-                    { 15, "20202020-2020-2020-2020-202020202020", "مبنى 15", 1 },
-                    { 16, "dddddddd-dddd-dddd-dddd-dddddddddddd", "مبنى 16", 1 },
-                    { 17, "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee", "مبنى 17", 1 },
-                    { 18, "ffffffff-ffff-ffff-ffff-ffffffffffff", "مبنى 18", 1 },
-                    { 19, "10101010-1010-1010-1010-101010101010", "مبنى 19", 1 },
-                    { 20, "20202020-2020-2020-2020-202020202020", "مبنى 20", 1 }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Families",
-                columns: new[] { "Id", "BlockId", "FamilyCatgoryId", "FamilyNotes", "HousingType", "Location", "Name" },
-                values: new object[,]
-                {
-                    { 1, 1, 1, "لا ملاحظات", 2, "البيت 1، الحي القديم", "عائلة الغانم" },
-                    { 2, 1, 3, "تأجير طويل الأمد", 1, "البيت 2، شارع البحر", "عائلة الملاح" },
-                    { 3, 2, 2, "عائلة مع العديد من الأولاد", 2, "الزاوية الجنوبية، مبنى 2", "عائلة العكبري" },
-                    { 4, 2, 3, null, 1, "الطابق الأول، مبنى 2", "عائلة العمري" },
-                    { 5, 3, 1, "تحتاج دعم صحّي", 2, "الحي الشمالي، مبنى 3", "عائلة الهاشمي" },
-                    { 6, 3, 3, null, 1, "الطابق الثاني، مبنى 3", "عائلة الحمادي" },
-                    { 7, 4, 2, "أحد أفراد الأسرة بحاجة لرعاية", 2, "الشارع العام، مبنى 4", "عائلة الحدري" },
-                    { 8, 4, 3, null, 1, "الصفحة الشرقية، مبنى 4", "عائلة البساطي" },
-                    { 9, 5, 1, "عائلة مستقرة", 2, "المنطقة الجنوبية، مبنى 5", "عائلة الملاح" },
-                    { 10, 5, 3, null, 1, "الطابق الأرضي، مبنى 5", "عائلة القحطاني" },
-                    { 11, 6, 1, null, 2, "الطابق الأول، مبنى 6", "عائلة الشريف" },
-                    { 12, 7, 2, "تحتاج دعم تعليمي", 1, "البيت 2، مبنى 7", "عائلة الزبيري" },
-                    { 13, 8, 3, null, 2, "الزاوية الغربية، مبنى 8", "عائلة الهاشمي" },
-                    { 14, 9, 3, null, 1, "الشقة 3، مبنى 9", "عائلة العرادي" },
-                    { 15, 10, 1, "أم عازبة", 2, "الطابق العلوي، مبنى 10", "عائلة القاضي" },
-                    { 16, 11, 3, null, 1, "مبنى 11، شارع السوق", "عائلة الربيعي" },
-                    { 17, 12, 2, "عائلة كبيرة", 2, "المنطقة 12، مبنى 12", "عائلة الحاج" },
-                    { 18, 13, 3, null, 1, "الطابق الثاني، مبنى 13", "عائلة السقاف" },
-                    { 19, 14, 3, null, 2, "منزل صغير، مبنى 14", "عائلة العولقي" },
-                    { 20, 15, 2, null, 1, "الطابق الأرضي، مبنى 15", "عائلة مختار" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "FamilyMembers",
-                columns: new[] { "Id", "FamilyId", "MemberFamilyRoleId", "PersonId" },
-                values: new object[,]
-                {
-                    { 1, 1, 1, 11 },
-                    { 2, 1, 2, 12 },
-                    { 3, 1, 3, 13 },
-                    { 4, 2, 1, 14 },
-                    { 5, 2, 2, 15 },
-                    { 6, 2, 4, 16 },
-                    { 7, 3, 1, 17 },
-                    { 8, 3, 2, 18 },
-                    { 9, 3, 4, 19 },
-                    { 10, 4, 1, 20 },
-                    { 11, 4, 2, 21 },
-                    { 12, 4, 3, 22 },
-                    { 13, 5, 1, 23 },
-                    { 14, 5, 2, 24 },
-                    { 15, 5, 4, 25 },
-                    { 16, 6, 1, 26 },
-                    { 17, 6, 2, 27 },
-                    { 18, 6, 3, 28 },
-                    { 19, 7, 1, 29 },
-                    { 20, 7, 2, 30 },
-                    { 21, 7, 3, 31 },
-                    { 22, 8, 1, 32 },
-                    { 23, 8, 2, 33 },
-                    { 24, 8, 4, 34 },
-                    { 25, 11, 1, 35 },
-                    { 26, 11, 2, 36 },
-                    { 27, 12, 1, 37 },
-                    { 28, 12, 2, 38 },
-                    { 29, 13, 1, 39 },
-                    { 30, 13, 2, 40 },
-                    { 31, 14, 1, 41 },
-                    { 32, 14, 2, 42 },
-                    { 33, 15, 1, 43 },
-                    { 34, 15, 2, 44 },
-                    { 35, 16, 1, 45 },
-                    { 36, 16, 2, 46 },
-                    { 37, 17, 1, 47 },
-                    { 38, 17, 2, 48 },
-                    { 39, 18, 1, 49 },
-                    { 40, 18, 2, 50 },
-                    { 41, 19, 1, 51 },
-                    { 42, 19, 2, 52 },
-                    { 43, 20, 1, 53 },
-                    { 44, 20, 2, 54 }
                 });
 
             migrationBuilder.CreateIndex(
@@ -1054,6 +843,11 @@ namespace SmartNeighborhoodAPI.Migrations
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
 
+            migrationBuilder.CreateIndex(
+                name: "IX_Blocks_BlockManagerId",
+                table: "Blocks",
+                column: "BlockManagerId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Blocks_ResidentialUnitId",
@@ -1064,6 +858,11 @@ namespace SmartNeighborhoodAPI.Migrations
                 name: "IX_ConfilctCases_BlockId",
                 table: "ConfilctCases",
                 column: "BlockId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ConfilctCases_ConfilctTypeId",
+                table: "ConfilctCases",
+                column: "ConfilctTypeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ConfilctCases_ConflictTypeId",
@@ -1116,6 +915,16 @@ namespace SmartNeighborhoodAPI.Migrations
                 column: "GovernmentInstitutionId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Issues_AssigneeId",
+                table: "Issues",
+                column: "AssigneeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Issues_ReporterId",
+                table: "Issues",
+                column: "ReporterId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ProjectBlock_BlockId",
                 table: "ProjectBlock",
                 column: "BlockId");
@@ -1162,6 +971,11 @@ namespace SmartNeighborhoodAPI.Migrations
                 column: "Name",
                 unique: true);
 
+            migrationBuilder.CreateIndex(
+                name: "IX_ResidentialNeighborhoods_NeighborhoodManagerId",
+                table: "ResidentialNeighborhoods",
+                column: "NeighborhoodManagerId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ResidentialUnits_ResidentialNeighborhoodId",
@@ -1216,6 +1030,9 @@ namespace SmartNeighborhoodAPI.Migrations
 
             migrationBuilder.DropTable(
                 name: "GovernmentInstitutionContacts");
+
+            migrationBuilder.DropTable(
+                name: "Issues");
 
             migrationBuilder.DropTable(
                 name: "ProjectBlock");
