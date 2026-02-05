@@ -25,31 +25,12 @@ namespace SmartNeighborhoodAPI
             builder.ApplyConfiguration(new FamilyCatgoryConfiguration());
             builder.ApplyConfiguration(new IdentityRoleSeedConfiguration());
             builder.ApplyConfiguration(new AppUserSeedConfiguration());
-            builder.ApplyConfiguration(new IdentityUserRoleSeedConfiguration());
             builder.ApplyConfiguration(new ProjectCatgoryEntityTypeConfiguration());
             builder.ApplyConfiguration(new ResidentialNeighborhoodConfiguration());
             builder.ApplyConfiguration(new ConflictCaseConfiguration());
+            builder.ApplyConfiguration(new IssueEntityTypeConfiguration());
 
-            // Seed data configurations for testing
-            //builder.ApplyConfiguration(new PersonSeedConfiguration());
-            builder.ApplyConfiguration(new ResidentialNeighborhoodSeedConfiguration());
-            builder.ApplyConfiguration(new ResidentialUnitSeedConfiguration());
-            builder.ApplyConfiguration(new BlockSeedConfiguration());
-            builder.ApplyConfiguration(new FamilySeedConfiguration());
-            builder.ApplyConfiguration(new FamilyMemberSeedConfiguration());
-            builder.ApplyConfiguration(new ConfilctTypeConfiguration());
-            builder.ApplyConfiguration(new TeamSeedConfiguration());
-            builder.ApplyConfiguration(new ProjectTeamSeedConfiguration());
-            builder.ApplyConfiguration(new GovernmentInstitutionSeedConfiguration());
-            builder.ApplyConfiguration(new GovernmentInstitutionContactSeedConfiguration());
-            builder.ApplyConfiguration(new ProjectSeedConfiguration_200());
-            builder.ApplyConfiguration(new TeamSeedConfiguration_50());
-            builder.ApplyConfiguration(new TeamMemberSeedConfiguration_250());
-
-
-
-
-
+           
             base.OnModelCreating(builder);
 
             builder.Entity<ResidentialUnit>()
@@ -150,5 +131,7 @@ namespace SmartNeighborhoodAPI
         public DbSet<TeamRole> TeamRoles { get; set; }
         public DbSet<ResidentialUnit> ResidentialUnits { get; set; }
         public DbSet<ResidentialNeighborhood> ResidentialNeighborhoods { get; set; }
+        public DbSet<Issue> Issues { get; set; }
+     
     }
 }

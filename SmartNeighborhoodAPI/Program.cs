@@ -81,7 +81,8 @@ builder.Services.AddScoped<IGovernmentInstitutionsService, GovernmentInstitution
 builder.Services.AddScoped<IGovernmentInstitutionContactService, GovernmentInstitutionContactService>();
 builder.Services.AddScoped<IResidentialNeighborhoodService, ResidentialNeighborhoodService>();
 builder.Services.AddScoped<ResidentialUnitService>();
-  builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<IIssueService, IssueService>();
 
 
 
