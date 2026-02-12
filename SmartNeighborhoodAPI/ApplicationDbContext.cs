@@ -25,6 +25,7 @@ namespace SmartNeighborhoodAPI
             builder.ApplyConfiguration(new FamilyCatgoryConfiguration());
             builder.ApplyConfiguration(new IdentityRoleSeedConfiguration());
             builder.ApplyConfiguration(new AppUserSeedConfiguration());
+            builder.ApplyConfiguration(new IdentityUserRoleSeedConfiguration());
             builder.ApplyConfiguration(new ProjectCatgoryEntityTypeConfiguration());
             builder.ApplyConfiguration(new ResidentialNeighborhoodConfiguration());
             builder.ApplyConfiguration(new ConflictCaseConfiguration());

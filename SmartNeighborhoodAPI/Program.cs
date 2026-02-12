@@ -83,6 +83,8 @@ builder.Services.AddScoped<IResidentialNeighborhoodService, ResidentialNeighborh
 builder.Services.AddScoped<ResidentialUnitService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IIssueService, IssueService>();
+//builder.Services.AddScoped<ISyncService, SyncService>();
+
 
 
 

@@ -12,7 +12,7 @@ using SmartNeighborhoodAPI;
 namespace SmartNeighborhoodAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260205033806_init")]
+    [Migration("20260212074859_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -178,6 +178,28 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+                            RoleId = "11111111-1111-1111-1111-111111111111"
+                        },
+                        new
+                        {
+                            UserId = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+                            RoleId = "22222222-2222-2222-2222-222222222222"
+                        },
+                        new
+                        {
+                            UserId = "cccccccc-cccc-cccc-cccc-cccccccccccc",
+                            RoleId = "33333333-3333-3333-3333-333333333333"
+                        },
+                        new
+                        {
+                            UserId = "dddddddd-dddd-dddd-dddd-dddddddddddd",
+                            RoleId = "44444444-4444-4444-4444-444444444444"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -842,19 +864,73 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "42955eb4-0ad4-47b6-a61d-b09d15adc2bc",
+                            ConcurrencyStamp = "6c89bfaf-211c-4009-a8cb-cd7b75dd7feb",
                             Email = "sys.smartneighborhood@gmail.com",
                             EmailConfirmed = true,
                             IsActive = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "SYS.SMARTNEIGHBORHOOD@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEK7ZtjEP6775wgToEJvNZWJcGxzvOKYj0UtBeoCp975VjyqRUgYRxDOaAKpFppTzNw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAENZX7hRXfko+fcAU1jFRDT8za2PKfJ5k//niB70kx8Ny332SUmd/44jMuMRg4faOGQ==",
                             PersonId = 1,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "a5787a6a-ea8d-403b-a2ac-414c29030920",
+                            SecurityStamp = "8e86b6a4-6a1f-4d5a-b10f-38a3fcb23c86",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
+                        },
+                        new
+                        {
+                            Id = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "fb81d958-7f5e-4ab6-a593-fb1528a467f3",
+                            Email = "block.manager@local",
+                            EmailConfirmed = true,
+                            IsActive = false,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "BLOCK.MANAGER@LOCAL",
+                            NormalizedUserName = "BLOCKMANAGER",
+                            PasswordHash = "AQAAAAIAAYagAAAAENDqW8LpwPqhicMTW1svWF1ek9uF03rYzh6nsaHRmVWjVGICRm4zxZrsjvDIi0mX8Q==",
+                            PersonId = 2,
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "61f596a8-4aef-404d-9699-f348a4a5aadd",
+                            TwoFactorEnabled = false,
+                            UserName = "BlockManager"
+                        },
+                        new
+                        {
+                            Id = "cccccccc-cccc-cccc-cccc-cccccccccccc",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "092d80b8-a1ec-4cb7-9fb8-e1c685d83f28",
+                            Email = "unit.manager@local",
+                            EmailConfirmed = true,
+                            IsActive = false,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "UNIT.MANAGER@LOCAL",
+                            NormalizedUserName = "UNITMANAGER",
+                            PasswordHash = "AQAAAAIAAYagAAAAEM6IEJIBfafCzVxEhQy+Sh3wqz6SDo0sttxy5Ur574o578I1Tl/uuEHqVAiBZhhnkA==",
+                            PersonId = 3,
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "ae25c687-bc80-4cd4-9a64-36673a0a2124",
+                            TwoFactorEnabled = false,
+                            UserName = "UnitManager"
+                        },
+                        new
+                        {
+                            Id = "dddddddd-dddd-dddd-dddd-dddddddddddd",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "149dd9bf-bf95-4591-b6a0-5529609b45db",
+                            Email = "rn.manager@local",
+                            EmailConfirmed = true,
+                            IsActive = false,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "RN.MANAGER@LOCAL",
+                            NormalizedUserName = "RESIDENTIALNEIGHBORHOODMANAGER",
+                            PasswordHash = "AQAAAAIAAYagAAAAEP1TO81k/kSkSmHc/1rTaMGLhFIaB9xrEvnl/plNPbqGcBnbwPBnV7su83x+kzjQvA==",
+                            PersonId = 4,
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "d4160704-30aa-46c2-a155-bc7d5726667a",
+                            TwoFactorEnabled = false,
+                            UserName = "ResidentialNeighborhoodManager"
                         });
                 });
 

@@ -274,7 +274,7 @@ namespace SmartNeighborhoodAPI.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
- 
+              
                 });
 
             migrationBuilder.CreateTable(
@@ -748,7 +748,13 @@ namespace SmartNeighborhoodAPI.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmationCode", "EmailConfirmationCodeExpiresAt", "EmailConfirmed", "IsActive", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PersonId", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", 0, "42955eb4-0ad4-47b6-a61d-b09d15adc2bc", "sys.smartneighborhood@gmail.com", null, null, true, false, false, null, "SYS.SMARTNEIGHBORHOOD@GMAIL.COM", "ADMIN", "AQAAAAIAAYagAAAAEK7ZtjEP6775wgToEJvNZWJcGxzvOKYj0UtBeoCp975VjyqRUgYRxDOaAKpFppTzNw==", 1, null, false, "a5787a6a-ea8d-403b-a2ac-414c29030920", false, "Admin" });
+                values: new object[,]
+                {
+                    { "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", 0, "6c89bfaf-211c-4009-a8cb-cd7b75dd7feb", "sys.smartneighborhood@gmail.com", null, null, true, false, false, null, "SYS.SMARTNEIGHBORHOOD@GMAIL.COM", "ADMIN", "AQAAAAIAAYagAAAAENZX7hRXfko+fcAU1jFRDT8za2PKfJ5k//niB70kx8Ny332SUmd/44jMuMRg4faOGQ==", 1, null, false, "8e86b6a4-6a1f-4d5a-b10f-38a3fcb23c86", false, "Admin" },
+                    { "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb", 0, "fb81d958-7f5e-4ab6-a593-fb1528a467f3", "block.manager@local", null, null, true, false, false, null, "BLOCK.MANAGER@LOCAL", "BLOCKMANAGER", "AQAAAAIAAYagAAAAENDqW8LpwPqhicMTW1svWF1ek9uF03rYzh6nsaHRmVWjVGICRm4zxZrsjvDIi0mX8Q==", 2, null, false, "61f596a8-4aef-404d-9699-f348a4a5aadd", false, "BlockManager" },
+                    { "cccccccc-cccc-cccc-cccc-cccccccccccc", 0, "092d80b8-a1ec-4cb7-9fb8-e1c685d83f28", "unit.manager@local", null, null, true, false, false, null, "UNIT.MANAGER@LOCAL", "UNITMANAGER", "AQAAAAIAAYagAAAAEM6IEJIBfafCzVxEhQy+Sh3wqz6SDo0sttxy5Ur574o578I1Tl/uuEHqVAiBZhhnkA==", 3, null, false, "ae25c687-bc80-4cd4-9a64-36673a0a2124", false, "UnitManager" },
+                    { "dddddddd-dddd-dddd-dddd-dddddddddddd", 0, "149dd9bf-bf95-4591-b6a0-5529609b45db", "rn.manager@local", null, null, true, false, false, null, "RN.MANAGER@LOCAL", "RESIDENTIALNEIGHBORHOODMANAGER", "AQAAAAIAAYagAAAAEP1TO81k/kSkSmHc/1rTaMGLhFIaB9xrEvnl/plNPbqGcBnbwPBnV7su83x+kzjQvA==", 4, null, false, "d4160704-30aa-46c2-a155-bc7d5726667a", false, "ResidentialNeighborhoodManager" }
+                });
 
             migrationBuilder.InsertData(
                 table: "FamilyCatgories",
@@ -792,6 +798,17 @@ namespace SmartNeighborhoodAPI.Migrations
                     { 1, "مدير المشروع" },
                     { 2, "النائب" },
                     { 3, "عضو" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUserRoles",
+                columns: new[] { "RoleId", "UserId" },
+                values: new object[,]
+                {
+                    { "11111111-1111-1111-1111-111111111111", "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa" },
+                    { "22222222-2222-2222-2222-222222222222", "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb" },
+                    { "33333333-3333-3333-3333-333333333333", "cccccccc-cccc-cccc-cccc-cccccccccccc" },
+                    { "44444444-4444-4444-4444-444444444444", "dddddddd-dddd-dddd-dddd-dddddddddddd" }
                 });
 
             migrationBuilder.CreateIndex(

@@ -288,6 +288,15 @@ namespace SmartNeighborhoodAPI.Helpers
             public const string Update = Prefix + "/{id:guid}";
             public const string Delete = Prefix + "/{id:guid}";
         }
+
+        public static class Sync
+        {
+            public const string Prefix = Rule + "sync";
+
+            public const string Pull = Prefix + "/pull";
+            public const string Push = Prefix + "/push";
+            public const string Status = Prefix + "/status";
+        }
     }
 }
 
