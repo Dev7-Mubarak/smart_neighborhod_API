@@ -2,7 +2,7 @@
 
 namespace OurProjectSmartNeiborhood.Entites
 {
-    public class Team
+    public class Team:SyncEntity
     {
         public int Id { get; set; }
         public string Name { get; set; }

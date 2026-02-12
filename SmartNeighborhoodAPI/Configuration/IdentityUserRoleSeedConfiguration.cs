@@ -1,18 +1,20 @@
-﻿//using Microsoft.AspNetCore.Identity;
-//using Microsoft.EntityFrameworkCore;
-//using Microsoft.EntityFrameworkCore.Metadata.Builders;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-//public class IdentityUserRoleSeedConfiguration : IEntityTypeConfiguration<IdentityUserRole<string>>
-//{
-//    public void Configure(EntityTypeBuilder<IdentityUserRole<string>> builder)
-//    {
-      
-//        builder.HasData(
-//            new IdentityUserRole<string>
-//            {
-//                UserId = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-//                RoleId = "11111111-1111-1111-1111-111111111111"
-//            },
+public class IdentityUserRoleSeedConfiguration : IEntityTypeConfiguration<IdentityUserRole<string>>
+{
+    public void Configure(EntityTypeBuilder<IdentityUserRole<string>> builder)
+    {
+        // Map seeded users to seeded roles
+        builder.HasData(
+            new IdentityUserRole<string> { UserId = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", RoleId = "11111111-1111-1111-1111-111111111111" }, // Admin
+            new IdentityUserRole<string> { UserId = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb", RoleId = "22222222-2222-2222-2222-222222222222" }, // BlockManager
+            new IdentityUserRole<string> { UserId = "cccccccc-cccc-cccc-cccc-cccccccccccc", RoleId = "33333333-3333-3333-3333-333333333333" }, // UnitManager
+            new IdentityUserRole<string> { UserId = "dddddddd-dddd-dddd-dddd-dddddddddddd", RoleId = "44444444-4444-4444-4444-444444444444" }  // ResidentialNeighborhoodManager
+        );
+    }
+} 
 
 //            new IdentityUserRole<string> { UserId = "00000000000000000000000000000001", RoleId = "44444444-4444-4444-4444-444444444444" },
 //            new IdentityUserRole<string> { UserId = "00000000000000000000000000000002", RoleId = "44444444-4444-4444-4444-444444444444" },
