@@ -1,8 +1,9 @@
 ﻿using SmartNeighborhoodAPI.Entites;
+using SmartNeighborhoodAPI.Interfaces;
 
 namespace OurProjectSmartNeiborhood.Entites
 {
-    public class ConflictCase
+    public class ConflictCase : ISyncable
     {
         public int Id { get; set; }
         public int FirstPartyId { get; set; }
@@ -23,6 +24,13 @@ namespace OurProjectSmartNeiborhood.Entites
         public FamilyMember FirstParty { get; set; }
         public FamilyMember SecondParty { get; set; }
         public ConfilctType ConflictType { get; set; }
+
+        // ISyncable implementation
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+        public bool IsDeleted { get; set; } = false;
+        public DateTime? DeletedAt { get; set; }
+        public string? ClientId { get; set; }
     }
 
 }
