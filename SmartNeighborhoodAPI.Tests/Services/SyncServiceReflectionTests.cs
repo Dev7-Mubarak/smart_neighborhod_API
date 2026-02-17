@@ -47,19 +47,19 @@ namespace SmartNeighborhoodAPI.Tests.Services
                 // Person mappings
                 cfg.CreateMap<PersonChangeDto, Person>()
                     .ForMember(dest => dest.Id, opt => opt.Ignore()) // ID is auto-generated
-                    .ForMember(dest => dest.Gender, opt => opt.MapFrom(src => 
+                    .ForMember(dest => dest.Gender, opt => opt.MapFrom(src =>
                         string.IsNullOrEmpty(src.Gender) ? (SmartNeighborhoodAPI.Entites.Enums.Gender?)null : Enum.Parse<SmartNeighborhoodAPI.Entites.Enums.Gender>(src.Gender)))
-                    .ForMember(dest => dest.BloodType, opt => opt.MapFrom(src => 
+                    .ForMember(dest => dest.BloodType, opt => opt.MapFrom(src =>
                         string.IsNullOrEmpty(src.BloodType) ? default(SmartNeighborhoodAPI.Entites.Enums.BloodType) : Enum.Parse<SmartNeighborhoodAPI.Entites.Enums.BloodType>(src.BloodType)))
-                    .ForMember(dest => dest.MaritalStatus, opt => opt.MapFrom(src => 
+                    .ForMember(dest => dest.MaritalStatus, opt => opt.MapFrom(src =>
                         string.IsNullOrEmpty(src.MaritalStatus) ? default(SmartNeighborhoodAPI.Entites.Enums.MaritalStatus) : Enum.Parse<SmartNeighborhoodAPI.Entites.Enums.MaritalStatus>(src.MaritalStatus)))
-                    .ForMember(dest => dest.OccupationStatus, opt => opt.MapFrom(src => 
+                    .ForMember(dest => dest.OccupationStatus, opt => opt.MapFrom(src =>
                         string.IsNullOrEmpty(src.OccupationStatus) ? default(SmartNeighborhoodAPI.Entites.Enums.OccupationStatus) : Enum.Parse<SmartNeighborhoodAPI.Entites.Enums.OccupationStatus>(src.OccupationStatus)))
-                    .ForMember(dest => dest.personType, opt => opt.MapFrom(src => 
+                    .ForMember(dest => dest.personType, opt => opt.MapFrom(src =>
                         string.IsNullOrEmpty(src.PersonType) ? default(SmartNeighborhoodAPI.Entites.Enums.PersonType) : Enum.Parse<SmartNeighborhoodAPI.Entites.Enums.PersonType>(src.PersonType)))
-                    .ForMember(dest => dest.VehicleType, opt => opt.MapFrom(src => 
+                    .ForMember(dest => dest.VehicleType, opt => opt.MapFrom(src =>
                         string.IsNullOrEmpty(src.VehicleType) ? (SmartNeighborhoodAPI.Entites.Enums.VehicleType?)null : Enum.Parse<SmartNeighborhoodAPI.Entites.Enums.VehicleType>(src.VehicleType)))
-                    .ForMember(dest => dest.ResidencyStatus, opt => opt.MapFrom(src => 
+                    .ForMember(dest => dest.ResidencyStatus, opt => opt.MapFrom(src =>
                         string.IsNullOrEmpty(src.ResidencyStatus) ? (SmartNeighborhoodAPI.Entites.Enums.ResidencyStatus?)null : Enum.Parse<SmartNeighborhoodAPI.Entites.Enums.ResidencyStatus>(src.ResidencyStatus)))
                     .ForMember(dest => dest.FamilyMembers, opt => opt.Ignore())
                     .ForMember(dest => dest.TeamMemberships, opt => opt.Ignore());
@@ -67,9 +67,9 @@ namespace SmartNeighborhoodAPI.Tests.Services
                 // Issue mappings
                 cfg.CreateMap<IssueChangeDto, Issue>()
                     .ForMember(dest => dest.Id, opt => opt.Ignore()) // ID is auto-generated
-                    .ForMember(dest => dest.Priority, opt => opt.MapFrom(src => 
+                    .ForMember(dest => dest.Priority, opt => opt.MapFrom(src =>
                         string.IsNullOrEmpty(src.Priority) ? default(SmartNeighborhoodAPI.Entites.Enums.IssuePriority) : Enum.Parse<SmartNeighborhoodAPI.Entites.Enums.IssuePriority>(src.Priority)))
-                    .ForMember(dest => dest.Status, opt => opt.MapFrom(src => 
+                    .ForMember(dest => dest.Status, opt => opt.MapFrom(src =>
                         string.IsNullOrEmpty(src.Status) ? default(SmartNeighborhoodAPI.Entites.Enums.IssueStatus) : Enum.Parse<SmartNeighborhoodAPI.Entites.Enums.IssueStatus>(src.Status)))
                     .ForMember(dest => dest.Reporter, opt => opt.Ignore())
                     .ForMember(dest => dest.Assignee, opt => opt.Ignore())
@@ -81,7 +81,7 @@ namespace SmartNeighborhoodAPI.Tests.Services
                     .ForMember(dest => dest.Id, opt => opt.Ignore())
                     .ForMember(dest => dest.FamilyCatgoryId, opt => opt.MapFrom(src => int.Parse(src.FamilyCategoryId)))
                     .ForMember(dest => dest.BlockId, opt => opt.MapFrom(src => int.Parse(src.BlockId)))
-                    .ForMember(dest => dest.HousingType, opt => opt.MapFrom(src => 
+                    .ForMember(dest => dest.HousingType, opt => opt.MapFrom(src =>
                         string.IsNullOrEmpty(src.HousingType) ? default(SmartNeighborhoodAPI.Entites.Enums.HousingType) : Enum.Parse<SmartNeighborhoodAPI.Entites.Enums.HousingType>(src.HousingType)))
                     .ForMember(dest => dest.FamilyMembers, opt => opt.Ignore())
                     .ForMember(dest => dest.FamilyCatgory, opt => opt.Ignore())
