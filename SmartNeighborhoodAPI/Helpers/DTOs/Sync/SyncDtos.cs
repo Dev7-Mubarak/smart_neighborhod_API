@@ -129,6 +129,7 @@ namespace SmartNeighborhoodAPI.Helpers.DTOs.Sync
         public EntityChanges<FamilyMemberChangeDto>? FamilyMembers { get; set; }
         public EntityChanges<BlockChangeDto>? Blocks { get; set; }
         public EntityChanges<ResidentialNeighborhoodChangeDto>? ResidentialNeighborhoods { get; set; }
+        public EntityChanges<ResidentialUnitChangeDto>? ResidentialUnits { get; set; }
         public EntityChanges<ConflictCaseChangeDto>? ConflictCases { get; set; }
         public EntityChanges<ProjectChangeDto>? Projects { get; set; }
         // Add other entity types as needed
@@ -420,6 +421,18 @@ namespace SmartNeighborhoodAPI.Helpers.DTOs.Sync
         public string? Status { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+        public ClientVersionInfo? ClientVersion { get; set; }
+    }
+
+    public class ResidentialUnitChangeDto
+    {
+        public string? Id { get; set; }
+        public string? ClientId { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string ResidentialNeighborhoodId { get; set; } = string.Empty;
+        public string UnitManagerId { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public ClientVersionInfo? ClientVersion { get; set; }
