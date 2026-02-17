@@ -1,10 +1,11 @@
 using SmartNeighborhoodAPI.Entites.Enums;
+using SmartNeighborhoodAPI.Interfaces;
 using System;
 using System.Collections.Generic;
 
 namespace SmartNeighborhoodAPI.Entites
 {
-    public class Issue
+    public class Issue : ISyncable
     {
         public Guid Id { get; set; }
         public string Title { get; set; }
@@ -20,5 +21,10 @@ namespace SmartNeighborhoodAPI.Entites
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? ResolvedAt { get; set; }
+
+        // ISyncable implementation 
+        public bool IsDeleted { get; set; } = false;
+        public DateTime? DeletedAt { get; set; }
+        public string? ClientId { get; set; }
     }
 }

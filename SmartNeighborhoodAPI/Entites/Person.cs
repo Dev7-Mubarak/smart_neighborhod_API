@@ -1,9 +1,10 @@
 ﻿using System.Text.Json.Serialization;
 using SmartNeighborhoodAPI.Entites.Enums;
+using SmartNeighborhoodAPI.Interfaces;
 
 namespace OurProjectSmartNeiborhood.Entites
 {
-    public class Person
+    public class Person : ISyncable
     {
         public int Id { get; set; }
         [MaxLength(20)]
@@ -53,5 +54,11 @@ namespace OurProjectSmartNeiborhood.Entites
         public string FullName =>
         $"{FirstName} {SecondName} {ThirdName} {LastName}".Replace("  ", " ").Trim();
 
+        // ISyncable implementation :-
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+        public bool IsDeleted { get; set; } = false;
+        public DateTime? DeletedAt { get; set; }
+        public string? ClientId { get; set; }
     }
 }

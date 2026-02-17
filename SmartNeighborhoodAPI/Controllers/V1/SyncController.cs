@@ -2,10 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SmartNeighborhoodAPI.Helpers;
 using SmartNeighborhoodAPI.Helpers.DTOs.Sync;
-using SmartNeighborhoodAPI.Helpers.DTOs.TeamMembers;
 using SmartNeighborhoodAPI.Interfaces;
-using SmartNeighborhoodAPI.Services;
-using Swashbuckle.AspNetCore.Annotations;
 using System;
 using System.Net;
 using System.Security.Claims;
@@ -17,13 +14,11 @@ namespace SmartNeighborhoodAPI.Controllers.V1
     {
         private readonly ISyncService _syncService;
         private readonly ILogger<SyncController> _logger;
-        private readonly TeamMemberService _teamMemberService;
 
-        public SyncController(ISyncService syncService, ILogger<SyncController> logger, TeamMemberService teamMemberService)
+        public SyncController(ISyncService syncService, ILogger<SyncController> logger)
         {
             _syncService = syncService;
             _logger = logger;
-            _teamMemberService = teamMemberService;
         }
 
         [HttpGet(Router.Sync.Pull)]
@@ -76,16 +71,6 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var response = await _syncService.GetSyncStatusAsync(userId);
             return Response(ApiResponse<SyncStatusResponse>.Success(response));
-        }
-
-        [HttpGet(Router.TeamMembers.GetAll)]
-        [MapToApiVersion("1.0")]
-        [SwaggerOperation(Summary = "Retrieve all team members", Description = "Retrieves all team members.")]
-        [ProducesResponseType(typeof(IEnumerable<TeamMemberDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetAllTeamMembersForSync()
-        {
-            return Response(await _teamMemberService.GetAll());
         }
     }
 }

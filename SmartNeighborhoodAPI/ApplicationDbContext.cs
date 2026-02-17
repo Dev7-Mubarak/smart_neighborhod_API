@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using OurProjectSmartNeiborhood.Configuration;
 using SmartNeighborhoodAPI.Configuration;
 using SmartNeighborhoodAPI.Entites;
+using SmartNeighborhoodAPI.Helpers.DTOs.block;
+using SmartNeighborhoodAPI.Interfaces;
 using System.Reflection.Emit;
 using static SmartNeighborhoodAPI.Helpers.Router;
 
@@ -31,7 +33,6 @@ namespace SmartNeighborhoodAPI
             builder.ApplyConfiguration(new ConflictCaseConfiguration());
             builder.ApplyConfiguration(new IssueEntityTypeConfiguration());
 
-           
             base.OnModelCreating(builder);
 
             builder.Entity<ResidentialUnit>()
@@ -56,7 +57,7 @@ namespace SmartNeighborhoodAPI
 
 
             builder.Entity<ProjectBlock>()
-                .HasKey(pb => new { pb.ProjectId, pb.BlockId }); 
+                .HasKey(pb => new { pb.ProjectId, pb.BlockId });
 
             builder.Entity<ProjectBlock>()
                 .HasOne(pb => pb.Project)
@@ -69,10 +70,10 @@ namespace SmartNeighborhoodAPI
                 .HasForeignKey(pb => pb.BlockId);
 
             builder.Entity<TeamRole>().HasData(
-                   new TeamRole { Id = 1, Name = "مدير المشروع"},
-                   new TeamRole { Id = 2, Name = "النائب"},
-                   new TeamRole { Id = 3, Name = "عضو" }
-               );
+                new TeamRole { Id = 1, Name = "مدير المشروع" },
+                new TeamRole { Id = 2, Name = "النائب" },
+                new TeamRole { Id = 3, Name = "عضو" }
+            );
 
             builder.Entity<ConflictCase>()
                 .HasOne(c => c.FirstParty)
@@ -133,6 +134,31 @@ namespace SmartNeighborhoodAPI
         public DbSet<ResidentialUnit> ResidentialUnits { get; set; }
         public DbSet<ResidentialNeighborhood> ResidentialNeighborhoods { get; set; }
         public DbSet<Issue> Issues { get; set; }
-     
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            foreach (var entry in ChangeTracker.Entries<ISyncable>())
+            {
+                switch (entry.State)
+                {
+                    case EntityState.Added:
+                        entry.Entity.CreatedAt = DateTime.UtcNow;
+                        entry.Entity.UpdatedAt = DateTime.UtcNow;
+                        entry.Entity.IsDeleted = false;
+                        break;
+                    case EntityState.Modified:
+                        // just update the UpdatedAt timestamp, other properties should be managed by the application logic
+                        entry.Entity.UpdatedAt = DateTime.UtcNow;
+                        break;
+                    case EntityState.Deleted:
+                        entry.State = EntityState.Modified; // change the state to Modified to perform a soft delete
+                        entry.Entity.IsDeleted = true;
+                        entry.Entity.DeletedAt = DateTime.UtcNow;
+                        entry.Entity.UpdatedAt = DateTime.UtcNow;
+                        break;
+                }
+            }
+            return base.SaveChangesAsync(cancellationToken);
+        }
     }
 }

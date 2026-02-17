@@ -1,9 +1,14 @@
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using OurProjectSmartNeiborhood.Entites;
+using SmartNeighborhoodAPI.Entites;
+using SmartNeighborhoodAPI.Entites.Enums;
 using SmartNeighborhoodAPI.Helpers.DTOs.Sync;
 using SmartNeighborhoodAPI.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -14,11 +19,16 @@ namespace SmartNeighborhoodAPI.Services
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly ILogger<SyncService> _logger;
+        private readonly IMapper _mapper;
 
-        public SyncService(ApplicationDbContext dbContext, ILogger<SyncService> logger)
+        public SyncService(
+            ApplicationDbContext dbContext,
+            ILogger<SyncService> logger,
+            IMapper mapper)
         {
             _dbContext = dbContext;
             _logger = logger;
+            _mapper = mapper;
         }
 
 
@@ -74,6 +84,11 @@ namespace SmartNeighborhoodAPI.Services
             }
         }
 
+        /// <summary>
+        /// Master method: Opens a transaction, processes all entity types, and commits.
+        /// Implements the "Dual-Generic Processor Strategy" to handle mixed ID types.
+        /// Uses Reflection to dynamically process all entity types in SyncChanges.
+        /// </summary>
         public async Task<SyncPushResponse> PushChangesAsync(
             SyncPushRequest request,
             string userId,
@@ -92,6 +107,10 @@ namespace SmartNeighborhoodAPI.Services
                         Results = new Dictionary<string, SyncResultDetails>()
                     };
 
+                    // Use reflection to dynamically process all properties in SyncChanges
+                    await ProcessAllEntitiesDynamicallyAsync(request.Changes, userId, response);
+
+                    // Calculate summary
                     response.TotalProcessed = response.Results.Values
                         .Sum(r => r.Created.Count + r.Updated.Count + r.Deleted.Count);
 
@@ -100,21 +119,12 @@ namespace SmartNeighborhoodAPI.Services
 
                     response.SyncStatus = response.TotalConflicts == 0 ? "success" : "partial_success";
 
-                    if (response.SyncStatus == "success")
-                    {
-                        await transaction.CommitAsync();
-                        _logger.LogInformation(
-                            $"Push sync successful: processed={response.TotalProcessed}, " +
-                            $"conflicts={response.TotalConflicts}");
-                    }
-                    else
-                    {
-                        // Still commit but indicate partial success
-                        await transaction.CommitAsync();
-                        _logger.LogWarning(
-                            $"Push sync partial success: processed={response.TotalProcessed}, " +
-                            $"conflicts={response.TotalConflicts}");
-                    }
+                    // Commit transaction
+                    await transaction.CommitAsync();
+
+                    _logger.LogInformation(
+                        $"Push sync {response.SyncStatus}: processed={response.TotalProcessed}, " +
+                        $"conflicts={response.TotalConflicts}");
 
                     return response;
                 }
@@ -131,6 +141,499 @@ namespace SmartNeighborhoodAPI.Services
                     throw;
                 }
             }
+        }
+
+        /// <summary>
+        /// Dynamically processes all entity types in SyncChanges using Reflection.
+        /// Iterates through all properties, derives entity names, discovers types,
+        /// and invokes the correct processing method based on the ID type (int or Guid).
+        /// </summary>
+        private async Task ProcessAllEntitiesDynamicallyAsync(
+            SyncChanges changes,
+            string userId,
+            SyncPushResponse response)
+        {
+            // Get all properties from SyncChanges
+            var syncChangesType = typeof(SyncChanges);
+            var properties = syncChangesType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+            foreach (var property in properties)
+            {
+                // Get the property value (EntityChanges<TDto>)
+                var entityChangesValue = property.GetValue(changes);
+
+                // Skip if null (no changes for this entity type)
+                if (entityChangesValue == null)
+                    continue;
+
+                try
+                {
+                    // Get the generic type argument (TDto) from EntityChanges<TDto>
+                    var propertyType = property.PropertyType;
+                    if (!propertyType.IsGenericType ||
+                        propertyType.GetGenericTypeDefinition() != typeof(EntityChanges<>))
+                    {
+                        _logger.LogWarning($"Property {property.Name} is not of type EntityChanges<T>");
+                        continue;
+                    }
+
+                    var dtoType = propertyType.GetGenericArguments()[0];
+
+                    // Derive entity name from DTO name by removing "ChangeDto" suffix
+                    var dtoTypeName = dtoType.Name;
+                    if (!dtoTypeName.EndsWith("ChangeDto"))
+                    {
+                        _logger.LogWarning($"DTO type {dtoTypeName} does not follow naming convention (should end with 'ChangeDto')");
+                        continue;
+                    }
+
+                    var entityName = dtoTypeName.Substring(0, dtoTypeName.Length - "ChangeDto".Length);
+                    var entityTypeNameLower = property.Name.ToLowerInvariant();
+
+                    // Find the entity type in all loaded assemblies
+                    // Search in both OurProjectSmartNeiborhood.Entites and SmartNeighborhoodAPI.Entites namespaces
+                    var assemblies = new[]
+                    {
+                        Assembly.GetExecutingAssembly(),
+                        typeof(Person).Assembly,
+                        typeof(Issue).Assembly
+                    }.Distinct();
+
+                    Type? entityType = null;
+                    foreach (var assembly in assemblies)
+                    {
+                        entityType = assembly.GetTypes()
+                            .FirstOrDefault(t => t.Name.Equals(entityName, StringComparison.OrdinalIgnoreCase) &&
+                                                t.IsClass && !t.IsAbstract &&
+                                                typeof(ISyncable).IsAssignableFrom(t));
+
+                        if (entityType != null)
+                            break;
+                    }
+
+                    if (entityType == null)
+                    {
+                        _logger.LogWarning($"Entity type '{entityName}' not found in any loaded assembly");
+                        continue;
+                    }
+
+                    // Validate that entity implements ISyncable (redundant check, but kept for clarity)
+                    if (!typeof(ISyncable).IsAssignableFrom(entityType))
+                    {
+                        _logger.LogWarning($"Entity type '{entityName}' does not implement ISyncable");
+                        continue;
+                    }
+
+                    // Get the Id property to determine the ID type
+                    var idProperty = entityType.GetProperty("Id");
+                    if (idProperty == null)
+                    {
+                        _logger.LogWarning($"Entity type '{entityName}' does not have an 'Id' property");
+                        continue;
+                    }
+
+                    var idType = idProperty.PropertyType;
+
+                    // Determine which processor method to invoke based on ID type
+                    MethodInfo processorMethod;
+                    if (idType == typeof(int))
+                    {
+                        processorMethod = GetType()
+                            .GetMethod(nameof(ProcessIntEntitiesAsync), BindingFlags.NonPublic | BindingFlags.Instance)!;
+                    }
+                    else if (idType == typeof(Guid))
+                    {
+                        processorMethod = GetType()
+                            .GetMethod(nameof(ProcessGuidEntitiesAsync), BindingFlags.NonPublic | BindingFlags.Instance)!;
+                    }
+                    else
+                    {
+                        _logger.LogWarning($"Entity type '{entityName}' has unsupported Id type: {idType.Name}");
+                        continue;
+                    }
+
+                    // Make the generic method with TEntity and TDto
+                    var genericMethod = processorMethod.MakeGenericMethod(entityType, dtoType);
+
+                    // Invoke the method dynamically
+                    var resultTask = (Task<SyncResultDetails>)genericMethod.Invoke(
+                        this,
+                        new object[] { entityChangesValue, entityTypeNameLower, userId })!;
+
+                    var result = await resultTask;
+
+                    // Add result to response
+                    response.Results[entityTypeNameLower] = result;
+
+                    _logger.LogInformation($"Successfully processed {entityName} entities using reflection");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Error processing property {property.Name}: {ex.Message}", ex);
+                    // Continue processing other entities instead of failing completely
+                }
+            }
+        }
+
+        /// <summary>
+        /// Processor A: Handles entities with INT primary keys (Person, Family, etc.)
+        /// - Create: Adds entity, saves immediately to generate ID, returns clientId->serverId mapping
+        /// - Update: Parses string Id to int, finds entity, updates with conflict detection
+        /// - Delete: Parses string Id to int, finds entity, performs soft delete
+        /// </summary>
+        private async Task<SyncResultDetails> ProcessIntEntitiesAsync<TEntity, TDto>(
+            EntityChanges<TDto> changes,
+            string entityTypeName,
+            string userId)
+            where TEntity : class, ISyncable, new()
+            where TDto : class
+        {
+            var result = new SyncResultDetails();
+
+            try
+            {
+                // Get the Id property using reflection
+                var idProperty = typeof(TEntity).GetProperty("Id");
+                if (idProperty == null || idProperty.PropertyType != typeof(int))
+                {
+                    throw new InvalidOperationException($"Entity {typeof(TEntity).Name} must have an 'int Id' property");
+                }
+
+                // Process CREATE operations
+                foreach (var createDto in changes.Created)
+                {
+                    try
+                    {
+                        var entity = _mapper.Map<TEntity>(createDto);
+
+                        // Ensure sync fields are set
+                        entity.CreatedAt = DateTime.UtcNow;
+                        entity.UpdatedAt = DateTime.UtcNow;
+                        entity.IsDeleted = false;
+
+                        // Get ClientId from DTO
+                        var clientIdProp = typeof(TDto).GetProperty("ClientId");
+                        var clientId = clientIdProp?.GetValue(createDto) as string;
+                        entity.ClientId = clientId;
+
+                        _dbContext.Set<TEntity>().Add(entity);
+
+                        // Save immediately to generate the int ID
+                        await _dbContext.SaveChangesAsync();
+
+                        // Get the generated server ID
+                        var serverId = (int)idProperty.GetValue(entity)!;
+
+                        result.Created.Add(new
+                        {
+                            clientId = clientId,
+                            serverId = serverId.ToString(),
+                            status = "created"
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        var clientIdProp = typeof(TDto).GetProperty("ClientId");
+                        var clientId = clientIdProp?.GetValue(createDto) as string;
+
+                        result.Errors.Add(new
+                        {
+                            clientId = clientId,
+                            error = ex.Message
+                        });
+                        _logger.LogError($"Error creating {entityTypeName}: {ex.Message}");
+                    }
+                }
+
+                // Process UPDATE operations
+                foreach (var updateDto in changes.Updated)
+                {
+                    try
+                    {
+                        // Parse string Id to int
+                        var idProp = typeof(TDto).GetProperty("Id");
+                        var idString = idProp?.GetValue(updateDto) as string;
+
+                        if (string.IsNullOrEmpty(idString) || !int.TryParse(idString, out int entityId))
+                        {
+                            result.Errors.Add(new { id = idString, error = "Invalid ID format" });
+                            continue;
+                        }
+
+                        var entity = await _dbContext.Set<TEntity>()
+                            .FirstOrDefaultAsync(e => (int)idProperty.GetValue(e)! == entityId);
+
+                        if (entity == null)
+                        {
+                            result.Errors.Add(new { id = idString, error = "Entity not found" });
+                            continue;
+                        }
+
+                        // Conflict detection: Check if server version is newer
+                        var clientVersionProp = typeof(TDto).GetProperty("ClientVersion");
+                        var clientVersion = clientVersionProp?.GetValue(updateDto) as ClientVersionInfo;
+
+                        if (clientVersion != null && entity.UpdatedAt > clientVersion.PreviousUpdatedAt)
+                        {
+                            // Conflict detected - server version is newer
+                            result.Conflicts.Add(new
+                            {
+                                id = idString,
+                                conflict = "version_mismatch",
+                                clientVersion = clientVersion.PreviousUpdatedAt,
+                                serverVersion = entity.UpdatedAt,
+                                resolution = "LAST_WRITE_WINS",
+                                message = "Server version is newer. Client should pull latest data."
+                            });
+                            continue;
+                        }
+
+                        // Map DTO to entity (AutoMapper handles the mapping)
+                        _mapper.Map(updateDto, entity);
+
+                        // UpdatedAt will be set automatically by SaveChangesAsync override
+
+                        result.Updated.Add(new
+                        {
+                            id = idString,
+                            status = "updated",
+                            serverUpdatedAt = DateTime.UtcNow
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        var idProp = typeof(TDto).GetProperty("Id");
+                        var idString = idProp?.GetValue(updateDto) as string;
+
+                        result.Errors.Add(new { id = idString, error = ex.Message });
+                        _logger.LogError($"Error updating {entityTypeName}: {ex.Message}");
+                    }
+                }
+
+                // Process DELETE operations (soft delete)
+                foreach (var deleteDto in changes.Deleted)
+                {
+                    try
+                    {
+                        if (!int.TryParse(deleteDto.Id, out int entityId))
+                        {
+                            result.Errors.Add(new { id = deleteDto.Id, error = "Invalid ID format" });
+                            continue;
+                        }
+
+                        var entity = await _dbContext.Set<TEntity>()
+                            .FirstOrDefaultAsync(e => (int)idProperty.GetValue(e)! == entityId);
+
+                        if (entity == null)
+                        {
+                            result.Errors.Add(new { id = deleteDto.Id, error = "Entity not found" });
+                            continue;
+                        }
+
+                        // Perform soft delete (SaveChangesAsync will handle this)
+                        _dbContext.Set<TEntity>().Remove(entity);
+
+                        result.Deleted.Add(new
+                        {
+                            id = deleteDto.Id,
+                            status = "deleted"
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        result.Errors.Add(new { id = deleteDto.Id, error = ex.Message });
+                        _logger.LogError($"Error deleting {entityTypeName}: {ex.Message}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error processing {entityTypeName}: {ex.Message}", ex);
+                throw;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Processor B: Handles entities with GUID primary keys (Issue, etc.)
+        /// - Create: Generates Guid.NewGuid(), no need to save immediately
+        /// - Update: Parses string Id to Guid, finds entity, updates with conflict detection
+        /// - Delete: Parses string Id to Guid, finds entity, performs soft delete
+        /// Uses reflection to access the Id property since ISyncable doesn't include PK
+        /// </summary>
+        private async Task<SyncResultDetails> ProcessGuidEntitiesAsync<TEntity, TDto>(
+            EntityChanges<TDto> changes,
+            string entityTypeName,
+            string userId)
+            where TEntity : class, ISyncable, new()
+            where TDto : class
+        {
+            var result = new SyncResultDetails();
+
+            try
+            {
+                // Get the Id property using reflection
+                var idProperty = typeof(TEntity).GetProperty("Id");
+                if (idProperty == null || idProperty.PropertyType != typeof(Guid))
+                {
+                    throw new InvalidOperationException($"Entity {typeof(TEntity).Name} must have a 'Guid Id' property");
+                }
+
+                // Process CREATE operations
+                foreach (var createDto in changes.Created)
+                {
+                    try
+                    {
+                        var entity = _mapper.Map<TEntity>(createDto);
+
+                        // Generate new Guid manually
+                        var newGuid = Guid.NewGuid();
+                        idProperty.SetValue(entity, newGuid);
+
+                        // Ensure sync fields are set
+                        entity.CreatedAt = DateTime.UtcNow;
+                        entity.UpdatedAt = DateTime.UtcNow;
+                        entity.IsDeleted = false;
+
+                        // Get ClientId from DTO
+                        var clientIdProp = typeof(TDto).GetProperty("ClientId");
+                        var clientId = clientIdProp?.GetValue(createDto) as string;
+                        entity.ClientId = clientId;
+
+                        _dbContext.Set<TEntity>().Add(entity);
+
+                        // No need to save immediately for Guid - it's already set
+
+                        result.Created.Add(new
+                        {
+                            clientId = clientId,
+                            serverId = newGuid.ToString(),
+                            status = "created"
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        var clientIdProp = typeof(TDto).GetProperty("ClientId");
+                        var clientId = clientIdProp?.GetValue(createDto) as string;
+
+                        result.Errors.Add(new
+                        {
+                            clientId = clientId,
+                            error = ex.Message
+                        });
+                        _logger.LogError($"Error creating {entityTypeName}: {ex.Message}");
+                    }
+                }
+
+                // Process UPDATE operations
+                foreach (var updateDto in changes.Updated)
+                {
+                    try
+                    {
+                        // Parse string Id to Guid
+                        var idProp = typeof(TDto).GetProperty("Id");
+                        var idString = idProp?.GetValue(updateDto) as string;
+
+                        if (string.IsNullOrEmpty(idString) || !Guid.TryParse(idString, out Guid entityId))
+                        {
+                            result.Errors.Add(new { id = idString, error = "Invalid GUID format" });
+                            continue;
+                        }
+
+                        var entity = await _dbContext.Set<TEntity>()
+                            .FirstOrDefaultAsync(e => (Guid)idProperty.GetValue(e)! == entityId);
+
+                        if (entity == null)
+                        {
+                            result.Errors.Add(new { id = idString, error = "Entity not found" });
+                            continue;
+                        }
+
+                        // Conflict detection: Check if server version is newer
+                        var clientVersionProp = typeof(TDto).GetProperty("ClientVersion");
+                        var clientVersion = clientVersionProp?.GetValue(updateDto) as ClientVersionInfo;
+
+                        if (clientVersion != null && entity.UpdatedAt > clientVersion.PreviousUpdatedAt)
+                        {
+                            // Conflict detected - server version is newer
+                            result.Conflicts.Add(new
+                            {
+                                id = idString,
+                                conflict = "version_mismatch",
+                                clientVersion = clientVersion.PreviousUpdatedAt,
+                                serverVersion = entity.UpdatedAt,
+                                resolution = "LAST_WRITE_WINS",
+                                message = "Server version is newer. Client should pull latest data."
+                            });
+                            continue;
+                        }
+
+                        // Map DTO to entity (AutoMapper handles the mapping)
+                        _mapper.Map(updateDto, entity);
+
+                        // UpdatedAt will be set automatically by SaveChangesAsync override
+
+                        result.Updated.Add(new
+                        {
+                            id = idString,
+                            status = "updated",
+                            serverUpdatedAt = DateTime.UtcNow
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        var idProp = typeof(TDto).GetProperty("Id");
+                        var idString = idProp?.GetValue(updateDto) as string;
+
+                        result.Errors.Add(new { id = idString, error = ex.Message });
+                        _logger.LogError($"Error updating {entityTypeName}: {ex.Message}");
+                    }
+                }
+
+                // Process DELETE operations (soft delete)
+                foreach (var deleteDto in changes.Deleted)
+                {
+                    try
+                    {
+                        if (!Guid.TryParse(deleteDto.Id, out Guid entityId))
+                        {
+                            result.Errors.Add(new { id = deleteDto.Id, error = "Invalid GUID format" });
+                            continue;
+                        }
+
+                        var entity = await _dbContext.Set<TEntity>()
+                            .FirstOrDefaultAsync(e => (Guid)idProperty.GetValue(e)! == entityId);
+
+                        if (entity == null)
+                        {
+                            result.Errors.Add(new { id = deleteDto.Id, error = "Entity not found" });
+                            continue;
+                        }
+
+                        // Perform soft delete (SaveChangesAsync will handle this)
+                        _dbContext.Set<TEntity>().Remove(entity);
+
+                        result.Deleted.Add(new
+                        {
+                            id = deleteDto.Id,
+                            status = "deleted"
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        result.Errors.Add(new { id = deleteDto.Id, error = ex.Message });
+                        _logger.LogError($"Error deleting {entityTypeName}: {ex.Message}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error processing {entityTypeName}: {ex.Message}", ex);
+                throw;
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -192,7 +695,7 @@ namespace SmartNeighborhoodAPI.Services
             string clientId,
             Guid serverId)
         {
-   
+
 
             return new
             {
@@ -241,7 +744,7 @@ namespace SmartNeighborhoodAPI.Services
         {
             try
             {
-                IQueryable<dynamic> query = _dbContext.Issues
+                var query = _dbContext.Issues
                     .AsNoTracking()
                     .Where(i => i.UpdatedAt > since);
 
@@ -295,7 +798,7 @@ namespace SmartNeighborhoodAPI.Services
         {
             try
             {
-                IQueryable<dynamic> query = _dbContext.Persons
+                var query = _dbContext.People
                     .AsNoTracking()
                     .Where(p => p.UpdatedAt > since);
 
@@ -343,7 +846,7 @@ namespace SmartNeighborhoodAPI.Services
         {
             try
             {
-                IQueryable<dynamic> query = _dbContext.Families
+                var query = _dbContext.Families
                     .AsNoTracking()
                     .Where(f => f.UpdatedAt > since);
 
@@ -361,7 +864,7 @@ namespace SmartNeighborhoodAPI.Services
                         f.Name,
                         f.Location,
                         f.FamilyNotes,
-                        f.FamilyCategoryId,
+                        f.FamilyCatgoryId,
                         f.HousingType,
                         f.BlockId,
                         f.CreatedAt,

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SmartNeighborhoodAPI;
 
@@ -11,9 +12,11 @@ using SmartNeighborhoodAPI;
 namespace SmartNeighborhoodAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260217023257_AddSyncDataForIssueAndPerson")]
+    partial class AddSyncDataForIssueAndPerson
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -253,27 +256,12 @@ namespace SmartNeighborhoodAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ClientId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ResidentialUnitId")
                         .HasColumnType("int");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -313,29 +301,17 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.Property<int?>("BlockId")
                         .HasColumnType("int");
 
-                    b.Property<string>("ClientId")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int?>("ConfilctTypeId")
                         .HasColumnType("int");
 
                     b.Property<int>("ConflictTypeId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("FirstPartyId")
                         .HasColumnType("int");
 
                     b.Property<string>("ImagePath")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
 
                     b.Property<bool>("IsResolved")
                         .HasColumnType("bit");
@@ -355,9 +331,6 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -471,29 +444,14 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ClientId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<int>("FamilyId")
                         .HasColumnType("int");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
 
                     b.Property<int>("MemberFamilyRoleId")
                         .HasColumnType("int");
 
                     b.Property<int>("PersonId")
                         .HasColumnType("int");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -689,23 +647,11 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.Property<double?>("Budget")
                         .HasColumnType("float");
 
-                    b.Property<string>("ClientId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
 
                     b.Property<int?>("ManagerId")
                         .HasColumnType("int");
@@ -727,9 +673,6 @@ namespace SmartNeighborhoodAPI.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
@@ -978,17 +921,17 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "736391b3-d174-464f-904e-fc972b221c01",
+                            ConcurrencyStamp = "3f219730-2212-41d2-93a3-7b2247416062",
                             Email = "sys.smartneighborhood@gmail.com",
                             EmailConfirmed = true,
                             IsActive = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "SYS.SMARTNEIGHBORHOOD@GMAIL.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEHCdl7+g1d4uuDUP8S6O4lE36MDkTJiOSFM22dUMrl5eqchBYJtXUzvzkcHwezl8gg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEA3PNwYjKbu3XZYWh74otmjZ0H5U64NscjRQzcRBtFuBV46lqFNA3otg+A4SJ2vP4g==",
                             PersonId = 1,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "0b407601-d9fc-48d2-b20a-96187fd0a87e",
+                            SecurityStamp = "756b1956-3636-42da-bb25-9838a57feed6",
                             TwoFactorEnabled = false,
                             UserName = "Admin"
                         },
@@ -996,17 +939,17 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "9db32ab6-bb52-4728-98d2-98b2c92438e0",
+                            ConcurrencyStamp = "c3b2cf94-a672-42cb-a6c6-8624cf1e3497",
                             Email = "block.manager@local",
                             EmailConfirmed = true,
                             IsActive = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "BLOCK.MANAGER@LOCAL",
                             NormalizedUserName = "BLOCKMANAGER",
-                            PasswordHash = "AQAAAAIAAYagAAAAEGmZL7Dd1jxetDNoK2y2GsUDoVCl3DBqiPB1W2IgRhiYo5wZr+E60jt76JhEWaQH9A==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEBCBbanmnpPiqyRjWZRhHT+6fnJ82EGd/ZE/GuZZlnmy/JEleRhTaWmswn6WwNXkaA==",
                             PersonId = 2,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "8d93e605-57e5-4bad-a0fb-f9ee6800c969",
+                            SecurityStamp = "bfb41145-3207-420e-99d3-4cee58cd7ab7",
                             TwoFactorEnabled = false,
                             UserName = "BlockManager"
                         },
@@ -1014,17 +957,17 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = "cccccccc-cccc-cccc-cccc-cccccccccccc",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "cb5b7420-2a1f-4da7-942b-4f10d5a4b2bf",
+                            ConcurrencyStamp = "0852f726-0235-490a-bc70-8de393c668ce",
                             Email = "unit.manager@local",
                             EmailConfirmed = true,
                             IsActive = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "UNIT.MANAGER@LOCAL",
                             NormalizedUserName = "UNITMANAGER",
-                            PasswordHash = "AQAAAAIAAYagAAAAEPR8J0riO2YeNAUssPTU00bo/eYiyl2f+FegsrOP9q3yrZd2B/PciV0hYKNY3fS95w==",
+                            PasswordHash = "AQAAAAIAAYagAAAAELPVYI88sX3GH8WnCwjOWiuaA+cmgyoKHif1Hy0cghzqCkEv5dOpBBiq5O7LvlxreQ==",
                             PersonId = 3,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "6c951fda-dc05-4e36-89e4-8ebf821064b3",
+                            SecurityStamp = "e14c2ca7-c405-4d10-bc72-45e55534827c",
                             TwoFactorEnabled = false,
                             UserName = "UnitManager"
                         },
@@ -1032,17 +975,17 @@ namespace SmartNeighborhoodAPI.Migrations
                         {
                             Id = "dddddddd-dddd-dddd-dddd-dddddddddddd",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "5b242d81-b666-4b5f-ac9e-794a5c47b6f5",
+                            ConcurrencyStamp = "10055aee-40c8-419a-aec4-bfc5750f02ea",
                             Email = "rn.manager@local",
                             EmailConfirmed = true,
                             IsActive = false,
                             LockoutEnabled = false,
                             NormalizedEmail = "RN.MANAGER@LOCAL",
                             NormalizedUserName = "RESIDENTIALNEIGHBORHOODMANAGER",
-                            PasswordHash = "AQAAAAIAAYagAAAAEBn80/dXffldeZzqN+HzcINcKRMzGTALLgyYVoG/jOMsPo3rXUD9CvUy7qM+YSN29A==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEKLsNCYShylnKoUSnX5syq2jAXfO1eqN7wG/XIkfI3lYjwMeBgV9jKa7+cSMTJ7YCw==",
                             PersonId = 4,
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "a23a6d0f-ac87-4c20-80b8-95a3fb61aaa7",
+                            SecurityStamp = "ed3820a6-5b3d-486e-a1bb-e021da781736",
                             TwoFactorEnabled = false,
                             UserName = "ResidentialNeighborhoodManager"
                         });
@@ -1205,18 +1148,6 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ClientId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -1225,9 +1156,6 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.Property<string>("NeighborhoodManagerId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -1248,18 +1176,6 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("ClientId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -1270,9 +1186,6 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.Property<string>("UnitManagerId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
