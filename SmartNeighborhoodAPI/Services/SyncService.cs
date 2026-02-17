@@ -87,6 +87,7 @@ namespace SmartNeighborhoodAPI.Services
         /// <summary>
         /// Master method: Opens a transaction, processes all entity types, and commits.
         /// Implements the "Dual-Generic Processor Strategy" to handle mixed ID types.
+        /// Uses Reflection to dynamically process all entity types in SyncChanges.
         /// </summary>
         public async Task<SyncPushResponse> PushChangesAsync(
             SyncPushRequest request,
@@ -106,50 +107,8 @@ namespace SmartNeighborhoodAPI.Services
                         Results = new Dictionary<string, SyncResultDetails>()
                     };
 
-                    // Process entities with INT primary keys
-                    // Person (Int)
-                    if (request.Changes.Persons != null)
-                    {
-                        var personResult = await ProcessIntEntitiesAsync<Person, PersonChangeDto>(
-                            request.Changes.Persons,
-                            "persons",
-                            userId);
-                        response.Results["persons"] = personResult;
-                    }
-
-                    // Family (Int)
-                    if (request.Changes.Families != null)
-                    {
-                        var familyResult = await ProcessIntEntitiesAsync<Family, FamilyChangeDto>(
-                            request.Changes.Families,
-                            "families",
-                            userId);
-                        response.Results["families"] = familyResult;
-                    }
-
-                    // TODO: Add future int-based entities here
-                    // Example: FamilyMember (Int), Block (Int), etc.
-                    // if (request.Changes.FamilyMembers != null)
-                    // {
-                    //     var familyMemberResult = await ProcessIntEntitiesAsync<FamilyMember, FamilyMemberChangeDto>(
-                    //         request.Changes.FamilyMembers,
-                    //         "familymembers",
-                    //         userId);
-                    //     response.Results["familymembers"] = familyMemberResult;
-                    // }
-
-                    // Process entities with GUID primary keys
-                    // Issue (Guid)
-                    if (request.Changes.Issues != null)
-                    {
-                        var issueResult = await ProcessGuidEntitiesAsync<Issue, IssueChangeDto>(
-                            request.Changes.Issues,
-                            "issues",
-                            userId);
-                        response.Results["issues"] = issueResult;
-                    }
-
-                    // TODO: Add future Guid-based entities here
+                    // Use reflection to dynamically process all properties in SyncChanges
+                    await ProcessAllEntitiesDynamicallyAsync(request.Changes, userId, response);
 
                     // Calculate summary
                     response.TotalProcessed = response.Results.Values
@@ -180,6 +139,138 @@ namespace SmartNeighborhoodAPI.Services
                     await transaction.RollbackAsync();
                     _logger.LogError($"Error in PushChangesAsync: {ex.Message}", ex);
                     throw;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Dynamically processes all entity types in SyncChanges using Reflection.
+        /// Iterates through all properties, derives entity names, discovers types,
+        /// and invokes the correct processing method based on the ID type (int or Guid).
+        /// </summary>
+        private async Task ProcessAllEntitiesDynamicallyAsync(
+            SyncChanges changes,
+            string userId,
+            SyncPushResponse response)
+        {
+            // Get all properties from SyncChanges
+            var syncChangesType = typeof(SyncChanges);
+            var properties = syncChangesType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+            foreach (var property in properties)
+            {
+                // Get the property value (EntityChanges<TDto>)
+                var entityChangesValue = property.GetValue(changes);
+
+                // Skip if null (no changes for this entity type)
+                if (entityChangesValue == null)
+                    continue;
+
+                try
+                {
+                    // Get the generic type argument (TDto) from EntityChanges<TDto>
+                    var propertyType = property.PropertyType;
+                    if (!propertyType.IsGenericType ||
+                        propertyType.GetGenericTypeDefinition() != typeof(EntityChanges<>))
+                    {
+                        _logger.LogWarning($"Property {property.Name} is not of type EntityChanges<T>");
+                        continue;
+                    }
+
+                    var dtoType = propertyType.GetGenericArguments()[0];
+
+                    // Derive entity name from DTO name by removing "ChangeDto" suffix
+                    var dtoTypeName = dtoType.Name;
+                    if (!dtoTypeName.EndsWith("ChangeDto"))
+                    {
+                        _logger.LogWarning($"DTO type {dtoTypeName} does not follow naming convention (should end with 'ChangeDto')");
+                        continue;
+                    }
+
+                    var entityName = dtoTypeName.Substring(0, dtoTypeName.Length - "ChangeDto".Length);
+                    var entityTypeNameLower = property.Name.ToLowerInvariant();
+
+                    // Find the entity type in all loaded assemblies
+                    // Search in both OurProjectSmartNeiborhood.Entites and SmartNeighborhoodAPI.Entites namespaces
+                    var assemblies = new[]
+                    {
+                        Assembly.GetExecutingAssembly(),
+                        typeof(Person).Assembly,
+                        typeof(Issue).Assembly
+                    }.Distinct();
+
+                    Type? entityType = null;
+                    foreach (var assembly in assemblies)
+                    {
+                        entityType = assembly.GetTypes()
+                            .FirstOrDefault(t => t.Name.Equals(entityName, StringComparison.OrdinalIgnoreCase) &&
+                                                t.IsClass && !t.IsAbstract &&
+                                                typeof(ISyncable).IsAssignableFrom(t));
+
+                        if (entityType != null)
+                            break;
+                    }
+
+                    if (entityType == null)
+                    {
+                        _logger.LogWarning($"Entity type '{entityName}' not found in any loaded assembly");
+                        continue;
+                    }
+
+                    // Validate that entity implements ISyncable (redundant check, but kept for clarity)
+                    if (!typeof(ISyncable).IsAssignableFrom(entityType))
+                    {
+                        _logger.LogWarning($"Entity type '{entityName}' does not implement ISyncable");
+                        continue;
+                    }
+
+                    // Get the Id property to determine the ID type
+                    var idProperty = entityType.GetProperty("Id");
+                    if (idProperty == null)
+                    {
+                        _logger.LogWarning($"Entity type '{entityName}' does not have an 'Id' property");
+                        continue;
+                    }
+
+                    var idType = idProperty.PropertyType;
+
+                    // Determine which processor method to invoke based on ID type
+                    MethodInfo processorMethod;
+                    if (idType == typeof(int))
+                    {
+                        processorMethod = GetType()
+                            .GetMethod(nameof(ProcessIntEntitiesAsync), BindingFlags.NonPublic | BindingFlags.Instance)!;
+                    }
+                    else if (idType == typeof(Guid))
+                    {
+                        processorMethod = GetType()
+                            .GetMethod(nameof(ProcessGuidEntitiesAsync), BindingFlags.NonPublic | BindingFlags.Instance)!;
+                    }
+                    else
+                    {
+                        _logger.LogWarning($"Entity type '{entityName}' has unsupported Id type: {idType.Name}");
+                        continue;
+                    }
+
+                    // Make the generic method with TEntity and TDto
+                    var genericMethod = processorMethod.MakeGenericMethod(entityType, dtoType);
+
+                    // Invoke the method dynamically
+                    var resultTask = (Task<SyncResultDetails>)genericMethod.Invoke(
+                        this,
+                        new object[] { entityChangesValue, entityTypeNameLower, userId })!;
+
+                    var result = await resultTask;
+
+                    // Add result to response
+                    response.Results[entityTypeNameLower] = result;
+
+                    _logger.LogInformation($"Successfully processed {entityName} entities using reflection");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Error processing property {property.Name}: {ex.Message}", ex);
+                    // Continue processing other entities instead of failing completely
                 }
             }
         }
