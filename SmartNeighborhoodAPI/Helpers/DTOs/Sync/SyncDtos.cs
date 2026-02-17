@@ -278,11 +278,19 @@ namespace SmartNeighborhoodAPI.Helpers.DTOs.Sync
     }
 
     // DTO classes for specific entity changes
+    // All DTOs use string? Id to handle both int and Guid primary keys from mobile clients
 
+    /// <summary>
+    /// Issue change DTO - supports Guid primary key
+    /// </summary>
     public class IssueChangeDto
     {
+        // Id can be null for create operations, or string representation of Guid for update/delete
         public string? Id { get; set; }
+
+        // ClientId is used for mapping new offline records
         public string? ClientId { get; set; }
+
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public string Category { get; set; } = string.Empty;
@@ -295,24 +303,53 @@ namespace SmartNeighborhoodAPI.Helpers.DTOs.Sync
         public ClientVersionInfo? ClientVersion { get; set; }
     }
 
+    /// <summary>
+    /// Person change DTO - supports int primary key
+    /// </summary>
     public class PersonChangeDto
     {
+        // Id can be null for create operations, or string representation of int for update/delete
         public string? Id { get; set; }
+
+        // ClientId is used for mapping new offline records
         public string? ClientId { get; set; }
+
         public string FirstName { get; set; } = string.Empty;
+        public string SecondName { get; set; } = string.Empty;
+        public string ThirdName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public string? PhoneNumber { get; set; }
+        public bool? IsWhatsapp { get; set; }
+        public bool? IsContactNumber { get; set; }
+        public DateTime? DateOfBirth { get; set; }
         public string? Gender { get; set; }
         public string? BloodType { get; set; }
+        public string? MaritalStatus { get; set; }
+        public string? OccupationStatus { get; set; }
+        public string? PersonType { get; set; }
+        public string? Job { get; set; }
+        public string? NationalId { get; set; }
+        public string? VehicleType { get; set; }
+        public string? VehicleRegistrationNumber { get; set; }
+        public string? ResidencyStatus { get; set; }
+        public bool? HasChronicDiseases { get; set; }
+        public string? ChronicDiseasesNotes { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public ClientVersionInfo? ClientVersion { get; set; }
     }
 
+    /// <summary>
+    /// Family change DTO - supports int primary key
+    /// </summary>
     public class FamilyChangeDto
     {
+        // Id can be null for create operations, or string representation of int for update/delete
         public string? Id { get; set; }
+
+        // ClientId is used for mapping new offline records
         public string? ClientId { get; set; }
+
         public string Name { get; set; } = string.Empty;
         public string Location { get; set; } = string.Empty;
         public string? FamilyNotes { get; set; }
