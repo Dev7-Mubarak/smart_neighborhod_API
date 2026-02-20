@@ -30,6 +30,7 @@ namespace OurProjectSmartNeiborhood.Services
             _imageService = imageService;
             _logger = logger;
             _userContextService = userContextService;
+            _userManager = userManager;
         }
 
         public async Task<ApiResponse<Person>> AddAsync(CreatePersonDto dto)

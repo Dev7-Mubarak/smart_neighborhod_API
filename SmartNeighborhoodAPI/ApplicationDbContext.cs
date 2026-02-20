@@ -53,8 +53,9 @@ namespace SmartNeighborhoodAPI
                 .HasForeignKey<Block>(b => b.BlockManagerId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-
-
+            // it must be in PersonConfiguration  , we will refactor it later
+            builder.Entity<Person>()
+                .HasQueryFilter(p => !p.IsDeleted);
 
             builder.Entity<ProjectBlock>()
                 .HasKey(pb => new { pb.ProjectId, pb.BlockId });

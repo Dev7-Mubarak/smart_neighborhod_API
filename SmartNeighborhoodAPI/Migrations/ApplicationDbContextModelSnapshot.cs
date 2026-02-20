@@ -34,7 +34,7 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     b.HasIndex("GroupsId");
 
-                    b.ToTable("AdGroup");
+                    b.ToTable("AdGroup", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -238,7 +238,7 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Ads");
+                    b.ToTable("Ads", (string)null);
                 });
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.Block", b =>
@@ -282,7 +282,7 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     b.HasIndex("ResidentialUnitId");
 
-                    b.ToTable("Blocks");
+                    b.ToTable("Blocks", (string)null);
                 });
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.ConfilctType", b =>
@@ -299,7 +299,7 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ConfilctTypes");
+                    b.ToTable("ConfilctTypes", (string)null);
                 });
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.ConflictCase", b =>
@@ -425,7 +425,7 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     b.HasIndex("FamilyCatgoryId");
 
-                    b.ToTable("Families");
+                    b.ToTable("Families", (string)null);
                 });
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.FamilyCatgory", b =>
@@ -443,7 +443,7 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("FamilyCatgories");
+                    b.ToTable("FamilyCatgories", (string)null);
 
                     b.HasData(
                         new
@@ -503,7 +503,7 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     b.HasIndex("PersonId");
 
-                    b.ToTable("FamilyMembers");
+                    b.ToTable("FamilyMembers", (string)null);
                 });
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.Group", b =>
@@ -520,7 +520,7 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Groups");
+                    b.ToTable("Groups", (string)null);
                 });
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.MemberFamilyRole", b =>
@@ -538,7 +538,7 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MemberFamilyRoles");
+                    b.ToTable("MemberFamilyRoles", (string)null);
 
                     b.HasData(
                         new
@@ -675,7 +675,7 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("People");
+                    b.ToTable("People", (string)null);
                 });
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.Project", b =>
@@ -738,7 +738,7 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     b.HasIndex("ProjectCatogoryId");
 
-                    b.ToTable("Projects");
+                    b.ToTable("Projects", (string)null);
                 });
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.ProjectCatogory", b =>
@@ -764,7 +764,7 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("ProjectCatogories");
+                    b.ToTable("ProjectCatogories", (string)null);
 
                     b.HasData(
                         new
@@ -816,7 +816,7 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     b.HasIndex("ProjectID");
 
-                    b.ToTable("ProjectFamilies");
+                    b.ToTable("ProjectFamilies", (string)null);
                 });
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.Team", b =>
@@ -860,7 +860,7 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Teams");
+                    b.ToTable("Teams", (string)null);
                 });
 
             modelBuilder.Entity("OurProjectSmartNeiborhood.Entites.TeamMember", b =>
@@ -891,7 +891,7 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     b.HasIndex("TeamRoleId");
 
-                    b.ToTable("TeamMembers");
+                    b.ToTable("TeamMembers", (string)null);
                 });
 
             modelBuilder.Entity("SmartNeighborhoodAPI.Entites.AppUser", b =>
@@ -1062,7 +1062,7 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GovernmentInstitutions");
+                    b.ToTable("GovernmentInstitutions", (string)null);
                 });
 
             modelBuilder.Entity("SmartNeighborhoodAPI.Entites.GovernmentInstitutionContact", b =>
@@ -1091,7 +1091,7 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     b.HasIndex("GovernmentInstitutionId");
 
-                    b.ToTable("GovernmentInstitutionContacts");
+                    b.ToTable("GovernmentInstitutionContacts", (string)null);
                 });
 
             modelBuilder.Entity("SmartNeighborhoodAPI.Entites.Issue", b =>
@@ -1156,7 +1156,7 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     b.HasIndex("ReporterId");
 
-                    b.ToTable("Issues");
+                    b.ToTable("Issues", (string)null);
                 });
 
             modelBuilder.Entity("SmartNeighborhoodAPI.Entites.ProjectBlock", b =>
@@ -1171,7 +1171,7 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     b.HasIndex("BlockId");
 
-                    b.ToTable("ProjectBlock");
+                    b.ToTable("ProjectBlock", (string)null);
                 });
 
             modelBuilder.Entity("SmartNeighborhoodAPI.Entites.ProjectTeam", b =>
@@ -1194,7 +1194,7 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     b.HasIndex("TeamId");
 
-                    b.ToTable("ProjectTeams");
+                    b.ToTable("ProjectTeams", (string)null);
                 });
 
             modelBuilder.Entity("SmartNeighborhoodAPI.Entites.ResidentialNeighborhood", b =>
@@ -1237,7 +1237,7 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasIndex("NeighborhoodManagerId")
                         .IsUnique();
 
-                    b.ToTable("ResidentialNeighborhoods");
+                    b.ToTable("ResidentialNeighborhoods", (string)null);
                 });
 
             modelBuilder.Entity("SmartNeighborhoodAPI.Entites.ResidentialUnit", b =>
@@ -1281,7 +1281,7 @@ namespace SmartNeighborhoodAPI.Migrations
                     b.HasIndex("UnitManagerId")
                         .IsUnique();
 
-                    b.ToTable("ResidentialUnits");
+                    b.ToTable("ResidentialUnits", (string)null);
                 });
 
             modelBuilder.Entity("SmartNeighborhoodAPI.Entites.TeamRole", b =>
@@ -1298,7 +1298,7 @@ namespace SmartNeighborhoodAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TeamRoles");
+                    b.ToTable("TeamRoles", (string)null);
 
                     b.HasData(
                         new

@@ -51,6 +51,8 @@ namespace OurProjectSmartNeiborhood.Configuration
             builder.Property(p => p.Job)
                 .HasMaxLength(30);
 
+            builder.HasQueryFilter(d => !d.IsDeleted);
+
             // Seed moved to PersonSeedConfiguration.cs to avoid duplicate Id conflicts
             // builder.HasData(...) removed here intentionally
             
