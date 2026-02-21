@@ -31,7 +31,9 @@ namespace SmartNeighborhoodAPI
             builder.ApplyConfiguration(new ProjectCatgoryEntityTypeConfiguration());
             builder.ApplyConfiguration(new ResidentialNeighborhoodConfiguration());
             builder.ApplyConfiguration(new ConflictCaseConfiguration());
+
             builder.ApplyConfiguration(new IssueEntityTypeConfiguration());
+
 
             base.OnModelCreating(builder);
 

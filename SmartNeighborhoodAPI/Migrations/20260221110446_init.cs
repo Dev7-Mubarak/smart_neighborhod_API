@@ -133,7 +133,12 @@ namespace SmartNeighborhoodAPI.Migrations
                     VehicleRegistrationNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     ResidencyStatus = table.Column<int>(type: "int", nullable: true),
                     HasChronicDiseases = table.Column<bool>(type: "bit", nullable: true),
-                    ChronicDiseasesNotes = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true)
+                    ChronicDiseasesNotes = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ClientId = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -173,7 +178,15 @@ namespace SmartNeighborhoodAPI.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    SyncStatus = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    ClientId = table.Column<string>(type: "nvarchar(36)", maxLength: 36, nullable: true),
+                    LastSyncedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ConflictResolution = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -274,7 +287,7 @@ namespace SmartNeighborhoodAPI.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-              
+
                 });
 
             migrationBuilder.CreateTable(
@@ -411,7 +424,10 @@ namespace SmartNeighborhoodAPI.Migrations
                     Attachments = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ResolvedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    ResolvedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ClientId = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -445,7 +461,12 @@ namespace SmartNeighborhoodAPI.Migrations
                     Budget = table.Column<double>(type: "float", nullable: true),
                     ProjectPriority = table.Column<int>(type: "int", nullable: false),
                     ManagerId = table.Column<int>(type: "int", nullable: true),
-                    ManagerId1 = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    ManagerId1 = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ClientId = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -470,7 +491,12 @@ namespace SmartNeighborhoodAPI.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    NeighborhoodManagerId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    NeighborhoodManagerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ClientId = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -517,7 +543,12 @@ namespace SmartNeighborhoodAPI.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ResidentialNeighborhoodId = table.Column<int>(type: "int", nullable: false),
-                    UnitManagerId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    UnitManagerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ClientId = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -544,7 +575,12 @@ namespace SmartNeighborhoodAPI.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ResidentialUnitId = table.Column<int>(type: "int", nullable: false),
-                    BlockManagerId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    BlockManagerId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ClientId = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -574,7 +610,12 @@ namespace SmartNeighborhoodAPI.Migrations
                     FamilyNotes = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     FamilyCatgoryId = table.Column<int>(type: "int", nullable: false),
                     HousingType = table.Column<int>(type: "int", nullable: false),
-                    BlockId = table.Column<int>(type: "int", nullable: false)
+                    BlockId = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ClientId = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -624,7 +665,12 @@ namespace SmartNeighborhoodAPI.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PersonId = table.Column<int>(type: "int", nullable: false),
                     FamilyId = table.Column<int>(type: "int", nullable: false),
-                    MemberFamilyRoleId = table.Column<int>(type: "int", nullable: false)
+                    MemberFamilyRoleId = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ClientId = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -692,6 +738,11 @@ namespace SmartNeighborhoodAPI.Migrations
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     BlockId = table.Column<int>(type: "int", nullable: true),
                     ManagerId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ClientId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ConfilctTypeId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
@@ -750,10 +801,10 @@ namespace SmartNeighborhoodAPI.Migrations
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmationCode", "EmailConfirmationCodeExpiresAt", "EmailConfirmed", "IsActive", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PersonId", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
                 values: new object[,]
                 {
-                    { "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", 0, "6c89bfaf-211c-4009-a8cb-cd7b75dd7feb", "sys.smartneighborhood@gmail.com", null, null, true, false, false, null, "SYS.SMARTNEIGHBORHOOD@GMAIL.COM", "ADMIN", "AQAAAAIAAYagAAAAENZX7hRXfko+fcAU1jFRDT8za2PKfJ5k//niB70kx8Ny332SUmd/44jMuMRg4faOGQ==", 1, null, false, "8e86b6a4-6a1f-4d5a-b10f-38a3fcb23c86", false, "Admin" },
-                    { "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb", 0, "fb81d958-7f5e-4ab6-a593-fb1528a467f3", "block.manager@local", null, null, true, false, false, null, "BLOCK.MANAGER@LOCAL", "BLOCKMANAGER", "AQAAAAIAAYagAAAAENDqW8LpwPqhicMTW1svWF1ek9uF03rYzh6nsaHRmVWjVGICRm4zxZrsjvDIi0mX8Q==", 2, null, false, "61f596a8-4aef-404d-9699-f348a4a5aadd", false, "BlockManager" },
-                    { "cccccccc-cccc-cccc-cccc-cccccccccccc", 0, "092d80b8-a1ec-4cb7-9fb8-e1c685d83f28", "unit.manager@local", null, null, true, false, false, null, "UNIT.MANAGER@LOCAL", "UNITMANAGER", "AQAAAAIAAYagAAAAEM6IEJIBfafCzVxEhQy+Sh3wqz6SDo0sttxy5Ur574o578I1Tl/uuEHqVAiBZhhnkA==", 3, null, false, "ae25c687-bc80-4cd4-9a64-36673a0a2124", false, "UnitManager" },
-                    { "dddddddd-dddd-dddd-dddd-dddddddddddd", 0, "149dd9bf-bf95-4591-b6a0-5529609b45db", "rn.manager@local", null, null, true, false, false, null, "RN.MANAGER@LOCAL", "RESIDENTIALNEIGHBORHOODMANAGER", "AQAAAAIAAYagAAAAEP1TO81k/kSkSmHc/1rTaMGLhFIaB9xrEvnl/plNPbqGcBnbwPBnV7su83x+kzjQvA==", 4, null, false, "d4160704-30aa-46c2-a155-bc7d5726667a", false, "ResidentialNeighborhoodManager" }
+                    { "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", 0, "edf5c63b-adb3-4ee2-aa29-14520897630b", "sys.smartneighborhood@gmail.com", null, null, true, false, false, null, "SYS.SMARTNEIGHBORHOOD@GMAIL.COM", "ADMIN", "AQAAAAIAAYagAAAAEM3r4tLTvsopgFbrc6Bh5qLbisYVG7K31uVVKyyQ0rrqI32oQmZLmLRrk70miKZZEA==", 1, null, false, "ff8c0970-1ac5-459d-bf71-6d28c34e2155", false, "Admin" },
+                    { "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb", 0, "e3ab3acc-ff83-420f-82b8-32ef71cf15de", "block.manager@local", null, null, true, false, false, null, "BLOCK.MANAGER@LOCAL", "BLOCKMANAGER", "AQAAAAIAAYagAAAAELTZVM8Hz1YaJEYOvlWSs4ERWbAZJ2AKss8N9toXn2ksk2pKA6JspToIxYlEye542g==", 2, null, false, "8096bac0-be95-4a60-bff6-2c68539610df", false, "BlockManager" },
+                    { "cccccccc-cccc-cccc-cccc-cccccccccccc", 0, "89cb1568-f95b-4c28-96f0-b4a643e682ca", "unit.manager@local", null, null, true, false, false, null, "UNIT.MANAGER@LOCAL", "UNITMANAGER", "AQAAAAIAAYagAAAAEHquJt5Vg45sprAhL/hc72GxXCLOM089xHJvz5V5uR0Y/KS+XKuxgW63cW0SJyJMZw==", 3, null, false, "62b53589-2b2e-45b1-85cb-5c32f6e8b88b", false, "UnitManager" },
+                    { "dddddddd-dddd-dddd-dddd-dddddddddddd", 0, "d907e33c-16e1-41fc-999d-e70ed7b87e70", "rn.manager@local", null, null, true, false, false, null, "RN.MANAGER@LOCAL", "RESIDENTIALNEIGHBORHOODMANAGER", "AQAAAAIAAYagAAAAEINyP1bIcw4zyraYuWyXvYkpYp+xCuE8xnvtL/HOfPnAJEDWlSdDdJzQc6ylH1CEpw==", 4, null, false, "b396c000-9ed5-43c2-961b-ab3177e49913", false, "ResidentialNeighborhoodManager" }
                 });
 
             migrationBuilder.InsertData(
