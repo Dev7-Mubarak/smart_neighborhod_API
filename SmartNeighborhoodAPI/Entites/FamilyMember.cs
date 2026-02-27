@@ -1,9 +1,8 @@
 ﻿using System.Text.Json.Serialization;
-using SmartNeighborhoodAPI.Interfaces;
 
 namespace OurProjectSmartNeiborhood.Entites
 {
-    public class FamilyMember : ISyncable
+    public class FamilyMember
     {
         public int Id { get; set; }
 
@@ -21,13 +20,6 @@ namespace OurProjectSmartNeiborhood.Entites
         [JsonIgnore]
         public ICollection<ConflictCase> FirstPartyConflictCases { get; set; }
         public ICollection<ConflictCase> SecondPartyConflictCases { get; set; }
-
-        // ISyncable implementation
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-        public bool IsDeleted { get; set; } = false;
-        public DateTime? DeletedAt { get; set; }
-        public string? ClientId { get; set; }
     }
 
 }

@@ -49,9 +49,10 @@ namespace SmartNeighborhoodAPI.Services
                 var descending = sortOrder?.ToLower() == "desc";
                 query = sortBy.ToLower() switch
                 {
-                    "createdat" => descending ? query.OrderByDescending(i => i.CreatedAt) : query.OrderBy(i => i.CreatedAt),
-                    "updatedat" => descending ? query.OrderByDescending(i => i.UpdatedAt) : query.OrderBy(i => i.UpdatedAt),
-                    _ => query.OrderBy(i => i.CreatedAt),
+                    "title" => descending ? query.OrderByDescending(i => i.Title) : query.OrderBy(i => i.Title),
+                    "priority" => descending ? query.OrderByDescending(i => i.Priority) : query.OrderBy(i => i.Priority),
+                    "status" => descending ? query.OrderByDescending(i => i.Status) : query.OrderBy(i => i.Status),
+                    _ => query.OrderBy(i => i.Id),
                 };
             }
 
@@ -96,7 +97,6 @@ namespace SmartNeighborhoodAPI.Services
             }
 
             _mapper.Map(updateIssueDto, issue);
-            issue.UpdatedAt = DateTime.UtcNow;
 
             if (updateIssueDto.Status?.ToLower() == "resolved")
             {

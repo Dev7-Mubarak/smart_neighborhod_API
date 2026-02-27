@@ -15,8 +15,6 @@ namespace SmartNeighborhoodAPI.Helpers.DTOs.Issue
         public string ReporterId { get; set; }
         public string? AssigneeId { get; set; }
         public List<string> Attachments { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
         public DateTime? ResolvedAt { get; set; }
     }
 }

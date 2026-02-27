@@ -1,10 +1,9 @@
 ﻿using SmartNeighborhoodAPI.Entites;
 using SmartNeighborhoodAPI.Entites.Enums;
-using SmartNeighborhoodAPI.Interfaces;
 
 namespace OurProjectSmartNeiborhood.Entites
 {
-    public class Project : ISyncable
+    public class Project
     {
         public int Id { get; set; }
         public string Name { get; set; }
@@ -22,12 +21,5 @@ namespace OurProjectSmartNeiborhood.Entites
         public ICollection<ProjectTeam> ProjectTeams { get; set; }
         public ICollection<ProjectFamily> ProjectFamilies { get; set; }
         public ICollection<ProjectBlock> ProjectBlocks { get; set; } = new List<ProjectBlock>();
-
-        // ISyncable implementation
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-        public bool IsDeleted { get; set; } = false;
-        public DateTime? DeletedAt { get; set; }
-        public string? ClientId { get; set; }
     }
 }

@@ -67,7 +67,7 @@ builder.Services.AddScoped<MemberFamilyRoleService>();
 builder.Services.AddScoped<BlockServices>();
 builder.Services.AddScoped<ImageService>();
 builder.Services.AddScoped<ConflictCaseService>();
-builder.Services.AddScoped<IConflictTypeService,ConflictTypeService>();
+builder.Services.AddScoped<IConflictTypeService, ConflictTypeService>();
 builder.Services.AddScoped<ProjectCatgoryService>();
 builder.Services.AddScoped<ProjectService>();
 builder.Services.AddScoped<ProjectFamilieservice>();
@@ -83,7 +83,6 @@ builder.Services.AddScoped<IResidentialNeighborhoodService, ResidentialNeighborh
 builder.Services.AddScoped<ResidentialUnitService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IIssueService, IssueService>();
-builder.Services.AddScoped<ISyncService, SyncService>();
 
 
 
@@ -181,7 +180,7 @@ builder.Services.AddControllers()
             options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
             options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
         });
-        
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {

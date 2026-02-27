@@ -1,9 +1,8 @@
 using SmartNeighborhoodAPI.Helpers.DTOs.ResidentialNeighborhood;
-using SmartNeighborhoodAPI.Interfaces;
 
 namespace SmartNeighborhoodAPI.Entites
 {
-    public class ResidentialNeighborhood : ISyncable
+    public class ResidentialNeighborhood
     {
         public int Id { get; set; }
 
@@ -14,13 +13,6 @@ namespace SmartNeighborhoodAPI.Entites
 
         public ICollection<ResidentialUnit> ResidentialUnits { get; set; }
             = new List<ResidentialUnit>();
-
-        // ISyncable implementation
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
-        public bool IsDeleted { get; set; } = false;
-        public DateTime? DeletedAt { get; set; }
-        public string? ClientId { get; set; }
 
         // Factory → DTO
         public ReturnResidentialNeighborhoodDto ToDto()
