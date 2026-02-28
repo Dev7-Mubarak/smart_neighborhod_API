@@ -6,6 +6,7 @@ using SmartNeighborhoodAPI.Interfaces;
 using SmartNeighborhoodAPI.Services.Factories;
 using SmartNeighborhoodAPI.Services.IssueStatusHandlers;
 using SmartNeighborhoodAPI.Services.Notifications;
+using SmartNeighborhoodAPI.Services.ReportGenerators;
 using System;
 using System.Net;
 using System.Text;
@@ -22,6 +23,7 @@ namespace SmartNeighborhoodAPI
             services.AddRateLimiting();
             services.AddIssueStatusHandlers();
             services.AddNotifications();
+            services.AddReportGenerators();
 
             return services;
         }
@@ -42,6 +44,15 @@ namespace SmartNeighborhoodAPI
             services.AddTransient<EmailNotificationSender>();
             services.AddTransient<InAppNotificationSender>();
             services.AddSingleton<INotificationFactory, NotificationFactory>();
+            return services;
+        }
+
+        public static IServiceCollection AddReportGenerators(this IServiceCollection services)
+        {
+            services.AddTransient<PdfReportGenerator>();
+            services.AddTransient<ExcelReportGenerator>();
+            services.AddTransient<CsvReportGenerator>();
+            services.AddScoped<IReportGeneratorFactory, ReportGeneratorFactory>();
             return services;
         }
 
