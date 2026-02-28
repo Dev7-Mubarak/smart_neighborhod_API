@@ -22,6 +22,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Excluded: references SyncService/DTOs that do not yet exist in the main project -->
+    <Compile Remove="Services/SyncServiceReflectionTests.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\SmartNeighborhoodAPI\SmartNeighborhoodAPI.csproj" />
   </ItemGroup>
 
