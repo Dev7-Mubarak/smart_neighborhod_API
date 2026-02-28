@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using SmartNeighborhoodAPI.Interfaces;
+using SmartNeighborhoodAPI.Services.IssueStatusHandlers;
 using System;
 using System.Net;
 using System.Text;
@@ -16,12 +18,18 @@ namespace SmartNeighborhoodAPI
         public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddRateLimiting();
+            services.AddIssueStatusHandlers();
 
-               
-                  
-        
+            return services;
+        }
 
-
+        public static IServiceCollection AddIssueStatusHandlers(this IServiceCollection services)
+        {
+            services.AddTransient<OpenIssueHandler>();
+            services.AddTransient<InProgressIssueHandler>();
+            services.AddTransient<ResolvedIssueHandler>();
+            services.AddTransient<ClosedIssueHandler>();
+            services.AddScoped<IIssueStatusHandlerFactory, IssueStatusHandlerFactory>();
             return services;
         }
 
@@ -61,10 +69,10 @@ namespace SmartNeighborhoodAPI
             });
             return services;
         }
-     
 
 
 
-  
+
+
     }
 }
