@@ -37,7 +37,11 @@ public class IssueStatusHandlerFactoryTests : IDisposable
     public void Create_WithResolvedStatus_ReturnsResolvedIssueHandler()
     {
         // Arrange
-        var handler = new ResolvedIssueHandler(_dbContext, _mockMapper.Object, Mock.Of<ILogger<ResolvedIssueHandler>>());
+        var handler = new ResolvedIssueHandler(
+            _dbContext,
+            _mockMapper.Object,
+            Mock.Of<ILogger<ResolvedIssueHandler>>(),
+            Mock.Of<SmartNeighborhoodAPI.Interfaces.INotificationFactory>());
         RegisterHandler(handler);
 
         // Act
