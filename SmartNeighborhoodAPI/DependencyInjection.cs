@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using SmartNeighborhoodAPI.Interfaces;
+using SmartNeighborhoodAPI.Services.Factories;
 using SmartNeighborhoodAPI.Services.IssueStatusHandlers;
+using SmartNeighborhoodAPI.Services.Notifications;
 using System;
 using System.Net;
 using System.Text;
@@ -19,6 +21,7 @@ namespace SmartNeighborhoodAPI
         {
             services.AddRateLimiting();
             services.AddIssueStatusHandlers();
+            services.AddNotifications();
 
             return services;
         }
@@ -30,6 +33,15 @@ namespace SmartNeighborhoodAPI
             services.AddTransient<ResolvedIssueHandler>();
             services.AddTransient<ClosedIssueHandler>();
             services.AddScoped<IIssueStatusHandlerFactory, IssueStatusHandlerFactory>();
+            return services;
+        }
+
+        public static IServiceCollection AddNotifications(this IServiceCollection services)
+        {
+            services.AddTransient<PushNotificationSender>();
+            services.AddTransient<EmailNotificationSender>();
+            services.AddTransient<InAppNotificationSender>();
+            services.AddSingleton<INotificationFactory, NotificationFactory>();
             return services;
         }
 
