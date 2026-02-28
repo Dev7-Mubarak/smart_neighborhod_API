@@ -17,11 +17,13 @@ namespace SmartNeighborhoodAPI.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IIssueStatusHandlerFactory _statusHandlerFactory;
 
-        public IssueService(ApplicationDbContext context, IMapper mapper)
+        public IssueService(ApplicationDbContext context, IMapper mapper, IIssueStatusHandlerFactory statusHandlerFactory)
         {
             _context = context;
             _mapper = mapper;
+            _statusHandlerFactory = statusHandlerFactory;
         }
 
         public async Task<ApiResponse<PaginatedResult<IssueDto>>> GetAllIssuesAsync(string? status, string? priority, string? category, string? sortBy, string? sortOrder, int page, int limit)
@@ -98,9 +100,19 @@ namespace SmartNeighborhoodAPI.Services
 
             _mapper.Map(updateIssueDto, issue);
 
-            if (updateIssueDto.Status?.ToLower() == "resolved")
+            if (updateIssueDto.Status is not null)
             {
-                issue.ResolvedAt = DateTime.UtcNow;
+                if (!Enum.TryParse<IssueStatus>(updateIssueDto.Status, true, out var newStatus))
+                {
+                    return ApiResponse<IssueDto>.Error(HttpStatusCode.BadRequest, $"Invalid status value: '{updateIssueDto.Status}'.");
+                }
+
+                var handler = _statusHandlerFactory.Create(newStatus);
+                var handlerResult = await handler.HandleAsync(issue, updateIssueDto);
+                if (!handlerResult.IsSuccess)
+                {
+                    return ApiResponse<IssueDto>.Error(handlerResult.StatusCode, handlerResult.Message, handlerResult.Errors);
+                }
             }
 
             await _context.SaveChangesAsync();
