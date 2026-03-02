@@ -84,7 +84,7 @@ builder.Services.AddScoped<ResidentialUnitService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IIssueService, IssueService>();
 
-
+builder.Services.AddApplicationServices(builder.Configuration);
 
 
 builder.Host.UseSerilog((context, loggerConfig) =>
@@ -98,38 +98,7 @@ builder.WebHost.UseSentry(options =>
     options.Debug = true; // Turn off debug for production
 });
 
-builder.Services.AddRateLimiter(options =>
-{
-    options.AddPolicy("fixed-window", context =>
-        RateLimitPartition.GetFixedWindowLimiter(
-            context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
-            factory: _ => new FixedWindowRateLimiterOptions
-            {
-                PermitLimit = 1000,
-                Window = TimeSpan.FromSeconds(1000),
-                QueueLimit = 0,
-                QueueProcessingOrder = QueueProcessingOrder.OldestFirst
-            }
-        )
-    );
-
-    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-
-    options.OnRejected = async (context, token) =>
-    {
-        context.HttpContext.Response.ContentType = "application/json";
-
-        var response = ApiResponse<object>.Error(
-            HttpStatusCode.TooManyRequests,
-            "You have exceeded the allowed number of requests. Try again later."
-        );
-
-        var json = JsonSerializer.Serialize(response);
-        context.HttpContext.Response.StatusCode = (int)HttpStatusCode.TooManyRequests;
-
-        await context.HttpContext.Response.WriteAsync(json, token);
-    };
-});
+// rate limiting is configured inside AddApplicationServices; no need to duplicate here
 
 
 var jwt = builder.Configuration.GetSection("Jwt").Get<JWT>();
