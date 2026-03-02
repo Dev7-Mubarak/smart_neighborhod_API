@@ -5,7 +5,6 @@ using OurProjectSmartNeiborhood.Configuration;
 using SmartNeighborhoodAPI.Configuration;
 using SmartNeighborhoodAPI.Entites;
 using SmartNeighborhoodAPI.Helpers.DTOs.block;
-using SmartNeighborhoodAPI.Interfaces;
 using System.Reflection.Emit;
 using static SmartNeighborhoodAPI.Helpers.Router;
 
@@ -137,30 +136,6 @@ namespace SmartNeighborhoodAPI
         public DbSet<ResidentialNeighborhood> ResidentialNeighborhoods { get; set; }
         public DbSet<Issue> Issues { get; set; }
 
-        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-        {
-            foreach (var entry in ChangeTracker.Entries<ISyncable>())
-            {
-                switch (entry.State)
-                {
-                    case EntityState.Added:
-                        entry.Entity.CreatedAt = DateTime.UtcNow;
-                        entry.Entity.UpdatedAt = DateTime.UtcNow;
-                        entry.Entity.IsDeleted = false;
-                        break;
-                    case EntityState.Modified:
-                        // just update the UpdatedAt timestamp, other properties should be managed by the application logic
-                        entry.Entity.UpdatedAt = DateTime.UtcNow;
-                        break;
-                    case EntityState.Deleted:
-                        entry.State = EntityState.Modified; // change the state to Modified to perform a soft delete
-                        entry.Entity.IsDeleted = true;
-                        entry.Entity.DeletedAt = DateTime.UtcNow;
-                        entry.Entity.UpdatedAt = DateTime.UtcNow;
-                        break;
-                }
-            }
-            return base.SaveChangesAsync(cancellationToken);
-        }
+
     }
 }

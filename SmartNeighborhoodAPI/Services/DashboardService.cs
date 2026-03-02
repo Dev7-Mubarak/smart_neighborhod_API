@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using SmartNeighborhoodAPI.Helpers.DTOs.Dashboard;
 using SmartNeighborhoodAPI.Interfaces;
 using SmartNeighborhoodAPI.Entites.Enums;
+using SmartNeighborhoodAPI.Models;
 using System.Linq;
 using System.Threading.Tasks;
 using SmartNeighborhoodAPI.Entites;
@@ -13,10 +14,12 @@ namespace SmartNeighborhoodAPI.Services
     public class DashboardService : IDashboardService
     {
         private readonly ApplicationDbContext _context;
+        private readonly IReportGeneratorFactory _reportGeneratorFactory;
 
-        public DashboardService(ApplicationDbContext context)
+        public DashboardService(ApplicationDbContext context, IReportGeneratorFactory reportGeneratorFactory)
         {
             _context = context;
+            _reportGeneratorFactory = reportGeneratorFactory;
         }
 
         public async Task<DashboardStatsDto> GetDashboardStatsAsync(int? neighborhoodId = null, int? residentialUnitId = null)
@@ -47,9 +50,9 @@ namespace SmartNeighborhoodAPI.Services
 
             // Social stats: divorced (assume enum values: 3=Divorced, 4=Widowed per DTO docs)
             //dto.SocialAndFamily.Divorced = await _context.People.Where(p => personIds.Contains(p.Id) && (int)p.MaritalStatus == 3).CountAsync();
-           // dto.SocialAndFamily.Widows = await _context.People.Where(p => personIds.Contains(p.Id) && (int)p.MaritalStatus == 4).CountAsync();
-           dto.SocialAndFamily.Divorced = 30;
-           dto.SocialAndFamily.Widows = 20;
+            // dto.SocialAndFamily.Widows = await _context.People.Where(p => personIds.Contains(p.Id) && (int)p.MaritalStatus == 4).CountAsync();
+            dto.SocialAndFamily.Divorced = 30;
+            dto.SocialAndFamily.Widows = 20;
             // Agreements -> ProjectFamilies linked to families
             var projFamiliesQuery = _context.ProjectFamilies.Where(pf => familyIds.Contains(pf.FamilyID));
             var totalAgreements = await projFamiliesQuery.CountAsync();
@@ -140,6 +143,25 @@ namespace SmartNeighborhoodAPI.Services
 
 
             return dto;
+        }
+
+        public async Task<byte[]> ExportDashboardStatsAsync(
+            ReportFormat format,
+            int? neighborhoodId = null,
+            int? residentialUnitId = null)
+        {
+            var stats = await GetDashboardStatsAsync(neighborhoodId, residentialUnitId);
+
+            var parameters = new ReportParameters
+            {
+                Title = $"Dashboard Stats Report" +
+                        (neighborhoodId.HasValue ? $" — Neighborhood #{neighborhoodId}" : string.Empty) +
+                        (residentialUnitId.HasValue ? $" — Unit #{residentialUnitId}" : string.Empty),
+                Data = stats
+            };
+
+            var generator = _reportGeneratorFactory.Create(format);
+            return await generator.GenerateAsync(parameters);
         }
     }
 }
