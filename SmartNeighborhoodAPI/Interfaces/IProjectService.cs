@@ -1,4 +1,5 @@
-﻿using SmartNeighborhoodAPI.Helpers.DTOs.Project;
+﻿using SmartNeighborhoodAPI.Helpers;
+using SmartNeighborhoodAPI.Helpers.DTOs.Project;
 
 namespace SmartNeighborhoodAPI.Interfaces
 {
@@ -10,7 +11,7 @@ namespace SmartNeighborhoodAPI.Interfaces
         Task<ApiResponse<string>> DeleteAssignTeamFromProjectAsync(int projectId, int teamId);
         Task<ApiResponse<string>> DeleteAsync(int id);
         Task<ApiResponse<string>> DeleteFamilyFromProjectAsync(int projectId, int familyId);
-        Task<ApiResponse<IEnumerable<ReturnProjectDto>>> GetAll(int? ProjectCategoryId);
+        Task<ApiResponse<PaginatedResult<ReturnProjectDto>>> GetAllAsync(ProjectFilterParams filter);
         Task<ApiResponse<ReturnProjectDto>> GetByIdAsync(int id);
         Task<ApiResponse<List<BeneficiaryFamilies>>> GetProjectBlocksWithBeneficiaryFamilies(int projectId);
         Task<ApiResponse<string>> UpdateAsync(int id, ProjectDto projectDto);

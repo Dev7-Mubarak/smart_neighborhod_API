@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SmartNeighborhoodAPI.Entites.Enums;
+using SmartNeighborhoodAPI.Helpers;
 using SmartNeighborhoodAPI.Helpers.Attrbuites;
 using SmartNeighborhoodAPI.Helpers.DTOs.Project;
 using SmartNeighborhoodAPI.Services;
@@ -21,12 +22,14 @@ namespace SmartNeighborhoodAPI.Controllers.V1
 
         [HttpGet(Router.Projects.GetAll)]
         [MapToApiVersion("1.0")]
-        [SwaggerOperation(Summary = "Retrieve all projects", Description = "Retrieves all projects optionally filtered by category.")]
-        [ProducesResponseType(typeof(IEnumerable<ProjectDto>), StatusCodes.Status200OK)]
+        [SwaggerOperation(
+            Summary = "Retrieve all projects",
+            Description = "Retrieves a paginated, filterable list of projects. Supports filtering by name, category, status, priority, date range, plus sorting.")]
+        [ProducesResponseType(typeof(PaginatedResult<ReturnProjectDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetAllAsync([FromQuery, SwaggerParameter("Optional project category ID")] int? projectCategoryId)
+        public async Task<IActionResult> GetAllAsync([FromQuery] ProjectFilterParams filter)
         {
-            return Response(await _projectService.GetAll(projectCategoryId));
+            return Response(await _projectService.GetAllAsync(filter));
         }
 
         [HttpGet(Router.Projects.GetById)]
@@ -124,7 +127,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> AssignFamilyToProject(
             [FromRoute] int projectId,
-            [FromRoute] int familyId) 
+            [FromRoute] int familyId)
         {
             return Response(await _projectService.AssignFamilyToProjectAsync(projectId, familyId));
         }
@@ -136,7 +139,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteFamilyFromProject(
             [FromRoute] int projectId,
-            [FromRoute] int familyId) 
+            [FromRoute] int familyId)
         {
             return Response(await _projectService.DeleteFamilyFromProjectAsync(projectId, familyId));
         }

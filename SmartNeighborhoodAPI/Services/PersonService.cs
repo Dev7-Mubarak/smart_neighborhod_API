@@ -1,4 +1,6 @@
 ﻿using SmartNeighborhoodAPI.Entites;
+using SmartNeighborhoodAPI.Entites.Enums;
+using SmartNeighborhoodAPI.Helpers;
 using SmartNeighborhoodAPI.Helpers.DTOs.Person;
 using SmartNeighborhoodAPI.Interfaces;
 using SmartNeighborhoodAPI.Services;
@@ -89,7 +91,7 @@ namespace OurProjectSmartNeiborhood.Services
                 }
             }
 
-       
+
 
             _context.Remove(entity);
             if (!string.IsNullOrEmpty(entity.Image))
@@ -102,54 +104,56 @@ namespace OurProjectSmartNeiborhood.Services
 
             return ApiResponse<string>.Error(HttpStatusCode.NotModified, "فشل في حذف الشخص.");
         }
-        public async Task<ApiResponse<PaginatedResult<PersonDto>>> GetAllAsync(
-              int pageNumber = 1,
-              int pageSize = 10,
-              string? search = null)
+        public async Task<ApiResponse<PaginatedResult<PersonDto>>> GetAllAsync(PersonFilterParams filter)
         {
-            var query = _context.People.AsNoTracking();
+            IQueryable<Person> query = _context.People.AsNoTracking();
 
-            if (!string.IsNullOrEmpty(search))
+            // ── Optional filters (all translated to SQL) ────────────────────────────
+            if (!string.IsNullOrWhiteSpace(filter.Search))
+                query = query.Where(p =>
+                    p.FirstName.Contains(filter.Search) ||
+                    p.SecondName.Contains(filter.Search) ||
+                    p.ThirdName.Contains(filter.Search) ||
+                    p.LastName.Contains(filter.Search));
+
+            if (filter.Gender.HasValue)
+                query = query.Where(p => p.Gender == filter.Gender.Value);
+
+            if (filter.MaritalStatus.HasValue)
+                query = query.Where(p => p.MaritalStatus == filter.MaritalStatus.Value);
+
+            if (filter.OccupationStatus.HasValue)
+                query = query.Where(p => p.OccupationStatus == filter.OccupationStatus.Value);
+
+            if (filter.ResidencyStatus.HasValue)
+                query = query.Where(p => p.ResidencyStatus == filter.ResidencyStatus.Value);
+
+            if (filter.PersonType.HasValue)
+                query = query.Where(p => p.personType == filter.PersonType.Value);
+
+            if (filter.HasChronicDiseases.HasValue)
+                query = query.Where(p => p.HasChronicDiseases == filter.HasChronicDiseases.Value);
+
+            if (filter.BloodType.HasValue)
+                query = query.Where(p => p.BloodType == filter.BloodType.Value);
+
+            // ── Optional sorting ───────────────────────────────────────────────
+            bool descending = string.Equals(filter.SortOrder, "desc", StringComparison.OrdinalIgnoreCase);
+            query = filter.SortBy?.ToLowerInvariant() switch
             {
-                var result = await query.Where(x => x.FirstName.Contains(search) ||
-                                                    x.SecondName.Contains(search) ||
-                                                    x.ThirdName.Contains(search) ||
-                                                    x.LastName.Contains(search))
-                                        .Select(p => new PersonDto
-                                        {
-                                            Id = p.Id,
-                                            FullName = p.FirstName,
-                                            FirstName = p.FirstName,
-                                            SecondName = p.SecondName,
-                                            ThirdName = p.ThirdName,
-                                            LastName = p.LastName,
-                                            PhoneNumber = p.PhoneNumber,
-                                            DateOfBirth = p.DateOfBirth,
-                                            Image = string.IsNullOrEmpty(p.Image) ? null : p.Image,
-                                            Gender = GetDisplayName(p.Gender),
-                                            BloodType = GetDisplayName(p.BloodType),
-                                            OccupationStatus = GetDisplayName(p.OccupationStatus),
-                                            MaritalStatus = GetDisplayName(p.MaritalStatus),
-                                            PersonType = GetDisplayName(p.personType),
-                                            Job = p.Job,
-                                            NationalId = p.NationalId,
-                                            VehicleType = GetDisplayName(p.VehicleType),
-                                            VehicleRegistrationNumber = p.VehicleRegistrationNumber,
-                                            ResidencyStatus = GetDisplayName(p.ResidencyStatus),
-                                            HasChronicDiseases = p.HasChronicDiseases,
-                                            ChronicDiseasesNotes = p.ChronicDiseasesNotes
-                                        })
-                                        .ToPaginatedListAsync(pageNumber, pageSize);
+                "lastname" => descending ? query.OrderByDescending(p => p.LastName) : query.OrderBy(p => p.LastName),
+                "dateofbirth" => descending ? query.OrderByDescending(p => p.DateOfBirth) : query.OrderBy(p => p.DateOfBirth),
+                _ => descending ? query.OrderByDescending(p => p.FirstName) : query.OrderBy(p => p.FirstName)
+            };
 
-                if (result == null)
-                    return ApiResponse<PaginatedResult<PersonDto>>.Error(HttpStatusCode.NotFound, "لا يوجد أشخاص مطابقين للبحث.");
+            // ── Paginate on the entity query (filtering/sorting fully in SQL) ────────
+            var paginated = await query.ToPaginatedListAsync(filter.PageNumber, filter.PageSize);
 
-                return ApiResponse<PaginatedResult<PersonDto>>.Success(result, "تم جلب الأشخاص بنجاح.");
-            }
-
-            var people = await query.Select(p => new PersonDto
+            // ── Project entities → DTOs client-side (GetDisplayName uses reflection) ─
+            var dtos = paginated.items.Select(p => new PersonDto
             {
                 Id = p.Id,
+                FullName = p.FirstName,
                 FirstName = p.FirstName,
                 SecondName = p.SecondName,
                 ThirdName = p.ThirdName,
@@ -161,6 +165,7 @@ namespace OurProjectSmartNeiborhood.Services
                 BloodType = GetDisplayName(p.BloodType),
                 OccupationStatus = GetDisplayName(p.OccupationStatus),
                 MaritalStatus = GetDisplayName(p.MaritalStatus),
+                PersonType = GetDisplayName(p.personType),
                 Job = p.Job,
                 NationalId = p.NationalId,
                 VehicleType = GetDisplayName(p.VehicleType),
@@ -168,12 +173,12 @@ namespace OurProjectSmartNeiborhood.Services
                 ResidencyStatus = GetDisplayName(p.ResidencyStatus),
                 HasChronicDiseases = p.HasChronicDiseases,
                 ChronicDiseasesNotes = p.ChronicDiseasesNotes
-            }).ToPaginatedListAsync(pageNumber, pageSize);
+            }).ToList();
 
-            if (people == null)
-                return ApiResponse<PaginatedResult<PersonDto>>.Error(HttpStatusCode.NotFound, "لا يوجد أشخاص.");
+            var result = PaginatedResult<PersonDto>.Success(
+                dtos, paginated.TotalCount, paginated.CurrentPage, paginated.PageSize);
 
-            return ApiResponse<PaginatedResult<PersonDto>>.Success(people, "تم جلب الأشخاص بنجاح.");
+            return ApiResponse<PaginatedResult<PersonDto>>.Success(result, "تم جلب الأشخاص بنجاح.");
         }
 
 

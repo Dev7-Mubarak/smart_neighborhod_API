@@ -7,7 +7,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace SmartNeighborhoodAPI.Controllers.V1
 {
- 
+
     [SwaggerTag("Manage Conflict Cases")]
     public class ConflictCaseController : AppControllerBase
     {
@@ -29,12 +29,14 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         }
 
         [HttpGet(Router.ConflictCases.GetAll)]
-        [SwaggerOperation(Summary = "Get all conflict cases", Description = "Retrieves all conflict cases in the system.")]
-        [ProducesResponseType(typeof(IEnumerable<GetConflictCaseDto>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetAllAsync()
+        [SwaggerOperation(
+            Summary = "Get all conflict cases",
+            Description = "Retrieves a paginated, filterable list of conflict cases. All query parameters are optional.")]
+        [ProducesResponseType(typeof(PaginatedResult<GetConflictCaseDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+        public async Task<IActionResult> GetAllAsync([FromQuery] ConflictCaseFilterParams filter)
         {
-            var result = await _conflictCaseService.GetAll();
+            var result = await _conflictCaseService.GetAllAsync(filter);
             return Response(result);
         }
 
