@@ -11,21 +11,11 @@ namespace SmartNeighborhoodAPI.Controllers.V1
     [SwaggerTag("Manage Conflict Cases")]
     public class ConflictCaseController : AppControllerBase
     {
-        private readonly ConflictCaseService _conflictCaseService;
+        private readonly IConflictCaseService _conflictCaseService;
 
-        public ConflictCaseController(ConflictCaseService conflictCaseService)
+        public ConflictCaseController(IConflictCaseService conflictCaseService)
         {
             _conflictCaseService = conflictCaseService;
-        }
-
-        [HttpPost(Router.ConflictCases.Add)]
-        [SwaggerOperation(Summary = "Add a new conflict case", Description = "Creates a new conflict case with optional image and manager.")]
-        [ProducesResponseType(typeof(ReturnConflictCaseDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> AddAsync([FromForm, SwaggerParameter("Conflict case data to add", Required = true)] AddConflictCaseDto conflictCaseDto)
-        {
-            var result = await _conflictCaseService.AddAsync(conflictCaseDto);
-            return Response(result);
         }
 
         [HttpGet(Router.ConflictCases.GetAll)]

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SmartNeighborhoodAPI.Helpers.Attrbuites;
 using SmartNeighborhoodAPI.Helpers.DTOs.Project;
+using SmartNeighborhoodAPI.Interfaces;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
 using SmartNeighborhoodAPI.Services;
@@ -12,9 +13,9 @@ namespace SmartNeighborhoodAPI.Controllers.V1
     [SwaggerTag("Project categories management endpoints")]
     public class ProjectCategoriesController : AppControllerBase
     {
-        private readonly ProjectCatgoryService _projectCategoryService;
+        private readonly IProjectCatgoryService _projectCategoryService;
 
-        public ProjectCategoriesController(ProjectCatgoryService projectCategoryService)
+        public ProjectCategoriesController(IProjectCatgoryService projectCategoryService)
         {
             _projectCategoryService = projectCategoryService;
         }

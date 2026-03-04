@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SmartNeighborhoodAPI.Helpers.DTOs.Families;
 using SmartNeighborhoodAPI.Helpers.DTOs.FamilyMember;
 using SmartNeighborhoodAPI.Helpers.DTOs.Teams;
+using SmartNeighborhoodAPI.Interfaces;
 using SmartNeighborhoodAPI.Services;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -12,9 +13,9 @@ namespace SmartNeighborhoodAPI.Controllers.V1
     [SwaggerTag("Manage Families")]
     public class FamilyController : AppControllerBase
     {
-        private readonly FamilyService _familyService;
+        private readonly IFamilyService _familyService;
 
-        public FamilyController(FamilyService familyService)
+        public FamilyController(IFamilyService familyService)
         {
             _familyService = familyService;
         }

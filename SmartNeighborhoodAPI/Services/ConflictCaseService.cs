@@ -12,7 +12,7 @@ using System.Net;
 
 namespace SmartNeighborhoodAPI.Services
 {
-    public class ConflictCaseService
+    public class ConflictCaseService : IConflictCaseService
     {
         private readonly ApplicationDbContext _context;
         private readonly UserContextService _userContextService;

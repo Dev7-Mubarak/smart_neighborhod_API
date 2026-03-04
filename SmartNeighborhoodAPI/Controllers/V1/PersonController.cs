@@ -12,9 +12,9 @@ namespace SmartNeighborhoodAPI.Controllers.V1
     [SwaggerTag("Person management endpoints")]
     public class PersonController : AppControllerBase
     {
-        private readonly PersonService _personService;
+        private readonly IPersonService _personService;
 
-        public PersonController(PersonService personService)
+        public PersonController(IPersonService personService)
         {
             _personService = personService;
         }

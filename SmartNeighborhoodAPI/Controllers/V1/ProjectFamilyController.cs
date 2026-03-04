@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SmartNeighborhoodAPI.Helpers.Attrbuites;
 using SmartNeighborhoodAPI.Helpers.DTOs.Project;
+using SmartNeighborhoodAPI.Interfaces;
 using Swashbuckle.AspNetCore.Annotations;
 using SmartNeighborhoodAPI.Services;
 
@@ -11,9 +12,9 @@ namespace SmartNeighborhoodAPI.Controllers.V1
     [SwaggerTag("Project families management endpoints")]
     public class ProjectFamilyController : AppControllerBase
     {
-        private readonly ProjectFamilieservice _projectFamilyService;
+        private readonly IProjectFamilieservice _projectFamilyService;
 
-        public ProjectFamilyController(ProjectFamilieservice projectFamilyService)
+        public ProjectFamilyController(IProjectFamilieservice projectFamilyService)
         {
             _projectFamilyService = projectFamilyService;
         }

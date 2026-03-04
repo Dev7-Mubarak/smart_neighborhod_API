@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.RateLimiting;
 using SmartNeighborhoodAPI.Helpers.Attrbuites;
 using SmartNeighborhoodAPI.Helpers.DTOs.block;
 using SmartNeighborhoodAPI.Helpers.DTOs.Auth;
+using SmartNeighborhoodAPI.Interfaces;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
 using System.Security.Claims;
@@ -10,14 +11,14 @@ using SmartNeighborhoodAPI.Helpers;
 
 namespace SmartNeighborhoodAPI.Controllers.V1
 {
- 
+
     [SwaggerTag("Blocks management endpoints")]
     [AllowAnonymous]
     public class BlocksController : AppControllerBase
     {
-        private readonly BlockServices _BlockServices;
+        private readonly IBlockServices _BlockServices;
 
-        public BlocksController(BlockServices BlockServices)
+        public BlocksController(IBlockServices BlockServices)
         {
             _BlockServices = BlockServices;
         }
@@ -49,7 +50,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
         public async Task<IActionResult> ChangeBlockManager(int id, [FromBody, SwaggerParameter("Manager change details", Required = true)] ChangeManagerDto blockManagerDto)
         {
-            return Response(await _BlockServices.ChangeManager(id ,blockManagerDto));
+            return Response(await _BlockServices.ChangeManager(id, blockManagerDto));
         }
 
         [HttpGet(Router.Blocks.GetAll)]

@@ -12,9 +12,9 @@ namespace SmartNeighborhoodAPI.Controllers.V1
     [SwaggerTag("Teams management endpoints")]
     public class TeamsController : AppControllerBase
     {
-        private readonly TeamsService _teamsService;
+        private readonly ITeamsService _teamsService;
 
-        public TeamsController(TeamsService teamsService)
+        public TeamsController(ITeamsService teamsService)
         {
             _teamsService = teamsService;
         }

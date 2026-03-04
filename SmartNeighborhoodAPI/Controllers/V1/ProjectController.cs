@@ -4,6 +4,7 @@ using SmartNeighborhoodAPI.Entites.Enums;
 using SmartNeighborhoodAPI.Helpers;
 using SmartNeighborhoodAPI.Helpers.Attrbuites;
 using SmartNeighborhoodAPI.Helpers.DTOs.Project;
+using SmartNeighborhoodAPI.Interfaces;
 using SmartNeighborhoodAPI.Services;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -13,9 +14,9 @@ namespace SmartNeighborhoodAPI.Controllers.V1
     [SwaggerTag("Projects management endpoints")]
     public class ProjectsController : AppControllerBase
     {
-        private readonly ProjectService _projectService;
+        private readonly IProjectService _projectService;
 
-        public ProjectsController(ProjectService projectService)
+        public ProjectsController(IProjectService projectService)
         {
             _projectService = projectService;
         }
