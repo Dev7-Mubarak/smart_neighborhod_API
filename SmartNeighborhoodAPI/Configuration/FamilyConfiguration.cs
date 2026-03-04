@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using SmartNeighborhoodAPI.Entites.Enums;
 
 public class FamilyConfiguration : IEntityTypeConfiguration<Family>
 {
@@ -19,22 +20,72 @@ public class FamilyConfiguration : IEntityTypeConfiguration<Family>
         builder.Property(f => f.FamilyNotes)
             .HasMaxLength(500);
 
-        builder.HasOne(f => f.FamilyCatgory)
-            .WithMany()
-            .HasForeignKey(f => f.FamilyCatgoryId)
-            .OnDelete(DeleteBehavior.Restrict);
+        // FamilyCatgory relationship owned by FamilyCatgoryConfiguration
+        builder.Property(f => f.FamilyCatgoryId).IsRequired();
 
         builder.Property(p => p.HousingType)
             .IsRequired();
 
-        builder.HasOne(f => f.Block)
-            .WithMany()
-            .HasForeignKey(f => f.BlockId)
-            .OnDelete(DeleteBehavior.Restrict);
+        // Block relationship owned by BlockEntityTypeConfiguration / ApplicationDbContext
+        builder.Property(f => f.BlockId).IsRequired();
 
         builder.HasMany(f => f.FamilyMembers)
-            .WithOne()
-            .HasForeignKey("FamilyId")
+            .WithOne(fm => fm.Family)
+            .HasForeignKey(fm => fm.FamilyId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        // Seed: five families in حي الثوره (BlockId = 1)
+        builder.HasData(
+            new
+            {
+                Id = 1,
+                Name = "عائلة الصالح",
+                Location = "الشارع الأول، حي الثوره",
+                FamilyNotes = (string?)null,
+                FamilyCatgoryId = 1,
+                HousingType = HousingType.Property,
+                BlockId = 1
+            },
+            new
+            {
+                Id = 2,
+                Name = "عائلة البدر",
+                Location = "الشارع الثاني، حي الثوره",
+                FamilyNotes = (string?)null,
+                FamilyCatgoryId = 2,
+                HousingType = HousingType.Rent,
+                BlockId = 1
+            },
+            new
+            {
+                Id = 3,
+                Name = "عائلة الحمدان",
+                Location = "الشارع الثالث، حي الثوره",
+                FamilyNotes = (string?)null,
+                FamilyCatgoryId = 1,
+                HousingType = HousingType.Property,
+                BlockId = 1
+            },
+            new
+            {
+                Id = 4,
+                Name = "عائلة الرشيد",
+                Location = "الشارع الرابع، حي الثوره",
+                FamilyNotes = (string?)null,
+                FamilyCatgoryId = 3,
+                HousingType = HousingType.Rent,
+                BlockId = 1
+            },
+            new
+            {
+                Id = 5,
+                Name = "عائلة النعيمي",
+                Location = "الشارع الخامس، حي الثوره",
+                FamilyNotes = (string?)null,
+                FamilyCatgoryId = 2,
+                HousingType = HousingType.Property,
+                BlockId = 1
+            }
+        );
     }
 }

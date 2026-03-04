@@ -22,6 +22,14 @@ namespace SmartNeighborhoodAPI.Configuration
                 .WithOne(u => u.ResidentialNeighborhood)
                 .HasForeignKey(u => u.ResidentialNeighborhoodId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // Seed: الحي الأول — parent of حي الثوره block
+            builder.HasData(new
+            {
+                Id = 1,
+                Name = "الحي الأول",
+                NeighborhoodManagerId = "dddddddd-dddd-dddd-dddd-dddddddddddd" // RN Manager
+            });
         }
     }
 }

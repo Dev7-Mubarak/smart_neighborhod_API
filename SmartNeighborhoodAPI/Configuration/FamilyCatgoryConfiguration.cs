@@ -11,7 +11,7 @@
                    .HasMaxLength(100);
 
             builder.HasMany(fc => fc.Families)
-                   .WithOne(f => f.FamilyCatgory) 
+                   .WithOne(f => f.FamilyCatgory)
                    .HasForeignKey(f => f.FamilyCatgoryId)
                    .OnDelete(DeleteBehavior.NoAction);
 
