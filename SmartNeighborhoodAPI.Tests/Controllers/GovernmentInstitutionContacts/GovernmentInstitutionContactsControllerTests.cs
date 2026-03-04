@@ -18,8 +18,8 @@ public class GovernmentInstitutionContactsControllerTests
     public GovernmentInstitutionContactsControllerTests()
     {
         _mockService = new Mock<IGovernmentInstitutionContactService>();
-        _mockLogger  = new Mock<ILogger<GovernmentInstitutionContactsController>>();
-        _controller  = new GovernmentInstitutionContactsController(_mockService.Object, _mockLogger.Object);
+        _mockLogger = new Mock<ILogger<GovernmentInstitutionContactsController>>();
+        _controller = new GovernmentInstitutionContactsController(_mockService.Object, _mockLogger.Object);
     }
 
     // ── GetByAuthority ────────────────────────────────────────────────────────

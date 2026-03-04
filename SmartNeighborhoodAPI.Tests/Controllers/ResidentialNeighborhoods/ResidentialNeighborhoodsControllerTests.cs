@@ -19,7 +19,7 @@ public class ResidentialNeighborhoodsControllerTests
 
     public ResidentialNeighborhoodsControllerTests()
     {
-        _mockService     = new Mock<IResidentialNeighborhoodService>();
+        _mockService = new Mock<IResidentialNeighborhoodService>();
         _mockUserManager = new Mock<UserManager<AppUser>>(
             Mock.Of<IUserStore<AppUser>>(), null, null, null, null, null, null, null, null);
         _controller = new ResidentialNeighborhoodsController(_mockService.Object, _mockUserManager.Object);
