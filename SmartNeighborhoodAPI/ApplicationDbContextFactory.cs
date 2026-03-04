@@ -16,7 +16,7 @@ namespace SmartNeighborhoodAPI
 
             var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
             optionsBuilder.UseSqlServer(
-                configuration.GetConnectionString("DefaultConnection"));
+                configuration.GetConnectionString("RemoteConnection"));
 
             return new ApplicationDbContext(optionsBuilder.Options);
         }

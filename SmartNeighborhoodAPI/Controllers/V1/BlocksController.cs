@@ -13,7 +13,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
 {
 
     [SwaggerTag("Blocks management endpoints")]
-    [AllowAnonymous]
+    [Authorize]
     public class BlocksController : AppControllerBase
     {
         private readonly IBlockServices _BlockServices;
