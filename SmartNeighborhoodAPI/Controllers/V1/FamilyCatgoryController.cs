@@ -9,9 +9,9 @@ namespace SmartNeighborhoodAPI.Controllers.V1
     [SwaggerTag("Manage Family Categories")]
     public class FamilyCatgoryController : AppControllerBase
     {
-        private readonly FamilyCatgoryService _familyCatgoryService;
+        private readonly IFamilyCatgoryService _familyCatgoryService;
 
-        public FamilyCatgoryController(FamilyCatgoryService familyCatgoryService)
+        public FamilyCatgoryController(IFamilyCatgoryService familyCatgoryService)
         {
             _familyCatgoryService = familyCatgoryService;
         }

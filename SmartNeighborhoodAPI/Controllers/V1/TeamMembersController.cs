@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SmartNeighborhoodAPI.Helpers.Attrbuites;
 using SmartNeighborhoodAPI.Helpers.DTOs.TeamMembers;
+using SmartNeighborhoodAPI.Interfaces;
 using SmartNeighborhoodAPI.Services;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -11,9 +12,9 @@ namespace SmartNeighborhoodAPI.Controllers.V1
     [SwaggerTag("Team members management endpoints")]
     public class TeamMembersController : AppControllerBase
     {
-        private readonly TeamMemberService _teamMemberService;
+        private readonly ITeamMemberService _teamMemberService;
 
-        public TeamMembersController(TeamMemberService teamMemberService)
+        public TeamMembersController(ITeamMemberService teamMemberService)
         {
             _teamMemberService = teamMemberService;
         }

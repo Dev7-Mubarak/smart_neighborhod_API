@@ -2,6 +2,7 @@
 using OurProjectSmartNeiborhood.Entites;
 using SmartNeighborhoodAPI.Entites;
 using SmartNeighborhoodAPI.Entites.Enums;
+using SmartNeighborhoodAPI.Helpers;
 using SmartNeighborhoodAPI.Helpers.DTOs.Families;
 using SmartNeighborhoodAPI.Helpers.DTOs.Project;
 using SmartNeighborhoodAPI.Helpers.DTOs.TeamMembers;
@@ -93,55 +94,84 @@ namespace SmartNeighborhoodAPI.Services
             _logger.LogError("Delete failed: SaveChanges returned 0 for Project ID {ProjectId}.", id);
             return ApiResponse<string>.Error(HttpStatusCode.NotModified, "فشل حذف المشروع");
         }
-        public async Task<ApiResponse<IEnumerable<ReturnProjectDto>>> GetAll(int? ProjectCategoryId)
+        public async Task<ApiResponse<PaginatedResult<ReturnProjectDto>>> GetAllAsync(ProjectFilterParams filter)
         {
-            _logger.LogInformation("Fetching all Projects{CategoryFilter}",
-                ProjectCategoryId.HasValue ? $" with CategoryId = {ProjectCategoryId}" : "");
+            _logger.LogInformation("Fetching all Projects with filter: {@Filter}", filter);
 
-            var query = _context.Projects
-                .Include(x => x.ProjectCatogory)
-                .AsNoTracking()
-                .AsQueryable();
+            IQueryable<Project> query = _context.Projects
+                .Include(p => p.ProjectCatogory)
+                .AsNoTracking();
 
-            if (ProjectCategoryId.HasValue)
+            // ── Optional filters ───────────────────────────────────────────────
+            if (!string.IsNullOrWhiteSpace(filter.Search))
+                query = query.Where(p => p.Name.Contains(filter.Search));
+
+            if (filter.ProjectCategoryId.HasValue)
+                query = query.Where(p => p.ProjectCatogoryId == filter.ProjectCategoryId.Value);
+
+            if (filter.ProjectStatus.HasValue)
+                query = query.Where(p => p.ProjectStatus == filter.ProjectStatus.Value);
+
+            if (filter.ProjectPriority.HasValue)
+                query = query.Where(p => p.ProjectPriority == filter.ProjectPriority.Value);
+
+            if (filter.From.HasValue)
+                query = query.Where(p => p.StartDate >= filter.From.Value);
+
+            if (filter.To.HasValue)
+                query = query.Where(p => p.StartDate <= filter.To.Value);
+
+            // ── Optional sorting ───────────────────────────────────────────────
+            bool descending = string.Equals(filter.SortOrder, "desc", StringComparison.OrdinalIgnoreCase);
+            query = filter.SortBy?.ToLowerInvariant() switch
             {
-                query = query.Where(p => p.ProjectCatogoryId == ProjectCategoryId.Value);
-            }
+                "startdate" => descending ? query.OrderByDescending(p => p.StartDate) : query.OrderBy(p => p.StartDate),
+                "budget" => descending ? query.OrderByDescending(p => p.Budget) : query.OrderBy(p => p.Budget),
+                _ => descending ? query.OrderByDescending(p => p.Name) : query.OrderBy(p => p.Name)
+            };
 
-            var projects = await query.ToListAsync();
+            // ── Paginate on the entity query (filtering/sorting fully in SQL) ────────
+            var paginated = await query.ToPaginatedListAsync(filter.PageNumber, filter.PageSize);
 
-            if (projects.Count > 0)
+            // ── Resolve managers in a single extra query for the current page only ──
+            var managerIds = paginated.items
+                .Where(p => p.ManagerId.HasValue)
+                .Select(p => p.ManagerId!.Value)
+                .Distinct()
+                .ToList();
+
+            var managersDict = managerIds.Count > 0
+                ? await _context.People
+                    .Where(p => managerIds.Contains(p.Id))
+                    .AsNoTracking()
+                    .ToDictionaryAsync(p => p.Id, p => p.FullName)
+                : new Dictionary<int, string>();
+
+            // ── Project to DTOs client-side ────────────────────────────────────
+            var dtos = paginated.items.Select(project => new ReturnProjectDto
             {
-                var projectDtos = (from project in projects
-                                   join person in _context.People on project.ManagerId equals person.Id into gj
-                                   from subperson in gj.DefaultIfEmpty()
-                                   select new ReturnProjectDto
-                                   {
-                                       Id = project.Id,
-                                       Name = project.Name,
-                                       Description = project.Description,
-                                       StartDate = project.StartDate,
-                                       EndDate = project.EndDate,
-                                       ProjectStatus = GetDisplayName(project.ProjectStatus),
-                                       ProjectPriority = GetDisplayName(project.ProjectPriority),
-                                       Budget = project.Budget,
-                                       Manager = subperson != null ? new CustomPersonDto
-                                       {
-                                           Id = subperson.Id,
-                                           FullName = subperson.FullName
-                                       } : null,
-                                       ProjectCatgory = project.ProjectCatogory
-                                   }).ToList();
+                Id = project.Id,
+                Name = project.Name,
+                Description = project.Description,
+                StartDate = project.StartDate,
+                EndDate = project.EndDate,
+                ProjectStatus = GetDisplayName(project.ProjectStatus),
+                ProjectPriority = GetDisplayName(project.ProjectPriority),
+                Budget = project.Budget,
+                Manager = project.ManagerId.HasValue &&
+                          managersDict.TryGetValue(project.ManagerId.Value, out var fullName)
+                    ? new CustomPersonDto { Id = project.ManagerId.Value, FullName = fullName }
+                    : null,
+                ProjectCatgory = project.ProjectCatogory
+            }).ToList();
 
-                _logger.LogInformation("Retrieved {Count} projects successfully.", projectDtos.Count);
+            var result = PaginatedResult<ReturnProjectDto>.Success(
+                dtos, paginated.TotalCount, paginated.CurrentPage, paginated.PageSize);
 
-                return ApiResponse<IEnumerable<ReturnProjectDto>>.Success(projectDtos);
-            }
+            _logger.LogInformation("Retrieved {Count} projects (page {Page}/{TotalPages}).",
+                paginated.TotalCount, paginated.CurrentPage, paginated.TotalPages);
 
-            _logger.LogWarning("No projects found{Filter}.",
-                ProjectCategoryId.HasValue ? $" for CategoryId {ProjectCategoryId}" : "");
-
-            return ApiResponse<IEnumerable<ReturnProjectDto>>.Error(HttpStatusCode.NotFound, "لا توجد مشاريع");
+            return ApiResponse<PaginatedResult<ReturnProjectDto>>.Success(result, "تم جلب المشاريع بنجاح.");
         }
 
 

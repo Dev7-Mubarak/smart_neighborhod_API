@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using SmartNeighborhoodAPI.Helpers.Attrbuites;
 using SmartNeighborhoodAPI.Helpers.DTOs.Person;
+using SmartNeighborhoodAPI.Helpers.Attrbuites;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
 using OurProjectSmartNeiborhood.Services;
@@ -12,9 +12,9 @@ namespace SmartNeighborhoodAPI.Controllers.V1
     [SwaggerTag("Person management endpoints")]
     public class PersonController : AppControllerBase
     {
-        private readonly PersonService _personService;
+        private readonly IPersonService _personService;
 
-        public PersonController(PersonService personService)
+        public PersonController(IPersonService personService)
         {
             _personService = personService;
         }
@@ -22,22 +22,13 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         [MapToApiVersion("1.0")]
         [SwaggerOperation(
             Summary = "Retrieve all people",
-            Description = "Retrieves all people in the system with optional paging and searching."
+            Description = "Retrieves people with optional filtering by name, gender, marital/occupational/residency status, blood type, chronic diseases, and person type. Supports sorting and pagination."
         )]
-        [ProducesResponseType(typeof(IEnumerable<PersonDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PaginatedResult<PersonDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetAllAsync(
-            [SwaggerParameter(Description = "Page number (starting from 1). Default is 1.")]
-            int pageNumber = 1,
-
-            [SwaggerParameter(Description = "Number of records per page. Default is 10.")]
-            int pageSize = 10,
-
-            [SwaggerParameter(Description = "Optional search term to filter people by name or other criteria.")]
-            string? search = null
-        )
+        public async Task<IActionResult> GetAllAsync([FromQuery] PersonFilterParams filter)
         {
-            return Response(await _personService.GetAllAsync(pageNumber, pageSize, search));
+            return Response(await _personService.GetAllAsync(filter));
         }
 
 

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using OurProjectSmartNeiborhood.Entites;
 using SmartNeighborhoodAPI.Entites;
+using SmartNeighborhoodAPI.Helpers;
 using SmartNeighborhoodAPI.Helpers.DTOs.ConfilctCase;
 using SmartNeighborhoodAPI.Helpers.DTOs.Families;
 using SmartNeighborhoodAPI.Helpers.DTOs.FamilyMember;
@@ -11,7 +12,7 @@ using System.Net;
 
 namespace SmartNeighborhoodAPI.Services
 {
-    public class ConflictCaseService
+    public class ConflictCaseService : IConflictCaseService
     {
         private readonly ApplicationDbContext _context;
         private readonly UserContextService _userContextService;
@@ -40,10 +41,10 @@ namespace SmartNeighborhoodAPI.Services
             _userManager = userManager;
             _imageService = imageService;
             _personImagePath = $"{_webHostEnvironment.WebRootPath}{FileHelper.PersonImagesPath}";
-      
+
         }
 
-        public async Task<ApiResponse<IEnumerable<GetConflictCaseDto>>> GetAll()
+        public async Task<ApiResponse<PaginatedResult<GetConflictCaseDto>>> GetAllAsync(ConflictCaseFilterParams filter)
         {
             var currentUser = _userContextService.GetCurrentUser();
             _logger.LogInformation("Retrieving ConflictCases for user {UserId} with role {Role}", currentUser.Id, currentUser.Role);
@@ -51,7 +52,7 @@ namespace SmartNeighborhoodAPI.Services
             if (currentUser.Role == Role.BlockManager)
             {
                 _logger.LogWarning("User {UserId} attempted to access ConflictCases without permission", currentUser.Id);
-                return ApiResponse<IEnumerable<GetConflictCaseDto>>
+                return ApiResponse<PaginatedResult<GetConflictCaseDto>>
                     .Error(HttpStatusCode.Unauthorized, "ليس لديك صلاحية الوصول إلى هذه البيانات.");
             }
 
@@ -62,19 +63,48 @@ namespace SmartNeighborhoodAPI.Services
                 .Include(c => c.SecondParty).ThenInclude(sp => sp.Person)
                 .AsNoTracking();
 
-            var conflictCases = await query.ToListAsync();
-            var conflictCaseDtos = _mapper.Map<IEnumerable<GetConflictCaseDto>>(conflictCases);
+            // ── Optional filters ───────────────────────────────────────────────
+            if (!string.IsNullOrWhiteSpace(filter.Search))
+                query = query.Where(c => c.Title.Contains(filter.Search));
 
-            if (conflictCaseDtos.Any())
+            if (filter.IsResolved.HasValue)
+                query = query.Where(c => c.IsResolved == filter.IsResolved.Value);
+
+            if (filter.ConflictTypeId.HasValue)
+                query = query.Where(c => c.ConflictTypeId == filter.ConflictTypeId.Value);
+
+            if (filter.BlockId.HasValue)
+                query = query.Where(c => c.BlockId == filter.BlockId.Value);
+
+            if (!string.IsNullOrWhiteSpace(filter.ManagerId))
+                query = query.Where(c => c.ManagerId == filter.ManagerId);
+
+            if (filter.From.HasValue)
+                query = query.Where(c => c.SessionDate >= filter.From.Value);
+
+            if (filter.To.HasValue)
+                query = query.Where(c => c.SessionDate <= filter.To.Value);
+
+            // ── Optional sorting ───────────────────────────────────────────────
+            bool descending = string.Equals(filter.SortOrder, "desc", StringComparison.OrdinalIgnoreCase);
+            query = filter.SortBy?.ToLowerInvariant() switch
             {
-                _logger.LogInformation("Found {Count} ConflictCases", conflictCaseDtos.Count());
-                return ApiResponse<IEnumerable<GetConflictCaseDto>>
-                    .Success(conflictCaseDtos, "تم جلب جميع القضايا بنجاح.");
-            }
+                "title" => descending ? query.OrderByDescending(c => c.Title) : query.OrderBy(c => c.Title),
+                "sessiondate" => descending ? query.OrderByDescending(c => c.SessionDate) : query.OrderBy(c => c.SessionDate),
+                _ => query.OrderBy(c => c.SessionDate)
+            };
 
-            _logger.LogWarning("No ConflictCases found");
-            return ApiResponse<IEnumerable<GetConflictCaseDto>>
-                .Success(Enumerable.Empty<GetConflictCaseDto>(), "لا توجد قضايا نزاع.");
+            // ── Paginate on the entity query, then map items ───────────────────
+            var paginated = await query.ToPaginatedListAsync(filter.PageNumber, filter.PageSize);
+            var dtos = _mapper.Map<List<GetConflictCaseDto>>(paginated.items);
+
+            var result = PaginatedResult<GetConflictCaseDto>.Success(
+                dtos, paginated.TotalCount, paginated.CurrentPage, paginated.PageSize);
+
+            _logger.LogInformation("Found {Count} ConflictCases (page {Page}/{TotalPages})",
+                paginated.TotalCount, paginated.CurrentPage, paginated.TotalPages);
+
+            return ApiResponse<PaginatedResult<GetConflictCaseDto>>.Success(result, "تم جلب جميع القضايا بنجاح.");
         }
 
 
@@ -183,7 +213,7 @@ namespace SmartNeighborhoodAPI.Services
             return ApiResponse<string>.Error(HttpStatusCode.NotModified, "فشل في حذف القضية.");
         }
 
-      
+
 
 
         public async Task<ApiResponse<GetConflictCaseDto>> GetByIdAsync(int id)
