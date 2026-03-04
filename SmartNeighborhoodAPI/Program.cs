@@ -98,6 +98,8 @@ builder.WebHost.UseSentry(options =>
     options.Debug = true; // Turn off debug for production
 });
 
+// rate limiting is configured inside AddApplicationServices; no need to duplicate here
+
 
 var jwt = builder.Configuration.GetSection("Jwt").Get<JWT>();
 
