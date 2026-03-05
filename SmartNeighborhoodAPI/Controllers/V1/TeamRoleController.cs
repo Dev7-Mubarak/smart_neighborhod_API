@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using SmartNeighborhoodAPI.Entites;
 using SmartNeighborhoodAPI.Helpers.Attrbuites;
 using SmartNeighborhoodAPI.Helpers.DTOs.TeamMembers;
+using SmartNeighborhoodAPI.Interfaces;
 using SmartNeighborhoodAPI.Services;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -12,9 +13,9 @@ namespace SmartNeighborhoodAPI.Controllers.V1
     [SwaggerTag("Team roles management endpoints")]
     public class TeamRoleController : AppControllerBase
     {
-        private readonly TeamRoleService _teamRoleService;
+        private readonly ITeamRoleService _teamRoleService;
 
-        public TeamRoleController(TeamRoleService teamRoleService)
+        public TeamRoleController(ITeamRoleService teamRoleService)
         {
             _teamRoleService = teamRoleService;
         }

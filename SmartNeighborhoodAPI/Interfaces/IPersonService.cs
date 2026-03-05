@@ -1,4 +1,5 @@
-﻿using SmartNeighborhoodAPI.Helpers.DTOs.Person;
+﻿using SmartNeighborhoodAPI.Helpers;
+using SmartNeighborhoodAPI.Helpers.DTOs.Person;
 
 namespace OurProjectSmartNeiborhood.Services
 {
@@ -6,7 +7,7 @@ namespace OurProjectSmartNeiborhood.Services
     {
         Task<ApiResponse<Person>> AddAsync(CreatePersonDto dto);
         Task<ApiResponse<string>> DeleteAsync(int id);
-        Task<ApiResponse<PaginatedResult<PersonDto>>> GetAllAsync(int pageNumber = 1, int pageSize = 10, string? search = null);
+        Task<ApiResponse<PaginatedResult<PersonDto>>> GetAllAsync(PersonFilterParams filter);
         Task<ApiResponse<PersonDto>> GetByIdAsync(int id);
         Task<ApiResponse<string>> UpdateAsync(int id, CreatePersonDto dto);
     }

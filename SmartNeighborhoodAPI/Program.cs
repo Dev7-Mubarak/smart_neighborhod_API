@@ -60,21 +60,21 @@ builder.Services.Configure<JWT>(builder.Configuration.GetSection("Jwt"));
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 
-builder.Services.AddScoped<PersonService>();
-builder.Services.AddScoped<FamilyCatgoryService>();
-builder.Services.AddScoped<FamilyService>();
-builder.Services.AddScoped<MemberFamilyRoleService>();
-builder.Services.AddScoped<BlockServices>();
+builder.Services.AddScoped<IPersonService, PersonService>();
+builder.Services.AddScoped<IFamilyCatgoryService, FamilyCatgoryService>();
+builder.Services.AddScoped<IFamilyService, FamilyService>();
+builder.Services.AddScoped<IMemberFamilyRoleService, MemberFamilyRoleService>();
+builder.Services.AddScoped<IBlockServices, BlockServices>();
 builder.Services.AddScoped<ImageService>();
-builder.Services.AddScoped<ConflictCaseService>();
+builder.Services.AddScoped<IConflictCaseService, ConflictCaseService>();
 builder.Services.AddScoped<IConflictTypeService, ConflictTypeService>();
-builder.Services.AddScoped<ProjectCatgoryService>();
-builder.Services.AddScoped<ProjectService>();
-builder.Services.AddScoped<ProjectFamilieservice>();
-builder.Services.AddScoped<TeamsService>();
-builder.Services.AddScoped<TeamMemberService>();
-builder.Services.AddScoped<FamilyMemberService>();
-builder.Services.AddScoped<TeamRoleService>();
+builder.Services.AddScoped<IProjectCatgoryService, ProjectCatgoryService>();
+builder.Services.AddScoped<IProjectService, ProjectService>();
+builder.Services.AddScoped<IProjectFamilieservice, ProjectFamilieservice>();
+builder.Services.AddScoped<ITeamsService, TeamsService>();
+builder.Services.AddScoped<ITeamMemberService, TeamMemberService>();
+builder.Services.AddScoped<IFamilyMemberService, FamilyMemberService>();
+builder.Services.AddScoped<ITeamRoleService, TeamRoleService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<UserContextService>();
 builder.Services.AddScoped<IGovernmentInstitutionsService, GovernmentInstitutionsService>();
@@ -83,7 +83,7 @@ builder.Services.AddScoped<IResidentialNeighborhoodService, ResidentialNeighborh
 builder.Services.AddScoped<ResidentialUnitService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IIssueService, IssueService>();
-
+builder.Services.AddApplicationServices(builder.Configuration);
 
 
 
@@ -98,38 +98,7 @@ builder.WebHost.UseSentry(options =>
     options.Debug = true; // Turn off debug for production
 });
 
-builder.Services.AddRateLimiter(options =>
-{
-    options.AddPolicy("fixed-window", context =>
-        RateLimitPartition.GetFixedWindowLimiter(
-            context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
-            factory: _ => new FixedWindowRateLimiterOptions
-            {
-                PermitLimit = 1000,
-                Window = TimeSpan.FromSeconds(1000),
-                QueueLimit = 0,
-                QueueProcessingOrder = QueueProcessingOrder.OldestFirst
-            }
-        )
-    );
-
-    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-
-    options.OnRejected = async (context, token) =>
-    {
-        context.HttpContext.Response.ContentType = "application/json";
-
-        var response = ApiResponse<object>.Error(
-            HttpStatusCode.TooManyRequests,
-            "You have exceeded the allowed number of requests. Try again later."
-        );
-
-        var json = JsonSerializer.Serialize(response);
-        context.HttpContext.Response.StatusCode = (int)HttpStatusCode.TooManyRequests;
-
-        await context.HttpContext.Response.WriteAsync(json, token);
-    };
-});
+// rate limiting is configured inside AddApplicationServices; no need to duplicate here
 
 
 var jwt = builder.Configuration.GetSection("Jwt").Get<JWT>();

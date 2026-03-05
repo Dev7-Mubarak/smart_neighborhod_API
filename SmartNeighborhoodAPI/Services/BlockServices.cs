@@ -33,7 +33,20 @@ namespace SmartNeighborhoodAPI.Services
 
         public async Task<ApiResponse<IEnumerable<RetrunBlockDto>>> GetAllAsync()
         {
-            var currentUser = _userContextService.GetCurrentUser();
+            CurrentUserDto currentUser;
+
+            try
+            {
+                currentUser = _userContextService.GetCurrentUser();
+            }
+            catch (InvalidOperationException ex)
+            {
+                _logger.LogWarning(ex, "Failed to resolve current user for fetching blocks.");
+                return ApiResponse<IEnumerable<RetrunBlockDto>>.Error(
+                    HttpStatusCode.Unauthorized,
+                    "يجب تسجيل الدخول للوصول إلى هذه البيانات.");
+            }
+
             _logger.LogInformation("Fetching blocks for user ID: {UserId} with role {Role}", currentUser.Id, currentUser.Role);
 
             IQueryable<Block> query = _context.Blocks.AsQueryable();
@@ -52,7 +65,7 @@ namespace SmartNeighborhoodAPI.Services
                         .Success(Enumerable.Empty<RetrunBlockDto>(), "لا توجد بيانات متاحة.");
                 }
 
-         
+
                 var flatBlocks = await _context.Blocks
                     .Select(b => new { b.Id, b.BlockManagerId })
                     .ToListAsync();
@@ -575,7 +588,8 @@ namespace SmartNeighborhoodAPI.Services
                 Name = block.Name,
                 BlockManagerId = block.BlockManagerId,
                 BlockManagerName = block.BlockManager?.Person?.FullName ?? string.Empty,
-                Families = block.Families.Select(f => {
+                Families = block.Families.Select(f =>
+                {
                     // Find family head: MemberFamilyRoleId == 1 (أب)
                     var head = f.FamilyMembers.FirstOrDefault(x => x.MemberFamilyRoleId == 1);
                     return new FamilySummaryDto

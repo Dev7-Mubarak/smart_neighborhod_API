@@ -35,6 +35,25 @@ namespace SmartNeighborhoodAPI
 
             builder.ApplyConfiguration(new IssueEntityTypeConfiguration());
 
+            // Seed configurations for حي الثوره
+            builder.ApplyConfiguration(new ResidentialUnitSeedConfiguration());
+            builder.ApplyConfiguration(new BlockEntityTypeConfiguration());
+            builder.ApplyConfiguration(new PersonSeedConfiguration());
+            builder.ApplyConfiguration(new FamilyConfiguration());
+            builder.ApplyConfiguration(new FamilyMemberSeedConfiguration());
+
+            // Additional entity configurations (relationships + seed)
+            builder.ApplyConfiguration(new ConfilctTypeConfiguration());
+            builder.ApplyConfiguration(new GovernmentInstitutionConfiguration());
+            builder.ApplyConfiguration(new GovernmentInstitutionContactSeedConfiguration());
+            builder.ApplyConfiguration(new ProjectConfiguration());
+            builder.ApplyConfiguration(new GroupEntityTypeConfiguration());
+            builder.ApplyConfiguration(new AdEntityTypeConfiguration());
+            builder.ApplyConfiguration(new ProjectFamilyEntityTypeConfiguration());
+            builder.ApplyConfiguration(new TeamSeedConfiguration());
+            builder.ApplyConfiguration(new TeamMemberSeedConfiguration());
+            builder.ApplyConfiguration(new ProjectTeamSeedConfiguration());
+
 
             base.OnModelCreating(builder);
 

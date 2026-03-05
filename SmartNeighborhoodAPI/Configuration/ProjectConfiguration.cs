@@ -38,13 +38,10 @@ namespace SmartNeighborhoodAPI.Configuration
                 .HasColumnType("decimal(18,2)")
                 .IsRequired(false);
 
-            builder.Property(p => p.ManagerId)
-                .IsRequired(false);
-
-            builder.HasOne(p => p.Manager)
-                .WithMany()
-                .HasForeignKey(p => p.ManagerId)
-                .OnDelete(DeleteBehavior.SetNull);
+            // ManagerId is int? but AppUser.Id is string — types are incompatible.
+            // Ignore the nav to prevent EF from trying to build an invalid FK relationship.
+            builder.Ignore(p => p.Manager);
+            builder.Property(p => p.ManagerId).IsRequired(false);
 
             builder.HasOne(p => p.ProjectCatogory)
                 .WithMany(c => c.Projects)
