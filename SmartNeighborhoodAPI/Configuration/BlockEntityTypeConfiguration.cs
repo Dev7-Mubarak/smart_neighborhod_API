@@ -26,10 +26,25 @@ namespace OurProjectSmartNeiborhood.Configuration
             builder.HasData(new
             {
                 Id = 1,
-                Name = "حي الثوره",
+                Name = "مربع 1",
                 ResidentialUnitId = 1,
                 BlockManagerId
-            });
+            },
+            new
+            {
+                Id = 2,
+                Name = "مربع 2",
+                ResidentialUnitId = 1,
+                BlockManagerId
+            },
+               new
+               {
+                   Id = 3,
+                   Name = "مربع 3",
+                   ResidentialUnitId = 1,
+                   BlockManagerId
+               }
+            );
         }
     }
 }
