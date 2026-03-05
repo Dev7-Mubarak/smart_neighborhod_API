@@ -99,7 +99,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
 
         [HttpGet(Router.ResidentialUnits.Dashboard)]
         [MapToApiVersion("1.0")]
-        [Authorize]
+        [Authorize(Roles = "ResidentialNeighborhoodManager,UnitManager,BlockManager,Admin")]
         [SwaggerOperation(Summary = "Get residential units dashboard", Description = "Returns dashboard statistics and units list. Admin gets all units; manager gets their units.")]
         [ProducesResponseType(typeof(ResidentialUnitDashboardDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
@@ -117,6 +117,8 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         [ProducesResponseType(typeof(ResidentialUnitDashboardDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+        [Authorize(Roles = "ResidentialNeighborhoodManager,UnitManager,BlockManager,Admin")]
+
         public async Task<IActionResult> GetMyDashboard(CancellationToken ct)
         {
             return Response(await _unitServices.GetMyDashboardAsync(ct));

@@ -30,6 +30,9 @@ namespace SmartNeighborhoodAPI
             builder.ApplyConfiguration(new ProjectCatgoryEntityTypeConfiguration());
             builder.ApplyConfiguration(new ResidentialNeighborhoodConfiguration());
             builder.ApplyConfiguration(new ConflictCaseConfiguration());
+            builder.ApplyConfiguration(new ConfilctTypeConfiguration());
+
+
             builder.ApplyConfiguration(new IssueEntityTypeConfiguration());
 
             // Seed configurations for حي الثوره
