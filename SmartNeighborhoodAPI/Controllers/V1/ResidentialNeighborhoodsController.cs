@@ -65,6 +65,8 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         [ProducesResponseType(typeof(ResidentialDashboardDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+        [Authorize(Roles = "ResidentialNeighborhoodManager,UnitManager,BlockManager,Admin")]
+
         public async Task<IActionResult> GetDashboard(CancellationToken ct)
         {
             return Response(await _service.GetDashboardAsync(ct));
@@ -82,6 +84,8 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         [ProducesResponseType(typeof(ResidentialDashboardDto), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+        [Authorize(Roles = "ResidentialNeighborhoodManager,UnitManager,BlockManager,Admin")]
+
         public async Task<IActionResult> GetMyDashboard(CancellationToken ct)
         {
             return Response(await _service.GetMyDashboardAsync(ct));
@@ -94,6 +98,8 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         [ProducesResponseType(typeof(ApiResponse<List<ReturnResidentialUnitDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+        [Authorize(Roles = "ResidentialNeighborhoodManager,Admin")]
+
         public async Task<IActionResult> GetMyNeighborhoods(CancellationToken ct)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
