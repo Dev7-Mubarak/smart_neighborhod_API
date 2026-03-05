@@ -21,7 +21,6 @@ namespace SmartNeighborhoodAPI
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            //builder.ApplyConfiguration(new PersonConfiguration());
             builder.ApplyConfiguration(new MemberFamilyRoleConfiguration());
             builder.ApplyConfiguration(new FamilyCatgoryConfiguration());
             builder.ApplyConfiguration(new IdentityRoleSeedConfiguration());
@@ -30,7 +29,6 @@ namespace SmartNeighborhoodAPI
             builder.ApplyConfiguration(new ProjectCatgoryEntityTypeConfiguration());
             builder.ApplyConfiguration(new ResidentialNeighborhoodConfiguration());
             builder.ApplyConfiguration(new ConflictCaseConfiguration());
-            builder.ApplyConfiguration(new ConfilctTypeConfiguration());
 
 
             builder.ApplyConfiguration(new IssueEntityTypeConfiguration());

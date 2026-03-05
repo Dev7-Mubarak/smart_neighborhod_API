@@ -8,7 +8,6 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace SmartNeighborhoodAPI.Controllers.V1
 {
     [Authorize]
-    [MapToApiVersion("1.0")]
     [SwaggerTag("Manage Conflict Cases")]
     public class ConflictCaseController : AppControllerBase
     {

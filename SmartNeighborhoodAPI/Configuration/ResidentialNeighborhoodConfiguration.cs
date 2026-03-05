@@ -27,7 +27,7 @@ namespace SmartNeighborhoodAPI.Configuration
             builder.HasData(new
             {
                 Id = 1,
-                Name = "الحي الأول",
+                Name = "حي الثوره",
                 NeighborhoodManagerId = "dddddddd-dddd-dddd-dddd-dddddddddddd" // RN Manager
             });
         }

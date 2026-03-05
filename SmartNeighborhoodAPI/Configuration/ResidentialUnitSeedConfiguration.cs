@@ -15,7 +15,7 @@ namespace SmartNeighborhoodAPI.Configuration
             builder.HasData(new
             {
                 Id = 1,
-                Name = "الوحدة الأولى",
+                Name = " وحدة الشفيع",
                 ResidentialNeighborhoodId = 1,
                 UnitManagerId
             });
