@@ -11,12 +11,12 @@ namespace SmartNeighborhoodAPI.Tests.Controllers.ConflictCaseType;
 public class ConflictCaseTypeControllerTests
 {
     private readonly Mock<IConflictTypeService> _mockService;
-    private readonly ConfilctCaseTypeController _controller;
+    private readonly ConflictCaseTypeController _controller;
 
     public ConflictCaseTypeControllerTests()
     {
         _mockService = new Mock<IConflictTypeService>();
-        _controller = new ConfilctCaseTypeController(_mockService.Object);
+        _controller = new ConflictCaseTypeController(_mockService.Object);
     }
 
     // ── GetAllAsync ──────────────────────────────────────────────────────────
