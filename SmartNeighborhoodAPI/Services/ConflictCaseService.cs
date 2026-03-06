@@ -271,7 +271,9 @@ namespace SmartNeighborhoodAPI.Services
             AppUser? manager = null;
             if (!string.IsNullOrWhiteSpace(conflictCaseDto.ManagerId))
             {
-                manager = await _userManager.FindByIdAsync(conflictCaseDto.ManagerId);
+                manager = await _context.Users
+                    .Include(u => u.ManagesBlock)
+                    .FirstOrDefaultAsync(u => u.Id == conflictCaseDto.ManagerId);
             }
 
             if (manager == null)
@@ -280,9 +282,15 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<string>.Error(HttpStatusCode.NotFound, "لم يتم العثور على المدير.");
             }
 
+            if (manager.ManagesBlock == null)
+            {
+                _logger.LogWarning("Manager {ManagerId} does not manage any block", manager.Id);
+                return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "المدير المختار غير مسؤول عن أي مربع سكني.");
+            }
+
             _mapper.Map(conflictCaseDto, existingConflictCase);
             existingConflictCase.ManagerId = manager.Id;
-            existingConflictCase.BlockId = manager.ManagesBlock!.Id;
+            existingConflictCase.BlockId = manager.ManagesBlock.Id;
 
             if (conflictCaseDto.Image != null)
             {
