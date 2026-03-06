@@ -19,7 +19,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         }
 
         [HttpPost(Router.ConflictCases.Add)]
-        [Consumes("multipart/form-data")]
+        //[Consumes("multipart/form-data")]
         [SwaggerOperation(
             Summary = "Add a new conflict case",
             Description = "Creates a new conflict case with an optional image and assigned manager.")]
@@ -28,7 +28,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> AddAsync(
-            [FromForm, SwaggerParameter("Conflict case data to add", Required = true)] AddConflictCaseDto conflictCaseDto)
+            [FromBody, SwaggerParameter("Conflict case data to add", Required = true)] AddConflictCaseDto conflictCaseDto)
         {
             var result = await _conflictCaseService.AddAsync(conflictCaseDto);
             return Response(result);
@@ -59,7 +59,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         }
 
         [HttpPut(Router.ConflictCases.Update)]
-        [Consumes("multipart/form-data")]
+        //[Consumes("multipart/form-data")]
         [SwaggerOperation(Summary = "Update a conflict case", Description = "Updates an existing conflict case, including optional image and manager replacement.")]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
@@ -67,7 +67,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
         public async Task<IActionResult> UpdateAsync(
             [FromRoute, SwaggerParameter("ID of the conflict case to update", Required = true)] int id,
-            [FromForm, SwaggerParameter("Updated conflict case data", Required = true)] UpdateConflictCaseDto conflictCaseDto)
+            [FromBody, SwaggerParameter("Updated conflict case data", Required = true)] UpdateConflictCaseDto conflictCaseDto)
         {
             var result = await _conflictCaseService.UpdateAsync(id, conflictCaseDto);
             return Response(result);
