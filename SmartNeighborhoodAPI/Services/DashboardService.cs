@@ -49,10 +49,9 @@ namespace SmartNeighborhoodAPI.Services
             dto.SocialAndFamily.Individuals = personIds.Count;
 
             // Social stats: divorced (assume enum values: 3=Divorced, 4=Widowed per DTO docs)
-            //dto.SocialAndFamily.Divorced = await _context.People.Where(p => personIds.Contains(p.Id) && (int)p.MaritalStatus == 3).CountAsync();
-            // dto.SocialAndFamily.Widows = await _context.People.Where(p => personIds.Contains(p.Id) && (int)p.MaritalStatus == 4).CountAsync();
-            dto.SocialAndFamily.Divorced = 30;
-            dto.SocialAndFamily.Widows = 20;
+            dto.SocialAndFamily.Divorced = await _context.People.Where(p => personIds.Contains(p.Id) && p.MaritalStatus == MaritalStatus.Divorced).CountAsync();
+            dto.SocialAndFamily.Widows = await _context.People.Where(p => personIds.Contains(p.Id) && p.MaritalStatus == MaritalStatus.Widowed).CountAsync();
+
             // Agreements -> ProjectFamilies linked to families
             var projFamiliesQuery = _context.ProjectFamilies.Where(pf => familyIds.Contains(pf.FamilyID));
             var totalAgreements = await projFamiliesQuery.CountAsync();
@@ -121,8 +120,7 @@ namespace SmartNeighborhoodAPI.Services
             var teamIdsFromProjectTeam = _context.ProjectTeams.Where(pt => projectIds.Contains(pt.ProjectId)).Select(pt => pt.TeamId);
             var teamIdsFromMembers = _context.TeamMembers.Where(tm => personIds.Contains(tm.PersonId)).Select(tm => tm.TeamId);
             var teamIds = await teamIdsFromProjectTeam.Union(teamIdsFromMembers).Distinct().ToListAsync();
-            //dto.Teams.TeamsCount = teamIds.Count;
-            dto.Teams.TeamsCount = 40;
+            dto.Teams.TeamsCount = teamIds.Count;
 
             // Population status
             dto.PopulationStatus.Residents = await _context.People.Where(p => personIds.Contains(p.Id) && p.ResidencyStatus == Entites.Enums.ResidencyStatus.Resident).CountAsync();
@@ -135,8 +133,8 @@ namespace SmartNeighborhoodAPI.Services
 
             // Health: individuals with chronic diseases
             //dto.Health.IndividualsWithChronicDiseases = await _context.People.Where(p => personIds.Contains(p.Id) && p.HasChronicDiseases == true).CountAsync();
-            dto.Health.IndividualsWithChronicDiseases = 50;
-            // Housing
+            dto.Health.IndividualsWithChronicDiseases = await _context.People.Where(p => personIds.Contains(p.Id) && p.HasChronicDiseases == true).CountAsync();
+
             dto.Housing.Rented = await familiesQuery.Where(f => f.HousingType == Entites.Enums.HousingType.Rent).CountAsync();
             dto.Housing.Owned = await familiesQuery.Where(f => f.HousingType == Entites.Enums.HousingType.Property).CountAsync();
 
