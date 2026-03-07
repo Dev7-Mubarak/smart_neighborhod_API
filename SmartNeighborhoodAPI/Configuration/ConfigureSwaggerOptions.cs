@@ -3,25 +3,57 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
+namespace SmartNeighborhoodAPI.Configuration
 {
-    private readonly IApiVersionDescriptionProvider _provider;
-
-    public ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider)
+    /// <summary>
+    /// Dynamically generates one SwaggerDoc per API version detected by
+    /// <see cref="IApiVersionDescriptionProvider"/> and wires up JWT Bearer security
+    /// so every versioned document supports "Authorize" in the Swagger UI.
+    /// </summary>
+    public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
     {
-        _provider = provider;
-    }
+        private readonly IApiVersionDescriptionProvider _provider;
 
-    public void Configure(SwaggerGenOptions options)
-    {
-        foreach (var description in _provider.ApiVersionDescriptions)
+        public ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider)
         {
-            options.SwaggerDoc(description.GroupName, new OpenApiInfo
+            _provider = provider;
+        }
+
+        public void Configure(SwaggerGenOptions options)
+        {
+            // --- One SwaggerDoc per API version ---
+            foreach (var description in _provider.ApiVersionDescriptions)
             {
-                Title = "SmartNeighborhood API",
+                options.SwaggerDoc(description.GroupName, CreateVersionInfo(description));
+            }
+        }
+
+        // ---------------------------------------------------------------
+        // Helpers
+        // ---------------------------------------------------------------
+
+        private static OpenApiInfo CreateVersionInfo(ApiVersionDescription description)
+        {
+            var info = new OpenApiInfo
+            {
+                Title = "Smart Neighborhood API",
                 Version = description.ApiVersion.ToString(),
-                Description = "API documentation with versioning"
-            });
+                Description = description.IsDeprecated
+                    ? "⚠️ This API version has been deprecated. Please migrate to the latest version."
+                    : "A comprehensive API for managing smart neighborhood operations including families, blocks, conflicts, projects, and government institutions.",
+                Contact = new OpenApiContact
+                {
+                    Name = "Smart Neighborhood Team",
+                    Email = "support@smartneighborhood.com"
+                },
+                License = new OpenApiLicense
+                {
+                    Name = "MIT License",
+                    Url = new Uri("https://opensource.org/licenses/MIT")
+                }
+            };
+
+            return info;
         }
     }
 }
