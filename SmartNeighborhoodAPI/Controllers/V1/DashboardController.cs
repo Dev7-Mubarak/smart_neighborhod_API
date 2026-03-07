@@ -15,7 +15,7 @@ namespace SmartNeighborhoodAPI.Controllers.V1
             _dashboardService = dashboardService;
         }
 
-        [HttpGet("stats")]
+        [HttpGet(Router.Dashboard.Stats)]
         public async Task<IActionResult> GetStats([FromQuery(Name = "neighborhood_id")] int? neighborhoodId, [FromQuery(Name = "residentialUnit_id")] int? residentialUnitId)
         {
             var stats = await _dashboardService.GetDashboardStatsAsync(neighborhoodId, residentialUnitId);

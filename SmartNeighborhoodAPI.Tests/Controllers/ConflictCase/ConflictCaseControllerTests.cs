@@ -19,6 +19,45 @@ public class ConflictCaseControllerTests
         _controller = new ConflictCaseController(_mockService.Object);
     }
 
+    // ── AddAsync ─────────────────────────────────────────────────────────────
+
+    [Fact]
+    public async Task AddAsync_ReturnsCreated_WhenCaseAdded()
+    {
+        var dto = new AddConflictCaseDto();
+        var returnDto = new ReturnConflictCaseDto { Id = 1 };
+        var serviceResponse = ApiResponse<ReturnConflictCaseDto>.Success(returnDto);
+        serviceResponse.StatusCode = HttpStatusCode.Created;
+
+        _mockService.Setup(s => s.AddAsync(dto))
+            .ReturnsAsync(serviceResponse);
+
+        var result = await _controller.AddAsync(dto);
+
+        var createdResult = Assert.IsType<CreatedResult>(result);
+        var response = Assert.IsType<ApiResponse<ReturnConflictCaseDto>>(createdResult.Value);
+        Assert.True(response.IsSuccess);
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        Assert.Equal(1, response.Data!.Id);
+    }
+
+    [Fact]
+    public async Task AddAsync_ReturnsBadRequest_WhenServiceFails()
+    {
+        var dto = new AddConflictCaseDto();
+        var serviceResponse = ApiResponse<ReturnConflictCaseDto>.Error(HttpStatusCode.BadRequest, "Error");
+
+        _mockService.Setup(s => s.AddAsync(dto))
+            .ReturnsAsync(serviceResponse);
+
+        var result = await _controller.AddAsync(dto);
+
+        var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+        var response = Assert.IsType<ApiResponse<ReturnConflictCaseDto>>(badRequestResult.Value);
+        Assert.False(response.IsSuccess);
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
     // ── GetAllAsync ──────────────────────────────────────────────────────────
 
     [Fact]
@@ -152,5 +191,19 @@ public class ConflictCaseControllerTests
         var ok = Assert.IsType<OkObjectResult>(result);
         var response = Assert.IsType<ApiResponse<IEnumerable<GetConflictCaseDto>>>(ok.Value);
         Assert.True(response.IsSuccess);
+    }
+
+    [Fact]
+    public async Task GetByFamilyMemberId_ReturnsNotFound_WhenFamilyMemberDoesNotExist()
+    {
+        _mockService.Setup(s => s.GetByFamilyMemberIdAsync(999))
+            .ReturnsAsync(ApiResponse<IEnumerable<GetConflictCaseDto>>.Error(HttpStatusCode.NotFound, "Not Found"));
+
+        var result = await _controller.GetByFamilyMemberId(999);
+
+        var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
+        var response = Assert.IsType<ApiResponse<IEnumerable<GetConflictCaseDto>>>(notFoundResult.Value);
+        Assert.False(response.IsSuccess);
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 }
