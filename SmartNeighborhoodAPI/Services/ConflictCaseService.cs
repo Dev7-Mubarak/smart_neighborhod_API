@@ -282,15 +282,10 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<string>.Error(HttpStatusCode.NotFound, "لم يتم العثور على المدير.");
             }
 
-            if (manager.ManagesBlock == null)
-            {
-                _logger.LogWarning("Manager {ManagerId} does not manage any block", manager.Id);
-                return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "المدير المختار غير مسؤول عن أي مربع سكني.");
-            }
+
 
             _mapper.Map(conflictCaseDto, existingConflictCase);
             existingConflictCase.ManagerId = manager.Id;
-            existingConflictCase.BlockId = manager.ManagesBlock.Id;
 
             if (conflictCaseDto.Image != null)
             {
