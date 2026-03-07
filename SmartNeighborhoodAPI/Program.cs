@@ -151,62 +151,74 @@ builder.Services.AddControllers()
         });
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
+
+// ── API Versioning ─────────────────────────────────────────────────────────
+// AddVersionedApiExplorer registers IApiVersionDescriptionProvider, which is
+// required by ConfigureSwaggerOptions to create one SwaggerDoc per version.
+builder.Services.AddApiVersioning(options =>
 {
-    // Use full type names to avoid duplicate schema Ids when different types share the same class name
-    c.CustomSchemaIds(type => type.FullName);
-
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "SmartNeibourhood", Version = "v1" });
-
-    // Add JWT Authentication to Swagger
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer",
-        BearerFormat = "JWT",
-        In = ParameterLocation.Header,
-        Description = "Enter 'Bearer' [space] and then your valid token.\n\nExample: \"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6...\"",
-    });
-
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            new string[] {}
-        }
-    });
+    options.DefaultApiVersion = new Microsoft.AspNetCore.Mvc.ApiVersion(1, 0);
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.ReportApiVersions = true; // adds "api-supported-versions" header
+})
+.AddVersionedApiExplorer(options =>
+{
+    // Format: 'v' + major[.minor] — e.g. v1, v1.1
+    options.GroupNameFormat           = "'v'VVV";
+    options.SubstituteApiVersionInUrl = true;
 });
+
+// Registers Swagger with bulletproof SchemaIds, JWT security, and XML comments.
+// See DependencyInjection.cs ➜ AddSwaggerDocumentation() for the full setup.
+builder.Services.AddSwaggerDocumentation();
 var app = builder.Build();
 app.UseRequestLocalization();
 //app.UseMiddleware<ExceptionHandlingMiddleware>();
 
+// ── Swagger ────────────────────────────────────────────────────────────────
+// Exposed in all environments so the hosted API can also be explored.
+// Scope to IsDevelopment() only if you want to hide docs in production.
+app.UseSwagger(c =>
+{
+    // Ensure the spec is served at the default path (/swagger/{documentName}/swagger.json)
+    c.RouteTemplate = "swagger/{documentName}/swagger.json";
+});
 
-// Configure the HTTP request pipeline.
-app.UseSwagger();
 app.UseSwaggerUI(options =>
 {
-    options.RoutePrefix = "";
+    // Serve the UI at /swagger — matches launchSettings.json "launchUrl": "swagger"
+    options.RoutePrefix = "swagger";
+
+    // Dynamically register one dropdown entry per API version so adding a new
+    // version in the future requires zero changes here.
+    var provider = app.Services.GetRequiredService<Microsoft.AspNetCore.Mvc.ApiExplorer.IApiVersionDescriptionProvider>();
+    foreach (var description in provider.ApiVersionDescriptions.OrderByDescending(v => v.ApiVersion))
+    {
+        var label = description.IsDeprecated
+            ? $"Smart Neighborhood API {description.GroupName} (deprecated)"
+            : $"Smart Neighborhood API {description.GroupName}";
+
+        options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", label);
+    }
+
+    // ── Enterprise UI options ───────────────────────────────────────────────
+    // Keep the JWT token alive across browser refreshes.
+    options.EnablePersistAuthorization();
+
+    // Collapse all operation groups on first load for a cleaner overview.
+    options.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
+
+    // Surface request duration in the UI.
+    options.DisplayRequestDuration();
+
+    // Shareable deep links per operation.
+    options.EnableDeepLinking();
 });
 
 app.UseRateLimiter();
 app.UseMiddleware<RequestTimingMiddleware>();
 
 app.UseStaticFiles();
-
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-;
 app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");

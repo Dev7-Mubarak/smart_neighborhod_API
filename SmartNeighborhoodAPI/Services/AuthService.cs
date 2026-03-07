@@ -4,12 +4,14 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using SmartNeighborhoodAPI.Entites;
 using SmartNeighborhoodAPI.Helpers.DTOs.Auth;
 using SmartNeighborhoodAPI.Helpers.DTOs.block;
 using SmartNeighborhoodAPI.Interfaces;
+using SmartNeighborhoodAPI.Services.Auth;
 
 namespace SmartNeighborhoodAPI.Services
 {
@@ -38,7 +40,8 @@ namespace SmartNeighborhoodAPI.Services
             AppUser? user = null;
 
 
-            if (isEmail) {
+            if (isEmail)
+            {
                 user = await _userManager.FindByEmailAsync(loginDto.Identifier);
             }
             else
@@ -80,8 +83,8 @@ namespace SmartNeighborhoodAPI.Services
             var existingUser = await _context.Users.FirstOrDefaultAsync(x => x.PersonId == dto.PersonId);
             if (existingUser != null)
             {
-                    _logger.LogWarning("User {Email} is already assigned as a Block Manager.", dto.Identifier);
-                    return ApiResponse<UserResponse>.Error(HttpStatusCode.BadRequest, "هذا المستخدم هو مدير بالفعل لإحدى المربعات.");
+                _logger.LogWarning("User {Email} is already assigned as a Block Manager.", dto.Identifier);
+                return ApiResponse<UserResponse>.Error(HttpStatusCode.BadRequest, "هذا المستخدم هو مدير بالفعل لإحدى المربعات.");
             }
 
             // Step 2: Create new user if not exists
@@ -188,7 +191,7 @@ namespace SmartNeighborhoodAPI.Services
                 var roles = await _userManager.GetRolesAsync(user);
                 if (roles.Any())
                 {
-                    return roles.First(); 
+                    return roles.First();
                 }
             }
             return null;
@@ -197,27 +200,51 @@ namespace SmartNeighborhoodAPI.Services
         {
             var userClaims = await _userManager.GetClaimsAsync(user);
             var roles = await _userManager.GetRolesAsync(user);
-            var roleClaims = new List<Claim>();
+            var roleClaims = roles.Select(r => new Claim(ClaimTypes.Role, r)).ToList();
 
-            foreach (var role in roles)
-                roleClaims.Add(new Claim(ClaimTypes.Role, role));
-
-            var claims = new[]
+            // ── Row-Level Security claim ──────────────────────────────────────────────
+            // For Neighbourhood Managers we embed the neighbourhood they govern so that
+            // ICurrentUserService can expose it and EF Core global query filters can
+            // restrict their data access at the database level automatically.
+            //
+            // The claim is added ONLY when the user actually manages a neighbourhood;
+            // it is intentionally omitted (not set to "0") for all other roles so that
+            // a misconfigured token cannot accidentally grant cross-neighbourhood access.
+            var securityClaims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-            }
-            .Union(userClaims)
-            .Union(roleClaims);
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
+                new Claim(JwtRegisteredClaimNames.Jti,   Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
+            };
 
-            var symmetricSecurityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwt.SigningKey));
-            var signingCredentials = new SigningCredentials(symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
+            // Resolve the neighbourhood managed by this user.
+            // ManagesNeighborhood is the inverse-navigation on AppUser populated by
+            // ResidentialNeighborhood.NeighborhoodManagerId FK.
+            var managedNeighbourhood = await _context.ResidentialNeighborhoods
+                .AsNoTracking()
+                .FirstOrDefaultAsync(n => n.NeighborhoodManagerId == user.Id);
+
+            if (managedNeighbourhood is not null)
+            {
+                // Custom claim — read by CurrentUserService.AssignedNeighborhoodId
+                securityClaims.Add(
+                    new Claim(CurrentUserService.NeighborhoodIdClaimType,
+                              managedNeighbourhood.Id.ToString()));
+            }
+
+            var allClaims = securityClaims
+                .Union(userClaims)
+                .Union(roleClaims);
+
+            var symmetricSecurityKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(_jwt.SigningKey));
+            var signingCredentials = new SigningCredentials(
+                symmetricSecurityKey, SecurityAlgorithms.HmacSha256);
 
             var jwtSecurityToken = new JwtSecurityToken(
                 issuer: _jwt.Issuer,
                 audience: _jwt.Audience,
-                claims: claims,
+                claims: allClaims,
                 expires: DateTime.UtcNow.AddDays(30),
                 signingCredentials: signingCredentials);
 
@@ -279,13 +306,13 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "Email is already in use.");
             }
 
-     
+
             var user = new AppUser
             {
                 UserName = model.Email,
                 Email = model.Email,
-                PersonId=1
-          
+                PersonId = 1
+
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
@@ -296,10 +323,10 @@ namespace SmartNeighborhoodAPI.Services
                 return ApiResponse<string>.Error(HttpStatusCode.BadRequest, $"User creation failed: {errors}");
             }
 
-            await _userManager.AddToRoleAsync(user, "User"); 
+            await _userManager.AddToRoleAsync(user, "User");
 
             return ApiResponse<string>.Success("User registered successfully.");
-        
+
         }
         public async Task<ApiResponse<string>> SendResetCodeAsync(ForgotPasswordDto model)
         {
