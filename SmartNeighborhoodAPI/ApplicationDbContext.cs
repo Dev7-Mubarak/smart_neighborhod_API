@@ -2,9 +2,11 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using OurProjectSmartNeiborhood.Configuration;
+using OurProjectSmartNeiborhood.Entites;
 using SmartNeighborhoodAPI.Configuration;
 using SmartNeighborhoodAPI.Entites;
 using SmartNeighborhoodAPI.Helpers.DTOs.block;
+using SmartNeighborhoodAPI.Interfaces;
 using System.Reflection.Emit;
 using static SmartNeighborhoodAPI.Helpers.Router;
 
@@ -13,14 +15,72 @@ namespace SmartNeighborhoodAPI
 {
     public class ApplicationDbContext : IdentityDbContext<AppUser>
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        // ── Row-Level Security context ────────────────────────────────────────────
+        // Captured per-request (scoped lifetime). EF Core evaluates the HasQueryFilter
+        // lambdas lazily on each query, so the current user's claims are always fresh.
+        private readonly ICurrentUserService _currentUser;
+
+        /// <summary>
+        /// Runtime constructor — used by the DI container.
+        /// <paramref name="currentUser"/> drives all global query filters.
+        /// </summary>
+        public ApplicationDbContext(
+            DbContextOptions<ApplicationDbContext> options,
+            ICurrentUserService currentUser)
             : base(options)
         {
+            _currentUser = currentUser
+                ?? throw new ArgumentNullException(nameof(currentUser));
         }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            // ── Global Query Filters (Row-Level Security) ─────────────────────────
+            // Every filter short-circuits to TRUE for SuperAdmins.
+            // For all other roles the predicate traverses the neighbourhood FK chain.
+            // IMPORTANT: EF Core translates NULL == int to FALSE in SQL, so a missing
+            // AssignedNeighborhoodId claim automatically produces zero rows — the
+            // deny-by-default guarantee is enforced at the database level.
+
+            // ── Block (direct FK: Block → ResidentialUnit → Neighbourhood) ─────────
+            builder.Entity<Block>().HasQueryFilter(b =>
+                _currentUser.IsSuperAdmin ||
+                b.ResidentialUnit.ResidentialNeighborhoodId == _currentUser.AssignedNeighborhoodId);
+
+            // ── Family (Block → ResidentialUnit → Neighbourhood) ─────────────────
+            builder.Entity<Family>().HasQueryFilter(f =>
+                _currentUser.IsSuperAdmin ||
+                f.Block.ResidentialUnit.ResidentialNeighborhoodId == _currentUser.AssignedNeighborhoodId);
+
+            // ── ConflictCase (nullable Block → ResidentialUnit → Neighbourhood) ──
+            // Block is nullable on ConflictCase, so we guard with a null-check first.
+            // In SQL this becomes: BlockId IS NOT NULL AND Block.ResUnit.NeighbId = @p
+            builder.Entity<ConflictCase>().HasQueryFilter(c =>
+                _currentUser.IsSuperAdmin ||
+                (c.Block != null &&
+                 c.Block.ResidentialUnit.ResidentialNeighborhoodId == _currentUser.AssignedNeighborhoodId));
+
+            // ── Project (via ProjectBlocks M2M → Block → ResidentialUnit → Neighbourhood)
+            // This is the advanced indirect filter: a project belongs to a neighbourhood
+            // if ANY of its assigned blocks are in that neighbourhood.
+            builder.Entity<Project>().HasQueryFilter(p =>
+                _currentUser.IsSuperAdmin ||
+                p.ProjectBlocks.Any(pb =>
+                    pb.Block.ResidentialUnit.ResidentialNeighborhoodId == _currentUser.AssignedNeighborhoodId));
+
+            // ── Issue (nullable Block → ResidentialUnit → Neighbourhood) ──────────
+            // Issue.BlockId was added specifically to anchor issues to a neighbourhood.
+            // Pattern mirrors ConflictCase — Block is optional until an issue is
+            // formally assigned to a location.
+            builder.Entity<Issue>().HasQueryFilter(i =>
+                _currentUser.IsSuperAdmin ||
+                (i.Block != null &&
+                 i.Block.ResidentialUnit.ResidentialNeighborhoodId == _currentUser.AssignedNeighborhoodId));
+
+            // ─────────────────────────────────────────────────────────────────────
+
             builder.ApplyConfiguration(new MemberFamilyRoleConfiguration());
             builder.ApplyConfiguration(new FamilyCatgoryConfiguration());
             builder.ApplyConfiguration(new IdentityRoleSeedConfiguration());
