@@ -236,6 +236,7 @@ namespace OurProjectSmartNeiborhood.Services
             existingPerson.BloodType = dto.BloodType;
             existingPerson.MaritalStatus = dto.MaritalStatus;
             existingPerson.OccupationStatus = dto.OccupationStatus;
+            existingPerson.NationalId = dto.NationalId;
 
             if (dto.Image != null)
             {
