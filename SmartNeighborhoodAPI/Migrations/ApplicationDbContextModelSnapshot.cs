@@ -184,6 +184,177 @@ namespace SmartNeighborhoodAPI.Migrations
                         });
                 });
 
+            modelBuilder.Entity("SmartNeighborhoodAPI.Entites.AppUser", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("EmailConfirmationCode")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<DateTime?>("EmailConfirmationCodeExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PersonId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("PersonId")
+                        .HasDatabaseName("IX_AspNetUsers_PersonId");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "c69ce64a-fdf6-46b3-8ac8-c56e55d4da7f",
+                            Email = "sys.smartneighborhood@gmail.com",
+                            EmailConfirmationCode = (string)null,
+                            EmailConfirmationCodeExpiresAt = (DateTime?)null,
+                            EmailConfirmed = true,
+                            IsActive = false,
+                            LockoutEnabled = false,
+                            LockoutEnd = (DateTimeOffset?)null,
+                            NormalizedEmail = "SYS.SMARTNEIGHBORHOOD@GMAIL.COM",
+                            NormalizedUserName = "ADMIN",
+                            PasswordHash = "AQAAAAIAAYagAAAAENAAwXABtrhrACJ28sDmsz0lKcqnTE7mX3HTdaLh0VJtF6s18xAiPcQ6tM+bcYoxSA==",
+                            PersonId = 1,
+                            PhoneNumber = (string)null,
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "45cb0cf1-8a00-4bef-ae6f-41003f3bce06",
+                            TwoFactorEnabled = false,
+                            UserName = "Admin"
+                        },
+                        new
+                        {
+                            Id = "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "af779984-567a-4296-a7f2-ca9f659eb893",
+                            Email = "block.manager@local",
+                            EmailConfirmationCode = (string)null,
+                            EmailConfirmationCodeExpiresAt = (DateTime?)null,
+                            EmailConfirmed = true,
+                            IsActive = false,
+                            LockoutEnabled = false,
+                            LockoutEnd = (DateTimeOffset?)null,
+                            NormalizedEmail = "BLOCK.MANAGER@LOCAL",
+                            NormalizedUserName = "BLOCKMANAGER",
+                            PasswordHash = "AQAAAAIAAYagAAAAEISFPXdEWO+k/mOmXyO7Ekn5dorCsjYaGN+5JJNRJsp0n4z6pcC/issBYtOFo4ee/A==",
+                            PersonId = 2,
+                            PhoneNumber = (string)null,
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "8db8ee5b-0756-4ab3-9cd8-e3ad0aebc845",
+                            TwoFactorEnabled = false,
+                            UserName = "BlockManager"
+                        },
+                        new
+                        {
+                            Id = "cccccccc-cccc-cccc-cccc-cccccccccccc",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "907ab802-4595-424d-934c-a472e1df0ba5",
+                            Email = "unit.manager@local",
+                            EmailConfirmationCode = (string)null,
+                            EmailConfirmationCodeExpiresAt = (DateTime?)null,
+                            EmailConfirmed = true,
+                            IsActive = false,
+                            LockoutEnabled = false,
+                            LockoutEnd = (DateTimeOffset?)null,
+                            NormalizedEmail = "UNIT.MANAGER@LOCAL",
+                            NormalizedUserName = "UNITMANAGER",
+                            PasswordHash = "AQAAAAIAAYagAAAAEHtHrWIYYzgLx7HQUpXIuzNVq8hIGuNTRXxp/YJSvJEZczPTOqhUELOwKfp3KL++PA==",
+                            PersonId = 3,
+                            PhoneNumber = (string)null,
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "a85f6be5-7eca-4df0-9de0-a6d7a5b58e5e",
+                            TwoFactorEnabled = false,
+                            UserName = "UnitManager"
+                        },
+                        new
+                        {
+                            Id = "dddddddd-dddd-dddd-dddd-dddddddddddd",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "15b75b50-6ab5-4f68-a020-20aee75fb19a",
+                            Email = "rn.manager@local",
+                            EmailConfirmationCode = (string)null,
+                            EmailConfirmationCodeExpiresAt = (DateTime?)null,
+                            EmailConfirmed = true,
+                            IsActive = false,
+                            LockoutEnabled = false,
+                            LockoutEnd = (DateTimeOffset?)null,
+                            NormalizedEmail = "RN.MANAGER@LOCAL",
+                            NormalizedUserName = "RESIDENTIALNEIGHBORHOODMANAGER",
+                            PasswordHash = "AQAAAAIAAYagAAAAEJk9QzJfdKy6ReBgka5g6TRU9r9jKpK3goRQ2EmOLjqFcTxu6RLKNPF3xelLMaxjcg==",
+                            PersonId = 4,
+                            PhoneNumber = (string)null,
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "e34aa3ef-3aeb-4364-b063-23e8fc71154c",
+                            TwoFactorEnabled = false,
+                            UserName = "ResidentialNeighborhoodManager"
+                        });
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
                     b.Property<string>("UserId")
