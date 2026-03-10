@@ -62,7 +62,7 @@ namespace OurProjectSmartNeiborhood.Services
                 VehicleRegistrationNumber = dto.VehicleRegistrationNumber,
                 ResidencyStatus = dto.ResidencyStatus,
                 HasChronicDiseases = dto.HasChronicDiseases,
-                ChronicDiseasesNotes = dto.ChronicDiseasesNotes
+                ChronicDiseasesNotes = dto.ChronicDiseasesNotes,
             };
 
             await _context.People.AddAsync(person);
@@ -237,6 +237,15 @@ namespace OurProjectSmartNeiborhood.Services
             existingPerson.MaritalStatus = dto.MaritalStatus;
             existingPerson.OccupationStatus = dto.OccupationStatus;
             existingPerson.NationalId = dto.NationalId;
+            existingPerson.VehicleType = dto.VehicleType;
+            existingPerson.VehicleRegistrationNumber = dto.VehicleRegistrationNumber;
+            existingPerson.ResidencyStatus = dto.ResidencyStatus;
+            existingPerson.HasChronicDiseases = dto.HasChronicDiseases;
+            existingPerson.ChronicDiseasesNotes = dto.ChronicDiseasesNotes;
+            existingPerson.DateOfBirth = dto.DateOfBirth;
+            existingPerson.personType = existingPerson.personType; 
+            existingPerson.IsWhatsapp = existingPerson.IsWhatsapp;
+            existingPerson.IsContactNumber = existingPerson.IsContactNumber;
 
             if (dto.Image != null)
             {
