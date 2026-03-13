@@ -141,7 +141,7 @@ namespace SmartNeighborhoodAPI.Services
             await _userManager.UpdateAsync(user);
 
 
-            _logger.LogInformation("User created successfully: {Email}. OTP sent to email.", user.Email);
+            //_logger.LogInformation("User created successfully: {Email}. OTP sent to email.", user.Email);
 
             UserResponse userResponse = new UserResponse
             {
@@ -150,7 +150,7 @@ namespace SmartNeighborhoodAPI.Services
                 Role = Role.BlockManager
             };
 
-            return ApiResponse<UserResponse>.Success(userResponse, "تم تسجيل المستخدم بنجاح. تم إرسال رمز التأكيد إلى البريد الإلكتروني.");
+            return ApiResponse<UserResponse>.Success(userResponse, "تم انشاء المربع بنجاح");
         }
         public async Task<ApiResponse<UserResponse>> DeleteBlockManagerAccountByIdAsync(string managerId)
         {
