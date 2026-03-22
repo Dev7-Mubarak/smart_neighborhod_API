@@ -215,21 +215,52 @@ namespace SmartNeighborhoodAPI.Services
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
                 new Claim(JwtRegisteredClaimNames.Jti,   Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
+                new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
             };
 
-            // Resolve the neighbourhood managed by this user.
-            // ManagesNeighborhood is the inverse-navigation on AppUser populated by
-            // ResidentialNeighborhood.NeighborhoodManagerId FK.
+            // Resolve neighborhood scope for row-level security.
+            // ResidentialNeighborhoodManager: by managed neighborhood
+            // UnitManager: by managed unit's neighborhood
+            // BlockManager: by managed block's unit neighborhood
+            int? assignedNeighborhoodId = null;
+
             var managedNeighbourhood = await _context.ResidentialNeighborhoods
                 .AsNoTracking()
+                .Select(n => new { n.Id, n.NeighborhoodManagerId })
                 .FirstOrDefaultAsync(n => n.NeighborhoodManagerId == user.Id);
 
             if (managedNeighbourhood is not null)
             {
+                assignedNeighborhoodId = managedNeighbourhood.Id;
+            }
+            else
+            {
+                var managedUnitNeighborhoodId = await _context.ResidentialUnits
+                    .AsNoTracking()
+                    .Where(u => u.UnitManagerId == user.Id)
+                    .Select(u => (int?)u.ResidentialNeighborhoodId)
+                    .FirstOrDefaultAsync();
+
+                if (managedUnitNeighborhoodId.HasValue)
+                {
+                    assignedNeighborhoodId = managedUnitNeighborhoodId.Value;
+                }
+                else
+                {
+                    assignedNeighborhoodId = await _context.Blocks
+                        .AsNoTracking()
+                        .Where(b => b.BlockManagerId == user.Id)
+                        .Select(b => (int?)b.ResidentialUnit.ResidentialNeighborhoodId)
+                        .FirstOrDefaultAsync();
+                }
+            }
+
+            if (assignedNeighborhoodId.HasValue)
+            {
                 // Custom claim — read by CurrentUserService.AssignedNeighborhoodId
                 securityClaims.Add(
                     new Claim(CurrentUserService.NeighborhoodIdClaimType,
-                              managedNeighbourhood.Id.ToString()));
+                              assignedNeighborhoodId.Value.ToString()));
             }
 
             var allClaims = securityClaims
