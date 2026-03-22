@@ -7,7 +7,7 @@ namespace SmartNeighborhoodAPI.Interfaces
 {
     public interface IProjectService
     {
-        Task<ApiResponse<ReturnProjectDto>> AddAsync(ProjectDto projectDto);
+        Task<ApiResponse<string>> AddAsync(ProjectDto projectDto);
         Task<ApiResponse<string>> AssignFamilyToProjectAsync(int projectId, int familyId);
         Task<ApiResponse<string>> AssignTeamToProjectAsync(int projectId, int teamId);
         Task<ApiResponse<string>> ChangeStatusAsync(int id, ProjectStatus newStatus);

@@ -26,19 +26,19 @@ namespace SmartNeighborhoodAPI.Services
             _logger = logger;
             _userContextService = userContextService;
         }
-        public async Task<ApiResponse<ReturnProjectDto>> AddAsync(ProjectDto projectDto)
+        public async Task<ApiResponse<string>> AddAsync(ProjectDto projectDto)
         {
             var managerExists = await _context.People.AnyAsync(u => u.Id == projectDto.ManagerId);
             if (!managerExists)
             {
                 _logger.LogWarning("AddAsync failed: Manager with ID {ManagerId} does not exist.", projectDto.ManagerId);
-                return ApiResponse<ReturnProjectDto>.Error(HttpStatusCode.NotFound, $"المدير برقم {projectDto.ManagerId} غير موجود");
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, $"المدير برقم {projectDto.ManagerId} غير موجود");
             }
             var categoryExists = await _context.ProjectCatogories.AnyAsync(u => u.Id == projectDto.ProjectCatgoryId);
             if (!categoryExists)
             {
                 _logger.LogWarning("AddAsync failed: Project Category with ID {ProjectCatgoryId} does not exist.", projectDto.ProjectCatgoryId);
-                return ApiResponse<ReturnProjectDto>.Error(HttpStatusCode.NotFound, $" {projectDto.ProjectCatgoryId} غير موجود");
+                return ApiResponse<string>.Error(HttpStatusCode.NotFound, $" {projectDto.ProjectCatgoryId} غير موجود");
             }
 
             var project = new Project
@@ -58,17 +58,13 @@ namespace SmartNeighborhoodAPI.Services
             if (await _context.SaveChangesAsync() > 0)
             {
 
-                var projectResult = await GetByIdAsync(project.Id);
-                if (!projectResult.IsSuccess)
-                    return projectResult;
+                _logger.LogInformation("Project added successfully: {@Project}", project.Name);
 
-                _logger.LogInformation("Project added successfully: {@Project}", projectResult.Data);
-
-                return ApiResponse<ReturnProjectDto>.Success(projectResult.Data, "تمت إضافة المشروع بنجاح");
+                return ApiResponse<string>.Success(project.Name, "تمت إضافة المشروع بنجاح");
             }
 
             _logger.LogWarning("AddAsync failed: SaveChanges returned 0.");
-            return ApiResponse<ReturnProjectDto>.Error(HttpStatusCode.BadRequest, "لم يتم حفظ المشروع");
+            return ApiResponse<string>.Error(HttpStatusCode.BadRequest, "لم يتم حفظ المشروع");
         }
 
         public async Task<ApiResponse<string>> DeleteAsync(int id)
