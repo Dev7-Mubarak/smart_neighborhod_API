@@ -225,7 +225,7 @@ namespace SmartNeighborhoodAPI.Services
                             BloodType = GetDisplayName(fm.Person.BloodType),
                             OccupationStatus = GetDisplayName(fm.Person.OccupationStatus),
                             MaritalStatus = GetDisplayName(fm.Person.MaritalStatus),
-                            Job = fm.Person.Job ?? "NAN"
+                            Job = fm.Person.Job
                         }
                     }).ToList(),
                     Assistances = x.ProjectFamilies.Select(pfm => new Assistances

@@ -23,7 +23,7 @@ namespace SmartNeighborhoodAPI.Helpers.DTOs.Person
         public string MaritalStatus { get; set; }    
         [SwaggerSchema("Person type: مواطن (Citizen), مدير وحدة سكنية (UnitManager), مدير مربع (BlockManager), مدير حي سكني (Admin)")]
         public string PersonType { get; set; }    
-        public string Job { get; set; }
+        public string? Job { get; set; }
 
         [SwaggerSchema("National ID / Personal ID number")]
         public string? NationalId { get; set; }
